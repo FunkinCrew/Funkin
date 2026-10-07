@@ -78,7 +78,10 @@ class SaveDataMenu extends Page<OptionsState.OptionsMenuPageName>
 
   var prompt:Prompt;
 
-  function openConfirmPrompt(text:String, yesText:String, onYes:Void->Void, ?groupToOpenOn:Null<flixel.group.FlxGroup>):Void
+  function openConfirmPrompt(text:String,
+    yesText:String,
+    onYes:Void->Void,
+    ?groupToOpenOn:Null<flixel.group.FlxGroup>):Void
   {
     if (prompt != null) return;
 

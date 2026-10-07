@@ -8,7 +8,8 @@ import funkin.data.song.SongData.CommentData;
  * Functions for interacting with comments in the chart editor.
  * Handlers split up the functionality of the Chart Editor into different classes based on focus to limit the amount of code in each class.
  */
-@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety
+@:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorCommentHandler
 {
   /**

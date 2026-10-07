@@ -14,7 +14,9 @@ class CompoundCommand implements CameraEditorCommand
   var selectionAfter:Array<SongEventData>;
   var selectionBefore:Array<SongEventData> = [];
 
-  public function new(commands:Array<CameraEditorCommand>, ?description:String, ?selectionAfter:Array<SongEventData>)
+  public function new(commands:Array<CameraEditorCommand>,
+    ?description:String,
+    ?selectionAfter:Array<SongEventData>)
   {
     this.commands = commands.copy();
     this.description = description ?? 'Batch (${commands.length})';

@@ -23,7 +23,8 @@ class AnimationDataUtil
    * @param name (adds index to name)
    * @return Array<AnimationData>
    */
-  public static function toNamedArray(data:Array<UnnamedAnimationData>, name:String = ''):Array<AnimationData>
+  public static function toNamedArray(data:Array<UnnamedAnimationData>,
+    name:String = ''):Array<AnimationData>
   {
     return data.mapi(function(animItem, ind) return toNamed(animItem, '$name$ind'));
   }

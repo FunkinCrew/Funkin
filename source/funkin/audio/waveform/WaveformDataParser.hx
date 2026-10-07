@@ -124,7 +124,8 @@ class WaveformDataParser
     return parser.value;
   }
 
-  static function printErrors(errors:Array<json2object.Error>, id:String = ''):Void
+  static function printErrors(errors:Array<json2object.Error>,
+    id:String = ''):Void
   {
     trace('[WAVEFORM] Failed to parse waveform data: ${id}');
 

@@ -107,9 +107,18 @@ class GRhythmUtil
     return RES_CONTINUE;
   }
 
-  static final RES_STOP:HitWindowRes = {botplayHit: false, cont: false};
-  static final RES_CONTINUE:HitWindowRes = {botplayHit: false, cont: true};
-  static final RES_BOTPLAY_HIT:HitWindowRes = {botplayHit: true, cont: true};
+  static final RES_STOP:HitWindowRes = {
+    botplayHit: false,
+    cont: false
+  };
+  static final RES_CONTINUE:HitWindowRes = {
+    botplayHit: false,
+    cont: true
+  };
+  static final RES_BOTPLAY_HIT:HitWindowRes = {
+    botplayHit: true,
+    cont: true
+  };
 
   /**
    * Get the y-position of a note based on its strum time.

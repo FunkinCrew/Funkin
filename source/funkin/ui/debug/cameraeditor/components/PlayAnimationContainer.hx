@@ -79,8 +79,7 @@ class PlayAnimationContainer extends BaseEventContainer
     final currentAnim:String = selected.getString('anim') ?? PlayAnimationSongEvent.DEFAULT_ANIM;
 
     final newTargetSprite:Null<FlxSprite> = resolveTarget(newTarget);
-    final animList:Array<String> = (newTargetSprite != null
-      && newTargetSprite.animation != null) ? newTargetSprite.animation.getNameList() : [];
+    final animList:Array<String> = (newTargetSprite != null && newTargetSprite.animation != null) ? newTargetSprite.animation.getNameList() : [];
 
     var animToUse:String = currentAnim;
     if (animList.length > 0 && !animList.contains(currentAnim))
@@ -125,16 +124,28 @@ class PlayAnimationContainer extends BaseEventContainer
     if (stage != null)
     {
       final bf = stage.getBoyfriend();
-      if (bf != null) playAnimationTarget.dataSource.add({id: 'boyfriend', text: labelWithAnimCount(bf.characterName ?? 'Boyfriend', bf)});
+      if (bf != null) playAnimationTarget.dataSource.add({
+        id: 'boyfriend',
+        text: labelWithAnimCount(bf.characterName ?? 'Boyfriend', bf)
+      });
       final dad = stage.getDad();
-      if (dad != null) playAnimationTarget.dataSource.add({id: 'dad', text: labelWithAnimCount(dad.characterName ?? 'Dad', dad)});
+      if (dad != null) playAnimationTarget.dataSource.add({
+        id: 'dad',
+        text: labelWithAnimCount(dad.characterName ?? 'Dad', dad)
+      });
       final gf = stage.getGirlfriend();
-      if (gf != null) playAnimationTarget.dataSource.add({id: 'girlfriend', text: labelWithAnimCount(gf.characterName ?? 'Girlfriend', gf)});
+      if (gf != null) playAnimationTarget.dataSource.add({
+        id: 'girlfriend',
+        text: labelWithAnimCount(gf.characterName ?? 'Girlfriend', gf)
+      });
 
       @:privateAccess
       for (propName in stage.namedProps.keys())
       {
-        playAnimationTarget.dataSource.add({id: propName, text: labelWithAnimCount(propName, stage.getNamedProp(propName))});
+        playAnimationTarget.dataSource.add({
+          id: propName,
+          text: labelWithAnimCount(propName, stage.getNamedProp(propName))
+        });
       }
     }
 
@@ -160,13 +171,13 @@ class PlayAnimationContainer extends BaseEventContainer
     playAnimationAnim.dataSource.clear();
 
     final target:Null<FlxSprite> = resolveTarget(targetName);
-    final animList:Array<String> = (target != null
-      && target.animation != null) ? target.animation.getNameList() : [];
+    final animList:Array<String> = (target != null && target.animation != null) ? target.animation.getNameList() : [];
 
     // A stray value (a modded/aliased anim not present on the resolved target) must stay
     // visible and selectable so the round-trip never silently loses it. Only fall back to
     // the disabled "None" display when there's nothing worth preserving (the plain default).
-    final hasStrayAnim:Bool = currentAnim != null
+    final hasStrayAnim:Bool =
+      currentAnim != null
       && currentAnim != ''
       && currentAnim != PlayAnimationSongEvent.DEFAULT_ANIM
       && !animList.contains(currentAnim);
@@ -182,7 +193,10 @@ class PlayAnimationContainer extends BaseEventContainer
 
     for (animName in animList)
     {
-      playAnimationAnim.dataSource.add({id: animName, text: animName});
+      playAnimationAnim.dataSource.add({
+        id: animName,
+        text: animName
+      });
     }
 
     addStringItemIfMissing(playAnimationAnim, currentAnim);
@@ -201,10 +215,14 @@ class PlayAnimationContainer extends BaseEventContainer
 
     return switch (targetName)
     {
-      case 'boyfriend' | 'bf' | 'player': stage.getBoyfriend();
-      case 'dad' | 'opponent': stage.getDad();
-      case 'girlfriend' | 'gf': stage.getGirlfriend();
-      default: stage.getNamedProp(targetName);
+      case 'boyfriend' | 'bf' | 'player':
+        stage.getBoyfriend();
+      case 'dad' | 'opponent':
+        stage.getDad();
+      case 'girlfriend' | 'gf':
+        stage.getGirlfriend();
+      default:
+        stage.getNamedProp(targetName);
     };
   }
 
@@ -213,7 +231,8 @@ class PlayAnimationContainer extends BaseEventContainer
    * with matching `id` already exists. Used for preserving stray values
    * (aliases, typos, mod targets) so round-tripping never loses data.
    */
-  static function addStringItemIfMissing(dropdown:haxe.ui.components.DropDown, value:String):Void
+  static function addStringItemIfMissing(dropdown:haxe.ui.components.DropDown,
+    value:String):Void
   {
     if (value == null || value == '') return;
     for (i in 0...dropdown.dataSource.size)
@@ -221,16 +240,21 @@ class PlayAnimationContainer extends BaseEventContainer
       final item:Dynamic = dropdown.dataSource.get(i);
       if (item != null && item.id == value) return;
     }
-    dropdown.dataSource.add({id: value, text: value});
+    dropdown.dataSource.add({
+      id: value,
+      text: value
+    });
   }
 
   /**
    * Select the dropdown item whose `id` matches `value`. No-op if not found.
    */
-  static function selectStringItem(dropdown:haxe.ui.components.DropDown, value:String):Void
+  static function selectStringItem(dropdown:haxe.ui.components.DropDown,
+    value:String):Void
   {
     if (value == null) return;
-    dropdown.selectItemBy(function(item):Bool {
+    dropdown.selectItemBy(function(item):Bool
+    {
       return item != null && item.id == value;
     });
   }

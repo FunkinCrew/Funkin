@@ -1093,10 +1093,7 @@ class StageEditorState extends UIState
       if (isCursorOverHaxeUI) return;
 
       // captures once so it don't drift
-      middleMousePanOffset = FlxPoint.get(
-        camFollow.x + FlxG.mouse.viewX,
-        camFollow.y + FlxG.mouse.viewY
-      );
+      middleMousePanOffset = FlxPoint.get(camFollow.x + FlxG.mouse.viewX, camFollow.y + FlxG.mouse.viewY);
     }
     else if (FlxG.mouse.pressedMiddle && middleMousePanOffset != null)
     {

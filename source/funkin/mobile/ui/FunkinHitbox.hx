@@ -203,7 +203,10 @@ class FunkinHint extends FunkinButton
       final hintWidth:Float = Math.max(columnWidth, baseWidth);
 
       if (followTargetSize) setSize(hintWidth, baseHeight);
-      setPosition((followTarget.x - (followTarget.width * ((widthMultiplier - 1) / 2))) - xOffset - ((hintWidth - baseWidth) / 2), (followTarget.y - 220) - yOffset);
+      setPosition(
+        (followTarget.x - (followTarget.width * ((widthMultiplier - 1) / 2))) - xOffset - ((hintWidth - baseWidth) / 2),
+        (followTarget.y - 220) - yOffset
+      );
     }
   }
 

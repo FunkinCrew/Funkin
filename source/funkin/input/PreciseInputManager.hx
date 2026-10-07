@@ -407,7 +407,8 @@ class PreciseInputList extends FlxKeyList
 {
   var _preciseInputManager:PreciseInputManager;
 
-  public function new(state:FlxInputState, preciseInputManager:FlxKeyManager<Dynamic, Dynamic>)
+  public function new(state:FlxInputState,
+    preciseInputManager:FlxKeyManager<Dynamic, Dynamic>)
   {
     super(state, preciseInputManager);
 
