@@ -10,7 +10,6 @@ class MultiBufferShader extends FlxGraphicsShader
 		void main()
 		{
 			vec4 color = flixel_texture2D(bitmap, openfl_TextureCoordv);
-      gl_FragData[0] = color;
 
       if (sampleAttachment)
       {
@@ -20,6 +19,8 @@ class MultiBufferShader extends FlxGraphicsShader
       {
         gl_FragData[1] = vec4(0.0, 0.0, 0.0, 0.0);
       }
+
+      gl_FragData[0] = color;
 		}')
   public function new()
   {
