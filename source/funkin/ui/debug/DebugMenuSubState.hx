@@ -105,6 +105,15 @@ class DebugMenuSubState extends MusicBeatSubState
       FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu'));
       exitDebugMenu();
     }
+
+    /**
+     * Set hasSelected to true so you can't leave the menu after you selected something!!!
+     * You made this choice now stick with it bucko.
+     */
+    if (controls.ACCEPT_P)
+    {
+      hasSelected = true;
+    }
   }
 
   function createItem(name:String, callback:Void->Void, fireInstantly = false):TextMenuItem
@@ -118,8 +127,6 @@ class DebugMenuSubState extends MusicBeatSubState
   #if FEATURE_CHART_EDITOR
   function openChartEditor():Void
   {
-    hasSelected = true;
-
     FlxTransitionableState.skipNextTransIn = true;
 
     FlxG.switchState(() -> new ChartEditorState());
@@ -134,7 +141,6 @@ class DebugMenuSubState extends MusicBeatSubState
   #if FEATURE_ANIMATION_EDITOR
   function openAnimationEditor():Void
   {
-    hasSelected = true;
     FlxG.switchState(() -> new funkin.ui.debug.anim.DebugBoundingState());
     trace('Animation Editor');
   }
@@ -150,7 +156,6 @@ class DebugMenuSubState extends MusicBeatSubState
   #if FEATURE_STAGE_EDITOR
   function openStageEditor():Void
   {
-    hasSelected = true;
     trace('Stage Editor');
     FlxG.switchState(() -> new funkin.ui.debug.stageeditor.StageEditorState());
   }
@@ -159,7 +164,6 @@ class DebugMenuSubState extends MusicBeatSubState
   #if FEATURE_POLYMOD_MODS
   function openModMenu():Void
   {
-    hasSelected = true;
     FlxG.switchState(() -> new funkin.ui.modmenu.ModMenuState());
   }
   #end
@@ -167,7 +171,6 @@ class DebugMenuSubState extends MusicBeatSubState
   #if FEATURE_CAMERA_EDITOR
   function openCameraEditor():Void
   {
-    hasSelected = true;
     FlxG.switchState(() -> new funkin.ui.debug.cameraeditor.CameraEditorState());
   }
   #end
@@ -182,7 +185,6 @@ class DebugMenuSubState extends MusicBeatSubState
   #if sys
   function openLogFolder()
   {
-    hasSelected = true;
     FileUtil.openFolder(CrashHandler.LOG_FOLDER);
   }
   #end
