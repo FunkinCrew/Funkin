@@ -83,7 +83,7 @@ class CharacterRegistry extends BaseRegistry<BaseCharacter, CharacterData, Chara
 
     charPath += '${lastValidIconName}';
 
-    var assetPath:AssetPath = Paths.image(charPath, false).withPixelData();
+    var assetPath:AssetPath = Paths.image(charPath, false);
 
     if (!assetPath.exists())
     {
@@ -92,8 +92,6 @@ class CharacterRegistry extends BaseRegistry<BaseCharacter, CharacterData, Chara
     }
 
     var isAnimated = assetPath.withAssetType(XML).exists();
-
-    var frame:Null<FlxFrame> = null;
 
     if (isAnimated)
     {
@@ -110,20 +108,13 @@ class CharacterRegistry extends BaseRegistry<BaseCharacter, CharacterData, Chara
         return null;
       }
 
-      // so, haxe.ui.backend.AssetsImpl uses the parent width and height, which makes the image go crazy when rendered
-      // so this is a work around so that it uses the actual width and height
-      var imageGraphic = flixel.graphics.FlxGraphic.fromFrame(idleFrame);
-
-      var imageFrame = flixel.graphics.frames.FlxImageFrame.fromImage(imageGraphic);
-      frame = imageFrame.frame;
+      return idleFrame;
     }
     else
     {
       var imageFrame = flixel.graphics.frames.FlxImageFrame.fromImage(assetPath.toFlxGraphicAsset());
-      frame = imageFrame.frame;
+      return imageFrame.frame;
     }
-
-    return frame;
   }
 
   public override function loadEntries():Void
@@ -779,7 +770,10 @@ class CharacterRegistry extends BaseRegistry<BaseCharacter, CharacterData, Chara
     @:privateAccess
     switch (this.loadEntryFile(id))
     {
-      case {fileName: fileName, contents: contents}:
+      case {
+        fileName: fileName,
+        contents: contents
+      }:
         parser.fromJson(funkin.util.SerializerUtil.sanitizeJSON(contents), fileName);
       default:
         return null;
