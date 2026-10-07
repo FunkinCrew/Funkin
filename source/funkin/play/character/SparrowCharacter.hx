@@ -36,7 +36,9 @@ class SparrowCharacter extends BaseCharacter
   {
     trace('Loading assets for Sparrow character "${characterId}"');
 
-    var tex:FlxFramesCollection = Paths.getSparrowAtlas(_data.assetPath);
+    var assetPath:String = funkin.assets.Paths.formatRelative(_data.assetPath, 'gameplay/characters/$characterId', Constants.EXT_IMAGE);
+
+    var tex:FlxFramesCollection = Paths.getSparrowAtlas(assetPath);
     if (tex == null)
     {
       trace('Could not load Sparrow sprite: ${_data.assetPath}');
