@@ -1,5 +1,6 @@
 package funkin.play.event;
 
+import flixel.FlxCamera;
 import flixel.tweens.FlxEase;
 import flixel.math.FlxPoint;
 import funkin.ui.FullScreenScaleMode;
@@ -33,6 +34,7 @@ class ZoomCameraSongEvent extends SongEvent
   public static final DEFAULT_WIDESCREEN_SCALE:Float = 0.0;
   public static final DEFAULT_DURATION:Float = 4.0;
   public static final DEFAULT_MODE:String = 'direct';
+  public static final DEFAULT_EASE:String = 'classicLerp';
 
   override public function handleEvent(data:SongEventData):Void
   {
@@ -53,8 +55,7 @@ class ZoomCameraSongEvent extends SongEvent
 
     var mode:String = data.getString('mode') ?? DEFAULT_MODE;
     var isDirectMode:Bool = mode == 'direct';
-
-    var ease:String = data.getString('ease') ?? SongEvent.DEFAULT_EASE;
+    var ease:String = data.getString('ease') ?? DEFAULT_EASE;
     var easeDir:String = data.getString('easeDir') ?? SongEvent.DEFAULT_EASE_DIR;
 
     if (SongEvent.EASE_TYPE_DIR_REGEX.match(ease) || ease == 'linear') easeDir = '';
@@ -64,6 +65,12 @@ class ZoomCameraSongEvent extends SongEvent
     {
       case 'INSTANT':
         PlayState.instance.tweenCameraZoom(scaledZoom, 0, isDirectMode);
+
+      case 'classicLerp':
+        var targetZoom = scaledZoom * (isDirectMode ? FlxCamera.defaultZoom : PlayState.instance.stageZoom);
+        PlayState.instance.cancelCameraZoomTween();
+        PlayState.instance.requiredZoom = targetZoom;
+
       default:
         var durSeconds = Conductor.instance.stepLengthMs * duration / Constants.MS_PER_SEC;
         var easeFunctionName = '$ease$easeDir';
@@ -123,11 +130,12 @@ class ZoomCameraSongEvent extends SongEvent
       {
         name: 'ease',
         title: 'Easing Type',
-        defaultValue: SongEvent.DEFAULT_EASE,
+        defaultValue: DEFAULT_EASE,
         type: SongEventFieldType.ENUM,
         keys: [
           'Linear' => 'linear',
           'Instant (Ignores duration)' => 'INSTANT',
+          'Classic (Lerp)' => 'classicLerp',
           'Sine' => 'sine',
           'Quad' => 'quad',
           'Cube' => 'cube',
