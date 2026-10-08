@@ -59,6 +59,9 @@ class SelectItemsCommand implements ChartEditorCommand
       var noteSelected = this.notes[0];
 
       state.noteKindToPlace = noteSelected.kind;
+      var defaultKey = noteSelected.getSchema()?.getFirstField()?.name;
+      var noteParams = noteSelected.paramsAsStruct(defaultKey);
+      state.noteParamsToPlace = noteParams;
 
       // This code is here to parse note data that's not built as a struct for some reason.
       state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_NOTE_DATA_LAYOUT);
