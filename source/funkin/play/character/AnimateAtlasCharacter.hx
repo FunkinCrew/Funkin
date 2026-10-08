@@ -38,7 +38,7 @@ class AnimateAtlasCharacter extends BaseCharacter
   function loadAtlas():Void
   {
     log('Loading sprite atlas for ${characterId}.');
-    var assetPath:String = Paths.stripLibrary(_data.assetPath);
+    var assetPath:String = Paths.stripLibrary(funkin.assets.Paths.formatRelative(_data.assetPath, 'gameplay/characters/$characterId'));
 
     loadTextureAtlas(assetPath, getAtlasSettings());
 

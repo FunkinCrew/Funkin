@@ -188,11 +188,14 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
         switch (dataProp.animType)
         {
           case 'packer':
-            propSprite.loadPacker(dataProp.assetPath);
+            var packerPath:String = funkin.assets.Paths.formatRelative(dataProp.assetPath, 'gameplay/stages/$id', Constants.EXT_IMAGE);
+            propSprite.loadPacker(packerPath);
           case 'animateatlas':
-            propSprite.loadTextureAtlas(dataProp.assetPath, null, cast dataProp.atlasSettings);
+            var atlasPath:String = funkin.assets.Paths.formatRelative(dataProp.assetPath, 'gameplay/stages/$id');
+            propSprite.loadTextureAtlas(atlasPath, null, cast dataProp.atlasSettings);
           default: // 'sparrow'
-            propSprite.loadSparrow(dataProp.assetPath);
+            var sparrowPath:String = funkin.assets.Paths.formatRelative(dataProp.assetPath, 'gameplay/stages/$id', Constants.EXT_IMAGE);
+            propSprite.loadSparrow(sparrowPath);
         }
       }
       else if (isSolidColor)
@@ -214,7 +217,8 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
       else
       {
         // Initalize static sprite.
-        propSprite.loadTexture(dataProp.assetPath);
+        var assetPath:String = funkin.assets.Paths.formatRelative(dataProp.assetPath, 'gameplay/stages/$id', 'png');
+        propSprite.loadTexture(assetPath);
 
         // Disables calls to update() for a performance boost.
         propSprite.active = false;

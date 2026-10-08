@@ -16,7 +16,8 @@ class AnimateAtlasFreeplayDJ extends BaseFreeplayDJ
   {
     super(x, y, characterId);
 
-    loadTextureAtlas(playableCharData.getAssetPath(), playableCharData.getAtlasSettings());
+    var assetPath:String = funkin.assets.Paths.formatRelative(playableCharData.getAssetPath(), 'gameplay/playable-characters/$characterId');
+    loadTextureAtlas(assetPath, playableCharData.getAtlasSettings());
     loadAnimations();
 
     if (playableCharData.useApplyStageMatrix() && !this.applyStageMatrix || playableCharData.useAnimatePosition)
