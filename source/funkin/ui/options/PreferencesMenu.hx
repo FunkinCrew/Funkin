@@ -121,6 +121,11 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
       #if FEATURE_TOUCH_CONTROLS ControlsHandler.hasExternalInputDevice
       || Preferences.controlsScheme != FunkinHitboxControlSchemes.Arrows
       #end);
+    createPrefItemCheckbox('Note Quantization', 'When enabled, notes are colored by their quantization (4th, 8th, 16th, etc.).',
+      function(value:Bool):Void
+      {
+        Preferences.noteQuantColors = value;
+      }, Preferences.noteQuantColors);
     createPrefItemPercentage('Strumline Background', 'Show a semi-transparent background behind the strumline.', function(value:Int):Void
     {
       Preferences.strumlineBackgroundOpacity = value;

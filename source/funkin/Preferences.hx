@@ -95,6 +95,25 @@ class Preferences
   }
 
   /**
+   * If enabled, notes are colored by their quantization (4th, 8th, 16th, etc.).
+   * @default `false`
+   */
+  public static var noteQuantColors(get, set):Bool;
+
+  static function get_noteQuantColors():Bool
+  {
+    return Save?.instance?.options?.noteQuantColors ?? false;
+  }
+
+  static function set_noteQuantColors(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.noteQuantColors = value;
+    Save.system.flush();
+    return value;
+  }
+
+  /**
    * If enabled, the strumline is at the bottom of the screen rather than the top.
    * @default `false`
    */
