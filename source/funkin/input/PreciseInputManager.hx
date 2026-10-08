@@ -14,6 +14,7 @@ import funkin.play.notes.NoteDirection;
 import funkin.util.FlxGamepadUtil;
 import haxe.Int64;
 import lime.ui.GamepadButton as LimeGamepadButton;
+import lime.ui.GamepadAxis as LimeGamepadAxis;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
 import openfl.events.KeyboardEvent;
@@ -194,10 +195,12 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
     var limeGamepad = FlxGamepadUtil.getLimeGamepad(gamepad);
     var callbacks = {
       onButtonDown: handleButtonDown.bind(gamepad),
-      onButtonUp: handleButtonUp.bind(gamepad)
+      onButtonUp: handleButtonUp.bind(gamepad),
+      onAxisMove: handleAxisMove.bind(gamepad)
     };
     limeGamepad.onButtonDownPrecise.add(callbacks.onButtonDown);
     limeGamepad.onButtonUpPrecise.add(callbacks.onButtonUp);
+    limeGamepad.onAxisMovePrecise.add(callbacks.onAxisMove);
 
     for (noteDirection in DIRECTIONS)
     {
@@ -357,6 +360,42 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
         noteDirection: getDirectionForButton(gamepad, buttonId),
         timestamp: timestamp,
         keyCode: button // implicit cast to int
+      });
+      _dirReleaseTimestamps.set(getDirectionForButton(gamepad, buttonId), timestamp);
+    }
+  }
+
+  function handleAxisMove(gamepad:FlxGamepad, axis:LimeGamepadAxis, value:Float, timestamp:Int64):Void
+  {
+    var buttonId:FlxGamepadInputID = switch (axis)
+    {
+      case TRIGGER_LEFT: LEFT_TRIGGER;
+      case TRIGGER_RIGHT: RIGHT_TRIGGER;
+      default: return;
+    }
+
+    var buttonListEntry = _buttonList.get(gamepad.id);
+    if (buttonListEntry == null || buttonListEntry.indexOf(buttonId) == -1) return;
+
+    var keyCode:Int = -1 - axis;
+
+    updateButtonStates(gamepad, buttonId, value > gamepad.deadZone);
+
+    if (getInputByButton(gamepad, buttonId)?.justPressed ?? false)
+    {
+      onInputPressed.dispatch({
+        noteDirection: getDirectionForButton(gamepad, buttonId),
+        timestamp: timestamp,
+        keyCode: keyCode
+      });
+      _dirPressTimestamps.set(getDirectionForButton(gamepad, buttonId), timestamp);
+    }
+    else if (getInputByButton(gamepad, buttonId)?.justReleased ?? false)
+    {
+      onInputReleased.dispatch({
+        noteDirection: getDirectionForButton(gamepad, buttonId),
+        timestamp: timestamp,
+        keyCode: keyCode
       });
       _dirReleaseTimestamps.set(getDirectionForButton(gamepad, buttonId), timestamp);
     }
