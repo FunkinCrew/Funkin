@@ -331,7 +331,7 @@ class PolymodHandler
     // `haxe.Http`
     // An alias for `sys.Http`, which is also a blacklisted package.
     Polymod.blacklistImport('haxe.Http');
-    
+
     // `haxe.Unserializer`
     // Unserializer.DEFAULT_RESOLVER.resolveClass() can access blacklisted packages
     Polymod.blacklistImport('haxe.Unserializer');
@@ -408,6 +408,10 @@ class PolymodHandler
     #if !html5 Polymod.blacklistInstanceFields(openfl.filesystem.FileStream, ['readObject']); #end
     Polymod.blacklistInstanceFields(openfl.net.Socket, ['readObject']);
     Polymod.blacklistInstanceFields(openfl.utils.ByteArray.ByteArrayData, ['readObject']);
+
+    // `openfl.filesystem.File`
+    // Can be used to delete files.
+    Polymod.blacklistInstanceFields(openfl.filesystem.File, ['deleteDirectory', 'deleteDirectoryAsync', 'deleteFile', 'deleteFileAsync']);
 
     // `funkin.api.*`
     // Contains functions which may allow for cheating and such.
@@ -561,9 +565,7 @@ class PolymodHandler
    */
   public static function getAllModDirs():Array<String>
   {
-    var modDirs:Array<String> = [
-      for (i in getAllMods()) i.dirName
-    ];
+    var modDirs:Array<String> = [for (i in getAllMods()) i.dirName];
     return modDirs;
   }
 
