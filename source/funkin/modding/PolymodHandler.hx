@@ -411,7 +411,7 @@ class PolymodHandler
 
     // `openfl.filesystem.File`
     // Can be used to delete files.
-    Polymod.blacklistImport('openfl.filesystem.File');
+    Polymod.blacklistInstanceFields(openfl.filesystem.File, ['deleteDirectory', 'deleteDirectoryAsync', 'deleteFile', 'deleteFileAsync']);
 
     // `funkin.api.*`
     // Contains functions which may allow for cheating and such.
