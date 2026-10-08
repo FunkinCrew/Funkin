@@ -9,7 +9,7 @@ import flixel.system.frontEnds.AssetFrontEnd.FlxAssetType;
 import funkin.assets.Paths.AnimateAtlasAssetPathBuilder;
 import funkin.assets.Paths.AssetPath;
 import funkin.assets.Paths.MusicAssetPathBuilder;
-import funkin.data.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterRegistry;
 import funkin.data.dialogue.ConversationRegistry;
 import funkin.data.dialogue.DialogueBoxRegistry;
 import funkin.data.dialogue.SpeakerRegistry;

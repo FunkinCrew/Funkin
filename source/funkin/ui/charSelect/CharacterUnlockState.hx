@@ -9,7 +9,7 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import funkin.graphics.FunkinSprite;
 import flixel.util.FlxColor;
-import funkin.data.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterRegistry;
 import funkin.play.components.HealthIcon;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.data.freeplay.player.PlayerRegistry;
@@ -82,7 +82,7 @@ class CharacterUnlockState extends MusicBeatState
     // HealthIcon handles getting the right frames for us,
     // but it has a bunch of overhead in it that makes it gross to work with outside the health bar.
     var healthIconCharacterId = targetCharacterData?.getOwnedCharacterIds()[0];
-    var baseCharacter = CharacterDataParser.fetchCharacter(healthIconCharacterId ?? Constants.DEFAULT_CHARACTER);
+    var baseCharacter = CharacterRegistry.instance.fetchEntry(healthIconCharacterId ?? Constants.DEFAULT_CHARACTER);
     var healthIcon:HealthIcon = new HealthIcon(healthIconCharacterId);
     @:privateAccess
     healthIcon.configure(baseCharacter?._data.healthIcon);
