@@ -33,6 +33,16 @@ class VersionUtil
   }
 
   /**
+   * Clone a semantic version so it cannot be accidentally shared by reference.
+   * This avoids aliasing when merging default save data into user data because the
+   * semver value is internally stored as an abstract array.
+   */
+  public static function cloneVersion(version:thx.semver.Version):thx.semver.Version
+  {
+    return cast Std.string(version);
+  }
+
+  /**
    * Repair a potentially broken version object.
    * @param version The version to repair, if necessary.
    * @return The fixed version.

@@ -13,12 +13,13 @@ class SaveDataMigrator
    */
   public static function migrate(inputData:Dynamic):Save
   {
-    var version:Null<thx.semver.Version> = VersionUtil.parseVersion(inputData?.version ?? null);
+    var safeInputData:Dynamic = sanitizeSaveData(inputData);
+    var version:Null<thx.semver.Version> = VersionUtil.parseVersion(safeInputData?.version ?? null);
 
     if (version == null)
     {
-      trace('[SAVE] No version found in save data! Returning blank data.');
-      trace(inputData);
+      trace('[SAVE] No version found in save data! Returning default data.');
+      trace(safeInputData);
       return new Save(Save.getDefaultData());
     }
     else
@@ -28,17 +29,18 @@ class SaveDataMigrator
       if (VersionUtil.validateVersion(version, Save.SAVE_DATA_VERSION_RULE))
       {
         // Import the structured data.
-        var saveDataWithDefaults:RawSaveData = cast thx.Objects.deepCombine(Save.getDefaultData(), inputData);
+        var saveDataWithDefaults:RawSaveData = cast thx.Objects.deepCombine(Save.getDefaultData(), safeInputData);
+        saveDataWithDefaults.version = VersionUtil.cloneVersion(Save.SAVE_DATA_VERSION);
         var save:Save = new Save(saveDataWithDefaults);
         return save;
       }
       else if (VersionUtil.validateVersion(version, "2.0.x"))
       {
-        return migrate_v2_0_0(inputData);
+        return migrate_v2_0_0(safeInputData);
       }
       else
       {
-        var slot:Int = Save.system.archiveBadSaveData(inputData);
+        var slot:Int = Save.system.archiveBadSaveData(safeInputData);
         var message:String =
           'An error occurred migrating your save data.'
           + '\nError migrating save data, expected ${Save.SAVE_DATA_VERSION}.'
@@ -50,15 +52,36 @@ class SaveDataMigrator
     }
   }
 
+  static function sanitizeSaveData(inputData:Dynamic):Dynamic
+  {
+    if (inputData == null) return Save.getDefaultData();
+
+    var safeData:Dynamic = thx.Objects.deepCombine(Save.getDefaultData(), inputData);
+    if (safeData == null) return Save.getDefaultData();
+
+    if (safeData.version == null)
+    {
+      safeData.version = VersionUtil.cloneVersion(Save.SAVE_DATA_VERSION);
+    }
+
+    if (safeData.options == null) safeData.options = Save.getDefaultData().options;
+    if (safeData.mods == null) safeData.mods = Save.getDefaultData().mods;
+    if (safeData.unlocks == null) safeData.unlocks = Save.getDefaultData().unlocks;
+    if (safeData.scores == null) safeData.scores = Save.getDefaultData().scores;
+
+    return safeData;
+  }
+
   static function migrate_v2_0_0(inputData:Dynamic):Save
   {
     // Import the structured data.
-    var saveDataWithDefaults:RawSaveData = cast thx.Objects.deepCombine(Save.getDefaultData(), inputData);
+    var saveDataWithDefaults:RawSaveData = cast thx.Objects.deepCombine(Save.getDefaultData(), sanitizeSaveData(inputData));
 
     // Reset these values to valid ones.
     saveDataWithDefaults.optionsChartEditor.chartEditorLiveInputStyle = funkin.ui.debug.charting.ChartEditorState.ChartEditorLiveInputStyle.None;
     saveDataWithDefaults.optionsChartEditor.theme = funkin.ui.debug.charting.ChartEditorState.ChartEditorTheme.Light;
     saveDataWithDefaults.optionsStageEditor.theme = funkin.ui.debug.stageeditor.StageEditorState.StageEditorTheme.Light;
+    saveDataWithDefaults.version = VersionUtil.cloneVersion(Save.SAVE_DATA_VERSION);
 
     var save:Save = new Save(saveDataWithDefaults);
     return save;
