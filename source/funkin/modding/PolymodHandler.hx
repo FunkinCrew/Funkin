@@ -568,6 +568,10 @@ class PolymodHandler
     Polymod.blacklistInstanceFields(openfl.net.Socket, ['readObject']);
     Polymod.blacklistInstanceFields(openfl.utils.ByteArray.ByteArrayData, ['readObject']);
 
+    // `openfl.filesystem.File`
+    // Can be used to delete files.
+    Polymod.blacklistImport('openfl.filesystem.File');
+
     // `funkin.api.*`
     // Contains functions which may allow for cheating and such.
     for (cls in ClassMacro.listClassesInPackage('funkin.api'))
