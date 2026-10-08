@@ -1712,6 +1712,12 @@ class ModMenuState extends MusicBeatState
           doHoldAction = true;
         }
       }
+      else
+      {
+        holdDirection = controls.UI_UP ? -1 : controls.UI_DOWN ? 1 : controls.UI_LEFT ? -2 : 2; // resets hold for new direction
+        holdTimer = 0.5;
+        doHoldAction = false;
+      }
     }
     else
     {
