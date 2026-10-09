@@ -19,6 +19,7 @@ class FreeplayScore extends FlxTypedSpriteGroup<ScoreNum>
 
     while (dumbNumb > 0)
     {
+      group.members[loopNum].leadingZero = false;
       group.members[loopNum].digit = dumbNumb % 10;
 
       dumbNumb = Math.floor(dumbNumb / 10);
@@ -27,6 +28,7 @@ class FreeplayScore extends FlxTypedSpriteGroup<ScoreNum>
 
     while (loopNum >= 0)
     {
+      group.members[loopNum].leadingZero = true;
       group.members[loopNum].digit = 0;
       loopNum--;
     }
@@ -68,6 +70,14 @@ class FreeplayScore extends FlxTypedSpriteGroup<ScoreNum>
 class ScoreNum extends FlxSprite
 {
   public var digit(default, set):Int = 0;
+
+  public var leadingZero(default, set):Bool = false;
+
+  function set_leadingZero(val):Bool
+  {
+    alpha = val ? 0.5 : 1.0;
+    return val;
+  }
 
   function set_digit(val):Int
   {
