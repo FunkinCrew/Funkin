@@ -417,6 +417,10 @@ class BaseFreeplayDJ extends FunkinSprite implements IFreeplayScriptedClass
   {
   }
 
+  public function onCustom(event:CustomScriptEvent):Void
+  {
+  }
+
   public function onStepHit(event:SongTimeScriptEvent):Void
   {
   }

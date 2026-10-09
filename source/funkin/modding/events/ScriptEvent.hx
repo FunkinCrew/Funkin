@@ -695,3 +695,32 @@ class PauseScriptEvent extends ScriptEvent
     this.gitaroo = gitaroo;
   }
 }
+
+/**
+ * A customizable event for modding.
+ */
+class CustomScriptEvent extends ScriptEvent
+{
+  /**
+   * The ID for this custom script event.
+   */
+  public var id(default, null):String;
+
+  /**
+   * Data for this custom script event.
+   */
+  public var data(default, default):Map<String, Dynamic>;
+
+  public function new(id:String, cancelable:Bool = true):Void
+  {
+    super(CUSTOM, cancelable);
+
+    this.id = id;
+    this.data = [];
+  }
+
+  override public function toString():String
+  {
+    return 'CustomScriptEvent(id=' + id + ', data=Map(' + data.size() + ' keys), cancelable=' + cancelable + ')';
+  }
+}
