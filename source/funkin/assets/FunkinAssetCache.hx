@@ -213,6 +213,33 @@ class FunkinAssetCache implements OpenFLIAssetCache
   }
 
   /**
+   * Forces lime to forget all cached assets.
+   */
+  public function clearCoreAssetCache():Void
+  {
+    #if sys
+    @:privateAccess
+    for (library in lime.utils.Assets.libraries)
+    {
+      // Polymod wraps each library, so walk down to the original one.
+      var current:Null<lime.utils.AssetLibrary> = library;
+      var depth:Int = 0;
+      while (current != null && depth < 8)
+      {
+        current.cachedText.clear();
+        current.cachedBytes.clear();
+        current.cachedImages.clear();
+        current.cachedAudioBuffers.clear();
+
+        var next:Dynamic = Reflect.field(current, 'fallback');
+        current = Std.isOfType(next, lime.utils.AssetLibrary) ? cast next : null;
+        depth++;
+      }
+    }
+    #end
+  }
+
+  /**
    * Prepare to purge the asset cache.
    * Attempting to recache any assets that were previously cached will just move them to the new cache.
    * Later, any old assets that the game didn't try to use again will be destroyed, saving memory.

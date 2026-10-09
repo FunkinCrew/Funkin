@@ -429,6 +429,7 @@ class DialogueBox extends FunkinSpriteGroup implements IDialogueScriptedClass im
 
   public function onDialogueEnd(event:DialogueScriptEvent):Void
   {
+    if (textDisplay != null) textDisplay.paused = true;
   }
 
   public function onUpdate(event:UpdateScriptEvent):Void

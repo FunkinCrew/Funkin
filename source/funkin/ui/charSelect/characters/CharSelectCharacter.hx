@@ -231,21 +231,6 @@ class CharSelectCharacter extends FunkinSprite implements IBPMSyncedScriptedClas
     return output;
   }
 
-  override function checkRenderTexture():Bool
-  {
-    // BF and Pico have an overlay blend on their deselect animation
-    // We enable render texture here on devices that don't support KHR_blend_equation_advanced to save on performance
-    if (!FunkinCamera.hasKhronosExtension)
-    {
-      if (getCurrentAnimation().startsWith('deselect'))
-      {
-        return true;
-      }
-    }
-
-    return super.checkRenderTexture();
-  }
-
   function onAnimationFinish(animationName:String):Void
   {
     if (hasAnimation(animationName + Constants.ANIMATION_HOLD_SUFFIX))

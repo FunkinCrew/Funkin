@@ -105,7 +105,18 @@ class Save implements ConsoleClass implements ISerializable
   public static function getDefaultData():RawSaveData
   {
     #if mobile
-    var refreshRate:Int = FlxG.stage.window.displayMode.refreshRate;
+    var refreshRate:Int = 60;
+    try
+    {
+      final window = FlxG.stage?.window;
+      if (window != null) refreshRate = window.displayMode.refreshRate;
+      else
+        refreshRate = lime.system.System.getDisplay(0)?.currentMode?.refreshRate ?? 60;
+    }
+    catch (e:Dynamic)
+    {
+      refreshRate = 60;
+    }
     if (refreshRate < 60) refreshRate = 60;
     #end
     return {

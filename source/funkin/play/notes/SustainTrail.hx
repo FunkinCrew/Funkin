@@ -16,7 +16,7 @@ import flixel.math.FlxMath;
  *
  * @author MtH
  */
-class SustainTrail extends FlxSprite
+class SustainTrail extends funkin.graphics.FunkinSprite
 {
   /**
    * The triangles corresponding to the hold, followed by the endcap.

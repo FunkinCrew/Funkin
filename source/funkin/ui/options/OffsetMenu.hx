@@ -427,8 +427,12 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     else
       FunkinSound.playOnce(Paths.sound('ui/main-menu/confirm-menu'));
     offsetItem.currentValue = Preferences.globalOffset;
-    OptionsState.instance.drumsBG.fadeOut(1, 0);
+
+    final drums:Null<FunkinSound> = OptionsState.instance?.drumsBG;
+    if (!destroying && drums != null && drums.exists) drums.fadeOut(1, 0);
   }
+
+  var destroying:Bool = false;
 
   // Handles the exit for mobile devices.
 
@@ -944,6 +948,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
   override public function destroy()
   {
     MenuTypedList.pauseInput = false;
+    destroying = true;
     exitCalibration(true);
     super.destroy();
   }

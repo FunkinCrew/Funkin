@@ -273,6 +273,8 @@ class PolymodHandler
     polymod.hscript._internal.PolymodCppiaClassReference.expectedVersion = lime.app.Application.current.meta.get('version');
     #end
 
+    funkin.assets.FunkinAssetCache.instance.clearCoreAssetCache();
+
     if (async)
     {
       return Polymod.registerAllScriptClassesAsync().then((result) ->
