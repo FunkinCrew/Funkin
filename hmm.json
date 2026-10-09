@@ -3,7 +3,7 @@
     {
       "name": "FlxPartialSound",
       "type": "git",
-      "ref": "8287bfc1d08b41cb762c4c7089a079530d699de6",
+      "ref": "ba1274145d5636d1aad53c7188c525bd39a99ee2",
       "url": "https://github.com/FunkinCrew/FlxPartialSound"
     },
     {
@@ -61,19 +61,19 @@
     {
       "name": "flixel",
       "type": "git",
-      "ref": "c88165fbfa4a46a05bfd796c4e39f0527cd7dc81",
+      "ref": "f21eaef2c3e470dcee45798ec4402114829f8455",
       "url": "https://github.com/FunkinCrew/flixel"
     },
     {
       "name": "flixel-addons",
       "type": "git",
-      "ref": "7628435364c4a45440d1e5db656741b66a8cd2ec",
+      "ref": "e038c227c0b48bd23a3ffa0f554e59b9c4c4bf2f",
       "url": "https://github.com/FunkinCrew/flixel-addons"
     },
     {
       "name": "flixel-animate",
       "type": "git",
-      "ref": "8c1014d9362c24538fb083706418d2ee5edf1d82",
+      "ref": "5d8c335457e69a154bcd06392990a377b9c6f806",
       "url": "https://github.com/FunkinCrew/flixel-animate"
     },
     {
@@ -130,7 +130,7 @@
     {
       "name": "hxcpp",
       "type": "git",
-      "ref": "1f4661402afe66ae7bf6a94161148f5285da5c93",
+      "ref": "a8b5f73b217132cdb595e515bb10332959a1ed39",
       "url": "https://github.com/FunkinCrew/hxcpp"
     },
     {
@@ -163,8 +163,9 @@
     },
     {
       "name": "hxvlc",
-      "type": "haxelib",
-      "version": "2.3.1"
+      "type": "git",
+      "ref": "5ceac764bd21625d1e9d92ea02f9a0d110c6a58c",
+      "url": "https://github.com/MAJigsaw77/hxvlc"
     },
     {
       "name": "json2object",
@@ -186,7 +187,7 @@
     {
       "name": "lime",
       "type": "git",
-      "ref": "1ce7b81be885760c6fc76e3703c3f7985e57e4b9",
+      "ref": "8888c14061aa55243da7fb6bdab21636bb32b248",
       "url": "https://github.com/FunkinCrew/lime"
     },
     {
@@ -198,13 +199,13 @@
     {
       "name": "openfl",
       "type": "git",
-      "ref": "ca9b27ca61ab672424134d97e3fc9017b0ee2436",
+      "ref": "05b4d5162741c823dab7b97899e38db09e54d775",
       "url": "https://github.com/FunkinCrew/openfl"
     },
     {
       "name": "polymod",
       "type": "git",
-      "ref": "c06ddba5de6eeabcee3daa7f80867a110407ff43",
+      "ref": "e1446c3b8cddafd6896f886cc91c9b5f8204f534",
       "url": "https://github.com/FunkinCrew/polymod"
     },
     {

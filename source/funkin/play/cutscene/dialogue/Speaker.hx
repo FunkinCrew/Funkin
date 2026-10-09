@@ -105,6 +105,10 @@ class Speaker extends FunkinSprite implements IDialogueScriptedClass implements 
    */
   override public function kill():Void
   {
+    FlxG.bitmap.remove(graphic);
+    graphic = null;
+    frames = null;
+
     super.kill();
   }
 

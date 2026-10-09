@@ -375,7 +375,23 @@ class ModMenuCharacter extends FunkinSprite
     trace(' MOD MENU '.bold().bg_orange() + ' Switched to character $currentCharacterId with mod $currentModId.');
 
     loadCharacterData();
-    loadGraphics();
+
+    try
+    {
+      loadGraphics();
+    }
+    catch (e:Dynamic)
+    {
+      trace(' MOD MENU '.bold().bg_orange() + ' Failed to load $currentCharacterId from mod $currentModId, falling back to pinhead: $e');
+
+      currentCharacterId = 'pinhead';
+      currentModId = 'basegame';
+      isPinhead = true;
+
+      loadCharacterData();
+      loadGraphics();
+    }
+
     loadAnimations();
 
     hasCustomWires = data?.hasCustomWires ?? false;

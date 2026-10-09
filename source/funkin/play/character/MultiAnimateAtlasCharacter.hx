@@ -50,11 +50,11 @@ class MultiAnimateAtlasCharacter extends BaseCharacter
     var baseAssetLibrary:String = Paths.getLibrary(_data.assetPath);
     var baseAssetPath:String = Paths.stripLibrary(_data.assetPath);
 
-    var mainTexture:FlxAnimateFrames = Paths.getAnimateAtlas(baseAssetPath, baseAssetLibrary, cast _data.atlasSettings);
+    var mainTexture:FlxAnimateFrames = Paths.getAnimateAtlas(baseAssetPath, baseAssetLibrary, getAtlasSettings());
     textureList.push(mainTexture);
 
-    this.useRenderTexture = _data.atlasSettings.useRenderTexture;
-    this.applyStageMatrix = _data.atlasSettings.applyStageMatrix;
+    this.useRenderTexture = getAtlasSettings().useRenderTexture;
+    this.applyStageMatrix = getAtlasSettings().applyStageMatrix;
 
     mainTexture.parent.destroyOnNoUse = false;
 
@@ -92,7 +92,7 @@ class MultiAnimateAtlasCharacter extends BaseCharacter
           var subAssetLibrary:String = Paths.getLibrary(animation.assetPath);
           var subAssetPath:String = Paths.stripLibrary(animation.assetPath);
 
-          var subTexture:FlxAnimateFrames = Paths.getAnimateAtlas(subAssetPath, subAssetLibrary, cast animation.atlasSettings ?? _data.atlasSettings);
+          var subTexture:FlxAnimateFrames = Paths.getAnimateAtlas(subAssetPath, subAssetLibrary, cast animation.atlasSettings ?? getAtlasSettings());
 
           log('Concatenating texture atlas: ${animation.assetPath}');
           subTexture.parent.destroyOnNoUse = false;

@@ -11,9 +11,7 @@ class ScriptGuard
   static final brokenClasses:Map<String, Bool> = new Map<String, Bool>();
   static final brokenObjects:haxe.ds.ObjectMap<Dynamic, Bool> = new haxe.ds.ObjectMap<Dynamic, Bool>();
   public static var brokenCount(default, null):Int = 0;
-
   public static var lastStack(default, null):String = '';
-
   static final NEW_LINE:String = String.fromCharCode(10);
 
   /**
@@ -96,7 +94,9 @@ class ScriptGuard
     {
       stack = CallStack.exceptionStack(true);
     }
-    catch (_:Dynamic) {}
+    catch (_:Dynamic)
+    {
+    }
 
     lastStack = describe(stack);
 
@@ -129,9 +129,17 @@ class ScriptGuard
       switch (item)
       {
         case Method(c, f):
-          if (c != null && isScriptClass(c)) return {cls: c, func: f, where: null};
+          if (c != null && isScriptClass(c)) return {
+            cls: c,
+            func: f,
+            where: null
+          };
         case FilePos(Method(c, f), file, line):
-          if (c != null && isScriptClass(c)) return {cls: c, func: f, where: '$file#$line'};
+          if (c != null && isScriptClass(c)) return {
+            cls: c,
+            func: f,
+            where: '$file#$line'
+          };
         default:
       }
     }
@@ -170,7 +178,9 @@ class ScriptGuard
     {
       asc = Reflect.field(target, '_asc');
     }
-    catch (_:Dynamic) {}
+    catch (_:Dynamic)
+    {
+    }
 
     return Std.isOfType(asc, polymod.hscript._internal.PolymodScriptClass) ? cast asc : null;
   }
@@ -241,20 +251,24 @@ class ScriptGuard
       var cls:Null<Class<Dynamic>> = scriptClass(clsName);
       if (cls == null || flixel.FlxG.state == null) return;
 
-      flixel.FlxG.state.forEachExists(function(basic:flixel.FlxBasic) {
+      flixel.FlxG.state.forEachExists(function(basic:flixel.FlxBasic)
+      {
         if (!Std.isOfType(basic, cls)) return;
 
         basic.active = false;
         basic.visible = false;
       }, true);
     }
-    catch (_:Dynamic) {}
+    catch (_:Dynamic)
+    {
+    }
   }
 
   public static function reportUnknown(error:Dynamic, context:String):Void
   {
-    var message:String = 'Something threw during $context and no loaded script could be blamed for it. '
-      + 'The frame was dropped, so the game may misbehave from here.'
+    var message:String =
+      'Something threw during $context and no loaded script could be blamed for it. '
+      + 'Exiting to main menu to avoid abnormal results as the frame has been dropped.'
       + NEW_LINE
       + NEW_LINE
       + describeError(error)
@@ -262,6 +276,8 @@ class ScriptGuard
       + lastStack;
 
     polymod.Polymod.error(SCRIPT_RUNTIME_EXCEPTION, message, SCRIPT_RUNTIME);
+    flixel.FlxG.switchState(() -> new funkin.ui.mainmenu.MainMenuState());
+    funkin.util.WindowUtil.setWindowTitle('Friday Night Funkin\'');
   }
 
   static function report(culprit:String, frame:Null<ScriptFrame>, context:String, error:Dynamic, stack:Array<StackItem>, ?target:Dynamic):Void
@@ -299,6 +315,5 @@ typedef ScriptFrame =
 {
   var cls:String;
   var func:Null<String>;
-
   var where:Null<String>;
 }

@@ -169,6 +169,26 @@ class Paths implements ConsoleClass
     return xml('ui/$key', library);
   }
 
+  /**
+   * Loads an image straight out of a specific mod.
+   * @param imagePath The asset path of the image, including its extension.
+   * @param modId The mod to load the image from.
+   * @return The bitmap, or `null` if the mod has neither version (or the device can't use the ASTC one).
+   */
+  public static function getBitmapDataFromMod(imagePath:String, modId:String):Null<BitmapData>
+  {
+    var bitmap:Null<BitmapData> = Polymod.assetLibrary.getBitmapDataDirectly(imagePath, modId);
+    if (bitmap != null) return bitmap;
+
+    var astcBytes:Null<haxe.io.Bytes> = Polymod.assetLibrary.getBytesDirectly(Path.withExtension(imagePath, 'astc'), modId);
+    if (astcBytes == null) return null;
+
+    var context = FlxG.stage.context3D;
+    if (context == null || !context.isASTCSupported()) return null;
+
+    return BitmapData.fromTexture(context.createASTCTexture(openfl.utils.ByteArray.fromBytes(astcBytes)), false);
+  }
+
   // deprecated("Use funkin.assets.Assets.getSparrowAtlas() instead")
 
   public static function getSparrowAtlas(key:String, ?library:String, modId:String = ''):FlxAtlasFrames
@@ -178,7 +198,7 @@ class Paths implements ConsoleClass
 
     if (modId != '')
     {
-      var bitmap:Null<BitmapData> = Polymod.assetLibrary.getBitmapDataDirectly(imagePath, modId);
+      var bitmap:Null<BitmapData> = getBitmapDataFromMod(imagePath, modId);
       var xml:Null<String> = Polymod.assetLibrary.getTextDirectly(xmlPath, modId);
 
       if (bitmap == null || xml == null)
@@ -254,7 +274,7 @@ class Paths implements ConsoleClass
 
     if (modId != '')
     {
-      var bitmap:Null<BitmapData> = Polymod.assetLibrary.getBitmapDataDirectly(imagePath, modId);
+      var bitmap:Null<BitmapData> = getBitmapDataFromMod(imagePath, modId);
       var txt:Null<String> = Polymod.assetLibrary.getTextDirectly(txtPath, modId);
 
       if (bitmap == null || txt == null)
