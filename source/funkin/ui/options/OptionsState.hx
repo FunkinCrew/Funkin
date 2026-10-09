@@ -54,6 +54,9 @@ class OptionsState extends MusicBeatState
   override function create():Void
   {
     instance = this;
+    FunkinSound.playMusic('freakyMenu', {
+      persist: true
+    });
 
     persistentUpdate = true;
 
