@@ -51,7 +51,10 @@ class TurboActionHandler extends FlxBasic
   var gamepadOnly:Bool;
   var pressedTime:Float = 0;
 
-  function new(action:Action, delay:Float = DEFAULT_DELAY, interval:Float = DEFAULT_INTERVAL, gamepadOnly:Bool = false)
+  function new(action:Action,
+    delay:Float = DEFAULT_DELAY,
+    interval:Float = DEFAULT_INTERVAL,
+    gamepadOnly:Bool = false)
   {
     super();
     this.action = action;
@@ -100,7 +103,10 @@ class TurboActionHandler extends FlxBasic
    * @param repeatDelay How long to wait between repeats.
    * @return A TurboActionHandler
    */
-  overload public static extern inline function build(action:Action, ?delay:Float = DEFAULT_DELAY, ?interval:Float = DEFAULT_INTERVAL, ?gamepadOnly:Bool = false):TurboActionHandler
+  overload public static extern inline function build(action:Action,
+    ?delay:Float = DEFAULT_DELAY,
+    ?interval:Float = DEFAULT_INTERVAL,
+    ?gamepadOnly:Bool = false):TurboActionHandler
   {
     return new TurboActionHandler(action, delay, interval);
   }

@@ -37,7 +37,9 @@ class QuickPanelState extends MusicBeatSubState
   var circleWipe:CircleWipeShader;
   var descriptionText:FlxText;
   var descriptionPanel:FunkinSprite;
+
   public var panel:QuickPanelGroup;
+
   var DESCRIPTION_PANEL_Y:Float = 0;
   var DESCRIPTION_TEXT_Y:Float = 0;
   var DESCRIPTION_OFFSET:Float = 100;
@@ -142,7 +144,6 @@ class QuickPanelState extends MusicBeatSubState
 
     repositionSide(left);
   }
-
 
   public function fadeScreen(out:Bool = false)
   {

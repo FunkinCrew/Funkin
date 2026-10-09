@@ -55,7 +55,9 @@ class SongTemplateList extends ScrollView
     }
   }
 
-  function addSongLink(songName:String, songId:String, onSelectSong:(songId:String) -> Void):Void
+  function addSongLink(songName:String,
+    songId:String,
+    onSelectSong:(songId:String) -> Void):Void
   {
     var link:Link = new Link();
     link.text = songName;

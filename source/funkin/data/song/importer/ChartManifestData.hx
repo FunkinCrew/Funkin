@@ -108,7 +108,8 @@ class ChartManifestData implements ISerializable
    * @param pretty Whether to format the JSON with indentation and newlines.
    * @return The JSON string.
    */
-  public function serialize(pretty:Bool = true, ?params:json2object.JsonWriterParams):String
+  public function serialize(pretty:Bool = true,
+    ?params:json2object.JsonWriterParams):String
   {
     // Update generatedBy and version before writing.
     updateVersionToLatest();

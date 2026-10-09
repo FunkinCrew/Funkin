@@ -27,8 +27,12 @@ class InputUtil
       case Keys:
         getKeyName(id);
       case Gamepad(gamepadID):
-        if(FlxG.gamepads.getByID(gamepadID) != null) getButtonName(id, FlxG.gamepads.getByID(gamepadID));
-        else if (FlxG.gamepads.getByID(gamepadID) == null) getKeyName(id); // temp fix to cutscenes N/A gamepad
+        if (FlxG.gamepads.getByID(
+          gamepadID
+        ) != null) getButtonName(
+          id,
+          FlxG.gamepads.getByID(gamepadID)
+        ); else if (FlxG.gamepads.getByID(gamepadID) == null) getKeyName(id); // temp fix to cutscenes N/A gamepad
         else 'N/A';
     }
   }

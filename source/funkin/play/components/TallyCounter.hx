@@ -16,7 +16,11 @@ class TallyCounter extends FlxTypedSpriteGroup<FlxSprite>
   public var flavour:Int = 0xFFFFFFFF;
   public var align:FlxTextAlign = FlxTextAlign.LEFT;
 
-  public function new(x:Float, y:Float, neededNumber:Int = 0, ?flavour:Int, align:FlxTextAlign = FlxTextAlign.LEFT)
+  public function new(x:Float,
+    y:Float,
+    neededNumber:Int = 0,
+    ?flavour:Int,
+    align:FlxTextAlign = FlxTextAlign.LEFT)
   {
     super(x, y);
 

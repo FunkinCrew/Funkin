@@ -109,7 +109,8 @@ class SongMetadata implements ICloneable<SongMetadata> implements ISerializable
    * or formatted with tabs (true)
    * @return The JSON string.
    */
-  public function serialize(pretty:Bool = true, ?params:json2object.JsonWriterParams):String
+  public function serialize(pretty:Bool = true,
+    ?params:json2object.JsonWriterParams):String
   {
     // Update generatedBy and version before writing.
     updateVersionToLatest();
@@ -268,7 +269,10 @@ class SongOffsets implements ICloneable<SongOffsets>
   @:optional @:default([])
   public var altVocals:Map<String, Map<String, Float>>;
 
-  public function new(instrumental:Float = 0.0, ?altInstrumentals:Map<String, Float>, ?vocals:Map<String, Float>, ?altVocals:Map<String, Map<String, Float>>)
+  public function new(instrumental:Float = 0.0,
+    ?altInstrumentals:Map<String, Float>,
+    ?vocals:Map<String, Float>,
+    ?altVocals:Map<String, Map<String, Float>>)
   {
     this.instrumental = instrumental;
     this.altInstrumentals = altInstrumentals == null ? new Map<String, Float>() : altInstrumentals;
@@ -538,7 +542,13 @@ class SongCharacterData implements ICloneable<SongCharacterData>
   @:optional
   public var playerVocals:Null<Array<String>> = null;
 
-  public function new(player:String = '', girlfriend:String = '', opponent:String = '', instrumental:String = '', ?altInstrumentals:Array<String>, ?opponentVocals:Array<String>, ?playerVocals:Array<String>)
+  public function new(player:String = '',
+    girlfriend:String = '',
+    opponent:String = '',
+    instrumental:String = '',
+    ?altInstrumentals:Array<String>,
+    ?opponentVocals:Array<String>,
+    ?playerVocals:Array<String>)
   {
     this.player = player;
     this.girlfriend = girlfriend;
@@ -600,7 +610,9 @@ class SongChartData implements ICloneable<SongChartData> implements ISerializabl
   @:jignored
   public var variation:String;
 
-  public function new(scrollSpeed:Map<String, Float>, events:Array<SongEventData>, notes:Map<String, Array<SongNoteData>>)
+  public function new(scrollSpeed:Map<String, Float>,
+    events:Array<SongEventData>,
+    notes:Map<String, Array<SongNoteData>>)
   {
     this.version = SongRegistry.SONG_CHART_DATA_VERSION;
 
@@ -666,7 +678,8 @@ class SongChartData implements ICloneable<SongChartData> implements ISerializabl
   /**
    * Convert this SongChartData into a JSON string.
    */
-  public function serialize(pretty:Bool = true, ?params:json2object.JsonWriterParams):String
+  public function serialize(pretty:Bool = true,
+    ?params:json2object.JsonWriterParams):String
   {
     // Update generatedBy and version before writing.
     updateVersionToLatest();

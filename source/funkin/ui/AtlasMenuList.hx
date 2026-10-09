@@ -13,7 +13,9 @@ class AtlasMenuList extends MenuTypedList<AtlasMenuItem>
 {
   public var atlas:Null<FlxAtlasFrames>;
 
-  public function new(atlas, navControls:NavControls = Vertical, ?wrapMode)
+  public function new(atlas,
+    navControls:NavControls = Vertical,
+    ?wrapMode)
   {
     super(navControls, wrapMode);
 

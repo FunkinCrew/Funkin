@@ -67,6 +67,7 @@ class ScrollingTextBox extends FunkinSpriteGroup
 
   var fontPath:String;
   var fontSize:Int;
+
   public var textColor(default, set):FlxColor = FlxColor.WHITE;
 
   function set_textColor(value:FlxColor):FlxColor
@@ -98,7 +99,11 @@ class ScrollingTextBox extends FunkinSpriteGroup
    */
   var holdTimer:Float = 0;
 
-  public function new(boxWidth:Float, boxHeight:Float, fontPath:String, fontSize:Int, textColor:FlxColor = FlxColor.WHITE)
+  public function new(boxWidth:Float,
+    boxHeight:Float,
+    fontPath:String,
+    fontSize:Int,
+    textColor:FlxColor = FlxColor.WHITE)
   {
     super();
 

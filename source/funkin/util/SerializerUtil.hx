@@ -21,7 +21,9 @@ class SerializerUtil
    * @param params If the input uses `json2object` for serialization, provide additional params.
    * @return The JSON string representation of the input object.
    */
-  public static function toJSON(input:Dynamic, pretty:Bool = true, ?params:json2object.JsonWriterParams):String
+  public static function toJSON(input:Dynamic,
+    pretty:Bool = true,
+    ?params:json2object.JsonWriterParams):String
   {
     // Check for a custom serializer
     if (Std.isOfType(input, ISerializable))

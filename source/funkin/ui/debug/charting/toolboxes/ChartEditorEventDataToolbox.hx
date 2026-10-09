@@ -155,7 +155,12 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
 
     if (newDropdownElement == null)
     {
-      trace(' WARNING '.bold().bg_yellow() + ' CHART EDITOR - Event kind "${chartEditorState.eventKindToPlace}" not found in dropdown lookup. Attempting to proceed...');
+      trace(
+        ' WARNING '
+          .bold()
+          .bg_yellow()
+        + ' CHART EDITOR - Event kind "${chartEditorState.eventKindToPlace}" not found in dropdown lookup. Attempting to proceed...'
+      );
       newDropdownElement = toolboxEventsEventKind.dataSource.get(0);
     }
     else if (toolboxEventsEventKind.value != newDropdownElement || lastEventKind != toolboxEventsEventKind.value.id)

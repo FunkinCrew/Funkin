@@ -126,7 +126,9 @@ class CppiaScripts
   static function missing(clsName:String, verb:String):Void
   {
     #if (hxcpp && POLYMOD_CPPIA)
-    var reason:String = polymod.hscript._internal.PolymodCppiaClassReference.isInactiveCppiaClass(clsName) ? 'its mod is no longer enabled' : 'no loaded compiled script provides it';
+    var reason:String = polymod.hscript._internal.PolymodCppiaClassReference.isInactiveCppiaClass(
+      clsName
+    ) ? 'its mod is no longer enabled' : 'no loaded compiled script provides it';
     polymod.Polymod.error(SCRIPT_RUNTIME_EXCEPTION, 'Compiled class ($clsName) cannot be $verb, $reason. Check CppiaScripts.exists() first.', SCRIPT_RUNTIME);
     #end
   }

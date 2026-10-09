@@ -341,7 +341,9 @@ class FNFCUtil
     }
   }
 
-  static function loadInstBytesFromFNFCZipEntries(mappedFileEntries:Map<String, haxe.zip.Entry>, manifest:ChartManifestData, metadata:SongMetadata):Bytes
+  static function loadInstBytesFromFNFCZipEntries(mappedFileEntries:Map<String, haxe.zip.Entry>,
+    manifest:ChartManifestData,
+    metadata:SongMetadata):Bytes
   {
     var instId:String = metadata?.playData?.characters?.instrumental ?? '';
     var instFileName:String = manifest.getInstFileName(instId);
@@ -360,7 +362,9 @@ class FNFCUtil
     return instBytes;
   }
 
-  static function loadVocalBytesFromFNFCZipEntries(mappedFileEntries:Map<String, haxe.zip.Entry>, manifest:ChartManifestData, metadata:SongMetadata):Map<String, Bytes>
+  static function loadVocalBytesFromFNFCZipEntries(mappedFileEntries:Map<String, haxe.zip.Entry>,
+    manifest:ChartManifestData,
+    metadata:SongMetadata):Map<String, Bytes>
   {
     var vocals:Map<String, Bytes> = [];
 
@@ -470,7 +474,9 @@ class FNFCUtil
    * @param variation The name of the song variation to load.
    * @return The metadata for that song variation.
    */
-  static function loadSongMetadataFromFNFCZipEntries(mappedFileEntries:Map<String, haxe.zip.Entry>, manifest:ChartManifestData, variation:String):SongMetadata
+  static function loadSongMetadataFromFNFCZipEntries(mappedFileEntries:Map<String, haxe.zip.Entry>,
+    manifest:ChartManifestData,
+    variation:String):SongMetadata
   {
     var metadataPath:String = manifest.getMetadataFileName(variation);
 
@@ -493,7 +499,9 @@ class FNFCUtil
    * @param variation The name of the song variation to load.
    * @return The chart data for that song variation.
    */
-  static function loadSongChartDataFromFNFCZipEntries(mappedFileEntries:Map<String, haxe.zip.Entry>, manifest:ChartManifestData, variation:String):SongChartData
+  static function loadSongChartDataFromFNFCZipEntries(mappedFileEntries:Map<String, haxe.zip.Entry>,
+    manifest:ChartManifestData,
+    variation:String):SongChartData
   {
     var chartDataPath:String = manifest.getChartDataFileName(variation);
 
@@ -515,7 +523,8 @@ class FNFCUtil
    * @param fileName The name of the file to load.
    * @return The string data of the file.
    */
-  static function loadStringFromFNFCZipEntries(mappedFileEntries:Map<String, haxe.zip.Entry>, fileName:String):String
+  static function loadStringFromFNFCZipEntries(mappedFileEntries:Map<String, haxe.zip.Entry>,
+    fileName:String):String
   {
     return loadBytesFromFNFCZipEntries(mappedFileEntries, fileName).toString();
   }
@@ -527,7 +536,8 @@ class FNFCUtil
    * @param fileName The name of the file to load.
    * @return The byte data of the file.
    */
-  static function loadBytesFromFNFCZipEntries(mappedFileEntries:Map<String, haxe.zip.Entry>, fileName:String):Bytes
+  static function loadBytesFromFNFCZipEntries(mappedFileEntries:Map<String, haxe.zip.Entry>,
+    fileName:String):Bytes
   {
     var data:Null<haxe.zip.Entry> = mappedFileEntries.get(fileName);
     if (data == null || data.data == null) throw 'Could not locate file: $fileName';
@@ -542,7 +552,8 @@ class FNFCUtil
    * @param fileName The name of the file to look for.
    * @return Whether a file with that name exists, and has data.
    */
-  static function hasFileInFNFCZipEntries(mappedFileEntries:Map<String, haxe.zip.Entry>, fileName:String):Bool
+  static function hasFileInFNFCZipEntries(mappedFileEntries:Map<String, haxe.zip.Entry>,
+    fileName:String):Bool
   {
     var data:Null<haxe.zip.Entry> = mappedFileEntries.get(fileName);
     return data != null && data.data != null;
@@ -591,7 +602,8 @@ class FNFCUtil
     return zipEntries;
   }
 
-  static function buildZIPEntriesFromInstrumentals(songId:String, instrumentals:Map<String, Bytes>):Array<haxe.zip.Entry>
+  static function buildZIPEntriesFromInstrumentals(songId:String,
+    instrumentals:Map<String, Bytes>):Array<haxe.zip.Entry>
   {
     var zipEntries:Array<haxe.zip.Entry> = [];
 

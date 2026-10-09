@@ -25,7 +25,8 @@ class ChartEditorGamepadHandler
    * @param chartEditorState The chart editor state.
    * @param gamepad The gamepad to handle.
    */
-  static function handleGamepad(chartEditorState:ChartEditorState, gamepad:FlxGamepad):Void
+  static function handleGamepad(chartEditorState:ChartEditorState,
+    gamepad:FlxGamepad):Void
   {
     if (chartEditorState.isHaxeUIFocused)
     {
@@ -68,7 +69,8 @@ class ChartEditorGamepadHandler
     }
   }
 
-  static function handleGamepadLiveInputs(chartEditorState:ChartEditorState, gamepad:FlxGamepad):Void
+  static function handleGamepadLiveInputs(chartEditorState:ChartEditorState,
+    gamepad:FlxGamepad):Void
   {
     // Place notes at the playhead with the gamepad.
     // Disable when we are interacting with HaxeUI.

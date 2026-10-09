@@ -8,8 +8,8 @@ class ModMenuButton extends FunkinSprite
 {
   var invert(default, set):Bool = false;
   var selected(default, set):Bool = false;
-
   var swappedGraphics:Bool = false;
+
   public var graphicName:String;
 
   function set_invert(val:Bool):Bool
@@ -17,7 +17,8 @@ class ModMenuButton extends FunkinSprite
     if (!val && invert)
     {
       if (selected) loadTexture('ui/mods/${graphicName}-highlighted');
-      else loadTexture('ui/mods/${graphicName}');
+      else
+        loadTexture('ui/mods/${graphicName}');
     }
     else if (val && !invert) loadTexture('ui/mods/${graphicName}-inverted');
 
@@ -32,7 +33,8 @@ class ModMenuButton extends FunkinSprite
     if (swappedGraphics != selected && !invert)
     {
       if (selected) loadTexture('ui/mods/${graphicName}-highlighted');
-      else loadTexture('ui/mods/${graphicName}');
+      else
+        loadTexture('ui/mods/${graphicName}');
       swappedGraphics = selected;
     }
 

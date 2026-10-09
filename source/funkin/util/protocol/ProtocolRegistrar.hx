@@ -213,7 +213,11 @@ class ProtocolRegistrar
 
     // xdg-mime is part of xdg-utils, which is installed by default on most distros.
     // If it is not present, the user can still manually add it I think.
-    Sys.command('xdg-mime', ['default', LINUX_DESKTOP_FILE, 'x-scheme-handler/${Constants.ONE_CLICK_SCHEME}']);
+    Sys.command('xdg-mime', [
+      'default',
+      LINUX_DESKTOP_FILE,
+      'x-scheme-handler/${Constants.ONE_CLICK_SCHEME}'
+    ]);
 
     updateLinuxMimeApps(false);
 
