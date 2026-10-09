@@ -1,12 +1,12 @@
 package funkin.play.character;
 
-import funkin.graphics.FunkinSprite;
-import funkin.util.assets.FlxAnimationUtil;
 import animate.FlxAnimateFrames;
 import flixel.graphics.frames.FlxAtlasFrames;
-import funkin.modding.events.ScriptEvent;
 import funkin.data.animation.AnimationData;
 import funkin.data.character.CharacterData.CharacterRenderType;
+import funkin.modding.events.ScriptEvent;
+import funkin.graphics.FunkinSprite;
+import funkin.util.assets.FlxAnimationUtil;
 
 /**
  * This render type is the most complex, and is used by characters which use
@@ -36,7 +36,7 @@ class MultiAnimateAtlasCharacter extends BaseCharacter
     loadAtlases();
     loadAnimations();
 
-    log('Successfully loaded texture atlases for ${characterId} with ${_data.animations.length} animations.');
+    log('Successfully loaded texture atlases for ${characterId} with ${getCharacterAnimations().length} animations.');
     super.onCreate(event);
   }
 
@@ -47,8 +47,9 @@ class MultiAnimateAtlasCharacter extends BaseCharacter
     var textureList:Array<FlxAtlasFrames> = [];
     var addedAssetPaths:Array<String> = [];
 
-    var baseAssetLibrary:String = Paths.getLibrary(_data.assetPath);
-    var baseAssetPath:String = Paths.stripLibrary(_data.assetPath);
+    var dataAssetPath:String = getAssetPath();
+    var baseAssetLibrary:String = Paths.getLibrary(dataAssetPath);
+    var baseAssetPath:String = Paths.stripLibrary(dataAssetPath);
 
     var mainTexture:FlxAnimateFrames = Paths.getAnimateAtlas(baseAssetPath, baseAssetLibrary, getAtlasSettings());
     textureList.push(mainTexture);
@@ -58,7 +59,7 @@ class MultiAnimateAtlasCharacter extends BaseCharacter
 
     mainTexture.parent.destroyOnNoUse = false;
 
-    for (animation in _data.animations)
+    for (animation in getCharacterAnimations())
     {
       if (animation.assetPath == null) continue;
       if (addedAssetPaths.contains(animation.assetPath)) continue;
@@ -115,14 +116,16 @@ class MultiAnimateAtlasCharacter extends BaseCharacter
     }
 
     this.frames = FlxAnimateFrames.combineAtlas(textureList);
-    this.setScale(_data.scale);
+    this.setScale(getBaseScale());
   }
 
   function loadAnimations():Void
   {
-    log('Loading ${_data.animations.length} animations for ${characterId}');
+    var animationList:Array<AnimationData> = getCharacterAnimations();
 
-    for (anim in _data.animations)
+    log('Loading ${animationList.length} animations for ${characterId}');
+
+    for (anim in animationList)
     {
       switch (anim.renderType)
       {
