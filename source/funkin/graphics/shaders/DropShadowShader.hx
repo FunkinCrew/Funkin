@@ -390,7 +390,7 @@ class DropShadowShader extends FlxShader
 
       vec4 getTexRGBA(vec2 uv)
       {
-        return texture2D(bitmap, uv);
+        return flixel_texture2D(bitmap, uv);
       }
 
       float getLumaTex(vec2 uv)
@@ -442,7 +442,7 @@ class DropShadowShader extends FlxShader
 
       vec4 createDropShadowEx(vec2 uv, vec2 ratio, vec2 size)
       {
-        vec4 color4 = texture2D(bitmap, uv);
+        vec4 color4 = getTexRGBA(uv);
 
         #ifdef HAS_DERIVATIVES
           // Increase the pixel distance if the screen is smaller than the sprite!
@@ -476,7 +476,7 @@ class DropShadowShader extends FlxShader
           shadowAlpha = texture2D(bitmap, checked).a;
         }
 
-        float rim = (1.0 - (shadowAlpha * str)) * intensity;
+        float rim = (str - (shadowAlpha * str)) * intensity;
 
         color3 += dropColor * rim;
 
