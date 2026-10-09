@@ -75,7 +75,8 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
   var _deviceBinds:Map<FlxGamepad,
     {
       onButtonDown:LimeGamepadButton->Int64->Void,
-      onButtonUp:LimeGamepadButton->Int64->Void
+      onButtonUp:LimeGamepadButton->Int64->Void,
+      onAxisMove:LimeGamepadAxis->Float->Int64->Void
     }>;
 
   public function new()
@@ -201,6 +202,7 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
     limeGamepad.onButtonDownPrecise.add(callbacks.onButtonDown);
     limeGamepad.onButtonUpPrecise.add(callbacks.onButtonUp);
     limeGamepad.onAxisMovePrecise.add(callbacks.onAxisMove);
+    _deviceBinds.set(gamepad, callbacks);
 
     for (noteDirection in DIRECTIONS)
     {
@@ -427,6 +429,7 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
       var limeGamepad = FlxGamepadUtil.getLimeGamepad(gamepad);
       limeGamepad.onButtonDownPrecise.remove(callbacks.onButtonDown);
       limeGamepad.onButtonUpPrecise.remove(callbacks.onButtonUp);
+      limeGamepad.onAxisMovePrecise.remove(callbacks.onAxisMove);
     }
     _deviceBinds.clear();
   }
