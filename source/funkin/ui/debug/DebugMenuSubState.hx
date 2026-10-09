@@ -21,6 +21,11 @@ class DebugMenuSubState extends MusicBeatSubState
    */
   var camFocusPoint:FlxObject;
 
+  /**
+   * Whether an item has been selected or not
+   */
+  var hasSelected:Bool = false;
+
   override function create():Void
   {
     FlxTransitionableState.skipNextTransIn = true;
@@ -78,6 +83,8 @@ class DebugMenuSubState extends MusicBeatSubState
     onMenuChange(items.members[0]);
     FlxG.camera.focusOn(new FlxPoint(camFocusPoint.x, camFocusPoint.y + 500));
 
+    hasSelected = false;
+
     #if FEATURE_HAXEUI
     // Remove the "user" stylesheet to prevent components using incorrect style data when entering an editor.
     haxe.ui.Toolkit.styleSheet.clear("user");
@@ -93,10 +100,19 @@ class DebugMenuSubState extends MusicBeatSubState
   {
     super.update(elapsed);
 
-    if (controls.BACK_P)
+    if (controls.BACK_P && !hasSelected)
     {
       FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu'));
       exitDebugMenu();
+    }
+
+    /**
+     * Set hasSelected to true so you can't leave the menu after you selected something!!!
+     * You made this choice now stick with it bucko.
+     */
+    if (controls.ACCEPT_P)
+    {
+      hasSelected = true;
     }
   }
 
