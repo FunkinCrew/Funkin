@@ -2,12 +2,24 @@ package funkin.data.story.level;
 
 import funkin.util.SortUtil;
 import funkin.ui.story.Level;
-import funkin.util.tools.ISingleton;
 import funkin.data.DefaultRegistryImpl;
 
 @:nullSafety
-class LevelRegistry extends BaseRegistry<Level, LevelData, LevelEntryParams> implements ISingleton implements DefaultRegistryImpl
+class LevelRegistry extends BaseRegistry<Level, LevelData, LevelEntryParams> implements DefaultRegistryImpl
 {
+  static var _instance:Null<LevelRegistry>;
+
+  public static var instance(get, never):LevelRegistry;
+
+  static function get_instance():LevelRegistry
+  {
+    if (_instance == null)
+    {
+      _instance = new LevelRegistry();
+    }
+    return _instance;
+  }
+
   /**
    * The current version string for the level data format.
    * Handle breaking changes by incrementing this value
