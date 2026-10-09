@@ -3757,52 +3757,21 @@ class PlayState extends MusicBeatSubState
         FlxG.sound.music?.stop();
         vocals?.stop();
 
-        // TODO: Softcode this cutscene.
-        if (currentSong.id == 'eggnog')
+        var targetSong:Song = SongRegistry.instance.fetchEntry(targetSongId, {
+          variation: currentVariation
+        }) ?? throw 'Could not find a song with ID $targetSongId';
+        var targetVariation:String = currentVariation;
+        if (!targetSong.hasDifficulty(PlayStatePlaylist.campaignDifficulty, currentVariation))
         {
-          var blackBG:FunkinSprite = new FunkinSprite(-FlxG.width * FlxG.camera.zoom, -FlxG.height * FlxG.camera.zoom);
-          blackBG.makeSolidColor(FlxG.width * 3, FlxG.height * 3, FlxColor.BLACK);
-          blackBG.scrollFactor.set();
-          add(blackBG);
-          camHUD.visible = false;
-          isInCutscene = true;
-
-          FunkinSound.playOnce(Paths.sound('gameplay/stages/mallEvil/sounds/lights-off'), function()
-          {
-            // no camFollow so it centers on horror tree
-            var targetSong:Song = SongRegistry.instance.fetchEntry(targetSongId) ?? throw 'Could not find a song with the ID $targetSongId';
-            var targetVariation:String = currentVariation;
-            if (!targetSong.hasDifficulty(PlayStatePlaylist.campaignDifficulty, currentVariation))
-            {
-              targetVariation = targetSong.getFirstValidVariation(PlayStatePlaylist.campaignDifficulty) ?? Constants.DEFAULT_VARIATION;
-            }
-            if (currentStage != null) this.remove(currentStage);
-            LoadingState.loadPlayState({
-              targetSong: targetSong,
-              targetDifficulty: PlayStatePlaylist.campaignDifficulty,
-              targetVariation: targetVariation,
-              cameraFollowPoint: cameraFollowPoint.getPosition(),
-            });
-          });
+          targetVariation = targetSong.getFirstValidVariation(PlayStatePlaylist.campaignDifficulty) ?? Constants.DEFAULT_VARIATION;
         }
-        else
-        {
-          var targetSong:Song = SongRegistry.instance.fetchEntry(targetSongId, {
-            variation: currentVariation
-          }) ?? throw 'Could not find a song with ID $targetSongId';
-          var targetVariation:String = currentVariation;
-          if (!targetSong.hasDifficulty(PlayStatePlaylist.campaignDifficulty, currentVariation))
-          {
-            targetVariation = targetSong.getFirstValidVariation(PlayStatePlaylist.campaignDifficulty) ?? Constants.DEFAULT_VARIATION;
-          }
-          if (currentStage != null) this.remove(currentStage);
-          LoadingState.loadPlayState({
-            targetSong: targetSong,
-            targetDifficulty: PlayStatePlaylist.campaignDifficulty,
-            targetVariation: targetVariation,
-            cameraFollowPoint: cameraFollowPoint.getPosition(),
-          });
-        }
+        if (currentStage != null) this.remove(currentStage);
+        LoadingState.loadPlayState({
+          targetSong: targetSong,
+          targetDifficulty: PlayStatePlaylist.campaignDifficulty,
+          targetVariation: targetVariation,
+          cameraFollowPoint: cameraFollowPoint.getPosition(),
+        });
       }
     }
     else
