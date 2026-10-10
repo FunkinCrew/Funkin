@@ -109,8 +109,8 @@ class ModMenuItem extends FunkinSpriteGroup
         bgOffsetX = 0;
         bgOffsetY = 0;
     }
-    background.localX = -bgOffsetX;
-    background.localY = -bgOffsetY;
+    background.x = -bgOffsetX;
+    background.y = -bgOffsetY;
   }
 
   /**
@@ -139,17 +139,17 @@ class ModMenuItem extends FunkinSpriteGroup
   var flightOnComplete:Null<Void->Void> = null;
 
   /**
-   * Starts a manual lerp of localX/localY from the item's CURRENT position to the given target.
-   * @param targetX Target localX.
-   * @param targetY Target localY.
+   * Starts a manual lerp of x/y from the item's CURRENT position to the given target.
+   * @param targetX Target x.
+   * @param targetY Target y.
    * @param duration Flight duration in seconds.
    * @param ease Optional ease function (defaults to FlxEase.quadOut).
    * @param onComplete Optional callback fired once, when the flight finishes (naturally or via finishFlight()).
    */
   public function startFlight(targetX:Float, targetY:Float, duration:Float, ?ease:Float->Float, ?onComplete:Void->Void):Void
   {
-    flightStartX = localX;
-    flightStartY = localY;
+    flightStartX = x;
+    flightStartY = y;
     flightTargetX = targetX;
     flightTargetY = targetY;
     flightElapsed = 0;
@@ -168,8 +168,8 @@ class ModMenuItem extends FunkinSpriteGroup
     if (!isInFlight) return;
 
     isInFlight = false;
-    localX = flightTargetX;
-    localY = flightTargetY;
+    x = flightTargetX;
+    y = flightTargetY;
 
     var cb = flightOnComplete;
     flightOnComplete = null;
@@ -202,8 +202,8 @@ class ModMenuItem extends FunkinSpriteGroup
     }
 
     var easedT:Float = flightEase(t);
-    localX = FlxMath.lerp(flightStartX, flightTargetX, easedT);
-    localY = FlxMath.lerp(flightStartY, flightTargetY, easedT);
+    x = FlxMath.lerp(flightStartX, flightTargetX, easedT);
+    y = FlxMath.lerp(flightStartY, flightTargetY, easedT);
   }
 
   var flashElapsed:Float = -1; // -1 means 'not flashing'
@@ -228,9 +228,9 @@ class ModMenuItem extends FunkinSpriteGroup
 
     background = new FunkinSprite(0, 0);
     background.makeGraphic(ITEM_WIDTH - ITEM_WIDTH_PADDING, ICON_HEIGHT, FlxColor.WHITE);
-    background.localX = 0;
-    background.localY = 0;
-    background.localAlpha = 0;
+    background.x = 0;
+    background.y = 0;
+    background.alpha = 0;
     add(background);
 
     modIcon = new FunkinSprite(0, 0);
@@ -240,8 +240,8 @@ class ModMenuItem extends FunkinSpriteGroup
       modIcon.scrollFactor.set();
       modIcon.antialiasing = true;
       modIcon.setGraphicSize(ICON_HEIGHT, ICON_HEIGHT);
-      modIcon.localScale.x = modIcon.scale.x;
-      modIcon.localScale.y = modIcon.scale.y;
+      modIcon.scale.x = modIcon.scale.x;
+      modIcon.scale.y = modIcon.scale.y;
       modIcon.updateHitbox();
       add(modIcon);
     }
@@ -254,8 +254,6 @@ class ModMenuItem extends FunkinSpriteGroup
         modIcon.scrollFactor.set();
         modIcon.antialiasing = true;
         modIcon.setGraphicSize(ICON_HEIGHT, ICON_HEIGHT);
-        modIcon.localScale.x = modIcon.scale.x;
-        modIcon.localScale.y = modIcon.scale.y;
         modIcon.updateHitbox();
         add(modIcon);
       }
@@ -281,8 +279,6 @@ class ModMenuItem extends FunkinSpriteGroup
         modIcon.scrollFactor.set();
         modIcon.antialiasing = true;
         modIcon.setGraphicSize(ICON_HEIGHT, ICON_HEIGHT);
-        modIcon.localScale.x = modIcon.scale.x;
-        modIcon.localScale.y = modIcon.scale.y;
         modIcon.updateHitbox();
         add(modIcon);
       }
@@ -294,25 +290,25 @@ class ModMenuItem extends FunkinSpriteGroup
         modIcon.scrollFactor.set();
         modIcon.antialiasing = true;
         modIcon.setGraphicSize(ICON_HEIGHT, ICON_HEIGHT);
-        modIcon.localScale.x = modIcon.scale.x;
-        modIcon.localScale.y = modIcon.scale.y;
+        modIcon.scale.x = modIcon.scale.x;
+        modIcon.scale.y = modIcon.scale.y;
         modIcon.updateHitbox();
         add(modIcon);
       }
     }
 
     titleText = new ScrollingTextBox(DESC_WIDTH, TITLE_HEIGHT, funkin.assets.Paths.font('ui/fonts/FunkinLingLong', 'otf'), 30, FlxColor.WHITE);
-    titleText.localX = ICON_HEIGHT + 8;
+    titleText.x = ICON_HEIGHT + 8;
     titleText.text = getModTitle();
     add(titleText);
 
     descriptionText = new FlxText(0, 0, DESC_WIDTH);
     descriptionText.setFormat(funkin.assets.Paths.font('ui/fonts/FunkinLingLong', 'otf'), 20, FlxColor.WHITE);
-    descriptionText.localX = ICON_HEIGHT + 8;
+    descriptionText.x = ICON_HEIGHT + 8;
     descriptionText.fieldHeight = 64;
-    descriptionText.localY = titleText.localY + TITLE_SPACING;
+    descriptionText.y = titleText.y + TITLE_SPACING;
     descriptionText.text = getModDescription();
-    descriptionText.localAlpha = 0.7;
+    descriptionText.alpha = 0.7;
     add(descriptionText);
 
     setChildClipRect(descriptionText, FlxRect.get(0, 0, DESC_WIDTH, ICON_HEIGHT - TITLE_SPACING));
@@ -340,8 +336,8 @@ class ModMenuItem extends FunkinSpriteGroup
       if (Math.abs(bgOffsetX) < 0.1) bgOffsetX = 0;
       if (Math.abs(bgOffsetY) < 0.1) bgOffsetY = 0;
 
-      background.localX = -bgOffsetX;
-      background.localY = -bgOffsetY;
+      background.x = -bgOffsetX;
+      background.y = -bgOffsetY;
     }
   }
 
@@ -358,12 +354,12 @@ class ModMenuItem extends FunkinSpriteGroup
 
   function updateBackgroundColor():Void
   {
-    // While flashing, updateFlash() owns background.localAlpha for this frame.
+    // While flashing, updateFlash() owns background.alpha for this frame.
     if (flashElapsed >= 0) return;
 
-    if (this.selected) background.localAlpha = 0.25;
+    if (this.selected) background.alpha = 0.25;
     else
-      background.localAlpha = 0;
+      background.alpha = 0;
   }
 
   /**
@@ -373,7 +369,7 @@ class ModMenuItem extends FunkinSpriteGroup
   public function flashBackground():Void
   {
     flashTargetAlpha = this.selected ? 0.25 : 0;
-    background.localAlpha = FLASH_START_ALPHA;
+    background.alpha = FLASH_START_ALPHA;
     flashElapsed = 0;
   }
 
@@ -386,13 +382,13 @@ class ModMenuItem extends FunkinSpriteGroup
 
     if (t >= 1)
     {
-      background.localAlpha = flashTargetAlpha;
+      background.alpha = flashTargetAlpha;
       flashElapsed = -1;
       return;
     }
 
     var easedT:Float = FlxEase.quintOut(t);
-    background.localAlpha = FlxMath.lerp(FLASH_START_ALPHA, flashTargetAlpha, easedT);
+    background.alpha = FlxMath.lerp(FLASH_START_ALPHA, flashTargetAlpha, easedT);
   }
 
   public function getModId():String
@@ -433,9 +429,9 @@ class ModMenuItem extends FunkinSpriteGroup
   {
     titleText.textColor = FlxColor.GRAY;
     descriptionText.setFormat(funkin.assets.Paths.font('ui/fonts/FunkinLingLong', 'otf'), 16, 0xFFFF0000);
-    descriptionText.localAlpha = 1.0;
+    descriptionText.alpha = 1.0;
     descriptionText.text = 'INCOMPATIBLE WITH v${Application.current.meta.get('version')}\nCURRENT MOD VERSION v${mod?.apiVersion.toString() ?? 'UNKNOWN'}';
-    if (modIcon != null) modIcon.localAlpha = 0.5;
+    if (modIcon != null) modIcon.alpha = 0.5;
   }
 
   override public function toString():String
