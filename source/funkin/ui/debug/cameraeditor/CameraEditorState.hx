@@ -460,7 +460,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   function get_isCursorOverHaxeUI():Bool
   {
-    return Screen.instance.hasSolidComponentUnderPoint(FlxG.mouse.viewX, FlxG.mouse.viewY);
+    return Screen.instance.hasComponentUnderPoint(Screen.instance.currentMouseX, Screen.instance.currentMouseY);
   }
 
   /**
@@ -1065,9 +1065,9 @@ class CameraEditorState extends UIState implements ConsoleClass
     if (timeline != null && timeline.viewport != null)
     {
       timeline.viewport.tickEdgeAutoScroll(elapsed);
-      timeline.viewport.handleTrackpadScroll();
+      if (!isCursorOverHaxeUI) timeline.viewport.handleTrackpadScroll();
     }
-    if (mainView != null) mainView.handleTrackpadScroll();
+    if (mainView != null && !isCursorOverHaxeUI) mainView.handleTrackpadScroll();
 
     super.update(elapsed);
 
