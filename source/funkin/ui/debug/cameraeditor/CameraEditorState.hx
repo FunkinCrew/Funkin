@@ -100,6 +100,7 @@ import haxe.ui.containers.menus.MenuBar;
 import haxe.ui.containers.menus.MenuItem;
 import haxe.ui.containers.menus.MenuOptionBox;
 import haxe.ui.containers.windows.WindowManager;
+import haxe.ui.core.Component;
 import haxe.ui.core.Screen;
 import haxe.ui.events.KeyboardEvent;
 import haxe.ui.events.MouseEvent;
@@ -460,7 +461,24 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   function get_isCursorOverHaxeUI():Bool
   {
-    return Screen.instance.hasComponentUnderPoint(Screen.instance.currentMouseX, Screen.instance.currentMouseY);
+    var componentsUnderMouse:Array<Component> = Screen.instance.findComponentsUnderPoint(Screen.instance.currentMouseX, Screen.instance.currentMouseY);
+    for (component in componentsUnderMouse)
+    {
+      var isCameraViewportContainer:Bool = component == mainView;
+      var ancestor:Null<Component> = mainView.parentComponent;
+      while (ancestor != null)
+      {
+        if (ancestor == component)
+        {
+          isCameraViewportContainer = true;
+          break;
+        }
+        ancestor = ancestor.parentComponent;
+      }
+
+      if (!isCameraViewportContainer) return true;
+    }
+    return false;
   }
 
   /**
