@@ -1067,7 +1067,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       timeline.viewport.tickEdgeAutoScroll(elapsed);
       timeline.viewport.handleTrackpadScroll();
     }
-    if (mainView != null) mainView.handleTrackpadScroll();
+    if (mainView != null && !isHaxeUIFocused) mainView.handleTrackpadScroll();
 
     super.update(elapsed);
 
