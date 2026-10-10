@@ -32,18 +32,23 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
    * You can manually set this value, or you can leave it as `null` to determine it automatically.
    */
   @:deprecated('Use danceType instead')
-  public var shouldAlternate(get, set):Bool;
+  public var shouldAlternate(get, set):Null<Bool>;
 
-  function get_shouldAlternate():Bool
+  function get_shouldAlternate():Null<Bool>
   {
+    if (this.danceType == null) return null;
     return this.danceType == ALTERNATE;
   }
 
-  function set_shouldAlternate(value:Bool):Bool
+  function set_shouldAlternate(value:Null<Bool>):Null<Bool>
   {
     // Only do IDLE and ALTERNATE since it wouldn't have accounted for the COUNT type
-    if (value) this.danceType = ALTERNATE;
-    else this.danceType = IDLE;
+    if (value == null) this.danceType = null;
+    else
+    {
+      if (value) this.danceType = ALTERNATE;
+      else this.danceType = IDLE;  
+    }
     return value;
   }
 
@@ -454,25 +459,27 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
 /**
  * The dance type of a bopper. Defines its default behaviors.
  */
-enum DanceType
+enum abstract DanceType(String) from String to String
 {
   /**
    * The IDLE dance type has the following behaviors.
    * - At idle, dances with `idle`
-   * - Most common type
+   * - Most common type, only uses one animation
    */
-  IDLE;
+  public var IDLE = 'idle';
 
   /**
    * The ALTERNATE dance type has the following behaviors.
    * - At idle, dances with `danceLeft` and `danceRight`.
+   * - Animation switches every time the character dances
    */
-  ALTERNATE;
+  public var ALTERNATE = 'alternate';
 
   /**
    * The COUNT dance type has the following behaviors.
    * - At idle, dances with `dance###` when a certain dance count is reached
    *   - For example, `dance5` will play the fifth dance animation
+   * - Dance count resets once it reaches a dance count that the character doesn't have
    */
-  COUNT;
+  public var COUNT = 'count';
 }
