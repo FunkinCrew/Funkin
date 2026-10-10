@@ -753,7 +753,6 @@ class CameraEditorState extends UIState implements ConsoleClass
         }
         return;
       }
-
     }
     else
     {
@@ -789,7 +788,10 @@ class CameraEditorState extends UIState implements ConsoleClass
     return {
       targetState: () -> new CameraEditorState({
         loadFromPath: currentWorkingFilePath,
-        loadFromFNFCData: (currentWorkingFilePath == null && chart.songMetadatas.size() > 0) ? CameraEditorImportExportHandler.buildFNFCDataFromCurrentChart(this) : null, // We want to reload the FNFCData so the user doesn't lose progress.
+        loadFromFNFCData: (
+          currentWorkingFilePath == null
+          && chart.songMetadatas.size() > 0
+        ) ? CameraEditorImportExportHandler.buildFNFCDataFromCurrentChart(this) : null, // We want to reload the FNFCData so the user doesn't lose progress.
         targetSongDifficulty: this.currentDifficulty,
         targetSongVariation: this.currentVariation,
         targetSongPosition: Conductor.instance.songPosition
@@ -1644,6 +1646,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       camGame.flashSprite.scaleX = camGame.flashSprite.scaleY = 1.0;
       camRelative.y = 0;
       camGame.y = 0;
+      cameraRect.fitViewportScale = 1.0;
 
       return;
     }
@@ -1660,6 +1663,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       camGame.flashSprite.scaleX = camGame.flashSprite.scaleY = scale;
       camRelative.y = offset;
       camGame.y = offset;
+      cameraRect.fitViewportScale = scale;
     }
   }
 
@@ -2827,7 +2831,7 @@ typedef CameraEditorParams =
    */
   var ?loadFromTemplate:String;
 
-/**
+  /**
    * If non-null, load from existing FNFCData.
    */
   var ?loadFromFNFCData:FNFCData;
