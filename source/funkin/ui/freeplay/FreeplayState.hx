@@ -55,6 +55,10 @@ import funkin.util.MathUtil;
 import funkin.util.SortUtil;
 import openfl.display.BlendMode;
 import funkin.ui.freeplay.DifficultyDot;
+import funkin.ui.freeplay.FreeplayFilterBar;
+import funkin.ui.freeplay.FreeplayFilterBar.FavoriteFilter;
+import funkin.ui.freeplay.FreeplayFilterBar.SongFilter;
+import funkin.ui.freeplay.FreeplayFilterBar.SongSortOrder;
 import funkin.data.freeplay.style.FreeplayStyleRegistry;
 #if FEATURE_CHART_EDITOR
 import funkin.ui.debug.charting.ChartEditorState;
@@ -221,7 +225,7 @@ class FreeplayState extends MusicBeatSubState
   var ostName:FlxText;
   var albumRoll:AlbumRoll;
   var charSelectHint:FlxText;
-  var letterSort:LetterSort;
+  var filterBar:FreeplayFilterBar;
   var exitMovers:ExitMoverData = new Map();
   var diffSelLeft:DifficultySelector;
   var diffSelRight:DifficultySelector;
@@ -349,7 +353,7 @@ class FreeplayState extends MusicBeatSubState
     grpDifficulties = new FlxTypedSpriteGroup<DifficultySprite>(-300, 80);
 
     difficultyDots = new FlxTypedSpriteGroup<DifficultyDot>(DEFAULT_DOTS_GROUP_POS[0], DEFAULT_DOTS_GROUP_POS[1]);
-    letterSort = new LetterSort((CUTOUT_WIDTH * SONGS_POS_MULTI) + 400, 75);
+    filterBar = new FreeplayFilterBar(FlxG.width * 0.315, 85);
     rankBg = new FunkinSprite(0, 0);
     rankVignette = new FlxSprite(0, 0).loadGraphic(Paths.image('ui/freeplay/interface/rank-vignette'));
     sparks = new FlxSprite(0, 0);
@@ -646,58 +650,44 @@ class FreeplayState extends MusicBeatSubState
     txtCompletion.visible = false;
     add(txtCompletion);
 
-    add(letterSort);
-    letterSort.visible = false;
-    letterSort.instance = this;
+    add(filterBar);
+    filterBar.visible = false;
+    filterBar.setInstance(this);
 
-    exitMovers.set([letterSort], {
+    exitMovers.set([filterBar], {
       y: -100,
       speed: 0.3
     });
 
-    exitMoversCharSel.set([letterSort], {
+    exitMoversCharSel.set([filterBar], {
       y: -270,
       speed: 0.8,
       wait: 0.1
     });
 
-    // Reminder, this is a callback function being set, rather than these being called here in create()
-    letterSort.changeSelectionCallback = (str) ->
+    filterBar.changeSelectionCallback = (filter, resetSelection) ->
     {
-      var curSong:Null<FreeplaySongData> = currentCapsule?.freeplayData;
-      currentCapsule.selected = false;
+      var curSongId:Null<String> = currentCapsule?.freeplayData?.data.id;
+      if (currentCapsule != null) currentCapsule.selected = false;
+      generateSongList(filter, true, false);
 
-      switch (str)
+      var selectedIndex:Int = -1;
+      if (!resetSelection && curSongId != null)
       {
-        case 'fav':
-          generateSongList({
-            filterType: FAVORITE
-          }, true, false);
-        case 'ALL':
-          generateSongList(null, true, false);
-        case '#':
-          generateSongList({
-            filterType: REGEXP,
-            filterData: '0-9'
-          }, true, false);
-        default:
-          generateSongList({
-            filterType: REGEXP,
-            filterData: str
-          }, true, false);
+        selectedIndex = currentFilteredSongs.findIndex(song -> song != null && song.data.id == curSongId);
       }
 
-      // If the current song is still in the list, or if it was random, we'll land on it
-      // Otherwise we want to land on the first song of the group, rather than random song when changing letter sorts
-      // that is, only if there's more than one song in the group!
-      if (curSong == null || currentFilteredSongs.contains(curSong))
+      if (selectedIndex >= 0)
       {
-        changeSelection();
+        changeSelection(selectedIndex + 1 - curSelected);
       }
-      else if (grpCapsules.members.length > 0)
+      else if (currentFilteredSongs.length > 0)
       {
-        curSelected = 1;
-        changeSelection();
+        changeSelection(1 - curSelected);
+      }
+      else
+      {
+        changeSelection(-curSelected);
       }
     };
 
@@ -786,7 +776,7 @@ class FreeplayState extends MusicBeatSubState
 
       diffSelLeft.visible = true;
       diffSelRight.visible = true;
-      letterSort.visible = true;
+      filterBar.visible = true;
 
       exitMovers.set([diffSelLeft, diffSelRight], {
         x: -diffSelLeft.width * 2,
@@ -959,7 +949,7 @@ class FreeplayState extends MusicBeatSubState
    * Given the current filter, rebuild the current song list and display it.
    * Automatically takes into account currentDifficulty, character, and variation
    *
-   * @param filterStuff A filter to apply to the song list (regex, startswith, all, favorite)
+   * @param filterStuff Favorite status, sort order, and song-name search to apply.
    * @param force Whether the capsules should "jump" back in or not using their animation
    * @param onlyIfChanged Only apply the filter if the song list has changed
    * @param noJumpIn Will not call the jump-in function, used when changing difficulties to update the song list correctly without this happening twice
@@ -985,7 +975,17 @@ class FreeplayState extends MusicBeatSubState
 
     if (onlyIfChanged)
     {
-      if (tempSongs.isEqualUnordered(currentFilteredSongs))
+      var isSameSongOrder:Bool = tempSongs.length == currentFilteredSongs.length;
+      for (index in 0...tempSongs.length)
+      {
+        if (tempSongs[index] != currentFilteredSongs[index])
+        {
+          isSameSongOrder = false;
+          break;
+        }
+      }
+
+      if (isSameSongOrder)
       {
         // If the song list is the same, we don't need to generate a new list.
 
@@ -1068,53 +1068,83 @@ class FreeplayState extends MusicBeatSubState
   public function sortSongs(songsToFilter:Array<Null<FreeplaySongData>>,
     songFilter:SongFilter):Array<Null<FreeplaySongData>>
   {
-    var filterAlphabetically = function(a:Null<FreeplaySongData>, b:Null<FreeplaySongData>):Int
+    songsToFilter = songsToFilter.copy();
+
+    var compareAlphabetically = function(a:Null<FreeplaySongData>, b:Null<FreeplaySongData>):Int
     {
       return SortUtil.alphabetically(a?.data.songName ?? '', b?.data.songName ?? '');
     };
 
-    switch (songFilter.filterType)
+    if (songFilter.search != '')
     {
-      case REGEXP:
-        // filterStuff.filterData has a string with the first letter of the sorting range, and the second one
-        // this creates a filter to return all the songs that start with a letter between those two
+      var searchTerm:String = songFilter.search.toLowerCase();
+      songsToFilter = songsToFilter.filter(song ->
+      {
+        if (song == null) return false;
+        return song.data.songName.toLowerCase().indexOf(searchTerm) != -1;
+      });
+    }
 
-        // if filterData looks like "A-C", the regex should look something like this: ^[A-C].*
-        // to get every song that starts between A and C
-        var filterRegexp:EReg = new EReg('^[' + songFilter.filterData + '].*', 'i');
-        songsToFilter = songsToFilter.filter(filteredSong ->
-        {
-          if (filteredSong == null) return true; // Random
-          return filterRegexp.match(filteredSong.data.songName);
-        });
-
-        songsToFilter.sort(filterAlphabetically);
-
-      case STARTSWITH:
-        // extra note: this is essentially a "search"
-
-        songsToFilter = songsToFilter.filter(filteredSong ->
-        {
-          if (filteredSong == null) return true; // Random
-          return filteredSong.data.songName.toLowerCase().startsWith(songFilter.filterData ?? '');
-        });
-      case ALL:
-        // no filter!
-      case FAVORITE:
-        // sort favorites by week, not alphabetically
-        songsToFilter = songsToFilter.filter(filteredSong ->
-        {
-          if (filteredSong == null) return true; // Random
-          return filteredSong.isFav;
-        });
-
+    switch (songFilter.favorite)
+    {
+      case FAVORITES:
+        songsToFilter = songsToFilter.filter(song -> song?.isFav ?? false);
+      case UNFAVORITES:
+        songsToFilter = songsToFilter.filter(song -> song != null && !song.isFav);
       default:
-        // return all on default
+    }
+
+    switch (songFilter.sortOrder)
+    {
+      case ALPHABETICAL_ASC:
+        songsToFilter.sort(compareAlphabetically);
+      case ALPHABETICAL_DESC:
+        songsToFilter.sort((a, b) -> compareAlphabetically(b, a));
+      case DIFFICULTY_ASC:
+        songsToFilter.sort((a, b) ->
+        {
+          var ratingComparison:Int = (a?.difficultyRating ?? 0) - (b?.difficultyRating ?? 0);
+          return ratingComparison != 0 ? ratingComparison : compareAlphabetically(a, b);
+        });
+      case DIFFICULTY_DESC:
+        songsToFilter.sort((a, b) ->
+        {
+          var ratingComparison:Int = (b?.difficultyRating ?? 0) - (a?.difficultyRating ?? 0);
+          return ratingComparison != 0 ? ratingComparison : compareAlphabetically(a, b);
+        });
+      case RANK_ASC:
+        songsToFilter.sort((a, b) ->
+        {
+          var rankComparison:Int = getRankSortValue(a?.scoringRank) - getRankSortValue(b?.scoringRank);
+          return rankComparison != 0 ? rankComparison : compareAlphabetically(a, b);
+        });
+      case RANK_DESC:
+        songsToFilter.sort((a, b) ->
+        {
+          var rankComparison:Int = getRankSortValue(b?.scoringRank) - getRankSortValue(a?.scoringRank);
+          return rankComparison != 0 ? rankComparison : compareAlphabetically(a, b);
+        });
+      default:
     }
 
     return songsToFilter;
   }
 
+  function getRankSortValue(rank:Null<ScoringRank>):Int
+  {
+    if (rank == null) return -1;
+
+    return switch (rank)
+    {
+      case PERFECT_GOLD: 5;
+      case PERFECT: 4;
+      case EXCELLENT: 3;
+      case GREAT: 2;
+      case GOOD: 1;
+      case SHIT: 0;
+      default: -1;
+    };
+  }
   var sparks:FlxSprite;
   var sparksADD:FlxSprite;
 
@@ -1791,6 +1821,8 @@ class FreeplayState extends MusicBeatSubState
   {
     if (criticalFailure) return;
 
+    diffSelLeft.allowKeyboardInput = !filterBar.isSearchFocused;
+    diffSelRight.allowKeyboardInput = !filterBar.isSearchFocused;
     super.update(elapsed);
 
     Conductor.instance.update(FlxG.sound?.music?.time ?? 0.0);
@@ -1815,7 +1847,7 @@ class FreeplayState extends MusicBeatSubState
     }
 
     #if FEATURE_DEBUG_FUNCTIONS
-    if (FlxG.keys.justPressed.P)
+    if (!filterBar.isSearchFocused && FlxG.keys.justPressed.P)
     {
       FlxG.switchState(() -> FreeplayState.build({
         {
@@ -1824,7 +1856,7 @@ class FreeplayState extends MusicBeatSubState
       }));
     }
 
-    if (FlxG.keys.justPressed.T)
+    if (!filterBar.isSearchFocused && FlxG.keys.justPressed.T)
     {
       rankAnimStart(fromResultsParams ?? {
         playRankAnim: true,
@@ -1836,7 +1868,7 @@ class FreeplayState extends MusicBeatSubState
     }
     #end // ^<-- FEATURE_DEBUG_FUNCTIONS
 
-    if (uiStateMachine.canInteract())
+    if (uiStateMachine.canInteract() && !filterBar.isSearchFocused)
     {
       if
         ((
@@ -1911,6 +1943,7 @@ class FreeplayState extends MusicBeatSubState
   {
     @:privateAccess
     if (!uiStateMachine.canInteract() || (stickerSubState?.switchingState ?? false)) return;
+    if (filterBar.isSearchFocused) return;
 
     #if FEATURE_TOUCH_CONTROLS
     handleTouchCapsuleClick();
@@ -1952,7 +1985,7 @@ class FreeplayState extends MusicBeatSubState
       goBack();
     }
 
-    if (controls.ACCEPT_P && uiStateMachine.canInteract())
+    if (!filterBar.consumeAcceptInput() && controls.ACCEPT_P && uiStateMachine.canInteract())
     {
       currentCapsule.onConfirm();
     }
@@ -3419,6 +3452,11 @@ class FreeplayState extends MusicBeatSubState
           }
         });
       }
+
+      if ((isFav && currentFilter?.favorite == UNFAVORITES) || (!isFav && currentFilter?.favorite == FAVORITES))
+      {
+        new FlxTimer().start(0.22, _ -> generateSongList(currentFilter, true, false));
+      }
     }
   }
 
@@ -3442,6 +3480,7 @@ class DifficultySelector extends FlxSprite
 {
   var controls:Controls;
   var uiStateMachine:UIStateMachine;
+  public var allowKeyboardInput:Bool = true;
   var whiteShader:PureColor;
   #if FEATURE_TOUCH_CONTROLS
   var pressed:Bool = false;
@@ -3467,8 +3506,11 @@ class DifficultySelector extends FlxSprite
   {
     if (!uiStateMachine.canInteract()) return;
 
-    if (flipX && controls.UI_RIGHT_P) moveShitDown();
-    if (!flipX && controls.UI_LEFT_P) moveShitDown();
+    if (allowKeyboardInput)
+    {
+      if (flipX && controls.UI_RIGHT_P) moveShitDown();
+      if (!flipX && controls.UI_LEFT_P) moveShitDown();
+    }
     super.update(elapsed);
   }
 
@@ -3513,41 +3555,6 @@ class DifficultySelector extends FlxSprite
       updateHitbox();
     });
   }
-}
-
-/**
- * Structure for the current song filter.
- */
-typedef SongFilter =
-{
-  var filterType:FilterType;
-  var ?filterData:Dynamic;
-}
-
-/**
- * Possible types to use for the song filter.
- */
-enum abstract FilterType(String)
-{
-  /**
-   * Filter to songs which start with a string
-   */
-  public var STARTSWITH;
-
-  /**
-   * Filter to songs which match a regular expression
-   */
-  public var REGEXP;
-
-  /**
-   * Filter to songs which are favorited
-   */
-  public var FAVORITE;
-
-  /**
-   * Filter to all songs
-   */
-  public var ALL;
 }
 
 /**
