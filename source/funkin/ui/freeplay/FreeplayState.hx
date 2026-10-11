@@ -2431,8 +2431,9 @@ class FreeplayState extends MusicBeatSubState
   override public function destroy():Void
   {
     super.destroy();
-    // remove and destroy freeplay camera
-    FlxG.cameras.remove(funnyCam);
+    // Remove and destroy the Freeplay cameras if they are still registered
+    if (FlxG.cameras.list.contains(funnyCam)) FlxG.cameras.remove(funnyCam);
+    if (FlxG.cameras.list.contains(rankCamera)) FlxG.cameras.remove(rankCamera);
     // Cancel all song preview timers just in case a preview loads after we exit.
     clearPreviews();
   }
