@@ -455,8 +455,9 @@ class DropShadowShader extends FlxShader
         if (useMask)
         {
           maskIntensity = texture2D(altMask, uv).b;
-          if (maskIntensity > 0.0)
-            threshold = thr2;
+
+          float maskCondition = float(maskIntensity > 0.0);
+          threshold = (thr2 * maskCondition) + (threshold * (1.0 - maskCondition));
         }
 
         return threshold;
