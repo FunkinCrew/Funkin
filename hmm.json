@@ -130,7 +130,7 @@
     {
       "name": "hxcpp",
       "type": "git",
-      "ref": "24c889fec1b88675adb6fe2d5178febbac7004a7",
+      "ref": "d5bda40ac13f2823fe1bdcb5476e0eb027f1e7e9",
       "url": "https://github.com/FunkinCrew/hxcpp"
     },
     {
@@ -205,7 +205,7 @@
     {
       "name": "polymod",
       "type": "git",
-      "ref": "e1446c3b8cddafd6896f886cc91c9b5f8204f534",
+      "ref": "b6e973feeeabff21547c78a843c45b0ff7e59e14",
       "url": "https://github.com/FunkinCrew/polymod"
     },
     {
