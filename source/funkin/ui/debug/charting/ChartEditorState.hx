@@ -150,17 +150,28 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   // ==============================
   // Layouts
-  public static final CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/toolboxes/difficulty').toString();
+  public static final CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT:String = funkin.assets.ValidatedPaths
+    .xml('ui/editors/chart-editor/toolboxes/difficulty')
+    .toString();
 
-  public static final CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/toolbox/player-preview').toString();
-  public static final CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/toolbox/opponent-preview').toString();
+  public static final CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT:String = funkin.assets.ValidatedPaths
+    .xml('ui/editors/chart-editor/toolbox/player-preview')
+    .toString();
+  public static final CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT:String = funkin.assets.ValidatedPaths
+    .xml('ui/editors/chart-editor/toolbox/opponent-preview')
+    .toString();
   public static final CHART_EDITOR_TOOLBOX_METADATA_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/toolboxes/metadata').toString();
   public static final CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/toolboxes/offsets').toString();
-  public static final CHART_EDITOR_TOOLBOX_NOTE_DATA_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/toolboxes/note-data').toString();
-  public static final CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/toolboxes/event-data').toString();
+  public static final CHART_EDITOR_TOOLBOX_NOTE_DATA_LAYOUT:String = funkin.assets.ValidatedPaths
+    .xml('ui/editors/chart-editor/toolboxes/note-data')
+    .toString();
+  public static final CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT:String = funkin.assets.ValidatedPaths
+    .xml('ui/editors/chart-editor/toolboxes/event-data')
+    .toString();
   public static final CHART_EDITOR_TOOLBOX_FREEPLAY_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/toolboxes/freeplay').toString();
-  public static final CHART_EDITOR_TOOLBOX_PLAYTEST_PROPERTIES_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/toolbox/playtest-properties').toString();
-
+  public static final CHART_EDITOR_TOOLBOX_PLAYTEST_PROPERTIES_LAYOUT:String = funkin.assets.ValidatedPaths
+    .xml('ui/editors/chart-editor/toolbox/playtest-properties')
+    .toString();
   // Validation
   public static final SUPPORTED_MUSIC_FORMATS:Array<String> = ['ogg'];
   // Layout
@@ -2585,7 +2596,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     @:privateAccess
     var nextState = () -> new ChartEditorState({
       loadFromPath: currentWorkingFilePath,
-      loadFromFNFCData: (currentWorkingFilePath == null && hasInstrumentalData) ? this.buildFNFCDataFromCurrentChart() : null, // We want to reload the FNFCData so the user doesn't lose progress.
+      loadFromFNFCData: (
+        currentWorkingFilePath == null
+        && hasInstrumentalData
+      ) ? this.buildFNFCDataFromCurrentChart() : null, // We want to reload the FNFCData so the user doesn't lose progress.
       targetSongDifficulty: this.selectedDifficulty,
       targetSongVariation: this.selectedVariation,
       targetSongPosition: scrollPositionInMs + playheadPositionInMs
@@ -7967,7 +7981,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var _allowedEvents = null;
   var _eventTarget:Null<CharacterPlayer> = null;
 
-  public static var _allowedEventsNames:Array<String> = ['PlayAnimation'];
+  public static var _allowedEventsNames:Array<String> = ['PlayAnimation', 'SetTargetBopSpeed'];
 
   function handleMusicPositionUpdate(oldSongPosition:Float, newSongPosition:Float):Void
   {
@@ -8035,6 +8049,17 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
             default:
           }
           if (_eventTarget != null) _eventTarget.playAnimManually(data.getString('anim') ?? 'idle', data.getBool('force') ?? false);
+
+        case 'SetTargetBopSpeed':
+          switch (data.getString('target').toLowerCase().trim())
+          {
+            case 'boyfriend' | 'bf' | 'player':
+              _eventTarget = currentPlayerCharacterPlayer;
+            case 'dad' | 'opponent':
+              _eventTarget = currentOpponentCharacterPlayer;
+            default:
+          }
+          if (_eventTarget != null) _eventTarget.setBopSpeed(data.getFloat('rate') ?? Constants.DEFAULT_PROP_RATE);
       }
     }
 

@@ -178,6 +178,11 @@ class CharacterPlayer extends Box
     if (character != null) character.playAnimation(name, restart, ignoreOther, reversed);
   }
 
+  public function setBopSpeed(speed:Float = 1):Void
+  {
+    if (character != null) character.danceEvery = speed;
+  }
+
   override function repositionChildren():Void
   {
     super.repositionChildren();
