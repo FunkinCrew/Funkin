@@ -7967,7 +7967,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var _allowedEvents = null;
   var _eventTarget:Null<CharacterPlayer> = null;
 
-  public static var _allowedEventsNames:Array<String> = ['PlayAnimation'];
+  public static var _allowedEventsNames:Array<String> = ['PlayAnimation', 'SetTargetBopSpeed'];
 
   function handleMusicPositionUpdate(oldSongPosition:Float, newSongPosition:Float):Void
   {
@@ -8035,6 +8035,17 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
             default:
           }
           if (_eventTarget != null) _eventTarget.playAnimManually(data.getString('anim') ?? 'idle', data.getBool('force') ?? false);
+
+        case 'SetTargetBopSpeed':
+          switch (data.getString('target').toLowerCase().trim())
+          {
+            case 'boyfriend' | 'bf' | 'player':
+              _eventTarget = currentPlayerCharacterPlayer;
+            case 'dad' | 'opponent':
+              _eventTarget = currentOpponentCharacterPlayer;
+            default:
+          }
+          if (_eventTarget != null) _eventTarget.setBopSpeed(data.getFloat('rate') ?? Constants.DEFAULT_PROP_RATE);
       }
     }
 
