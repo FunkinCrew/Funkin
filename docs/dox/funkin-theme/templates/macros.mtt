@@ -1,0 +1,336 @@
+<macro name="printTypeParams(params)">
+	::if params.length > 0::
+		&lt;
+		::foreach param params::
+			<span class="type">::param::</span>
+			::if !repeat.param.last::, ::end::
+		::end::
+		&gt;
+	::end::
+</macro>
+
+<macro name="getHexValue(value)">::value.split("0x").join("#")::</macro>
+
+<macro name="printPlatforms(platforms, useSeparator)">
+	::if (useSeparator && api.config.platforms.length>1)::<hr/>::end::
+	<p class="availability" ::cond (api.config.platforms.length>1)::>
+		<em>
+		Available on 
+		::if platforms.length == api.config.platforms.length:: all platforms
+		::elseif platforms.length > 1:: ::platforms.join(", ")::
+		::else:: ::platforms.join("")::
+		::end::
+		</em>
+	</p>
+</macro>
+
+<macro name="printFieldPlatforms(field)">
+	::if field.platforms.length != type.platforms.length && field.platforms.length > 0 && field.platforms.length < api.config.platforms.length::
+		$$printPlatforms(::field.platforms::,::false::)
+	::end::
+</macro>
+
+<macro name="printLinkedPath(path, params, qualified)">
+	::if api.isKnownType(path)::
+		<a class="type" title="::api.getSentenceDesc(api.resolveType(path))::" ::attr href api.pathToUrl(path)::>
+			::if qualified::
+				::path::
+			::else::
+				::api.getPathName(path)::
+			::end::
+		</a>
+	::else::
+		<span class="type">::api.getPathName(path)::</span>
+	::end::
+	::if params != null && params.length > 0::
+		&lt;
+		::foreach param params::
+			$$printLinkedType(::param::,::qualified::)
+			::if !repeat.param.last::, ::end::
+		::end::
+		&gt;
+	::end::
+</macro>
+
+<macro name="printLinkedType(ctype, qualified)">
+	::switch ctype::
+	::case::Unknown
+	::case::$$printLinkedPath(::args[0]::,::args[1]::,::qualified::)
+	::case::$$printLinkedPath(::args[0]::,::args[1]::,::qualified::)
+	::case::$$printLinkedPath(::args[0]::,::args[1]::,::qualified::)
+	::case::
+		::if args[0].length != 1 || args[0][0].name != ""::(::end::
+		::foreach arg args[0]::
+			::if arg.name != ""::
+				::arg.name:::
+			::end::
+			$$printLinkedType(::arg.t::,::qualified::)
+			::if !repeat.arg.last::, ::end::
+		::end::
+		::if args[0].length != 1 || args[0][0].name != ""::)::end::
+		&nbsp;&#8209;&gt;&nbsp;
+		$$printLinkedType(::args[1]::,::qualified::)
+	::case::
+	{
+		::foreach field args[0]::
+			::field.name:::$$printLinkedType(::field.type::,::qualified::)
+			::if !repeat.field.last::, ::end::
+		::end::
+	}
+	::case::$$printLinkedPath(::"Dynamic"::,::null::,::qualified::)::if args[0] != null::&lt;$$printLinkedType(::args[0]::,::qualified::)&gt;::end::
+	::case::$$printLinkedPath(::args[0]::,::args[1]::,::qualified::)
+	::end::
+</macro>
+
+<macro name="printModule(module)">
+	<h4 ::cond module != null && module != "StdTypes"::><small>import <a ::attr href api.pathToUrl(module)::>::module::</a></small></h4>
+</macro>
+
+<macro name="printDeprecation(field)">
+	::if (field.meta != null)::
+		::foreach meta field.meta::
+			::if (meta.name == ":deprecated")::
+			<div class="alert alert-warning alert-deprecated">
+				<strong>Deprecated:</strong> 
+				::if (meta.params != null && meta.params.length > 0)::
+					::foreach param meta.params::
+						::param::
+						::if !repeat.param.last::, ::end::
+					::end::
+				::end::
+			</div>
+			::end::
+		::end::
+	::end::
+</macro>
+
+<macro name="printMeta(field)">
+	::if (field.meta != null)::
+		::foreach meta field.meta::
+			::if (meta.name != ":deprecated")::::if false::<!--skip deprecation meta, see printDeprecation -->::end::
+				::set metaName = meta.name.substr(1)::
+				::set displayMetaName = "@" + meta.name::
+				<span class="label label-meta label-meta-::metaName::" title="::api.getMetaDesc(meta.name)::">::displayMetaName::
+				::if (meta.params != null && meta.params.length > 0)::(
+					::foreach param meta.params::
+						$$printMetaParam(::param::)
+						::if !repeat.param.last::,::end::
+					::end::
+				)::end::</span>
+			::end::
+		::end::
+	::end::
+</macro>
+
+<macro name="printMetaParam(param)">::if (param.substr(0,9) == "<![CDATA[")::::param.substr(9,param.length-3-9)::::else::::param::::end::</macro>
+
+<macro name="printFieldSignature(field, isStatic, type)">
+	<code>
+	::if !field.isPublic::
+		<span class="label label-private">private</span>
+	::end::
+	
+	$$printMeta(::field::)
+
+	::if isStatic::
+		<span class="label label-static">static</span>
+	::end::
+
+	::set fieldInfo = api.getFieldInfo(field)::
+
+	::if fieldInfo.modifiers.isOptional::
+		<span class="label label-optional">optional</span>
+	::end::
+
+	::if fieldInfo.modifiers.isFinal::
+		<span class="label label-final">final</span>
+	::end::
+
+	::if fieldInfo.modifiers.isDynamic::
+		<span class="label label-dynamic">dynamic</span>
+	::end::
+
+	::if fieldInfo.modifiers.isInline::
+		<span class="label label-inline">inline</span>
+	::end::
+	
+	::switch fieldInfo.kind::
+		::switch field.set::
+		::case 1::
+			<span class="label">read only</span>
+		::end::
+		::switch field.get::
+		::case 1::
+			<span class="label">write only</span>
+		::end::
+
+	<a href="#::field.name::"><span class="identifier">::field.name::</span></a>:$$printLinkedType(::field.type::,::false::)$$printInitExpr(::field.expr::)
+
+	::case 2::
+		<a href="#::field.name::"><span class="identifier">::field.name::</span></a>
+		$$printTypeParams(::field.params::)(
+		::foreach arg args[0]::
+			<span style="white-space:nowrap">
+				::if arg.opt && (arg.value == null || arg.value == "null")::?::end::
+				::arg.name:::$$printLinkedType(::arg.t::,::false::)
+				::if arg.value != null && arg.value != "null":: = ::arg.value::::end::
+				::if !repeat.arg.last::,::end::
+			</span>
+			::if !repeat.arg.last:: ::end::
+		::end::
+		)
+		::if field.name != "new"::
+			:$$printLinkedType(::args[1]::,::false::)
+		::end::
+	::end::
+	</code>
+</macro>
+
+<macro name="printInitExpr(expr)">
+	<span ::cond expr != null::>
+		 = ::expr::
+	</span>
+</macro>
+
+<macro name="printClassBody(type)">
+	::set showSection = false::
+	::foreach field type.statics::
+		::if !api.isMethod(field)::
+			::eval showSection = true::
+		::end::
+	::end::
+	::if showSection::
+		<h3 class="section">Static variables</h3>
+		<div class="fields">
+			::foreach field type.statics::
+				::set isStatic = true::
+				::if !api.isMethod(field)::
+					::use "class_field.mtt"::::end::
+				::end::
+			::end::
+		</div>
+	::end::
+	
+	::set showSection = false::
+	::foreach field type.statics::
+		::if api.isMethod(field)::
+			::eval showSection = true::
+		::end::
+	::end::
+	::if showSection::
+		<h3 class="section">Static methods</h3>
+		<div class="fields">
+			::foreach field type.statics::
+				::set isStatic = true::
+				::if api.isMethod(field)::
+					::use "class_field.mtt"::::end::
+				::end::
+			::end::
+		</div>
+	::end::
+
+	::set showSection = false::
+	::foreach field type.fields::
+		::if field.name == "new" && api.isMethod(field)::
+			::eval showSection = true::
+		::end::
+	::end::
+	::if showSection::
+		<h3 class="section">Constructor</h3>
+		<div class="fields">
+			::foreach field type.fields::
+				::set isStatic = false::
+				::if field.name == "new" && api.isMethod(field)::
+					::use "class_field.mtt"::::end::
+				::end::
+			::end::
+		</div>
+	::end::
+	
+	::set showSection = false::
+	::foreach field type.fields::
+		::if !api.isMethod(field)::
+			::eval showSection = true::
+		::end::
+	::end::
+	::if showSection::
+		<h3 class="section">Variables</h3>
+		<div class="fields">
+			::foreach field type.fields::
+				::set isStatic = false::
+				::if !api.isMethod(field)::
+					::use "class_field.mtt"::::end::
+				::end::
+			::end::
+		</div>
+	::end::
+	
+	::set showSection = false::
+	::foreach field type.fields::
+		::if field.name != "new" && api.isMethod(field)::
+			::eval showSection = true::
+		::end::
+	::end::
+	::if showSection::
+		<h3 class="section">Methods</h3>
+		<div class="fields">
+			::foreach field type.fields::
+				::set isStatic = false::
+				::if field.name != "new" && api.isMethod(field)::
+					::use "class_field.mtt"::::end::
+				::end::
+			::end::
+		</div>
+	::end::
+</macro>
+
+<macro name="printInheritedFields(type)">
+::if type.superClass != null::
+  ::set inheritedFields = api.getInheritedFields(type)::
+	::set hasFields = inheritedFields.fields.keys().hasNext()::
+	::set hasMethods = inheritedFields.methods.keys().hasNext()::
+	
+	<div class="inherited-fields well" ::cond hasFields || hasMethods::>
+		<h3 class="section" ::cond hasFields::>Inherited Variables</h3>
+		<div class="fields" ::cond hasFields::>
+			::set fields=inheritedFields.fields::
+			::foreach cl inheritedFields.types::
+				<h4 ::cond fields.get(cl).length>0::><a href="#" class="expand-button"><i class="fa fa-arrow-circle-o-right"></i></a> Defined by $$printLinkedPath(::cl.path::,::null::,::false::)</h4>
+				<div style="display:none">
+				::foreach field fields.get(cl)::
+					::set isStatic = false::
+					::set type=cl::
+					::use "class_field.mtt"::::end::
+				::end::
+				</div>
+			::end::
+		</div>
+		
+		<h3 class="section" ::cond hasMethods::>Inherited Methods</h3>
+		<div class="fields" ::cond hasMethods::>
+			::set fields=inheritedFields.methods::
+			::foreach cl inheritedFields.types::
+				<h4 ::cond fields.get(cl).length>0::><a href="#" class="expand-button"><i class="fa fa-arrow-circle-o-right"></i></a> Defined by $$printLinkedPath(::cl.path::,::null::,::false::)</h4>
+				<div style="display:none">
+				::foreach field fields.get(cl)::
+				::set isStatic = false::
+					::if field.name != "new" ::
+						::set type=cl::
+						::use "class_field.mtt"::::end::
+					::end::
+				::end::
+				</div>
+			::end::
+		</div>
+	</div>
+::end::
+</macro>
+
+<macro name="printPackage(type)">
+	::if type.path.indexOf(".", 0) >= 0::
+		::set packagePath = type.path.split(".").slice(0, -1).join(".")::
+		<h4><small>package <a ::attr href api.packageToUrl(packagePath)::>::packagePath::</a></small></h4>
+	::else::
+		<h4><small><a href="./">no package</a></small></h4>
+	::end::
+</macro>

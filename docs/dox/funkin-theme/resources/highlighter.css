@@ -1,0 +1,65 @@
+/**
+  Code Highlighting
+**/
+html pre,
+html pre code {
+    font-family: consolas, monospace;
+    white-space: pre;
+    overflow-x: auto;
+}
+
+code {
+    color: #333;
+}
+
+code a {
+    color: #08c;
+}
+
+pre {
+    color: #333;
+    margin: 15px 0;
+    padding: 0.5em;
+}
+
+pre .type {
+    color: #0086b3;
+}
+
+pre .kwd {
+    color: #00a;
+}
+
+pre .val {
+    color: #44a;
+}
+
+pre .str,
+div.pre .str,
+pre .str .kwd,
+pre .str .val,
+pre .str .type {
+    color: #a00;
+}
+
+pre .cmt {
+    color: #008800;
+    color: #998;
+    font-style: italic;
+}
+
+/* Make sure keywords inside comments are not highlighted*/
+pre .cmt .kwd,
+pre .cmt .str,
+pre .cmt .val,
+pre .cmt .type {
+    color: #998;
+}
+
+.last-modified {
+    color: #999;
+}
+
+.semantic {
+    display: none;
+}

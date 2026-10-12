@@ -1,0 +1,13 @@
+# Ignore artifacts
+export
+
+# Ignore all JSONS in the images folder (including FlxAnimate JSONs)
+assets/preload/images
+assets/shared/images
+assets/weekend1/images
+
+# Don't ignore data files
+# TODO: These don't work.
+!assets/preload/data/
+
+assets/exclude/data/credits.json

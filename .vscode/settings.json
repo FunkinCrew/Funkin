@@ -1,0 +1,195 @@
+{
+  "[haxe]": {
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "editor.codeActionsOnSave": { "source.organizeImports": "never" },
+    "editor.defaultFormatter": "nadako.vshaxe",
+    "editor.tabSize": 2
+  },
+  "[json]": {
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  // XML Formatting
+  "xml.format.enabled": true,
+  "xml.format.legacy": false,
+  "xml.format.emptyElements": "collapse",
+  "xml.preferences.quoteStyle": "double",
+  "xml.format.enforceQuoteStyle": "preferred",
+  "xml.format.preserveAttributeLineBreaks": false,
+  "xml.format.preservedNewlines": 0,
+  "xml.format.splitAttributes": "preserve",
+  "xml.format.joinCDATALines": true,
+  "xml.format.preserveEmptyContent": false,
+  "xml.format.joinCommentLines": false,
+  "xml.format.joinContentLines": false,
+  "xml.format.spaceBeforeEmptyCloseTag": true,
+  "xml.format.xsiSchemaLocationSplit": "onPair",
+  "xml.format.splitAttributesIndentSize": 2,
+  "xml.format.closingBracketNewLine": false,
+  "xml.format.preserveSpace": [
+    "xsl:text",
+    "xsl:comment",
+    "xsl:processing-instruction",
+    "literallayout",
+    "programlisting",
+    "screen",
+    "synopsis",
+    "pre",
+    "xd:pre"
+  ],
+  "xml.format.maxLineWidth": 0,
+  "xml.format.grammarAwareFormatting": true,
+
+  // General formatting
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": false,
+  "files.trimTrailingWhitespace": true,
+  "editor.detectIndentation": true,
+  "editor.insertSpaces": true,
+  "editor.tabSize": 2,
+  "prettier.tabWidth": 2,
+  "files.eol": "\n",
+  "haxe.displayPort": "auto",
+  "haxe.enableCompilationServer": true,
+  "haxe.enableServerView": true,
+  "haxe.displayServer": { "arguments": ["-v"] },
+  "files.associations": {
+    "*.hxp": "haxe",
+    "*.hscript": "haxe",
+    "*.haxe": "haxe",
+    "*.hxs": "haxe",
+    "*.hxc": "haxe"
+  },
+  "projectManager.git.baseFolders": ["./"],
+  "haxecheckstyle.sourceFolders": ["src", "source"],
+  "haxecheckstyle.externalSourceRoots": [],
+  "haxecheckstyle.configurationFile": "checkstyle.json",
+  "haxecheckstyle.codeSimilarityBufferSize": 100,
+  "lime.projectFile": "project.hxp",
+  "lime.targets": [
+    { "name": "windows", "enabled": true, "label": "Windows" },
+    { "name": "mac", "enabled": true, "label": "macOS" },
+    { "name": "linux", "enabled": true, "label": "Linux" },
+    { "name": "html5", "enabled": true, "label": "HTML5" },
+    { "name": "android", "enabled": true, "label": "Android" },
+    { "name": "ios", "enabled": true, "label": "iOS" },
+
+    // Disabled targets
+    { "name": "air", "enabled": false },
+    { "name": "electron", "enabled": false },
+    { "name": "flash", "enabled": false },
+    { "name": "neko", "enabled": false },
+    { "name": "hl", "enabled": false }
+  ],
+  "lime.defaultTargetConfiguration": "Windows / Debug",
+  "lime.targetConfigurations": [
+    {
+      "label": "Windows / Debug (Discord)",
+      "target": "windows",
+      "args": ["-debug", "-DFEATURE_DEBUG_FUNCTIONS", "-DFEATURE_DISCORD_RPC"]
+    },
+    {
+      "label": "Windows / Debug (FlxAnimate Test)",
+      "target": "windows",
+      "args": ["-debug", "-DANIMATE", "-DFEATURE_DEBUG_FUNCTIONS"]
+    },
+    {
+      "label": "Windows / Debug (Straight to Freeplay)",
+      "target": "windows",
+      "args": ["-debug", "-DFREEPLAY", "-DFEATURE_DEBUG_FUNCTIONS"]
+    },
+    {
+      "label": "Windows / Debug (Straight to Play - Bopeebo Normal)",
+      "target": "windows",
+      "args": [
+        "-debug",
+        "-DSONG=bopeebo -DDIFFICULTY=normal",
+        "-DFEATURE_DEBUG_FUNCTIONS"
+      ]
+    },
+    {
+      "label": "Windows / Debug (Straight to Play - 2hot)",
+      "target": "windows",
+      "args": ["-debug", "-DSONG=2hot", "-DFEATURE_DEBUG_FUNCTIONS"]
+    },
+    {
+      "label": "Windows / Debug (Straight to Stage Editor)",
+      "target": "windows",
+      "args": ["-debug", "-DSTAGING", "-DFEATURE_DEBUG_FUNCTIONS"]
+    },
+    {
+      "label": "Windows / Debug (Straight to Stage Builder)",
+      "target": "windows",
+      "args": ["-debug", "-DSTAGEBUILD", "-DFEATURE_DEBUG_FUNCTIONS"]
+    },
+    {
+      "label": "Windows / Debug (Straight to Animation Editor)",
+      "target": "windows",
+      "args": ["-debug", "-DANIMDEBUG", "-DFEATURE_DEBUG_FUNCTIONS"]
+    },
+    {
+      "label": "Windows / Debug (Debug hxvlc)",
+      "target": "windows",
+      "args": ["-debug", "-DHXVLC_LOGGING", "-DFEATURE_DEBUG_FUNCTIONS"]
+    },
+    {
+      "label": "Windows / Debug (Latency Test)",
+      "target": "windows",
+      "args": ["-debug", "-DLATENCY", "-DFEATURE_DEBUG_FUNCTIONS"]
+    },
+    {
+      "label": "Windows / Debug (No Asset Redirect)",
+      "target": "windows",
+      "args": ["-debug", "-DNO_REDIRECT_ASSETS_FOLDER"]
+    },
+    {
+      "label": "Windows / Debug (Waveform Test)",
+      "target": "windows",
+      "args": ["-debug", "-DWAVEFORM", "-DFEATURE_DEBUG_FUNCTIONS"]
+    },
+    {
+      "label": "HTML5 / Debug (Watch)",
+      "target": "html5",
+      "args": ["-debug", "-watch", "-DFEATURE_DEBUG_FUNCTIONS"]
+    }
+  ],
+  "lime.buildTypes": [
+    { "label": "Debug", "args": ["-debug", "-DFEATURE_DEBUG_FUNCTIONS"] },
+    {
+      "label": "Debug (Unlock Everything)",
+      "args": ["-debug", "-DUNLOCK_EVERYTHING"]
+    },
+    {
+      "label": "Debug (Tracy)",
+      "args": ["-debug", "-DFEATURE_DEBUG_TRACY", "-DFEATURE_DEBUG_FUNCTIONS"]
+    },
+    {
+      "label": "Debug (Straight to Chart Editor)",
+      "args": ["-debug", "-DCHARTING", "-DFEATURE_DEBUG_FUNCTIONS"]
+    },
+    { "label": "Release", "args": ["-release"] },
+    {
+      "label": "Release (GitHub Actions)",
+      "args": ["-release", "-DGITHUB_BUILD"]
+    }
+  ],
+  "cmake.configureOnOpen": false,
+  "coverage-gutters.coverageFileNames": [
+    "lcov.info",
+    "cov.xml",
+    "coverage.xml",
+    "jacoco.xml",
+    "coverage.cobertura.xml"
+  ],
+  "vscord.app.privacyMode.enable": true,
+  "json.schemas": [
+    { "fileMatch": ["/hmm.json"], "url": "./.vscode/schema/hmm.json" }
+  ]
+}

@@ -1,0 +1,49 @@
+::use 'main.mtt'::
+	<div class="page-header">
+		<span ::cond api.hasSourceLink(type):: class="viewsource">
+			<a href="::api.getSourceLink(type)::" class="btn btn-medium"><i class="fa fa-eye"></i> View source</a>
+		</span>
+		<h1><small>typedef</small> ::api.getPathName(type.path)::$$printTypeParams(::type.params::)</h1>
+		$$printPackage(::type::)
+		$$printModule(::type.module::)
+		$$printMeta(::type::)
+		$$printDeprecation(::type::)
+		$$printPlatforms(::type.platforms::,::true::)
+	</div>
+
+	<div class="body">
+		<div class="doc doc-main" ::cond type.doc != null::>
+			::raw type.doc::
+		</div>
+
+		::set multiplePlatforms = api.lambda.array(type.types).length > 1::
+		::foreach platform type.types.keys()::
+			::set platformType = type.types.get(platform)::
+			::if multiplePlatforms::
+				<h4 class="section section-availability">::platform::</h4>
+			::end::
+			::switch platformType::
+				::if !multiplePlatforms::<h3 class="section">Alias</h3>::end::
+				<div class="fields">
+					<div class="field">
+						<em>alias for </em><code>$$printLinkedType(::platformType::,::true::)</code>
+					</div>
+				</div>
+			::case 5::
+				::if !multiplePlatforms::<h3 class="section">Fields</h3>::end::
+				<div class="fields">
+					::switch platformType::
+					::case 5::
+						::if args[0].length == 0::
+							<em>empty structure</em>
+						::else::
+							::foreach field args[0]::
+								::use "class_field.mtt"::::end::
+							::end::
+						::end::
+					::end::
+				</div>
+			::end::
+		::end::
+	</div>
+::end::

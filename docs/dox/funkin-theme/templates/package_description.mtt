@@ -1,0 +1,2 @@
+	<h1>::api.currentPageName:: <small ::cond api.isDefined("version") && full == ""::>version ::api.getValue('version')::</small></h1>
+	<p ::cond api.isDefined("description")::>::api.getValue("description")::</p>

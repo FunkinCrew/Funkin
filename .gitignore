@@ -1,0 +1,37 @@
+.DS_STORE
+.haxelib/
+.vs/
+APIStuff.hx
+dump/
+temp/
+docs/temp/
+export/
+astc-textures/
+RECOVER_*.fla
+shitAudio/
+.build_time
+.swp
+NewgroundsCredentials.hx
+
+# Exclude IntelliJ IDEA stuff
+.idea/
+*.iml
+
+# Dox output and types
+docs/dox/output
+docs/dox/Windows.xml
+docs/dox/Mac.xml
+docs/dox/iOS.xml
+docs/dox/Linux.xml
+docs/dox/Android.xml
+
+# Mobile signing stuff
+.apple/
+.env
+*.keystore
+
+# Exclude JS stuff
+node_modules/
+package.json
+package-lock.json
+.aider*

@@ -1,0 +1,12 @@
+::use 'main.mtt'::
+
+<script type="text/javascript">
+	$(document).ready(errorSearch);
+</script>
+
+<h1><small>404</small> Page not found</h1>
+
+<p>Page not found, sorry.</p>
+
+::end::
+

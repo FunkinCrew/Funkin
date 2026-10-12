@@ -1,0 +1,5 @@
+Images stored in this folder come from these links:
+
+FNF_logo.png - https://fridaynightfunkin.wiki.gg/images/FNF_logo.png
+Menu.png - https://fridaynightfunkin.wiki.gg/images/Menu.png
+Title_Card.gif - https://fridaynightfunkin.wiki.gg/images/d/d7/Title_Card.gif

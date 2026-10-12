@@ -1,0 +1,66 @@
+{
+  "type": "object",
+  "properties": {
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string",
+            "description": "The name of the Haxe library"
+          },
+          "type": {
+            "title": "Type",
+            "type": "string",
+            "description": "one of haxelib, git, hg, or dev",
+            "enum": ["haxelib", "git", "hg", "dev"]
+          },
+          "ref": {
+            "type": "string",
+            "description": "the git/hg ref (branch, commit, tag, etc.)"
+          },
+          "url": {
+            "title": "URL",
+            "type": "string",
+            "description": "the git/hg URL"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string",
+            "description": "the haxelib library version. Must be in SemVer format (MAJOR.MINOR.PATCH)",
+            "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$"
+          }
+        },
+        "required": ["name", "type"],
+        "dependentSchemas": {
+          "type": {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "git"
+                }
+              }
+            },
+            "then": {
+              "required": ["url"]
+            },
+            "else": {
+              "if": {
+                "properties": {
+                  "type": {
+                    "const": "haxelib"
+                  }
+                }
+              },
+              "then": {
+                "required": ["version"]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

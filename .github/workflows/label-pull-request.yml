@@ -1,0 +1,45 @@
+# Applies the following labels to pull requests whenver they are created or modified:
+#  - pr: documentation
+#  - pr: haxe
+#  - pr: github
+#  - size: tiny
+#  - size: small
+#  - size: medium
+#  - size: large
+#  - size: huge
+# see .github/labeler.yml and .github/changed-lines-count-labeler.yml
+
+name: "Pull Request Labeler"
+on:
+- pull_request_target
+
+# Ensure only one task can execute for a given PR at a time.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref }}
+  queue: max
+
+jobs:
+  # Apply labels to pull requests based on which files were edited
+  labeler:
+    permissions:
+      contents: read
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set basic labels
+      uses: actions/labeler@v6
+      with:
+        sync-labels: true
+  # Apply labels to pull requests based on how many lines were edited
+  changed-lines-count-labeler:
+    permissions:
+      contents: read
+      pull-requests: write
+    runs-on: ubuntu-latest
+    name: An action for automatically labelling pull requests based on the changed lines count
+    steps:
+    - name: Set change count labels
+      uses: vkirilichev/changed-lines-count-labeler@v0.2
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        configuration-path: .github/changed-lines-count-labeler.yml

@@ -1,0 +1,189 @@
+nav.nav {
+    font-family: "Open Sans", sans-serif;
+    font-size: 16px;
+    margin: 0;
+}
+
+nav .fa {
+    color: #777;
+    margin-right: 5px;
+}
+
+body nav * {
+    line-height: 20px;
+}
+
+nav .navbar-inner {
+    background: #13110f;
+    border: 0;
+    border-radius: 0;
+}
+
+nav .navbar .nav {
+    margin: 0;
+
+}
+
+nav .dropdown-menu {
+    background: #2c2722;
+    font-size: 14px;
+    border-radius: 0px 0px 2px 2px;
+    padding: 10px 0px;
+    border: 1px solid #2c2722;
+    margin-top: -1px;
+}
+
+nav .navbar .nav>li>a {
+    padding: 14px 12px 15px 12px;
+    color: #ccc;
+}
+
+nav .dropdown-menu li a {
+    color: #b8b5b5;
+    padding: 3px 15px;
+}
+
+nav .divider {
+    background-color: transparent;
+    border-right: 1px solid #39332d;
+    margin: 5px 20px 5px 10px;
+    height: 39px;
+}
+
+nav .dropdown-menu .divider {
+    background-color: transparent;
+    border: 0;
+    border-bottom: 1px solid #39332d;
+    margin: 5px 0;
+}
+
+nav .navbar-inverse .nav .active>a,
+nav .navbar-inverse .nav .active>a:hover,
+nav .navbar-inverse .nav .active>a:focus,
+nav .navbar-inverse .nav li.dropdown.open>.dropdown-toggle,
+nav .navbar-inverse .nav li.dropdown.active>.dropdown-toggle,
+nav .navbar-inverse .nav li.dropdown.open.active>.dropdown-toggle {
+    color: #fff;
+    background-color: transparent;
+    background-image: none;
+}
+
+nav .navbar-inverse .nav .active>a:hover {
+    background: #39332d;
+}
+
+nav .dropdown-menu>.active>a,
+nav .dropdown-menu>.active>a:hover,
+nav .dropdown-menu>.active>a:focus {
+    font-weight: bold;
+    color: #fff;
+    background-image: none;
+    background: #39332d;
+}
+
+nav .dropdown-menu>li>a:hover,
+.dropdown-menu>li>a:focus,
+nav .dropdown-submenu:hover>a,
+nav .dropdown-submenu:focus>a {
+    background: #39332d;
+}
+
+nav .navbar .nav>li>.dropdown-menu:after {
+    border-bottom-color: #2c2722;
+}
+
+/** MEDIA Q **/
+
+@media (max-width: 979px) {
+
+    nav .navbar-fixed-top .navbar-inner,
+    nav .navbar-fixed-bottom .navbar-inner {
+        padding: 0px;
+    }
+
+    nav .navbar-fixed-top {
+        margin-bottom: 0;
+    }
+}
+
+/** SUB BRAND LOGOS **/
+
+.navbar .brand.haxe-logo {
+    padding-right: 0;
+    margin: 3px 0 0 0px;
+}
+
+.navbar .brand.haxe-logo:hover {
+    opacity: .9;
+}
+
+.navbar .brand.haxe-logo:after {
+    content: " ";
+    position: absolute;
+    /* create arrow */
+    width: 0;
+    height: 0;
+    border-top: 22px solid transparent;
+    border-bottom: 22px solid transparent;
+    border-left: 7px solid #13110f;
+    /* same color as nav bar */
+    top: 0;
+}
+
+.navbar .brand.sub {
+    background: #39332d;
+    /* Old browsers */
+    background: -moz-linear-gradient(top, #39332d 50%, #2c2722 51%);
+    /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(50%, #39332d), color-stop(51%, #2c2722));
+    /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top, #39332d 50%, #2c2722 51%);
+    /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top, #39332d 50%, #2c2722 51%);
+    /* Opera 11.10+ */
+    background: -ms-linear-gradient(top, #39332d 50%, #2c2722 51%);
+    /* IE10+ */
+    background: linear-gradient(to bottom, #39332d 50%, #2c2722 51%);
+    /* W3C */
+    padding: 14px 20px 13px 20px;
+    margin: 0 10px 0 0;
+    font: bold 18px "arial black", "open sans";
+    line-height: 22px;
+    color: rgb(255, 255, 255);
+}
+
+.navbar .brand.sub:hover {
+    color: rgb(230, 230, 230);
+    background: #2c2722;
+    /* Old browsers */
+}
+
+.navbar .brand.sub:before {
+    content: "..";
+    /* two dots */
+    position: absolute;
+    margin-left: -33px;
+    margin-top: -28px;
+    line-height: 0px;
+    font: bold 40px "Open Sans", sans-serif;
+    letter-spacing: 0px;
+    color: #fff200;
+}
+
+/** SUB BRAND COLORS **/
+
+.navbar .brand.sub.try:before {
+    color: #f89c0e;
+}
+
+.navbar .brand.sub.api:before {
+    color: #eedc16;
+}
+
+.navbar .brand.sub.lib:before {
+    color: #f1471d;
+}
+
+.navbar .brand.sub.ide:before {
+    color: #f89c0e;
+}

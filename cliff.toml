@@ -1,0 +1,89 @@
+# git-cliff ~ configuration file
+# https://git-cliff.org/docs/configuration
+
+[remote.github]
+owner = "FunkinCrew"
+repo = "Funkin"
+
+# To bypass "you have reached your rate limit!", you can input a github token either as an environment variable
+# or alongside the `git cliff` command like so `git cliff --github-token TOKEN_HERE`
+# Personally I like to use the github cli `gh` tool to get a token
+# `git cliff --github-token $(gh auth token)`
+
+[changelog]
+# template for the changelog body
+# https://keats.github.io/tera/docs/#introduction
+body = """
+{%- macro remote_url() -%}
+  https://github.com/{{ remote.github.owner }}/{{ remote.github.repo }}
+{%- endmacro -%}
+
+{% if version -%}
+    ## [{{ version | trim_start_matches(pat="v") }}] - {{ timestamp | date(format="%Y-%m-%d") }}
+{% else -%}
+    ## [Unreleased]
+{% endif -%}
+
+{% for group, commits in commits | group_by(attribute="group") %}
+    ### {{ group | upper_first }}
+    {%- for commit in commits %}
+        - {% if commit.scope %}({{commit.scope}}) {% endif %}{{ commit.message | split(pat="\n") | first | upper_first | trim }} \
+            ([{{ commit.id | truncate(length=7, end="") }}]({{self::remote_url()}}/commit/{{ commit.id }})) -\
+            {% if commit.remote.username %} by @{{ commit.remote.username }}
+            {%- elif commit.author.name %} by {{ commit.author.name }}
+            {%- endif -%}
+            {% if commit.remote.pr_number %} in \
+            [#{{ commit.remote.pr_number }}]({{ self::remote_url() }}/pull/{{ commit.remote.pr_number }}) \
+            {%- endif -%}
+            {% if commit.links | length != 0 %}\
+            [#{{ commit.links }}]({{ self::remote_url() }}/pull/{{ commit.remote.pr_number }}) \
+            {%- endif -%}
+    {% endfor %}
+{% endfor %}
+
+{%- if github.contributors | filter(attribute="is_first_time", value=true) | length != 0 %}
+  ## New Contributors
+{%- endif -%}
+
+{% for contributor in github.contributors | filter(attribute="is_first_time", value=true) %}
+  * @{{ contributor.username }} made their first contribution
+    {%- if contributor.pr_number %} in \
+      [#{{ contributor.pr_number }}]({{ self::remote_url() }}/pull/{{ contributor.pr_number }}) \
+    {%- endif %}
+{%- endfor %}\n
+"""
+
+# remove the leading and trailing whitespace from the templates
+trim = true
+
+[git]
+# parse the commits based on https://www.conventionalcommits.org
+conventional_commits = true
+# filter out the commits that are not conventional
+filter_unconventional = true
+# regex for preprocessing the commit messages
+commit_preprocessors = [
+    # remove issue numbers from commits
+    { pattern = '\((\w+\s)?#([0-9]+)\)', replace = "" },
+]
+# regex for parsing and grouping commits
+commit_parsers = [
+    { message = "^docs", group = "Changed", scope="docs" },
+    { message = "^[a|A]dd", group = "Added" },
+    { message = "^[s|S]upport", group = "Added" },
+    { message = "^[r|R]emove", group = "Removed" },
+    { message = "^.*: add", group = "Added" },
+    { message = "^.*: support", group = "Added" },
+    { message = "^.*: remove", group = "Removed" },
+    { message = "^.*: delete", group = "Removed" },
+    { message = "^test", group = "Fixed" },
+    { message = "^fix", group = "Fixed" },
+    { message = "^.*: fix", group = "Fixed" },
+    { message = "^.*", group = "Changed" },
+]
+# filter out the commits that are not matched by commit parsers
+filter_commits = false
+# sort the tags topologically
+topo_order = false
+# sort the commits inside sections by oldest/newest order
+sort_commits = "newest"

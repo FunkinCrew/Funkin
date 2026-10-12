@@ -1,0 +1,27 @@
+::if (field.doc != null && field.doc != "<p></p>") || !field.isOverride::
+
+<div class="field ::if (depth == 0 && api.isPlatform(name)) " platform platform-" + name else ""::">
+::if source_url != null && field.line != null::
+	<a href="::source_url::#L::field.line::" class="field-source pull-right" target="_blank">
+		<i class="fa fa-eye"></i> View source
+	</a>
+::end::
+
+	<a ::attr name field.name::></a>
+	
+	<h3 class="anchor">$$printFieldSignature(::field::,::isStatic::,::type::)</h3>
+	::if field.overloads != null::
+		::foreach field field.overloads::
+			<h3 class="anchor">$$printFieldSignature(::field::,::isStatic::,::type::)</h3>
+		::end::
+	::end::
+
+	$$printDeprecation(::field::)
+	$$printFieldPlatforms(::field::)
+	
+	::if field.doc != null::
+		<div class="doc">::raw field.doc::</div>
+	::end::
+</div>
+
+::end::

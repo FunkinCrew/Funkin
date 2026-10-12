@@ -1,0 +1,37 @@
+<key>UTExportedTypeDeclarations</key>
+<array>
+    <dict>
+        <key>UTTypeIdentifier</key>
+        <string>me.funkin.fnfc</string>
+        <key>UTTypeDescription</key>
+        <string>FNFC Document</string>
+        <key>UTTypeConformsTo</key>
+        <array>
+            <string>public.zip-archive</string>
+        </array>
+        <key>UTTypeTagSpecification</key>
+        <dict>
+            <key>public.filename-extension</key>
+            <array>
+                <string>fnfc</string>
+            </array>
+            <key>public.mime-type</key>
+            <string>application/zip</string>
+        </dict>
+    </dict>
+</array>
+<key>CFBundleDocumentTypes</key>
+<array>
+    <dict>
+        <key>CFBundleTypeName</key>
+        <string>FNFC Document</string>
+        <key>LSHandlerRank</key>
+        <string>Owner</string>
+        <key>CFBundleTypeRole</key>
+        <string>Viewer</string>
+        <key>LSItemContentTypes</key>
+        <array>
+            <string>me.funkin.fnfc</string>
+        </array>
+    </dict>
+</array>

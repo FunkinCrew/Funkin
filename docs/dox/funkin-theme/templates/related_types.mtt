@@ -1,0 +1,4 @@
+<span class="muted">::title::</span>
+::foreach info infos::
+	$$printLinkedPath(::info.path::,::null::,::false::)::if !repeat.info.last::, ::end::
+::end::
