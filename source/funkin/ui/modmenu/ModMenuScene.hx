@@ -380,7 +380,8 @@ class ModMenuScene
 
     dropShadow.renderer.blacklistSprite(gfWire);
     dropShadow.renderer.blacklistSprite(carBattery);
-    dropShadow.renderer.blacklistSprite(fgWires);
+    dropShadow.renderer.blacklistSprite(fgWiresBottom);
+    dropShadow.renderer.blacklistSprite(fgWiresTop);
 
     var blackFlash:FunkinSprite = new FunkinSprite(0, 0).makeSolidColor(FlxG.width, FlxG.height, BLACKOUT_COLOR);
     blackFlash.zIndex = 0;
@@ -407,7 +408,8 @@ class ModMenuScene
       dropShadow.visible = false;
       dropShadow.renderer.whitelistSprite(gfWire);
       dropShadow.renderer.whitelistSprite(carBattery);
-      dropShadow.renderer.whitelistSprite(fgWires);
+      dropShadow.renderer.whitelistSprite(fgWiresTop);
+      dropShadow.renderer.whitelistSprite(fgWiresBottom);
 
       FlxTimer.wait(BLACKOUT_DURATION, () ->
       {
