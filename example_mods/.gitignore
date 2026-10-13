@@ -1,0 +1,4 @@
+# Exclude any experimental mods that my have been added.
+/*
+!introMod
+!testing123
