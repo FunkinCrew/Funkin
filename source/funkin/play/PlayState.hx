@@ -2737,7 +2737,7 @@ class PlayState extends MusicBeatSubState
       vocals.play();
     }
 
-    FlxG.sound.music.play();
+    FlxG.sound.music.play(false, startTimestamp);
 
     #if FEATURE_DISCORD_RPC
     // Updating Discord Rich Presence.
