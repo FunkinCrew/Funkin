@@ -123,6 +123,11 @@ typedef PlayStateParams =
    */
   ?botPlayMode:Bool,
   /**
+   * Whether Bot Play Mode saves the score. Only used when `botPlayMode` is true.
+   * @default `false`
+   */
+  ?botPlaySaveScore:Bool,
+  /**
    * Whether the results screen should show up before returning to the chart editor.
    * @default `false`
    */
@@ -393,6 +398,11 @@ class PlayState extends MusicBeatSubState
   public var isBotPlayMode:Bool = false;
 
   /**
+   * Whether Bot Play Mode saves the score and counts as a normal run.
+   */
+  public var isBotPlaySaveScore:Bool = false;
+
+  /**
    * Whether the results screen should show up before returning to the chart editor.
    */
   public var isPlaytestResults:Bool = false;
@@ -557,6 +567,33 @@ class PlayState extends MusicBeatSubState
    * Dynamically updated based on the value of `healthLerp` (which is based on `health`).
    */
   public var healthBar:FlxBar;
+
+  /**
+   * The bar which displays how much of the song has been played.
+   * Null when the time bar preference is disabled.
+   */
+  var timeBar:Null<FlxBar> = null;
+
+  /**
+   * The song name and the current / total time, shown over the time bar.
+   */
+  var timeBarText:Null<FlxBitmapText> = null;
+
+  /**
+   * Whether the time bar is at the top of the screen (downscroll) instead of the bottom.
+   */
+  var timeBarOnTop:Bool = false;
+
+  /**
+   * The last whole second shown in the time bar text, so the text is only rebuilt when it changes.
+   */
+  var timeBarLastSecond:Int = -1;
+
+  /**
+   * One text line per judgement count and the rank, shown under the score.
+   * Empty when the judgement counter preference is disabled.
+   */
+  var judgeCounterLines:Array<FlxBitmapText> = [];
 
   /**
    * The background image used for the health bar.
@@ -761,6 +798,7 @@ class PlayState extends MusicBeatSubState
     if (params.targetInstrumental != null) currentInstrumental = params.targetInstrumental;
     isPracticeMode = params.practiceMode ?? false;
     isBotPlayMode = params.botPlayMode ?? false;
+    isBotPlaySaveScore = params.botPlaySaveScore ?? false;
     isPlaytestResults = params.playtestResults ?? false;
     isMinimalMode = params.minimalMode ?? false;
     startTimestamp = params.startTimestamp ?? 0.0;
@@ -885,6 +923,8 @@ class PlayState extends MusicBeatSubState
     // The song is now loaded. We can continue to initialize the play state.
     initCameras();
     initHealthBar();
+    initTimeBar();
+    initJudgeCounter();
     if (!isMinimalMode)
     {
       initStage();
@@ -1036,6 +1076,8 @@ class PlayState extends MusicBeatSubState
 
     updateHealthBar();
     updateScoreText();
+    updateTimeBar();
+    updateJudgeCounter();
 
     // Handle restarting the song when needed (player death or pressing Retry)
     if (needsReset)
@@ -2044,6 +2086,169 @@ class PlayState extends MusicBeatSubState
   /**
      * Generates the stage and all its props.
      */
+  /**
+   * Initializes the song time bar. It sits at the top when downscroll is on and at the bottom otherwise.
+   */
+  function initTimeBar():Void
+  {
+    if (!Preferences.timeBar) return;
+
+    final isDownscroll:Bool = #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
+      && !ControlsHandler.hasExternalInputDevice)
+      || #end Preferences.downscroll;
+
+    timeBarOnTop = isDownscroll;
+
+    final barWidth:Int = Std.int(FlxG.width * 0.6);
+    final barHeight:Int = 10;
+    final barY:Float = isDownscroll ? 6 : FlxG.height - barHeight - 6;
+
+    final bar:FlxBar = new FlxBar(0, 0, LEFT_TO_RIGHT, barWidth, barHeight, null, 0, 1);
+    bar.createFilledBar(0xAA000000, 0xFFFFFFFF);
+    bar.x = (FlxG.width - barWidth) / 2;
+    bar.y = barY;
+    bar.scrollFactor.set();
+    bar.setRange(0, Math.max(currentSongLengthMs, 1));
+    bar.value = 0;
+    bar.zIndex = 801;
+    bar.cameras = [camHUD];
+    add(bar);
+    timeBar = bar;
+
+    final text:FlxBitmapText = new FlxBitmapText(0, 0, '', FlxBitmapFont.fromAngelCode(Paths.font("vcr-bmp.png"), Paths.font("vcr-bmp.fnt")));
+    text.borderStyle = OUTLINE;
+    text.borderColor = FlxColor.BLACK;
+    text.letterSpacing = -1;
+    text.scrollFactor.set();
+    text.zIndex = 802;
+    text.cameras = [camHUD];
+    add(text);
+    timeBarText = text;
+  }
+
+  /**
+   * Moves the time bar to the current song position and refreshes its text when the second changes.
+   */
+  function updateTimeBar():Void
+  {
+    final bar:Null<FlxBar> = timeBar;
+    final text:Null<FlxBitmapText> = timeBarText;
+    if (bar == null || text == null) return;
+
+    final lengthMs:Float = Math.max(currentSongLengthMs, 1);
+    final positionMs:Float = Math.min(Math.max(Conductor.instance.songPosition, 0), lengthMs);
+    bar.value = positionMs;
+
+    final second:Int = Std.int(positionMs / 1000);
+    if (second == timeBarLastSecond) return;
+    timeBarLastSecond = second;
+
+    final songName:String = currentChart?.songName ?? '';
+    text.text = '$songName  ${FlxStringUtil.formatTime(positionMs / 1000, false)} / ${FlxStringUtil.formatTime(lengthMs / 1000, false)}';
+    text.x = bar.x + (bar.width - text.width) / 2;
+    text.y = timeBarOnTop ? bar.y + bar.height + 2 : bar.y - text.height - 2;
+  }
+
+  /**
+   * Initializes the judgement counter. Each count is its own line, placed under the score text.
+   */
+  function initJudgeCounter():Void
+  {
+    if (!Preferences.judgeCounter) return;
+
+    for (_ in 0...JUDGE_COUNTER_LINE_COUNT)
+    {
+      final text:FlxBitmapText = new FlxBitmapText(0, 0, '', FlxBitmapFont.fromAngelCode(Paths.font("vcr-bmp.png"), Paths.font("vcr-bmp.fnt")));
+      text.alignment = RIGHT;
+      text.borderStyle = OUTLINE;
+      text.borderColor = FlxColor.BLACK;
+      text.letterSpacing = -1;
+      text.scrollFactor.set();
+      text.zIndex = 802;
+      text.cameras = [camHUD];
+      add(text);
+      judgeCounterLines.push(text);
+    }
+  }
+
+  /**
+   * Number of lines in the judgement counter: Perfect, Sick, Good, Bad, Shit, Miss and Rank.
+   */
+  static final JUDGE_COUNTER_LINE_COUNT:Int = 7;
+
+  /**
+   * Refreshes the judgement counter from the current tallies and keeps it under the score text.
+   */
+  function updateJudgeCounter():Void
+  {
+    if (judgeCounterLines.length == 0) return;
+
+    final tallies = Highscore.tallies;
+    final hits:Int = tallies.sick + tallies.good + tallies.bad + tallies.shit;
+    final judged:Int = hits + tallies.missed;
+
+    var rank:String = '-';
+    if (judged > 0)
+    {
+      final accuracy:Float = hits / judged * 100;
+      final letter:String = if (tallies.missed == 0 && tallies.good == 0 && tallies.bad == 0 && tallies.shit == 0) 'SS'
+      else if (accuracy >= 95) 'S'
+      else if (accuracy >= 85) 'A'
+      else if (accuracy >= 75) 'B'
+      else if (accuracy >= 65) 'C'
+      else 'D';
+      rank = '$letter ${Math.ffloor(accuracy * 100) / 100}%';
+    }
+
+    // Sick is shown without the perfect notes, so Perfect and Sick do not overlap.
+    final lines:Array<String> = [
+      'Perfect: ${tallies.perfect}',
+      'Sick: ${tallies.sick - tallies.perfect}',
+      'Good: ${tallies.good}',
+      'Bad: ${tallies.bad}',
+      'Shit: ${tallies.shit}',
+      'Miss: ${tallies.missed}',
+      'Rank: $rank',
+    ];
+
+    var y:Float = scoreText.y + scoreText.height + 6;
+    for (i in 0...judgeCounterLines.length)
+    {
+      final text:FlxBitmapText = judgeCounterLines[i];
+      if (text.text != lines[i]) text.text = lines[i];
+      text.x = scoreText.x;
+      text.y = y;
+      y += text.height + 2;
+    }
+  }
+
+  /**
+   * Scores a note hit by the bot when Botplay is set to "Save Score".
+   * Uses the same judgements, combo and tallies as a player hit, with the bot hitting on time.
+   */
+  function scoreBotNoteHit(note:NoteSprite):Void
+  {
+    if (!note.scoreable) return;
+
+    var noteDiff:Int = Std.int(Conductor.instance.songPosition - note.noteData.time);
+    var score:Float = Scoring.scoreNote(noteDiff, PBOT1);
+    var daRating:String = Scoring.judgeNote(noteDiff, PBOT1);
+    var isPerfect:Bool = daRating == 'sick' && Math.abs(noteDiff) <= Scoring.PBOT1_PERFECT_THRESHOLD;
+
+    Highscore.tallies.totalNotesHit++;
+    applyScore(score, daRating, 0.0, false);
+    if (isPerfect) Highscore.tallies.perfect++;
+    popUpScore(isPerfect ? 'perfect' : daRating);
+  }
+
+  /**
+   * Whether this run must not save its score: practice mode, or bot play without the save score option.
+   */
+  function isScoreDisabled():Bool
+  {
+    return isPracticeMode || (isBotPlayMode && !isBotPlaySaveScore);
+  }
+
   function initStage():Void
   {
     loadStage(currentStageId);
@@ -2262,6 +2467,13 @@ class PlayState extends MusicBeatSubState
 
     opponentStrumline.zIndex = 1000;
     opponentStrumline.cameras = [camHUD];
+
+    if (Preferences.middlescroll)
+    {
+      // Center the player's strumline and hide the opponent's notes. The opponent still plays.
+      playerStrumline.x = (FlxG.width - playerStrumline.width) / 2 + Constants.STRUMLINE_X_OFFSET;
+      opponentStrumline.visible = false;
+    }
 
     #if mobile
     if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows && !ControlsHandler.hasExternalInputDevice)
@@ -2748,7 +2960,7 @@ class PlayState extends MusicBeatSubState
   function updateScoreText():Void
   {
     // TODO: Add functionality for modules to update the score text.
-    if (isBotPlayMode)
+    if (isBotPlayMode && !isBotPlaySaveScore)
     {
       scoreText.text = 'Bot Play Enabled';
     }
@@ -2886,6 +3098,9 @@ class PlayState extends MusicBeatSubState
         // Command the bot to hit the note on time.
         // NOTE: This is what handles the strumline and cleaning up the note itself!
         playerStrumline.hitNote(note);
+
+        // With Save Score, the bot's hit is scored like a player hit.
+        if (isBotPlaySaveScore) scoreBotNoteHit(note);
 
         if (note.holdNoteSprite != null)
         {
@@ -3053,7 +3268,7 @@ class PlayState extends MusicBeatSubState
       var notesInDirection:Array<NoteSprite> = notesByDirection[input.noteDirection];
 
       #if FEATURE_GHOST_TAPPING
-      if ((!playerStrumline.mayGhostTap()) && notesInDirection.length == 0)
+      if ((!Preferences.ghostTapping || !playerStrumline.mayGhostTap()) && notesInDirection.length == 0)
       #else
       if (notesInDirection.length == 0)
       #end
@@ -3119,6 +3334,8 @@ class PlayState extends MusicBeatSubState
 
     var score = Scoring.scoreNote(noteDiff, PBOT1);
     var daRating = Scoring.judgeNote(noteDiff, PBOT1);
+    // Perfect is a sub-tier of sick: the judgement stays 'sick' so scripts and combo logic are unchanged.
+    var isPerfect:Bool = daRating == 'sick' && Math.abs(noteDiff) <= Scoring.PBOT1_PERFECT_THRESHOLD;
 
     var healthChange = 0.0;
     var isComboBreak = false;
@@ -3160,7 +3377,8 @@ class PlayState extends MusicBeatSubState
     {
       Highscore.tallies.totalNotesHit++;
       applyScore(event.score, event.judgement, event.healthChange, event.isComboBreak);
-      popUpScore(event.judgement);
+      if (isPerfect && event.judgement == 'sick') Highscore.tallies.perfect++;
+      popUpScore(isPerfect && event.judgement == 'sick' ? 'perfect' : event.judgement);
     }
   }
 
@@ -3494,7 +3712,7 @@ class PlayState extends MusicBeatSubState
       Leaderboards.submitSongScore(currentSong.id, suffixedDifficulty, Std.int(songScore));
       #end
 
-      if (!isPracticeMode && !isBotPlayMode)
+      if (!isScoreDisabled())
       {
         #if FEATURE_NEWGROUNDS
         Events.logCompleteSong(currentSong.id, currentVariation);
@@ -3515,7 +3733,7 @@ class PlayState extends MusicBeatSubState
 
     #if FEATURE_NEWGROUNDS
     // Only award medals if we are LEGIT.
-    if (!isPracticeMode && !isBotPlayMode && !isChartingMode && currentSong.validScore)
+    if (!isScoreDisabled() && !isChartingMode && currentSong.validScore)
     {
       // Award a medal for beating at least one song on any difficulty on a Friday.
       if (Date.now().getDay() == 5) Medals.award(FridayNight);
@@ -3897,7 +4115,7 @@ class PlayState extends MusicBeatSubState
       },
       isNewHighscore: isNewHighscore,
       isPracticeMode: isPracticeMode,
-      isBotPlayMode: isBotPlayMode,
+      isBotPlayMode: isBotPlayMode && !isBotPlaySaveScore,
     });
     this.persistentDraw = false;
     openSubState(res);

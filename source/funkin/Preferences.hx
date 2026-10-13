@@ -594,6 +594,103 @@ class Preferences
     return value;
   }
 
+  /**
+   * If enabled, pressing keys with no notes nearby does not count as a miss.
+   * @default `false` (on mobile: `true`)
+   */
+  public static var ghostTapping(get, set):Bool;
+
+  static function get_ghostTapping():Bool
+  {
+    return Save?.instance?.options?.ghostTapping ?? #if mobile true #else false #end;
+  }
+
+  static function set_ghostTapping(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.ghostTapping = value;
+    Save.system.flush();
+    return value;
+  }
+
+  /**
+   * If enabled, the player's strumline is centered and the opponent's notes are hidden.
+   * @default `false`
+   */
+  public static var middlescroll(get, set):Bool;
+
+  static function get_middlescroll():Bool
+  {
+    return Save?.instance?.options?.middlescroll ?? false;
+  }
+
+  static function set_middlescroll(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.middlescroll = value;
+    Save.system.flush();
+    return value;
+  }
+
+  /**
+   * If enabled, a bar with the song name and time is shown at the top (downscroll) or bottom (upscroll).
+   * @default `true`
+   */
+  public static var timeBar(get, set):Bool;
+
+  static function get_timeBar():Bool
+  {
+    return Save?.instance?.options?.timeBar ?? true;
+  }
+
+  static function set_timeBar(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.timeBar = value;
+    Save.system.flush();
+    return value;
+  }
+
+  /**
+   * If enabled, a panel with the judgement counts and the rank is shown on the left side during songs.
+   * @default `true`
+   */
+  public static var judgeCounter(get, set):Bool;
+
+  static function get_judgeCounter():Bool
+  {
+    return Save?.instance?.options?.judgeCounter ?? true;
+  }
+
+  static function set_judgeCounter(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.judgeCounter = value;
+    Save.system.flush();
+    return value;
+  }
+
+  /**
+   * Botplay used when starting a song from Freeplay.
+   * 'Off' plays normally, 'No Score' lets the bot play without saving the score,
+   * and 'Save Score' lets the bot play and saves the score like a normal run.
+   * @default `'Off'`
+   */
+  public static var botPlay(get, set):String;
+
+  static function get_botPlay():String
+  {
+    return Save?.instance?.options?.botPlay ?? 'Off';
+  }
+
+  static function set_botPlay(value:String):String
+  {
+    var save:Save = Save.instance;
+    save.options.botPlay = value;
+    Save.system.flush();
+    return value;
+  }
+
   #if mobile
   /**
    * If enabled, device will be able to sleep on its own.

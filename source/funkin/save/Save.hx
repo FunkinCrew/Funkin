@@ -105,6 +105,11 @@ class Save implements ConsoleClass
         debugDisplay: 'Off',
         debugDisplayBGOpacity: 50,
         subtitles: true,
+        ghostTapping: #if mobile true #else false #end,
+        middlescroll: false,
+        timeBar: true,
+        judgeCounter: true,
+        botPlay: 'Off',
         hapticsMode: 'All',
         hapticsIntensityMultiplier: 1,
         autoPause: true,
@@ -1150,6 +1155,36 @@ typedef SaveDataOptions =
    * @default `true`
    */
   var subtitles:Bool;
+
+  /**
+   * If enabled, pressing keys with no notes nearby does not count as a miss.
+   * @default `false` (on mobile: `true`)
+   */
+  var ghostTapping:Bool;
+
+  /**
+   * If enabled, the player's strumline is centered and the opponent's notes are hidden.
+   * @default `false`
+   */
+  var middlescroll:Bool;
+
+  /**
+   * If enabled, a bar with the song name and time is shown at the top (downscroll) or bottom (upscroll).
+   * @default `true`
+   */
+  var timeBar:Bool;
+
+  /**
+   * If enabled, a panel with the judgement counts and the rank is shown on the left side during songs.
+   * @default `true`
+   */
+  var judgeCounter:Bool;
+
+  /**
+   * Botplay used when starting a song from Freeplay: 'Off', 'No Score' or 'Save Score'.
+   * @default `'Off'`
+   */
+  var botPlay:String;
 
   /**
    * If enabled, haptic feedback will be enabled.

@@ -918,10 +918,8 @@ class Project extends HXProject
     FEATURE_MOBILE_WEBVIEW.apply(this, isMobile() && FEATURE_NEWGROUNDS.isEnabled(this));
     FEATURE_MOBILE_AGESIGNALS.apply(this, isMobile() && isRelease());
 
-    // The coveted ghost tapping feature.
-    // Essential on mobile but delayed on desktop.
-    // Please send targeted harassment to PhantomArcade about this.
-    FEATURE_GHOST_TAPPING.apply(this, isMobile());
+    // Ghost tapping is always compiled in; the player enables it in Preferences.
+    FEATURE_GHOST_TAPPING.apply(this, true);
 
     // Enable ASTC Compressed textures for mobile.
     // Since mobile is pretty memory safe (I'm looking at you Apple...) we need them BADLY to have the game run properly.

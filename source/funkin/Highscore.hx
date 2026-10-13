@@ -32,6 +32,7 @@ class Highscore
     combinedTally.bad = newTally.bad + baseTally.bad;
     combinedTally.good = newTally.good + baseTally.good;
     combinedTally.sick = newTally.sick + baseTally.sick;
+    combinedTally.perfect = newTally.perfect + baseTally.perfect;
     combinedTally.totalNotes = newTally.totalNotes + baseTally.totalNotes;
     combinedTally.totalNotesHit = newTally.totalNotesHit + baseTally.totalNotesHit;
 
@@ -56,6 +57,7 @@ abstract Tallies(RawTallies)
       bad: 0,
       good: 0,
       sick: 0,
+      perfect: 0,
       totalNotes: 0,
       totalNotesHit: 0,
       maxCombo: 0,
@@ -81,6 +83,11 @@ typedef RawTallies =
   var bad:Int;
   var good:Int;
   var sick:Int;
+
+  /**
+   * How many sick notes were hit with perfect timing. Counted inside `sick`.
+   */
+  var perfect:Int;
   var maxCombo:Int;
   var score:Int;
   var isNewHighscore:Bool;

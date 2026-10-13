@@ -14,6 +14,7 @@ import flixel.util.FlxColor;
 import openfl.filters.ShaderFilter;
 import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
+import funkin.Preferences;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.ui.freeplay.dj.BaseFreeplayDJ;
 import funkin.ui.freeplay.dj.AnimateAtlasFreeplayDJ;
@@ -2814,10 +2815,11 @@ class FreeplayState extends MusicBeatSubState
           practiceMode: false,
           minimalMode: false,
 
+          // Shift starts a bot run without saving the score. Otherwise the Botplay preference decides.
+          botPlayMode: FlxG.keys.pressed.SHIFT || Preferences.botPlay != 'Off',
+          botPlaySaveScore: !FlxG.keys.pressed.SHIFT && Preferences.botPlay == 'Save Score',
           #if FEATURE_DEBUG_FUNCTIONS
-          botPlayMode: FlxG.keys.pressed.SHIFT, mirrored: FlxG.keys.pressed.CONTROL,
-          #else
-          botPlayMode: false,
+          mirrored: FlxG.keys.pressed.CONTROL,
           #end
           // TODO: Make these an option! It's currently only accessible via chart editor.
           // startTimestamp: 0.0,

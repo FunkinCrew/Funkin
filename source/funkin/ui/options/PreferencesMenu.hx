@@ -159,6 +159,32 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     {
       Preferences.subtitles = value;
     }, Preferences.subtitles);
+    createPrefItemCheckbox('Middlescroll', 'When enabled, your notes are centered and the opponent\'s notes are hidden.', function(value:Bool):Void
+    {
+      Preferences.middlescroll = value;
+    }, Preferences.middlescroll);
+    createPrefItemCheckbox('Time Bar', 'When enabled, a bar with the song name and time is shown at the top (downscroll) or bottom (upscroll).', function(value:Bool):Void
+    {
+      Preferences.timeBar = value;
+    }, Preferences.timeBar);
+    createPrefItemCheckbox('Judgement Counter', 'When enabled, the number of each judgement and your rank are shown during songs.', function(value:Bool):Void
+    {
+      Preferences.judgeCounter = value;
+    }, Preferences.judgeCounter);
+    createPrefItemEnum('Botplay', 'Off plays normally. No Score lets the bot play without saving the score. Save Score lets the bot play and saves the score.', [
+      "Off" => "Off",
+      "No Score" => "No Score",
+      "Save Score" => "Save Score",
+    ], function(key:String, value:String):Void
+    {
+      Preferences.botPlay = value;
+    }, Preferences.botPlay);
+    #if FEATURE_GHOST_TAPPING
+    createPrefItemCheckbox('Ghost Tapping', 'When enabled, pressing keys with no notes nearby does not count as a miss.', function(value:Bool):Void
+    {
+      Preferences.ghostTapping = value;
+    }, Preferences.ghostTapping);
+    #end
     #if FEATURE_DEBUG_DISPLAY
     // note: technically we can do DebugDisplayMode.Advanced => DebugDisplayMode.Advanced, etc. here, but that's a bit headache inducing.
     createPrefItemEnum('Debug Display', 'When enabled, FPS and other debug stats are displayed.', [

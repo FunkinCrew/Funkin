@@ -28,11 +28,30 @@ class PopUpStuff extends FlxTypedGroup<FunkinSprite>
     this.noteStyle = noteStyle;
   }
 
+  /**
+   * Builds the "perfect" popup. Perfect is a sub-tier of sick, so it follows the sick pixel setting.
+   */
+  function buildPerfectSprite():Null<FunkinSprite>
+  {
+    final isPixel:Bool = noteStyle.isJudgementSpritePixel('sick');
+
+    final result:FunkinSprite = new FunkinSprite();
+    result.loadTexture(isPixel ? 'perfect-pixel' : 'perfect');
+    result.scale.set(isPixel ? 3 : 0.5, isPixel ? 3 : 0.5);
+    result.scrollFactor.set(0.2, 0.2);
+    result.antialiasing = !isPixel;
+    result.pixelPerfectRender = isPixel;
+    result.pixelPerfectPosition = isPixel;
+    return result;
+  }
+
   public function displayRating(daRating:Null<String>)
   {
     if (daRating == null) daRating = "good";
 
-    var rating:Null<FunkinSprite> = noteStyle.buildJudgementSprite(daRating);
+    // Perfect is a sub-tier of sick, so it reuses the sick style settings.
+    final styleRating:String = daRating == 'perfect' ? 'sick' : daRating;
+    var rating:Null<FunkinSprite> = daRating == 'perfect' ? buildPerfectSprite() : noteStyle.buildJudgementSprite(daRating);
     if (rating == null) return;
 
     rating.zIndex = 1000;
@@ -44,7 +63,7 @@ class PopUpStuff extends FlxTypedGroup<FunkinSprite>
 
     rating.x += offsets[0];
     rating.y += offsets[1];
-    var styleOffsets = noteStyle.getJudgementSpriteOffsets(daRating);
+    var styleOffsets = noteStyle.getJudgementSpriteOffsets(styleRating);
     rating.x += styleOffsets[0];
     rating.y += styleOffsets[1];
 
@@ -56,7 +75,7 @@ class PopUpStuff extends FlxTypedGroup<FunkinSprite>
 
     add(rating);
 
-    var fadeEase = noteStyle.isJudgementSpritePixel(daRating) ? EaseUtil.stepped(2) : null;
+    var fadeEase = noteStyle.isJudgementSpritePixel(styleRating) ? EaseUtil.stepped(2) : null;
 
     FlxTween.tween(rating, {alpha: 0}, 0.2, {
       onComplete: function(tween:FlxTween)

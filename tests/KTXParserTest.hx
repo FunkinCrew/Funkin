@@ -1,6 +1,8 @@
+package ktx;
+
 import haxe.io.Bytes;
 import haxe.io.BytesOutput;
-import funkin.util.texture.KTXParser;
+import ktx.KTXParser;
 
 /**
  * Pruebas del parser KTX. Compilar y correr con, por ejemplo:
