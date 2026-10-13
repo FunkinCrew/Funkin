@@ -691,6 +691,45 @@ class Preferences
     return value;
   }
 
+  /**
+   * Offset in milliseconds applied only to hit judgement, not to the song or audio.
+   * Positive values count your inputs as later than they were.
+   * @default `0`
+   */
+  public static var inputOffset(get, set):Int;
+
+  static function get_inputOffset():Int
+  {
+    return Save?.instance?.options?.inputOffset ?? 0;
+  }
+
+  static function set_inputOffset(value:Int):Int
+  {
+    var save:Save = Save.instance;
+    save.options.inputOffset = value;
+    Save.system.flush();
+    return value;
+  }
+
+  /**
+   * If enabled, a meter under the health bar shows whether each hit was early or late.
+   * @default `true`
+   */
+  public static var timingMeter(get, set):Bool;
+
+  static function get_timingMeter():Bool
+  {
+    return Save?.instance?.options?.timingMeter ?? true;
+  }
+
+  static function set_timingMeter(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.timingMeter = value;
+    Save.system.flush();
+    return value;
+  }
+
   #if mobile
   /**
    * If enabled, device will be able to sleep on its own.

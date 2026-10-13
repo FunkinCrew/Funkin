@@ -1,66 +1,52 @@
-<div align='center'><img src="docs/readme_images/FNF_logo.png" width="800">
+# QT Slice
 
-<h2>Friday Night Funkin' is a rhythm game. Built using HaxeFlixel for <a href="https://ldjam.com/events/ludum-dare/47">Ludum Dare 47.</a></h2>
+Motor de ritmo para Friday Night Funkin', basado en V-Slice 0.8.7, desarrollado por Alonso Studio.
 
-This game was made with love to Newgrounds and its community. Extra love to Tom Fulp.
+QT Slice **no es un producto oficial** de The Funkin' Crew. "Friday Night Funkin'" y su logo son marcas de The Funkin' Crew Inc.
 
-</div>
+## Licencia
 
-- [Playable web demo on Newgrounds!](https://www.newgrounds.com/portal/view/770371)
-- [Demo download builds for Windows, Mac, and Linux from Itch.io!](https://ninja-muffin24.itch.io/funkin)
-- [Download Android builds from Google Play!](https://play.google.com/store/apps/details?id=me.funkin.fnf)
-- [Download iOS builds from the App Store!](https://apps.apple.com/app/id6740428530)
+El código fuente se distribuye bajo la licencia Apache 2.0, igual que V-Slice. Ver [LICENSE.md](LICENSE.md).
 
-<div align='center'>
-<table>
-  <tr>
-    <td><img src="docs/readme_images/Title_Card.gif" alt="Title Screen" width="350"/></td>
-    <td><img src="docs/readme_images/Menu.png" alt="Main Menu" width="350"/></td>
-  </tr>
-</table>
-</div>
+Los assets (música, sprites, personajes y demás) no forman parte de este repositorio y tienen su propia licencia.
 
-# Getting Started
+## Assets y arte
 
-**PLEASE USE THE LINKS ABOVE IF YOU JUST WANT TO PLAY THE GAME**
+Este repositorio usa dos submódulos, que debes bajar antes de compilar:
 
-To learn how to install the necessary dependencies and compile the game from source, please follow our [Compiling Guide](/docs/COMPILING.md).
+- `assets/`: https://github.com/FunkinCrew/Funkin.assets
+- `art/`: https://github.com/FunkinCrew/Funkin.art
 
-# Contributing
+Al clonar, usa:
 
-Check out our [Contributing Guide](/docs/CONTRIBUTING.md) to learn how you can actively contribute to the development of Friday Night Funkin'!
+```
+git clone --recurse-submodules https://github.com/joaquin-hubx/QTSlice-Engine.git
+```
 
-# Modding
+## Compilar
 
-Feel free to start learning to mod the game by reading our [documentation](https://funkincrew.github.io/funkin-modding-docs/) and guide to modding.
+Sigue la guía de compilación de V-Slice en [docs/COMPILING.md](docs/COMPILING.md). Las dependencias están en `hmm.json` y se instalan con `hmm install`.
 
-# Credits and Special Thanks
+En Windows, después de instalar las dependencias:
 
-Full credits can be found in-game, or in the `credits.json` file which is located [here](https://github.com/FunkinCrew/funkin.assets/blob/main/exclude/data/credits.json).
+```
+lime rebuild windows
+lime test windows
+```
 
-## Programming
-- [ninjamuffin99](https://twitter.com/ninja_muffin99) - Lead Programmer
-- [EliteMasterEric](https://twitter.com/EliteMasterEric) - Programmer
-- [MtH](https://twitter.com/emmnyaa) - Charting and Additional Programming
-- [GeoKureli](https://twitter.com/Geokureli/) - Additional Programming
-- [ZackDroid](https://x.com/ZackDroidCoder) - Lead Mobile Programmer
-- [MAJigsaw77](https://github.com/MAJigsaw77) - Mobile Programmer
-- [Karim-Akra](https://x.com/KarimAkra_0) - Mobile Programmer
-- [Sector_5](https://github.com/sector-a) - Mobile Programmer
-- [Luckydog7](https://github.com/luckydog7) - Mobile Programmer
-- Our contributors on GitHub
+## Cambios respecto a V-Slice 0.8.7
 
-## Art / Animation / UI
-- [PhantomArcade3K](https://twitter.com/phantomarcade3k) - Artist and Animator
-- [Evilsk8r](https://twitter.com/evilsk8r) - Art
-- [Moawling](https://twitter.com/moawko) - Week 6 Pixel Art
-- [IvanAlmighty](https://twitter.com/IvanA1mighty) - Misc UI Design
+- Middlescroll: notas del jugador centradas y notas del oponente ocultas.
+- Ghost tapping como opción en Preferencias.
+- Barra de tiempo con el nombre de la canción y el tiempo, arriba en downscroll y abajo en upscroll.
+- Juicio perfect a 5 ms, con su propio popup.
+- Panel de conteos (Perfect, Sick, Good, Bad, Shit, Miss) y rango.
+- Botplay con dos modos: No Score y Save Score.
+- Offset de input separado del offset de audio, y medidor de timing.
+- Parser de texturas KTX1, con pruebas en `tests/ktx/` (en desarrollo).
+- Paquete `dev.alonsostudio.qtslice` y nombre "QT Slice" en los metadatos.
 
-## Music
-- [Kawaisprite](https://twitter.com/kawaisprite) - Musician
-- [BassetFilms](https://twitter.com/Bassetfilms) - Music for "Monster", Additional Character Design
+## Créditos
 
-## Special Thanks
-- [Tom Fulp](https://twitter.com/tomfulp) - For being a great guy and for Newgrounds
-- [JohnnyUtah](https://twitter.com/JohnnyUtahNG/) - Voice of Tankman
-- [L0Litsmonica](https://twitter.com/L0Litsmonica) - Voice of Mommy Mearest
+- The Funkin' Crew, por Friday Night Funkin' y V-Slice.
+- Alonso Studio, por QT Slice.

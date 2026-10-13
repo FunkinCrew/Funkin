@@ -179,6 +179,14 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     {
       Preferences.botPlay = value;
     }, Preferences.botPlay);
+    createPrefItemNumber('Input Offset', 'Shifts only the judgement of your hits, not the song or audio. Positive values count your inputs as later.', function(value:Float):Void
+    {
+      Preferences.inputOffset = Std.int(value);
+    }, null, Preferences.inputOffset, -500, 500, 1, 0);
+    createPrefItemCheckbox('Timing Meter', 'When enabled, a meter under the health bar shows whether each hit was early or late.', function(value:Bool):Void
+    {
+      Preferences.timingMeter = value;
+    }, Preferences.timingMeter);
     #if FEATURE_GHOST_TAPPING
     createPrefItemCheckbox('Ghost Tapping', 'When enabled, pressing keys with no notes nearby does not count as a miss.', function(value:Bool):Void
     {

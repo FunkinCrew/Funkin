@@ -110,6 +110,8 @@ class Save implements ConsoleClass
         timeBar: true,
         judgeCounter: true,
         botPlay: 'Off',
+        inputOffset: 0,
+        timingMeter: true,
         hapticsMode: 'All',
         hapticsIntensityMultiplier: 1,
         autoPause: true,
@@ -1185,6 +1187,18 @@ typedef SaveDataOptions =
    * @default `'Off'`
    */
   var botPlay:String;
+
+  /**
+   * Offset in milliseconds applied only to hit judgement, not to the song or audio.
+   * @default `0`
+   */
+  var inputOffset:Int;
+
+  /**
+   * If enabled, a meter under the health bar shows whether each hit was early or late.
+   * @default `true`
+   */
+  var timingMeter:Bool;
 
   /**
    * If enabled, haptic feedback will be enabled.

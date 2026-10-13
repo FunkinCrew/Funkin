@@ -7,6 +7,7 @@ import flixel.addons.transition.Transition;
 import funkin.ui.FullScreenScaleMode;
 import flixel.FlxCamera;
 import flixel.FlxObject;
+import flixel.FlxSprite;
 import flixel.FlxSubState;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
@@ -925,6 +926,7 @@ class PlayState extends MusicBeatSubState
     initHealthBar();
     initTimeBar();
     initJudgeCounter();
+    initTimingMeter();
     if (!isMinimalMode)
     {
       initStage();
@@ -2242,6 +2244,60 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
+   * Half the width of the timing meter in pixels. The meter spans the miss threshold on each side.
+   */
+  static final TIMING_METER_HALF_WIDTH:Int = 150;
+
+  /**
+   * Y position of the timing meter, just under the health bar.
+   */
+  function timingMeterY():Float
+  {
+    return healthBarBG.y + healthBarBG.height + 6;
+  }
+
+  /**
+   * Draws the static center line of the timing meter.
+   */
+  function initTimingMeter():Void
+  {
+    if (!Preferences.timingMeter) return;
+
+    final center:FlxSprite = new FlxSprite(FlxG.width / 2 - TIMING_METER_HALF_WIDTH, timingMeterY() + 6);
+    center.makeGraphic(TIMING_METER_HALF_WIDTH * 2, 2, 0x88FFFFFF);
+    center.scrollFactor.set();
+    center.zIndex = 802;
+    center.cameras = [camHUD];
+    add(center);
+  }
+
+  /**
+   * Shows a tick on the timing meter for a hit.
+   * A positive `noteDiff` is a late hit (red, right side), a negative one is early (blue, left side).
+   */
+  function showTimingTick(noteDiff:Int):Void
+  {
+    if (!Preferences.timingMeter) return;
+
+    final ratio:Float = FlxMath.bound(noteDiff / Scoring.PBOT1_MISS_THRESHOLD, -1, 1);
+    final tick:FlxSprite = new FlxSprite(FlxG.width / 2 + ratio * TIMING_METER_HALF_WIDTH - 1, timingMeterY());
+    tick.makeGraphic(3, 14, noteDiff > 0 ? 0xFFFF5555 : 0xFF55AAFF);
+    tick.scrollFactor.set();
+    tick.zIndex = 803;
+    tick.cameras = [camHUD];
+    add(tick);
+
+    FlxTween.tween(tick, {alpha: 0}, 0.6, {
+      startDelay: 0.2,
+      onComplete: function(_:FlxTween):Void
+      {
+        remove(tick, true);
+        tick.destroy();
+      }
+    });
+  }
+
+  /**
    * Whether this run must not save its score: practice mode, or bot play without the save score option.
    */
   function isScoreDisabled():Bool
@@ -3330,7 +3386,7 @@ class PlayState extends MusicBeatSubState
 
     // Get the offset and compensate for input latency.
     // Round inward (trim remainder) for consistency.
-    var noteDiff:Int = Std.int(Conductor.instance.songPosition - note.noteData.time - inputLatencyMs);
+    var noteDiff:Int = Std.int(Conductor.instance.songPosition - note.noteData.time - inputLatencyMs - Preferences.inputOffset);
 
     var score = Scoring.scoreNote(noteDiff, PBOT1);
     var daRating = Scoring.judgeNote(noteDiff, PBOT1);
@@ -3379,6 +3435,7 @@ class PlayState extends MusicBeatSubState
       applyScore(event.score, event.judgement, event.healthChange, event.isComboBreak);
       if (isPerfect && event.judgement == 'sick') Highscore.tallies.perfect++;
       popUpScore(isPerfect && event.judgement == 'sick' ? 'perfect' : event.judgement);
+      showTimingTick(noteDiff);
     }
   }
 
