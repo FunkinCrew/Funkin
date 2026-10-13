@@ -2,7 +2,6 @@ package funkin.ui.modmenu;
 
 import flixel.FlxG;
 import flixel.addons.transition.FlxTransitionableState;
-import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.text.FlxText;
@@ -13,7 +12,6 @@ import funkin.audio.FunkinSound;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
 import funkin.graphics.framebuffer.DropShadowLayer;
-import funkin.group.FunkinGroup.FunkinSpriteGroup;
 import funkin.input.Cursor;
 import funkin.modding.PolymodHandler;
 import funkin.ui.FullScreenScaleMode;
@@ -23,19 +21,14 @@ import funkin.ui.modmenu.ModMenuCharacter.CharacterAnimation;
 import funkin.ui.transition.preload.hotreload.HotReloadState;
 import funkin.util.FileUtil;
 import funkin.util.PropertyAnimator;
-import funkin.util.WindowUtil;
 import haxe.io.Path;
-import polymod.PolymodConfig;
 #if android
 import funkin.external.android.DataFolderUtil;
 #elseif ios
 import lime.system.System;
 #end
 #if FEATURE_ONE_CLICK_INSTALL
-import funkin.modding.install.ModInstaller;
-import funkin.modding.install.ModInstaller.OneClickMod;
 import funkin.modding.install.ModInstaller.OneClickRequest;
-import funkin.modding.install.OneClickInstallHandler;
 #end
 #if FEATURE_TOUCH_CONTROLS
 import funkin.mobile.input.ControlsHandler;
@@ -140,31 +133,42 @@ class ModMenuState extends MusicBeatState
   var installPopup:ModMenuInstallPopup;
 
   /**
-   * The mod a one-click install is waiting for the player to confirm.
+   * One click install runner, it runs.. the one click install stuff..
    */
-  var pendingInstall:Null<OneClickMod> = null;
-
-  /**
-   * Set once the player cancels, so a download that's already in flight gets thrown away.
-   */
-  var installCancelled:Bool = false;
+  var oneClick:ModMenuOneClickInstall;
   #end
 
   var disabledModItems:ModMenuItemList = new ModMenuItemList();
   var enabledModItems:ModMenuItemList = new ModMenuItemList();
-  var listController:ModListController;
-  var selection:ModMenuSelection = DisabledModList;
-  var transitionLayer:FunkinSpriteGroup;
 
   /**
-   * Items that are currently flying between the two lists.
-   * Each one owns the manual flight state (via ModMenuItem.startFlight), plus the
-   * list/index it should land in once that flight completes.
+   * The dependency rules, disk sync and apply logic for both the enabled and disabled mod lists.
    */
-  var pendingTransitions:Array<TransitionRecord> = [];
+  var listController:ModListController;
 
-  var darkness:FunkinSprite;
-  var fileDrop:FunkinSprite;
+  /**
+   * Items transitioning between the two lists.
+   */
+  var transitions:ModMenuTransitions;
+
+  /**
+   * Enables, disables and reorders mods. A mover.
+   * NOTE: Too small to be its own thing, probably combine this with other stuff?
+   */
+  var mover:ModListMover;
+
+  var selection:ModMenuSelection = DisabledModList;
+
+  /**
+   * The "drop your mod here" overlay.
+   */
+  var dropOverlay:ModMenuDropOverlay = new ModMenuDropOverlay();
+
+  /**
+   * Installs mods that get dragged and dropped onto the window, should probably get merged into a big manager lols.
+   */
+  var fileInstaller:ModMenuFileInstaller;
+
   var openFolderAnimator:PropertyAnimator;
   var doneButtonAnimator:PropertyAnimator;
   var lastSelectDir:Int = 0;
@@ -187,6 +191,7 @@ class ModMenuState extends MusicBeatState
     camCharacters = new FunkinCamera('modMenuCharacters');
     camHUD = new FunkinCamera('modMenuHUD');
     camOther = new FunkinCamera('modMenuOther');
+    transitions = new ModMenuTransitions(disabledModItems, enabledModItems);
     listController = new ModListController(disabledModItems, enabledModItems);
   }
 
@@ -268,6 +273,11 @@ class ModMenuState extends MusicBeatState
     dragText.zIndex = 10;
     add(dragText);
 
+    mover = new ModListMover(disabledModItems, enabledModItems, listController, transitions, (newSelection) ->
+    {
+      selection = newSelection;
+    });
+
     refreshModList(false);
 
     enabledModItems.zIndex = 15;
@@ -278,9 +288,7 @@ class ModMenuState extends MusicBeatState
     disabledModItems.addElements(this);
     add(disabledModItems);
 
-    transitionLayer = new FunkinSpriteGroup();
-    transitionLayer.zIndex = 20;
-    add(transitionLayer);
+    transitions.attach(this, 20);
 
     enabledModItems.titleText.x = rightRectangle.x + (rightRectangle.width / 2) - (enabledModItems.titleText.width / 2);
     enabledModItems.titleText.y = rightRectangle.y + 14;
@@ -356,25 +364,16 @@ class ModMenuState extends MusicBeatState
     openFolderAnimator = buttonOpenFolder.createPressAnimator(0.65, 0.72);
     doneButtonAnimator = buttonDone.createPressAnimator(0.65, 0.72);
 
-    darkness = new FunkinSprite();
-    darkness.makeSolidColor(FlxG.width, FlxG.height, FlxColor.BLACK);
-    darkness.scrollFactor.set(0, 0);
-    darkness.alpha = 0;
-    darkness.visible = false;
-    darkness.zIndex = 3000;
-    darkness.camera = camHUD;
-    add(darkness);
+    dropOverlay.build(this, camHUD);
 
-    fileDrop = new FunkinSprite().loadTexture('ui/mods/drop-hover');
-    fileDrop.setGraphicSize(FlxG.width * 0.95, FlxG.height * 0.9);
-    fileDrop.scrollFactor.set(0, 0);
-    fileDrop.updateHitbox();
-    fileDrop.x = FlxG.width / 2 - (fileDrop.width / 2);
-    fileDrop.y = FlxG.height / 2 - (fileDrop.height / 2);
-    fileDrop.visible = false;
-    fileDrop.zIndex = darkness.zIndex + 1;
-    fileDrop.camera = camHUD;
-    add(fileDrop);
+    fileInstaller = new ModMenuFileInstaller(highlightNewMod, (enabled) ->
+    {
+      allowInput = enabled;
+    }, () ->
+      {
+        allowInput = true;
+        hideFileDropHover();
+      });
 
     enabledModItems.repositionItems();
     disabledModItems.repositionItems();
@@ -413,15 +412,17 @@ class ModMenuState extends MusicBeatState
 
     #if FEATURE_ONE_CLICK_INSTALL
     installPopup = new ModMenuInstallPopup();
-    installPopup.zIndex = fileDrop.zIndex + 1;
+    installPopup.zIndex = dropOverlay.topZIndex + 1;
     installPopup.setCamera(camHUD);
     add(installPopup);
+
+    oneClick = new ModMenuOneClickInstall(installPopup, highlightNewMod);
     #end
 
     FlxG.autoPause = false;
 
     // Adding the dropshadow blacklist here since everything is initialized by this point
-    dropShadowUI.blacklistSprite(menuBG);
+    dropShadowUI.renderer.blacklistSprite(menuBG);
     scene.blacklistFromShadow(dropShadowUI);
 
     scene.changeCharacters();
@@ -452,31 +453,18 @@ class ModMenuState extends MusicBeatState
     playBackButtonAnimation('press', true);
   }
 
-  var fileDropTimer:Float = 0;
-  var fileElapsed:Float = 0;
-  var isHoveringFile:Bool = false;
-  var animDone:Bool = false;
-
   function startFileDropHover():Void
   {
-    isHoveringFile = true;
-    trace('File drop hover start');
-    fileDropTimer = 0.5;
-    fileElapsed = 0;
-    fileDrop.visible = true;
-    darkness.visible = true;
-    animDone = false;
-    darkness.alpha = 0;
-    fileDrop.alpha = 0;
+    if (!allowInput) return;
+
+    dropOverlay.show();
   }
 
   function hideFileDropHover(x:Float, y:Float):Void
   {
-    fileElapsed = 0;
-    isHoveringFile = false;
-    animDone = false;
-    trace('File drop hover end');
-    fileDropTimer = -0.08;
+    if (!allowInput) return;
+
+    dropOverlay.hide();
   }
 
   function rescanFolder():Void
@@ -488,127 +476,6 @@ class ModMenuState extends MusicBeatState
     }
   }
 
-  // TRANSITION CODE //
-
-  /**
-   * Moves an item into the unclipped transition layer at the given world coordinates, so it can be tweened independently of the lists.
-   * @param item
-   * @param worldX
-   * @param worldY
-   */
-  function putItemInTransitionLayer(item:ModMenuItem, worldX:Float, worldY:Float):Void
-  {
-    if (item == null || transitionLayer == null) return;
-
-    enabledModItems.remove(item);
-    disabledModItems.remove(item);
-    if (transitionLayer.children.contains(item)) transitionLayer.remove(item);
-
-    item.clipRect = null;
-    transitionLayer.add(item);
-    item.cancelFlight();
-    item.localX = worldX - transitionLayer.x;
-    item.localY = worldY - transitionLayer.y;
-  }
-
-  /**
-   * Immediately finishes placing an item into its destination list, bypassing any in-flight tween.
-   * @param item
-   * @param destinationList
-   * @param index
-   */
-  function finishItemTransitionToList(item:ModMenuItem,
-    destinationList:ModMenuItemList,
-    index:Int):Void
-  {
-    if (item == null || destinationList == null || transitionLayer == null) return;
-
-    var worldX:Float = transitionLayer.x + item.localX;
-    var worldY:Float = transitionLayer.y + item.localY;
-
-    transitionLayer.remove(item);
-
-    var clamped:Int = index;
-    if (clamped > destinationList.modItems.length) clamped = destinationList.modItems.length;
-    if (clamped < 0) clamped = 0;
-    destinationList.addModRawWithoutLayout(item, clamped);
-
-    item.cancelFlight();
-    item.localX = worldX - destinationList.x;
-    item.localY = worldY - destinationList.y;
-
-    if (incomingCount(destinationList) == 0)
-    {
-      destinationList.repositionItems();
-    }
-    else
-    {
-      destinationList.updateScrollbar();
-    }
-  }
-
-  /**
-   * Starts the manual flight that carries an item from the transition layer into its
-   * destination list, tracking it via `pendingTransitions` so it can be force-settled
-   * later if another swap interrupts it.
-   */
-  function startItemTransition(item:ModMenuItem,
-    targetX:Float,
-    targetY:Float,
-    destinationList:ModMenuItemList,
-    index:Int):Void
-  {
-    if (item == null) return;
-
-    var record:TransitionRecord = {
-      item: item,
-      dest: destinationList,
-      index: index
-    };
-    pendingTransitions.push(record);
-
-    item.startFlight(targetX, targetY, 0.2, FlxEase.quadOut, () -> completeTransition(record));
-  }
-
-  /**
-   * Land a single in-flight item in its destination list. Safe to call more than
-   * once for the same record (subsequent calls are no-ops).
-   */
-  function completeTransition(record:TransitionRecord):Void
-  {
-    if (record == null) return;
-    if (!pendingTransitions.contains(record)) return;
-    pendingTransitions.remove(record);
-
-    finishItemTransitionToList(record.item, record.dest, record.index);
-  }
-
-  /**
-   * Immediately settle every in-flight item into its destination list.
-   */
-  function completeAllTransitions():Void
-  {
-    if (pendingTransitions.length == 0) return;
-    for (record in pendingTransitions.copy())
-    {
-      record.item.finishFlight();
-    }
-  }
-
-  /**
-   * How many items are currently flying into `dest` (pending transitions whose destination
-   * is that list).
-   */
-  function incomingCount(dest:ModMenuItemList):Int
-  {
-    var count:Int = 0;
-    for (record in pendingTransitions)
-    {
-      if (record.dest == dest) count++;
-    }
-    return count;
-  }
-
   // OVERRIDES //
 
   public override function destroy():Void
@@ -616,14 +483,8 @@ class ModMenuState extends MusicBeatState
     super.destroy();
 
     #if FEATURE_ONE_CLICK_INSTALL
-    // Stops an in-flight download's callbacks from poking at a menu that no longer exists.
-    installCancelled = true;
-    pendingInstall = null;
-    ModInstaller.cancelDownload();
-    ModInstaller.cancelInstall();
-
-    // Leaving the menu means the player is done installing, so nothing should drag them back in.
-    OneClickInstallHandler.clearQueue();
+    // Stops in-flight downloads, and drops the queue.
+    oneClick?.destroy();
     #end
 
     FlxG.autoPause = Preferences.autoPause;
@@ -640,51 +501,7 @@ class ModMenuState extends MusicBeatState
   {
     if (!allowInput) return;
 
-    if (StringTools.endsWith(file.path, '.zip'))
-    {
-      var fileClean = StringTools.replace(file.path, '\\', '/');
-      var fileName = StringTools.replace(file.path.substring(fileClean.lastIndexOf('/') + 1), '.zip', '');
-      var destPath = PolymodHandler.MOD_FOLDER + '/' + fileName + '.zip';
-
-      try
-      {
-        FileUtil.moveFile(file.path, destPath);
-      }
-      catch (e:Dynamic)
-      {
-        trace('Failed to move file: ' + e);
-        WindowUtil.showError('Failed to move file', 'Could not move zip file to mods folder. Check logs for details.');
-        return;
-      }
-
-      highlightNewMod();
-    }
-    else if (Path.isAbsolute(file.path) && FileUtil.directoryExists(file.path))
-    {
-      if (!FileUtil.pathExists(Path.join([file.path, PolymodConfig.modMetadataFile])))
-      {
-        WindowUtil.showError('Failed to move folder', 'Could not find polymod metadata inside the folder, are you sure this is a mod pack?');
-        return;
-      }
-
-      try
-      {
-        FileUtil.copyDirectory(file.path, Path.join([
-          PolymodHandler.MOD_FOLDER,
-          Path.withoutDirectory(file.path)
-        ]));
-      }
-      catch (e:Dynamic)
-      {
-        trace('Failed to move folder: ' + e);
-        WindowUtil.showError('Failed to move folder', 'Could not move folder to mods folder. Check logs for details.');
-        return;
-      }
-
-      highlightNewMod();
-    }
-    else
-      WindowUtil.showWarning('Invalid file type', 'Only .zip files and mod folders are supported for mod installation.');
+    fileInstaller.install(file);
   }
 
   /**
@@ -714,47 +531,9 @@ class ModMenuState extends MusicBeatState
    */
   public function beginOneClickInstall(request:OneClickRequest):Void
   {
-    if (installPopup == null) return;
+    if (oneClick == null) return;
 
-    // One at a time. A second link while one is running would fight over the popup.
-    if (installPopup.isBlocking())
-    {
-      trace('Ignoring a one-click install, one is already in progress.');
-      return;
-    }
-
-    pendingInstall = null;
-    installCancelled = false;
-
-    installPopup.showBusy('Mod Install', 'Looking this one up on GameBanana...');
-
-    ModInstaller.fetchMetadata(request, function(mod:OneClickMod):Void
-    {
-      if (installCancelled) return;
-
-      if (ModInstaller.isAlreadyInstalled(mod))
-      {
-        installPopup.showResult(mod.name, 'Already installed.');
-        return;
-      }
-
-      pendingInstall = mod;
-
-      startOneClickInstall();
-
-      ModInstaller.downloadIcon(mod, function(bytes:openfl.utils.ByteArray):Void
-      {
-        if (installCancelled || installPopup == null) return;
-
-        installPopup.setIcon(bytes);
-      });
-    }, function(reason:String):Void
-    {
-      if (installCancelled) return;
-
-      pendingInstall = null;
-      installPopup.showResult('Mod Install Failed', reason);
-    });
+    oneClick.begin(request);
   }
 
   /**
@@ -762,7 +541,7 @@ class ModMenuState extends MusicBeatState
    */
   public function isInstalling():Bool
   {
-    return installPopup != null && installPopup.isBlocking();
+    return oneClick != null && oneClick.isInstalling();
   }
 
   /**
@@ -770,58 +549,9 @@ class ModMenuState extends MusicBeatState
    */
   public function setInstallQueueCount(count:Int):Void
   {
-    if (installPopup == null) return;
+    if (oneClick == null) return;
 
-    installPopup.setQueueCount(count);
-  }
-
-  /**
-   * Starts the download.
-   */
-  function startOneClickInstall():Void
-  {
-    final mod:Null<OneClickMod> = pendingInstall;
-    if (mod == null) return;
-
-    final credit:String = 'by ${mod.author}  (${formatFilesize(mod.filesize)})';
-
-    installPopup.showProgress(mod.name, '${credit}\nDownloading...', 0);
-
-    ModInstaller.download(mod, function(ratio:Float):Void
-    {
-      if (installCancelled) return;
-
-      installPopup.showProgress(mod.name, '${credit}\nDownloading... ${Math.round(ratio * 100)}%', ratio);
-    }, function(archivePath:String):Void
-    {
-      if (installCancelled) return;
-
-      installPopup.showProgress(mod.name, '${credit}\nInstalling...', 0);
-
-      ModInstaller.install(mod, archivePath, function(ratio:Float):Void
-      {
-        if (installCancelled) return;
-
-        installPopup.showProgress(mod.name, '${credit}\nInstalling... ${Math.round(ratio * 100)}%', ratio);
-      }, function(paths:Array<String>):Void
-      {
-        if (installCancelled) return;
-
-        queueRequirements(mod);
-
-        finishOneClickInstall(mod);
-      }, function(reason:String):Void
-      {
-        if (installCancelled) return;
-
-        installPopup.showResult(mod.name, 'Install failed.\n${reason}');
-      });
-    }, function(reason:String):Void
-    {
-      if (installCancelled) return;
-
-      installPopup.showResult(mod.name, reason);
-    });
+    oneClick.setQueueCount(count);
   }
 
   /**
@@ -832,7 +562,7 @@ class ModMenuState extends MusicBeatState
     switch (installPopup.state)
     {
       case Downloading:
-        if (controls.BACK_P) cancelOneClickInstall();
+        if (controls.BACK_P) oneClick.cancel();
 
       case Result:
         // The card clears itself, this is only here for a player who doesn't want to wait on it.
@@ -845,58 +575,6 @@ class ModMenuState extends MusicBeatState
         // Busy and Hidden take no input.
     }
   }
-
-  /**
-   * Lines a mod's requirements up behind it, so they install the same way anything else does.
-   *
-   * @param mod The mod that was just installed.
-   */
-  function queueRequirements(mod:OneClickMod):Void
-  {
-    final requests:Array<OneClickRequest> = [];
-
-    for (requirement in mod.requirements)
-    {
-      final request:Null<OneClickRequest> = ModInstaller.requestForRequirement(requirement);
-
-      if (request == null) continue;
-
-      requests.push(request);
-    }
-
-    OneClickInstallHandler.enqueueNext(requests);
-  }
-
-  /**
-   * Refreshes the list and reports what landed.
-   */
-  function finishOneClickInstall(mod:OneClickMod):Void
-  {
-    highlightNewMod();
-
-    installPopup.showResult(mod.name, 'Installed. Drag it over to turn it on.');
-  }
-
-  function cancelOneClickInstall():Void
-  {
-    installCancelled = true;
-    pendingInstall = null;
-    ModInstaller.cancelDownload();
-    ModInstaller.cancelInstall();
-    installPopup.hide();
-  }
-
-  /**
-   * Renders a byte count the way a download dialog would.
-   */
-  function formatFilesize(bytes:Int):String
-  {
-    if (bytes <= 0) return '';
-
-    if (bytes < 1024 * 1024) return '${Math.round(bytes / 1024)} KB';
-
-    return '${Math.round(bytes / (1024 * 1024))} MB';
-  }
   #end
 
   var secondCounter:Float = 0;
@@ -906,6 +584,13 @@ class ModMenuState extends MusicBeatState
   override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
+
+    if (FlxG.keys.justPressed.M) for (m in members) if (m != null && Std.isOfType(m, flixel.FlxSprite) && m.camera == camCharacters) m.visible = !m.visible;
+    if (FlxG.keys.justPressed.COMMA)
+    {
+      scene.bf.visible = !scene.bf.visible;
+      scene.gf.visible = !scene.gf.visible;
+    }
 
     if (backPressStage == 3)
     {
@@ -934,41 +619,19 @@ class ModMenuState extends MusicBeatState
 
     if (fadingItems.length > 0)
     {
-      for (fade in fadingItems.copy())
+      // Iterating backwards so finished fades can be removed in place, super micro optimization
+      var i:Int = fadingItems.length;
+      while (i-- > 0)
       {
+        var fade = fadingItems[i];
         fade.elapsed += elapsed;
         var t = Math.min(1, fade.elapsed / fade.duration);
         fade.item.localAlpha = FlxEase.quadOut(t);
-        if (t >= 1) fadingItems.remove(fade);
+        if (t >= 1) fadingItems.splice(i, 1);
       }
     }
 
-    if (!animDone)
-    {
-      fileElapsed += elapsed;
-      var t = fileElapsed / fileDropTimer;
-
-      var adjustT = t;
-      if (adjustT < 0) adjustT += 1;
-
-      if (t > 1)
-      {
-        t = 1;
-        animDone = true;
-      }
-      else if (t < -1)
-      {
-        t = -1;
-        animDone = true;
-      }
-      fileDrop.alpha = FlxMath.lerp(0, 1, FlxEase.backOut(adjustT));
-      darkness.alpha = FlxMath.lerp(0, 0.72, FlxEase.backOut(adjustT));
-    }
-  }
-
-  function hasTransitions():Bool
-  {
-    return pendingTransitions.length > 0;
+    dropOverlay.update(elapsed);
   }
 
   // INPUT //
@@ -1008,7 +671,7 @@ class ModMenuState extends MusicBeatState
 
   function handleMouse():Void
   {
-    if (hasTransitions() || exitingMenu) return;
+    if (transitions.hasPending || exitingMenu) return;
 
     if (FlxG.mouse.justPressed)
     {
@@ -1064,7 +727,7 @@ class ModMenuState extends MusicBeatState
 
   function handleKeyboard():Void
   {
-    if (hasTransitions() || exitingMenu) return;
+    if (transitions.hasPending || exitingMenu) return;
 
     var pressingCtrl:Bool = FlxG.keys.pressed.CONTROL;
     if (controls.BACK_P)
@@ -1138,7 +801,7 @@ class ModMenuState extends MusicBeatState
             lastSelectDir = 1;
           }
         case EnabledModList:
-          if (pressingCtrl) orderMod(enabledModItems.selectedModItem, true);
+          if (pressingCtrl) mover.reorder(enabledModItems.selectedModItem, true);
           else
           {
             if (!enabledModItems.moveUp(false))
@@ -1173,7 +836,7 @@ class ModMenuState extends MusicBeatState
             lastSelectDir = 1;
           }
         case EnabledModList:
-          if (pressingCtrl) orderMod(enabledModItems.selectedModItem, false);
+          if (pressingCtrl) mover.reorder(enabledModItems.selectedModItem, false);
           else
           {
             if (!enabledModItems.moveDown(false))
@@ -1305,7 +968,7 @@ class ModMenuState extends MusicBeatState
     }
     if (delay > 0) delay -= FlxG.elapsed;
 
-    if (controls.ACCEPT_P && !hasTransitions() && acceptDelay <= 0)
+    if (controls.ACCEPT_P && !transitions.hasPending && acceptDelay <= 0)
     {
       FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
       enabledModItems.repositionItems();
@@ -1314,9 +977,9 @@ class ModMenuState extends MusicBeatState
       switch (selection)
       {
         case DisabledModList:
-          enableMod(disabledModItems.selectedModItem);
+          mover.enable(disabledModItems.selectedModItem);
         case EnabledModList:
-          disableMod(enabledModItems.selectedModItem);
+          mover.disable(enabledModItems.selectedModItem);
         case OpenModsFolder:
           openFolderAnimator.playAnimation('accept');
           openFolderAnimator.onFinish = openModsFolder;
@@ -1348,68 +1011,40 @@ class ModMenuState extends MusicBeatState
   var touchReordering:Bool = false;
   var touchReorderSlot:Int = -1;
 
-  function handleTouchReorder():Void
+  function checkItemGrab(itemList:ModMenuItemList,
+    targetSelection:ModMenuSelection):Void
   {
-    final itemCount:Int = enabledModItems.modItems.length;
-    final touchPos = TouchUtil.touch.getWorldPosition(rightRectangle.cameras[0]);
-    final localY:Float = touchPos.y - enabledModItems.y - enabledModItems.scrollOffset - ModMenuItemList.ITEM_Y_OFFSET + 8;
-    touchPos.put();
-
-    var slot:Int = itemCount - 1 - Math.floor(localY / 112);
-    if (slot < 0) slot = 0;
-    if (slot > itemCount - 1) slot = itemCount - 1;
-
-    if (slot == touchReorderSlot) return;
-
-    final index:Int = enabledModItems.modItems.indexOf(touchItem);
-
-    if (slot == index)
+    if (grabbedItem == null)
     {
-      touchReorderSlot = slot;
-      return;
+      itemList.deselect();
     }
-
-    orderMod(touchItem, slot > index);
-
-    if (enabledModItems.modItems.indexOf(touchItem) == index) touchReorderSlot = slot;
-    else
-    {
-      FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
-    }
-  }
-
-  function getTouchedItem(itemList:ModMenuItemList, box:FunkinSprite):Null<ModMenuItem>
-  {
-    // Items scrolled outside of the box are clipped, so they can't be tapped.
-    final touchPos = TouchUtil.touch.getWorldPosition(box.cameras[0]);
-    final inView:Bool = touchPos.y >= box.y + 60 && touchPos.y <= box.y + box.height - 15;
-    touchPos.put();
-
-    if (!inView) return null;
 
     for (item in itemList.modItems)
     {
-      if (TouchUtil.overlapsComplex(item)) return item;
+      if (!item.locked && TouchUtil.overlapsComplex(item) && TouchUtil.pressed && Math.abs(TouchUtil.touch?.deltaViewX) >= touchDeltaXThreshold)
+      {
+        FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
+
+        itemList.selectModItem(item, false);
+
+        grabbedItem = item;
+        originalItemList = itemList;
+
+        transitions.complete(transitions.findRecord(grabbedItem));
+
+        transitions.moveToLayer(item, grabbedItem.x, grabbedItem.y);
+
+        selection = targetSelection;
+      }
     }
-
-    return null;
   }
 
-  function resetTouch():Void
-  {
-    if (touchReordering) enabledModItems.deselect();
-
-    touchReordering = false;
-    touchReorderSlot = -1;
-    touchHoldTimer = 0;
-    touchList = null;
-    touchItem = null;
-    touchScrolling = false;
-  }
+  var touchScrolling:Bool = false;
 
   function handleTouch(elapsed:Float):Void
   {
-    if (hasTransitions() || exitingMenu || backPressStage > 0 || TouchUtil.touch == null)
+    if (transitions.hasPending || exitingMenu || backPressStage > 0) return;
+    if (touchScrolling)
     {
       resetTouch();
       return;
@@ -1426,66 +1061,82 @@ class ModMenuState extends MusicBeatState
       }
       else if (TouchUtil.overlapsComplex(rightRectangle))
       {
-        touchList = enabledModItems;
-        touchItem = getTouchedItem(enabledModItems, rightRectangle);
-      }
+        checkItemGrab(enabledModItems, EnabledModList);
+        checkItemGrab(disabledModItems, DisabledModList);
 
-      touchStartY = TouchUtil.touch.viewY;
-      touchLastY = touchStartY;
-    }
-    else if (touchReordering && TouchUtil.pressed)
-    {
-      handleTouchReorder();
-    }
-    else if (touchList != null && TouchUtil.pressed)
-    {
-      final touchY:Float = TouchUtil.touch.viewY;
-
-      if (!touchScrolling && touchList == enabledModItems && touchItem != null && !touchItem.locked && !enabledModItems.isPinnedItem(touchItem))
-      {
-        touchHoldTimer += elapsed;
-
-        if (touchHoldTimer >= touchReorderHoldTime)
+        if (TouchUtil.pressed && Math.abs(TouchUtil.touch?.deltaViewY) >= touchDeltaYThreshold)
         {
-          FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
-
-          touchReordering = true;
-          touchReorderSlot = enabledModItems.modItems.indexOf(touchItem);
-          enabledModItems.selectModItem(touchItem, false);
-
-          return;
+          touchScrolling = true;
         }
       }
-
-      if (!touchScrolling && Math.abs(touchY - touchStartY) >= touchScrollThreshold)
+      else
       {
-        touchScrolling = true;
-        touchLastY = touchY;
-      }
+        final targetX:Float = TouchUtil.touch?.x - grabbedItem.width / 2;
+        final targetY:Float = TouchUtil.touch?.y - grabbedItem.height / 2;
 
-      if (touchScrolling) touchList.scrollBy(touchY - touchLastY);
+        grabbedItem.localX = MathUtil.smoothLerpPrecision(grabbedItem.localX, targetX, elapsed, 0.5);
+        grabbedItem.localY = MathUtil.smoothLerpPrecision(grabbedItem.localY, targetY, elapsed, 0.5);
 
-      touchLastY = touchY;
-    }
-    else if (touchList != null)
-    {
-      if (!touchScrolling && !touchReordering && touchItem != null && !touchItem.locked && TouchUtil.justReleased && TouchUtil.overlapsComplex(touchItem))
-      {
-        FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
-
-        if (touchList == disabledModItems)
+        if (!TouchUtil.pressed)
         {
-          enableMod(touchItem, false);
-        }
-        else
-        {
-          disableMod(touchItem, false);
-        }
+          var targetList:ModMenuItemList = null;
 
-        selection = (touchList == disabledModItems) ? DisabledModList : EnabledModList;
+          var listChanged:Bool = false;
+
+          switch (selection)
+          {
+            case EnabledModList:
+              targetList = enabledModItems;
+
+              if (TouchUtil.overlapsComplex(leftRectangle))
+              {
+                targetList = disabledModItems;
+
+                selection = DisabledModList;
+
+                mover.disable(grabbedItem, true);
+
+                listChanged = true;
+              }
+
+            case DisabledModList:
+              targetList = disabledModItems;
+
+              if (TouchUtil.overlapsComplex(rightRectangle))
+              {
+                targetList = enabledModItems;
+
+                selection = EnabledModList;
+
+                final result:Bool = mover.enable(grabbedItem, true);
+
+                listChanged = result;
+              }
+
+            default:
+              // Isnt supposed to happen.
+          }
+
+          if (!listChanged)
+          {
+            targetList = originalItemList;
+
+            var finalIndex:Int = targetList.modItems.indexOf(grabbedItem);
+
+            var batchFutureCount:Int = targetList.modItems.length;
+
+            var targetTransitionX:Float = targetList.x + ModMenuItemList.ITEM_X_OFFSET;
+            var targetTransitionY:Float = targetList.y + targetList.getModItemYPosForCount(finalIndex, batchFutureCount) + targetList.scrollOffset;
+
+            transitions.startFlight(grabbedItem, targetTransitionX, targetTransitionY, targetList, finalIndex);
+          }
+
+          targetList.deselect();
+
+          grabbedItem = null;
+          originalItemList = null;
+        }
       }
-
-      resetTouch();
     }
 
     if (TouchUtil.overlapsComplex(hitboxOpenFolder) && selection != OpenModsFolder)
@@ -1720,255 +1371,6 @@ class ModMenuState extends MusicBeatState
     FlxG.switchState(() -> new HotReloadState());
   }
 
-  function enableMod(item:Null<ModMenuItem>,
-    ?forcedInsertIndex:Int = -1,
-    ?batchFutureCount:Int = -1,
-    shouldUpdateSelection:Bool = true):Bool
-  {
-    if (item == null) return false;
-    if (!disabledModItems.modItems.contains(item)) return false;
-    if (item.getModId() == BASE_GAME_MOD_ID) return false;
-    if (!PolymodHandler.isModCompatible(item.mod))
-    {
-      blockedIncompatible(item);
-      return false;
-    }
-
-    item.selected = false;
-
-    var dependenciesToEnable:Array<String> = listController.getMissingDependencies(item.mod);
-    trace('Dependencies to enable for ${item.getModTitle()}: ${dependenciesToEnable}');
-
-    if (batchFutureCount == -1)
-    {
-      batchFutureCount = enabledModItems.modItems.length + listController.countEnableBatch(item, []);
-    }
-
-    var originalInsertIndex:Int = forcedInsertIndex;
-
-    if (originalInsertIndex == -1) originalInsertIndex = listController.findEnableInsertIndex(item);
-
-    var nextInsertIndex = originalInsertIndex;
-    for (dependencyId in dependenciesToEnable)
-    {
-      var dependencyItem = disabledModItems.modItems.find((it) -> it.getModId() == dependencyId);
-      if (dependencyItem != null)
-      {
-        enableMod(dependencyItem, nextInsertIndex, batchFutureCount, false);
-        nextInsertIndex++;
-      }
-      else
-      {
-        WindowUtil.showError(
-          'Missing dependency',
-          'Could not find dependency mod with ID: ' + dependencyId + '. Please make sure all required mods are installed.'
-        );
-
-        return false;
-      }
-    }
-
-    var oldIndex:Int = disabledModItems.modItems.indexOf(item);
-    var srcLocalX:Float = ModMenuItemList.ITEM_X_OFFSET;
-    var srcLocalY:Float = disabledModItems.getModItemYPos(oldIndex) + disabledModItems.scrollOffset;
-    var worldX:Float = disabledModItems.x + srcLocalX;
-    var worldY:Float = disabledModItems.y + srcLocalY;
-    disabledModItems.removeModWithoutLayout(item);
-    disabledModItems.clampScrollToContent();
-
-    var insertIndex:Int = originalInsertIndex;
-
-    if (!transitionLayer.children.contains(item))
-    {
-      putItemInTransitionLayer(item, worldX, worldY);
-    }
-
-    var finalIndex:Int = insertIndex;
-    for (record in pendingTransitions)
-    {
-      if (record.dest == enabledModItems && record.index <= finalIndex) finalIndex++;
-    }
-
-    var inFlight:Int = incomingCount(enabledModItems);
-
-    enabledModItems.revealSlot(finalIndex, batchFutureCount);
-
-    var targetX:Float = enabledModItems.x + ModMenuItemList.ITEM_X_OFFSET;
-    var targetY:Float = enabledModItems.y + enabledModItems.getModItemYPosForCount(finalIndex, batchFutureCount) + enabledModItems.scrollOffset;
-
-    enabledModItems.animateItemsToLayoutForInsertCount(finalIndex, inFlight + 1, 0.28, FlxEase.quartOut);
-    disabledModItems.animateItemsToLayout(0.28, FlxEase.quartOut);
-    startItemTransition(item, targetX, targetY, enabledModItems, finalIndex);
-
-    if (!shouldUpdateSelection) return true;
-
-    if (disabledModItems.modItems.length > 0)
-    {
-      var newIndex:Int = Std.int(Math.min(oldIndex, disabledModItems.modItems.length - 1));
-      enabledModItems.deselectAll();
-      disabledModItems.selectModItem(disabledModItems.modItems[newIndex], false);
-      selection = DisabledModList;
-    }
-    else
-    {
-      disabledModItems.deselectAll();
-      enabledModItems.selectModItem(item, false);
-      selection = EnabledModList;
-    }
-
-    return true;
-  }
-
-  function disableMod(item:Null<ModMenuItem>,
-    ?batchFutureCount:Int = -1,
-    shouldUpdateSelection:Bool = true):Void
-  {
-    if (item == null) return;
-
-    if (!enabledModItems.modItems.contains(item)) return;
-    if (enabledModItems.isPinnedItem(item) || item.locked) return;
-
-    item.selected = false;
-
-    if (batchFutureCount == -1)
-    {
-      batchFutureCount = disabledModItems.modItems.length + listController.countDisableBatch(item, []);
-    }
-
-    // Disable any mods that depend on this mod as well.
-    var brokenDependencies = listController.getEnabledDependents(item.mod);
-    trace('Broken dependencies for ${item.getModTitle()}: ${brokenDependencies}');
-    for (dependencyTitle in brokenDependencies)
-    {
-      var dependencyItem = enabledModItems.modItems.find((it) -> it.getModTitle() == dependencyTitle);
-      if (dependencyItem != null)
-      {
-        trace('Disabling ${dependencyItem.getModTitle()} since it depends on ${item.getModTitle()}');
-        disableMod(dependencyItem, batchFutureCount, shouldUpdateSelection); // share denominator
-      }
-    }
-
-    var oldIndex:Int = enabledModItems.modItems.indexOf(item);
-    var srcLocalX:Float = ModMenuItemList.ITEM_X_OFFSET;
-    var srcLocalY:Float = enabledModItems.getModItemYPos(oldIndex) + enabledModItems.scrollOffset;
-    var worldX:Float = enabledModItems.x + srcLocalX;
-    var worldY:Float = enabledModItems.y + srcLocalY;
-    enabledModItems.removeModWithoutLayout(item);
-    enabledModItems.clampScrollToContent();
-
-    if (!transitionLayer.children.contains(item))
-    {
-      putItemInTransitionLayer(item, worldX, worldY);
-    }
-
-    // Always insert at the top of the disabled list; order there doesn't matter.
-    var destIndex:Int = disabledModItems.modItems.length;
-
-    var finalIndex:Int = destIndex;
-    for (record in pendingTransitions)
-    {
-      if (record.dest == disabledModItems && record.index <= finalIndex) finalIndex++;
-    }
-
-    var inFlight:Int = incomingCount(disabledModItems);
-
-    disabledModItems.revealSlot(finalIndex, batchFutureCount);
-
-    var targetX:Float = disabledModItems.x + ModMenuItemList.ITEM_X_OFFSET;
-    var targetY:Float = disabledModItems.y + disabledModItems.getModItemYPosForCount(finalIndex, batchFutureCount) + disabledModItems.scrollOffset;
-
-    disabledModItems.animateItemsToLayoutForInsertCount(finalIndex, inFlight + 1, 0.28, FlxEase.quartOut);
-    enabledModItems.animateItemsToLayout(0.28, FlxEase.quartOut);
-    startItemTransition(item, targetX, targetY, disabledModItems, finalIndex);
-
-    if (!shouldUpdateSelection) return;
-
-    disabledModItems.selectModItem(item, false);
-
-    if (enabledModItems.modItems.length > 0)
-    {
-      var newIndex:Int = Std.int(Math.min(oldIndex, enabledModItems.modItems.length - 1));
-      enabledModItems.selectModItem(enabledModItems.modItems[newIndex], false);
-      selection = EnabledModList;
-    }
-    else
-    {
-      selection = DisabledModList;
-    }
-  }
-
-  function nudgeBlocked(item:ModMenuItem, moveUp:Bool):Void
-  {
-    var index:Int = enabledModItems.modItems.indexOf(item);
-    if (index < 0) return;
-
-    var restY:Float = enabledModItems.getModItemYPos(index) + enabledModItems.scrollOffset;
-
-    item.cancelFlight();
-    item.localX = ModMenuItemList.ITEM_X_OFFSET;
-    item.localY = restY;
-
-    var dir:Float = moveUp ? -1 : 1;
-    item.startFlight(ModMenuItemList.ITEM_X_OFFSET, restY + dir * 14, 0.07, FlxEase.quadOut, () ->
-    {
-      item.startFlight(ModMenuItemList.ITEM_X_OFFSET, restY, 0.12, FlxEase.quadOut);
-    });
-  }
-
-  /**
-   * Show feedback when trying to enable an incompatible mod.
-   */
-  function blockedIncompatible(item:ModMenuItem):Void
-  {
-    FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/menu-deny'), 0.7);
-    item.flashBackground();
-  }
-
-  function orderMod(modItem:Null<ModMenuItem>, moveUp:Bool):Void
-  {
-    if (modItem == null) return;
-    if (enabledModItems.isPinnedItem(modItem)) return;
-
-    var modList:Array<ModMenuItem> = enabledModItems.modItems;
-    var index = modList.indexOf(modItem);
-    if (index == -1) return;
-
-    var pinnedItem = enabledModItems.getPinnedTopItem();
-    var pinnedIndex = pinnedItem != null ? modList.indexOf(pinnedItem) : -1;
-    var minMovableIndex = pinnedIndex != -1 ? pinnedIndex + 1 : 0;
-
-    if (index < minMovableIndex) return;
-    if (minMovableIndex >= modList.length) return;
-
-    var newIndex = moveUp ? index + 1 : index - 1;
-
-    if (newIndex < minMovableIndex || newIndex >= modList.length)
-    {
-      nudgeBlocked(modItem, moveUp);
-      return;
-    }
-
-    var otherModItem = modList[newIndex];
-
-    var blocked:Bool = listController.isReorderBlocked(modItem, otherModItem, moveUp);
-
-    if (blocked)
-    {
-      trace('Blocked reorder of ${modItem.getModTitle()} (dependency ordering)');
-      nudgeBlocked(modItem, moveUp);
-      return;
-    }
-
-    trace('Moving mod ${modItem.getModTitle()} from index $index to $newIndex');
-
-    modList.splice(index, 1);
-    modList.insert(newIndex, modItem);
-
-    enabledModItems.deselectAll();
-    enabledModItems.selectModItem(modItem);
-    enabledModItems.animateItemsToLayout(0.28, FlxEase.quartOut);
-  }
-
   // HELPERS //
 
   function distanceToPoint(point1:FlxPoint, point2:FlxPoint):Float
@@ -2017,14 +1419,4 @@ enum ModMenuSelection
   BackToMenu;
   OpenModsFolder;
   Done;
-}
-
-/**
- * Typedef for tracking an item that's currently in-flight in the transition layer.
- */
-typedef TransitionRecord =
-{
-  var item:ModMenuItem;
-  var dest:ModMenuItemList;
-  var index:Int;
 }
