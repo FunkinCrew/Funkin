@@ -528,7 +528,7 @@ class BaseCharacter extends Bopper
 
   /**
    * Returns true if the player just pressed a note.
-   * Used when determing whether a the player character should revert to the `idle` animation.
+   * Used when determining whether a player character should revert to the `idle` animation.
    * On non-player characters, this should be ignored.
    */
   function justPressedNote(player:Int = 1):Bool
@@ -554,7 +554,7 @@ class BaseCharacter extends Bopper
 
   /**
    * Returns true if the player is holding a note.
-   * Used when determing whether a the player character should revert to the `idle` animation.
+   * Used when determining whether a player character should revert to the `idle` animation.
    * On non-player characters, this should be ignored.
    */
   function isHoldingNote(player:Int = 1):Bool
