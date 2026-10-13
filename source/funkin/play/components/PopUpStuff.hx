@@ -42,6 +42,15 @@ class PopUpStuff extends FlxTypedGroup<FunkinSprite>
     result.antialiasing = !isPixel;
     result.pixelPerfectRender = isPixel;
     result.pixelPerfectPosition = isPixel;
+
+    // loadTexture returns silently when the image is missing, leaving graphic null.
+    // In that case, discard the sprite so the caller can fall back to the sick popup.
+    if (result.graphic == null)
+    {
+      FlxG.log.warn('Perfect texture missing (${isPixel ? 'perfect-pixel' : 'perfect'}), falling back to sick.');
+      result.destroy();
+      return null;
+    }
     return result;
   }
 
@@ -52,6 +61,7 @@ class PopUpStuff extends FlxTypedGroup<FunkinSprite>
     // Perfect is a sub-tier of sick, so it reuses the sick style settings.
     final styleRating:String = daRating == 'perfect' ? 'sick' : daRating;
     var rating:Null<FunkinSprite> = daRating == 'perfect' ? buildPerfectSprite() : noteStyle.buildJudgementSprite(daRating);
+    if (rating == null && daRating == 'perfect') rating = noteStyle.buildJudgementSprite('sick');
     if (rating == null) return;
 
     rating.zIndex = 1000;
@@ -71,7 +81,7 @@ class PopUpStuff extends FlxTypedGroup<FunkinSprite>
     rating.velocity.y -= FlxG.random.int(140, 175);
     rating.velocity.x -= FlxG.random.int(0, 10);
 
-    rating.graphic.destroyOnNoUse = false;
+    if (rating.graphic != null) rating.graphic.destroyOnNoUse = false;
 
     add(rating);
 
