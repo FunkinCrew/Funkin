@@ -5776,6 +5776,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
         // Finished dragging. Release the note.
         currentPlaceNoteData = null;
+        if (gridGhostHoldNote != null) gridGhostHoldNote.noteData = null;
       }
       else
       {
