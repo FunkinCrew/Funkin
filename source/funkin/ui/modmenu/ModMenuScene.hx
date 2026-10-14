@@ -305,6 +305,8 @@ class ModMenuScene
       gfWire.animation.play('idle');
     }
 
+    fgWiresTop.animation.play('idle');
+
     if (bf.useSmallWire)
     {
       fgWiresBottom.animation.play('idle-pinhead');
