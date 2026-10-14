@@ -130,8 +130,12 @@ class ModListManager
   {
     var modIds:Array<String> = [];
 
-    for (item in enabledList.modItems)
+    // The list stores its items bottom to top (see `ModMenuItemList.getModItemYPosForCount`), so the top-most mod is the LAST item.
+    // Callers pick the first mod that has what they're looking for, so this has to go top to bottom, with the base game last.
+    var i:Int = enabledList.modItems.length;
+    while (i-- > 0)
     {
+      var item = enabledList.modItems[i];
       if (item.mod != null) modIds.push(item.getModId());
     }
     modIds.push(ModMenuState.BASE_GAME_MOD_ID);
