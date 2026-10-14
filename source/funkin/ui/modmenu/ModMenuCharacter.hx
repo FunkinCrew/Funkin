@@ -7,18 +7,36 @@ import flixel.util.FlxColor;
 import funkin.data.animation.AnimationData;
 import funkin.data.modmenu.ModMenuCharacterData;
 import funkin.graphics.FunkinSprite;
-import funkin.ui.FullScreenScaleMode;
 import funkin.util.assets.FlxAnimationUtil;
 import json2object.JsonParser;
+import polymod.Polymod;
 import polymod.PolymodAssets;
 
 using StringTools;
 
+/**
+ * The animations that this character can play.
+ */
 enum abstract CharacterAnimation(String) to String
 {
+  /**
+   * Idle.
+   */
   public var IDLE = 'idle';
+
+  /**
+   * Electrocuted.
+   */
   public var ELECTROCUTED = 'electrocuted';
+
+  /**
+   * Crispy.
+   */
   public var CRISPY = 'crispy';
+
+  /**
+   * Crispy (looping).
+   */
   public var CRISPY_LOOP = 'crispy-loop';
 }
 
@@ -129,6 +147,9 @@ class ModMenuCharacter extends FunkinSprite
    */
   var shortestIndex:Int = 0;
 
+  /**
+   * The mod ID of the current asset.
+   */
   var currentAssetModId:String = '';
 
   /**
@@ -506,7 +527,7 @@ class ModMenuCharacter extends FunkinSprite
 
     var assetPath:String = Paths.json('ui/mods/characters/$currentCharacterId');
     var modExists:Bool = PolymodAssets.existsInMod(assetPath, modId);
-    var tryBase = !modExists;
+    var tryBase:Bool = !modExists;
 
     if ((tryBase && !Assets.exists(assetPath)) || (!tryBase && !modExists))
     {
@@ -517,7 +538,8 @@ class ModMenuCharacter extends FunkinSprite
     var jsonString:String = '';
     if (tryBase)
     {
-      jsonString = Assets.getText(assetPath);
+      @:privateAccess
+      jsonString = Polymod.assetLibrary.getTextDirectly(assetPath, '');
     }
     else
     {
