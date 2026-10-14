@@ -126,49 +126,20 @@ class ModMenuState extends MusicBeatState
    */
   var exitingMenu:Bool = false;
 
-  #if FEATURE_ONE_CLICK_INSTALL
-  /**
-   * The overlay that drives a one-click install, from the confirmation prompt to the result.
-   */
-  var installPopup:ModMenuInstallPopup;
-
-  /**
-   * One click install runner, it runs.. the one click install stuff..
-   */
-  var oneClick:ModMenuOneClickInstall;
-  #end
-
   var disabledModItems:ModMenuItemList = new ModMenuItemList();
   var enabledModItems:ModMenuItemList = new ModMenuItemList();
 
   /**
    * The dependency rules, disk sync and apply logic for both the enabled and disabled mod lists.
    */
-  var listController:ModListController;
+  var lists:ModListManager;
 
   /**
-   * Items transitioning between the two lists.
+   * Drag and drop, and one-click installs handler.
    */
-  var transitions:ModMenuTransitions;
-
-  /**
-   * Enables, disables and reorders mods. A mover.
-   * NOTE: Too small to be its own thing, probably combine this with other stuff?
-   */
-  var mover:ModListMover;
+  var installer:ModMenuInstaller;
 
   var selection:ModMenuSelection = DisabledModList;
-
-  /**
-   * The "drop your mod here" overlay.
-   */
-  var dropOverlay:ModMenuDropOverlay = new ModMenuDropOverlay();
-
-  /**
-   * Installs mods that get dragged and dropped onto the window, should probably get merged into a big manager lols.
-   */
-  var fileInstaller:ModMenuFileInstaller;
-
   var openFolderAnimator:PropertyAnimator;
   var doneButtonAnimator:PropertyAnimator;
   var lastSelectDir:Int = 0;
@@ -191,8 +162,10 @@ class ModMenuState extends MusicBeatState
     camCharacters = new FunkinCamera('modMenuCharacters');
     camHUD = new FunkinCamera('modMenuHUD');
     camOther = new FunkinCamera('modMenuOther');
-    transitions = new ModMenuTransitions(disabledModItems, enabledModItems);
-    listController = new ModListController(disabledModItems, enabledModItems);
+    lists = new ModListManager(disabledModItems, enabledModItems, (newSelection) ->
+    {
+      selection = newSelection;
+    });
   }
 
   override public function create():Void
@@ -273,11 +246,6 @@ class ModMenuState extends MusicBeatState
     dragText.zIndex = 10;
     add(dragText);
 
-    mover = new ModListMover(disabledModItems, enabledModItems, listController, transitions, (newSelection) ->
-    {
-      selection = newSelection;
-    });
-
     refreshModList(false);
 
     enabledModItems.zIndex = 15;
@@ -288,7 +256,7 @@ class ModMenuState extends MusicBeatState
     disabledModItems.addElements(this);
     add(disabledModItems);
 
-    transitions.attach(this, 20);
+    lists.attachTransitionLayer(this, 20);
 
     enabledModItems.titleText.x = rightRectangle.x + (rightRectangle.width / 2) - (enabledModItems.titleText.width / 2);
     enabledModItems.titleText.y = rightRectangle.y + 14;
@@ -331,7 +299,7 @@ class ModMenuState extends MusicBeatState
     buttonBackToMenu.zIndex = 10;
     add(buttonBackToMenu);
 
-    scene = new ModMenuScene(instance, camCharacters, dropShadowCharacters, listController.getEnabledModIdsWithBaseGame);
+    scene = new ModMenuScene(instance, camCharacters, dropShadowCharacters, lists.getEnabledModIdsWithBaseGame);
     scene.build(rightRectangle.x);
 
     buttonDone.x = scene.carBattery.x - 100;
@@ -364,9 +332,7 @@ class ModMenuState extends MusicBeatState
     openFolderAnimator = buttonOpenFolder.createPressAnimator(0.65, 0.72);
     doneButtonAnimator = buttonDone.createPressAnimator(0.65, 0.72);
 
-    dropOverlay.build(this, camHUD);
-
-    fileInstaller = new ModMenuFileInstaller(highlightNewMod, (enabled) ->
+    installer = new ModMenuInstaller(highlightNewMod, (enabled) ->
     {
       allowInput = enabled;
     }, () ->
@@ -374,6 +340,7 @@ class ModMenuState extends MusicBeatState
         allowInput = true;
         hideFileDropHover();
       });
+    installer.build(this, camHUD);
 
     enabledModItems.repositionItems();
     disabledModItems.repositionItems();
@@ -409,15 +376,6 @@ class ModMenuState extends MusicBeatState
     FlxG.stage.window.onDropFile.add(onDropFile);
     FlxG.stage.window.onDropBegin.add(startFileDropHover);
     FlxG.stage.window.onDropComplete.add(hideFileDropHover);
-
-    #if FEATURE_ONE_CLICK_INSTALL
-    installPopup = new ModMenuInstallPopup();
-    installPopup.zIndex = dropOverlay.topZIndex + 1;
-    installPopup.setCamera(camHUD);
-    add(installPopup);
-
-    oneClick = new ModMenuOneClickInstall(installPopup, highlightNewMod);
-    #end
 
     FlxG.autoPause = false;
 
@@ -457,19 +415,19 @@ class ModMenuState extends MusicBeatState
   {
     if (!allowInput) return;
 
-    dropOverlay.show();
+    installer.showDropOverlay();
   }
 
   function hideFileDropHover(x:Float, y:Float):Void
   {
     if (!allowInput) return;
 
-    dropOverlay.hide();
+    installer.hideDropOverlay();
   }
 
   function rescanFolder():Void
   {
-    if (listController.hasFolderChanged())
+    if (lists.hasFolderChanged())
     {
       trace("Mod folder changed, refreshing list.");
       refreshModList();
@@ -482,10 +440,8 @@ class ModMenuState extends MusicBeatState
   {
     super.destroy();
 
-    #if FEATURE_ONE_CLICK_INSTALL
     // Stops in-flight downloads, and drops the queue.
-    oneClick?.destroy();
-    #end
+    installer?.destroy();
 
     FlxG.autoPause = Preferences.autoPause;
     FlxG.stage.window.onDropFile.remove(onDropFile);
@@ -501,7 +457,7 @@ class ModMenuState extends MusicBeatState
   {
     if (!allowInput) return;
 
-    fileInstaller.install(file);
+    installer.installDropped(file);
   }
 
   /**
@@ -531,9 +487,9 @@ class ModMenuState extends MusicBeatState
    */
   public function beginOneClickInstall(request:OneClickRequest):Void
   {
-    if (oneClick == null) return;
+    if (installer == null) return;
 
-    oneClick.begin(request);
+    installer.beginOneClick(request);
   }
 
   /**
@@ -541,7 +497,7 @@ class ModMenuState extends MusicBeatState
    */
   public function isInstalling():Bool
   {
-    return oneClick != null && oneClick.isInstalling();
+    return installer != null && installer.isInstalling();
   }
 
   /**
@@ -549,9 +505,9 @@ class ModMenuState extends MusicBeatState
    */
   public function setInstallQueueCount(count:Int):Void
   {
-    if (oneClick == null) return;
+    if (installer == null) return;
 
-    oneClick.setQueueCount(count);
+    installer.setQueueCount(count);
   }
 
   /**
@@ -559,16 +515,16 @@ class ModMenuState extends MusicBeatState
    */
   function handleInstallPopupInput():Void
   {
-    switch (installPopup.state)
+    switch (installer.popup.state)
     {
       case Downloading:
-        if (controls.BACK_P) oneClick.cancel();
+        if (controls.BACK_P) installer.cancelOneClick();
 
       case Result:
         // The card clears itself, this is only here for a player who doesn't want to wait on it.
         if (FlxG.keys.justPressed.ANY || controls.ACCEPT_P || controls.BACK_P #if FEATURE_TOUCH_CONTROLS || TouchUtil.justPressed #end)
         {
-          installPopup.hide();
+          installer.popup.hide();
         }
 
       default:
@@ -585,12 +541,10 @@ class ModMenuState extends MusicBeatState
   {
     super.update(elapsed);
 
-    if (FlxG.keys.justPressed.M) for (m in members) if (m != null && Std.isOfType(m, flixel.FlxSprite) && m.camera == camCharacters) m.visible = !m.visible;
-    if (FlxG.keys.justPressed.COMMA)
-    {
-      scene.bf.visible = !scene.bf.visible;
-      scene.gf.visible = !scene.gf.visible;
-    }
+    if (FlxG.keys.justPressed.C) dropShadowUI.visible = !dropShadowUI.visible;
+    if (FlxG.keys.justPressed.V) dropShadowCharacters.visible = !dropShadowCharacters.visible;
+    if (FlxG.keys.justPressed.B) camCharacters.visible = !camCharacters.visible; // all scenery
+    if (FlxG.keys.justPressed.N) camHUD.visible = !camHUD.visible;
 
     if (backPressStage == 3)
     {
@@ -631,7 +585,7 @@ class ModMenuState extends MusicBeatState
       }
     }
 
-    dropOverlay.update(elapsed);
+    installer.update(elapsed);
   }
 
   // INPUT //
@@ -640,7 +594,7 @@ class ModMenuState extends MusicBeatState
   {
     #if FEATURE_ONE_CLICK_INSTALL
     // The install overlay is modal, so it gets first refusal on every input.
-    if (installPopup != null && installPopup.isBlocking())
+    if (installer.popup != null && installer.popup.isBlocking())
     {
       handleInstallPopupInput();
       return;
@@ -671,7 +625,7 @@ class ModMenuState extends MusicBeatState
 
   function handleMouse():Void
   {
-    if (transitions.hasPending || exitingMenu) return;
+    if (lists.hasTransitions || exitingMenu) return;
 
     if (FlxG.mouse.justPressed)
     {
@@ -727,7 +681,7 @@ class ModMenuState extends MusicBeatState
 
   function handleKeyboard():Void
   {
-    if (transitions.hasPending || exitingMenu) return;
+    if (lists.hasTransitions || exitingMenu) return;
 
     var pressingCtrl:Bool = FlxG.keys.pressed.CONTROL;
     if (controls.BACK_P)
@@ -801,7 +755,7 @@ class ModMenuState extends MusicBeatState
             lastSelectDir = 1;
           }
         case EnabledModList:
-          if (pressingCtrl) mover.reorder(enabledModItems.selectedModItem, true);
+          if (pressingCtrl) lists.reorder(enabledModItems.selectedModItem, true);
           else
           {
             if (!enabledModItems.moveUp(false))
@@ -836,7 +790,7 @@ class ModMenuState extends MusicBeatState
             lastSelectDir = 1;
           }
         case EnabledModList:
-          if (pressingCtrl) mover.reorder(enabledModItems.selectedModItem, false);
+          if (pressingCtrl) lists.reorder(enabledModItems.selectedModItem, false);
           else
           {
             if (!enabledModItems.moveDown(false))
@@ -968,7 +922,7 @@ class ModMenuState extends MusicBeatState
     }
     if (delay > 0) delay -= FlxG.elapsed;
 
-    if (controls.ACCEPT_P && !transitions.hasPending && acceptDelay <= 0)
+    if (controls.ACCEPT_P && !lists.hasTransitions && acceptDelay <= 0)
     {
       FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
       enabledModItems.repositionItems();
@@ -977,9 +931,9 @@ class ModMenuState extends MusicBeatState
       switch (selection)
       {
         case DisabledModList:
-          mover.enable(disabledModItems.selectedModItem);
+          lists.enable(disabledModItems.selectedModItem);
         case EnabledModList:
-          mover.disable(enabledModItems.selectedModItem);
+          lists.disable(enabledModItems.selectedModItem);
         case OpenModsFolder:
           openFolderAnimator.playAnimation('accept');
           openFolderAnimator.onFinish = openModsFolder;
@@ -1030,9 +984,9 @@ class ModMenuState extends MusicBeatState
         grabbedItem = item;
         originalItemList = itemList;
 
-        transitions.complete(transitions.findRecord(grabbedItem));
+        lists.completeTransition(lists.findTransition(grabbedItem));
 
-        transitions.moveToLayer(item, grabbedItem.x, grabbedItem.y);
+        lists.putItemInTransitionLayer(item, grabbedItem.x, grabbedItem.y);
 
         selection = targetSelection;
       }
@@ -1043,7 +997,7 @@ class ModMenuState extends MusicBeatState
 
   function handleTouch(elapsed:Float):Void
   {
-    if (transitions.hasPending || exitingMenu || backPressStage > 0) return;
+    if (lists.hasTransitions || exitingMenu || backPressStage > 0) return;
     if (touchScrolling)
     {
       resetTouch();
@@ -1094,7 +1048,7 @@ class ModMenuState extends MusicBeatState
 
                 selection = DisabledModList;
 
-                mover.disable(grabbedItem, true);
+                lists.disable(grabbedItem, true);
 
                 listChanged = true;
               }
@@ -1108,7 +1062,7 @@ class ModMenuState extends MusicBeatState
 
                 selection = EnabledModList;
 
-                final result:Bool = mover.enable(grabbedItem, true);
+                final result:Bool = lists.enable(grabbedItem, true);
 
                 listChanged = result;
               }
@@ -1128,7 +1082,7 @@ class ModMenuState extends MusicBeatState
             var targetTransitionX:Float = targetList.x + ModMenuItemList.ITEM_X_OFFSET;
             var targetTransitionY:Float = targetList.y + targetList.getModItemYPosForCount(finalIndex, batchFutureCount) + targetList.scrollOffset;
 
-            transitions.startFlight(grabbedItem, targetTransitionX, targetTransitionY, targetList, finalIndex);
+            lists.startItemTransition(grabbedItem, targetTransitionX, targetTransitionY, targetList, finalIndex);
           }
 
           targetList.deselect();
@@ -1296,7 +1250,7 @@ class ModMenuState extends MusicBeatState
     enabledModItems.x = rightRectangle.x;
     enabledModItems.y = rightRectangle.y;
 
-    var synced = listController.syncWithDisk();
+    var synced = lists.syncWithDisk();
     var newDisabledItems:Array<ModMenuItem> = synced.newDisabled;
     var newEnabledItems:Array<ModMenuItem> = synced.newEnabled;
 
@@ -1355,7 +1309,7 @@ class ModMenuState extends MusicBeatState
 
   function applyModlist():Void
   {
-    listController.applyToPolymod();
+    lists.applyToPolymod();
 
     buttonDone.visible = false;
     buttonOpenFolder.visible = false;
