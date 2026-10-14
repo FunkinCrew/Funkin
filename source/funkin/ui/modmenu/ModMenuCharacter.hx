@@ -129,6 +129,8 @@ class ModMenuCharacter extends FunkinSprite
    */
   var shortestIndex:Int = 0;
 
+  var currentAssetModId:String = '';
+
   /**
    * The shader used to replace the Pinhead colors.
    */
@@ -336,7 +338,10 @@ class ModMenuCharacter extends FunkinSprite
         continue;
       }
 
-      if (hasModdedAssets(mod))
+      var found:Bool = hasModdedAssets(mod);
+      trace(' MOD MENU '.bold().bg_orange() + ' Checking mod #$i "$mod" for $currentCharacterId: ${found ? "has character" : "no character"}');
+
+      if (found)
       {
         shortestIndex = i;
 
@@ -443,13 +448,14 @@ class ModMenuCharacter extends FunkinSprite
     previousAssetPath = currentAssetPath;
 
     var assetPath:Null<String> = 'ui/mods/characters/$currentCharacterId';
-    if (assetPath == previousAssetPath)
+    if (assetPath == previousAssetPath && modId == currentAssetModId)
     {
       // No need to load any new assets.
       return;
     }
 
     currentAssetPath = assetPath;
+    currentAssetModId = modId;
 
     trace(' MOD MENU '.bold().bg_orange() + ' Loading graphics for $currentCharacterId with mod $modId. Asset path: $assetPath');
 
