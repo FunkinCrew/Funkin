@@ -826,11 +826,10 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 
   function hitNote(note:NoteSprite, input:PreciseInputEvent):Void
   {
-    var inputPosition:Float = input.position ?? 0.0;
     var inputLatencyNs:Int64 = PreciseInputManager.getCurrentTimestamp() - input.timestamp;
     var inputLatencyMs:Float = inputLatencyNs.toFloat() / Constants.NS_PER_MS;
 
-    var noteDiff:Int = Std.int(note.noteData.time - inputPosition - inputLatencyMs);
+    var noteDiff:Int = Std.int(note.noteData.time - (localConductor.songPosition - inputLatencyMs));
     addDifference(noteDiff);
 
     if (noteDiff == 0)
