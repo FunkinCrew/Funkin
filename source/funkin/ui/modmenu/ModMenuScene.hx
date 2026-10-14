@@ -18,7 +18,7 @@ import funkin.ui.modmenu.ModMenuCharacter.CharacterAnimation;
  * Pretty weird one but basically this is everything visually visible on the camera in Mod Menu. Like, BF,
  * GF, the electric chair etc.
  *
- * This is NOT a display group on prupse. Everything is added straight to the state so the index ordering and dropshadow
+ * This is NOT a display group on purpose. Everything is added straight to the state so the index ordering and dropshadow
  * layering are all nice and jiffy.
  * Oh and this class isn't responsible for managing mod lists and whatnot, it just gets the enabled mods, puts them up, does
  * all the animation shtuff, nothing more.
