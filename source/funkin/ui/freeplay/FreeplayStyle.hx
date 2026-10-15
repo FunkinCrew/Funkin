@@ -28,7 +28,7 @@ class FreeplayStyle implements IRegistryEntry<FreeplayStyleData>
 
     if (_data == null)
     {
-      throw 'Could not parse album data for id: $id';
+      throw 'Could not parse freeplay style for id: $id';
     }
   }
 
@@ -85,6 +85,60 @@ class FreeplayStyle implements IRegistryEntry<FreeplayStyleData>
   public function getCapsuleDeselCol():FlxColor
   {
     return FlxColor.fromString(_data?.capsuleTextColors[0] ?? "#00ccff") ?? 0x00CCFF;
+  }
+
+  /**
+   * Get the asset key for the freeplay random music.
+   * @return The asset key
+   */
+  public function getFreeplayRandomMusicAssetKey():String
+  {
+    return _data?.sounds?.freeplayRandomMusic ?? 'ui/freeplay/freeplay-random/freeplay-random';
+  }
+
+  /**
+   * Get the asset key for the favorite sound.
+   * @return The asset key
+   */
+  public function getFavoriteSoundAssetKey():String
+  {
+    return _data?.sounds?.favorite ?? 'ui/freeplay/sounds/favorite';
+  }
+
+  /**
+   * Get the asset key for the unfavorite sound.
+   * @return The asset key
+   */
+  public function getUnfavoriteSoundAssetKey():String
+  {
+    return _data?.sounds?.unfavorite ?? 'ui/freeplay/sounds/unfavorite';
+  }
+
+  /**
+   * Get the asset key for the scroll menu sound.
+   * @return The asset key
+   */
+  public function getScrollMenuSoundAssetKey():String
+  {
+    return _data?.sounds?.menu?.scroll ?? 'ui/main-menu/scroll-menu';
+  }
+
+  /**
+   * Get the asset key for the cancel menu sound.
+   * @return The asset key
+   */
+  public function getCancelMenuSoundAssetKey():String
+  {
+    return _data?.sounds?.menu?.cancel ?? 'ui/main-menu/cancel-menu';
+  }
+
+  /**
+   * Get the asset key for the confirm sound.
+   * @return The asset key
+   */
+  public function getConfirmMenuSoundAssetKey():String
+  {
+    return _data?.sounds?.menu?.confirm ?? 'ui/main-menu/confirm-menu';
   }
 
   /**
