@@ -554,6 +554,54 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
   }
 
   /**
+   * Get the scrollFactor of the girlfriend character, as defined in the stage data.
+   */
+  public inline function getGirlfriendScroll():FlxPoint
+  {
+    return FlxPoint.weak(_data.characters.gf.scroll[0], _data.characters.gf.scroll[1]);
+  }
+
+  /**
+   * Get the scrollFactor of the boyfriend character, as defined in the stage data.
+   */
+  public inline function getBoyfriendScroll():FlxPoint
+  {
+    return FlxPoint.weak(_data.characters.bf.scroll[0], _data.characters.bf.scroll[1]);
+  }
+
+  /**
+   * Get the zIndex of the dad character, as defined in the stage data.
+   */
+  public inline function getDadScroll():FlxPoint
+  {
+    return FlxPoint.weak(_data.characters.dad.scroll[0], _data.characters.dad.scroll[1]);
+  }
+
+  /**
+   * Get the zIndex of the girlfriend character, as defined in the stage data.
+   */
+  public inline function getGirlfriendIndex():Int
+  {
+    return (_data.characters.gf.zIndex);
+  }
+
+  /**
+   * Get the zIndex of the boyfriend character, as defined in the stage data.
+   */
+  public inline function getBoyfriendIndex():Int
+  {
+    return (_data.characters.bf.zIndex);
+  }
+
+  /**
+   * Get the scrollFactor of the dad character, as defined in the stage data.
+   */
+  public inline function getDadIndex():Int
+  {
+    return (_data.characters.dad.zIndex);
+  }
+
+  /**
    * Retrieves a given character from the stage.
    */
   public function getCharacter(id:String):Null<BaseCharacter>
