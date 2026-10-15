@@ -311,9 +311,6 @@ class ModMenuState extends MusicBeatState
 
     refreshModList(false);
 
-    enabledModItems.updateClipRects();
-    disabledModItems.updateClipRects();
-
     buttonBackToMenu.loadTextureAtlas('ui/mods/back-arrow');
     buttonBackToMenu.scale.set(0.7, 0.7);
     buttonBackToMenu.updateHitbox();

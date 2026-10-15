@@ -20,6 +20,7 @@ using flixel.util.FlxColorTransformUtil;
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.DisplayObject)
 @:access(flixel.FlxCamera)
+@:access(openfl.display.OpenGLRenderer)
 class DropShadowLayer extends FlxSprite
 {
   /**
@@ -57,6 +58,8 @@ class DropShadowLayer extends FlxSprite
     this.cameras = [camera];
     this.funkinCamera = camera;
 
+    if (!isSupported()) return;
+
     camera.defaultShader = new funkin.graphics.shaders.MultiBufferShader();
     // Wanted to use just a RED color format because in the end it just becomes grayish
     // But that ended up making a fully gray rect in the end
@@ -91,8 +94,21 @@ class DropShadowLayer extends FlxSprite
     camera.canvas.graphics.setBufferFilters(_bufferID, _filters, resolutionScale, bufferDelay);
   }
 
+  /**
+   * Whether the device can render to multiple color attachments.
+   * If `false`, the layer renders nothing.
+  **/
+  public static function isSupported():Bool
+  {
+    var context = flixel.FlxG.stage.window.context;
+    if (context.type != lime.graphics.RenderContextType.OPENGLES) return true;
+    if (openfl.display.OpenGLRenderer.__drawBuffersEXT == true) return true;
+    return Std.parseFloat(context.version) >= 3;
+  }
+
   override function draw():Void
   {
+    if (_bufferID < 0) return;
     if (!visible) return;
     if (useWhitelist && _whiteList.isEmpty()) return;
     if (funkinCamera.canvas.graphics.getBuffer(_bufferID) == null) return;
@@ -233,13 +249,13 @@ class DropShadowLayer extends FlxSprite
 
   function set_resolutionScale(v:Float):Float
   {
-    camera.canvas.graphics.setBufferFilters(_bufferID, _filters, v, bufferDelay);
+    if (_bufferID >= 0) camera.canvas.graphics.setBufferFilters(_bufferID, _filters, v, bufferDelay);
     return resolutionScale = v;
   }
 
   function set_bufferDelay(v:Float):Float
   {
-    camera.canvas.graphics.setBufferFilters(_bufferID, _filters, resolutionScale, v);
+    if (_bufferID >= 0) camera.canvas.graphics.setBufferFilters(_bufferID, _filters, resolutionScale, v);
     return bufferDelay = v;
   }
 }
