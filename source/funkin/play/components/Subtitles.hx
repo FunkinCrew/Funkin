@@ -5,6 +5,7 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.sound.FlxSound;
 import flixel.FlxSprite;
+import funkin.data.subtitles.SubtitlesData;
 import funkin.util.SRTUtil.SubtitleEntry;
 import funkin.util.SRTUtil.SRTParser;
 
@@ -64,6 +65,22 @@ class Subtitles extends FlxSpriteGroup
     {
       setText([], true);
     }
+  }
+
+  /**
+   * Load subtitles by data.
+   * @param subtitles The subtitles to use.
+   * @param sound The sound to assign to the current subtitles.
+   */
+  public function assignSubtitlesData(subtitles:SubtitlesData, sound:FlxSound):Void
+  {
+    setText([], true);
+
+    subtitlesData = subtitles.data;
+
+    if (subtitlesData == null) return;
+
+    assignedSound = sound;
   }
 
   /**

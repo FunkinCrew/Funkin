@@ -2,6 +2,7 @@ package funkin.ui.debug.cameraeditor.data;
 
 #if FEATURE_CAMERA_EDITOR
 import flixel.util.FlxSignal;
+import funkin.data.subtitles.SubtitlesData;
 import funkin.data.song.SongData.SongChartData;
 import funkin.data.song.SongData.SongMetadata;
 import funkin.data.song.SongData.SongNoteData;
@@ -29,6 +30,7 @@ class ChartDocument
   public var currentDifficulty:String = 'hard';
   public var songDatas:Map<String, SongChartData> = new Map<String, SongChartData>();
   public var songMetadatas:Map<String, SongMetadata> = new Map<String, SongMetadata>();
+  public var songSubtitlesDatas:Map<String, SubtitlesData> = new Map<String, SubtitlesData>();
   public var audioInstTrackData:Map<String, Bytes> = new Map();
   public var audioVocalTrackData:Map<String, Bytes> = new Map();
   public var songManifestData(get, set):ChartManifestData;
@@ -108,6 +110,10 @@ class ChartDocument
   public var currentSongChartData(get, never):Null<SongChartData>;
 
   inline function get_currentSongChartData():Null<SongChartData> return songDatas.get(currentVariation);
+
+  public var currentSongSubtitlesData(get, never):Null<SubtitlesData>;
+
+  inline function get_currentSongSubtitlesData():Null<SubtitlesData> return songSubtitlesDatas.get(currentVariation);
 
   public var currentNotes(get, never):Array<SongNoteData>;
 

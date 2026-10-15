@@ -16,6 +16,7 @@ import funkin.ui.debug.charting.toolboxes.ChartEditorFreeplayToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorEventDataToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorNoteDataToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorDifficultyToolbox;
+import funkin.ui.debug.charting.toolboxes.ChartEditorSubtitlesToolbox;
 
 /**
  * Static functions which handle building themed UI elements for a provided ChartEditorState.
@@ -69,6 +70,8 @@ class ChartEditorToolboxHandler
         case ChartEditorState.CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT:
           cast(toolbox, ChartEditorBaseToolbox).refresh();
         case ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT:
+          cast(toolbox, ChartEditorBaseToolbox).refresh();
+        case ChartEditorState.CHART_EDITOR_TOOLBOX_SUBTITLES_LAYOUT:
           cast(toolbox, ChartEditorBaseToolbox).refresh();
         case ChartEditorState.CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT:
           cast(toolbox, ChartEditorBaseToolbox).refresh();
@@ -186,6 +189,8 @@ class ChartEditorToolboxHandler
         toolbox = buildToolboxDifficultyLayout(state);
       case ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT:
         toolbox = buildToolboxMetadataLayout(state);
+      case ChartEditorState.CHART_EDITOR_TOOLBOX_SUBTITLES_LAYOUT:
+        toolbox = buildToolboxSubtitlesLayout(state);
       case ChartEditorState.CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT:
         toolbox = buildToolboxOffsetsLayout(state);
       case ChartEditorState.CHART_EDITOR_TOOLBOX_FREEPLAY_LAYOUT:
@@ -346,6 +351,15 @@ class ChartEditorToolboxHandler
   static function buildToolboxMetadataLayout(state:ChartEditorState):Null<ChartEditorBaseToolbox>
   {
     var toolbox:ChartEditorBaseToolbox = ChartEditorMetadataToolbox.build(state);
+
+    if (toolbox == null) return null;
+
+    return toolbox;
+  }
+
+  static function buildToolboxSubtitlesLayout(state:ChartEditorState):Null<ChartEditorBaseToolbox>
+  {
+    var toolbox:ChartEditorBaseToolbox = ChartEditorSubtitlesToolbox.build(state);
 
     if (toolbox == null) return null;
 

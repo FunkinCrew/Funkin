@@ -14,6 +14,7 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
 import funkin.assets.FunkinAssetCache;
+import funkin.data.subtitles.SubtitlesData;
 import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.data.event.SongEventRegistry;
 import funkin.data.song.SongData.SongCharacterData;
@@ -176,6 +177,15 @@ class CameraEditorState extends UIState implements ConsoleClass
   inline function set_songMetadatas(value:Map<String, SongMetadata>):Map<String, SongMetadata> return chart.songMetadatas = value;
 
   /**
+   * The song subtitles data for all this chart's variations.
+   */
+  public var songSubtitlesDatas(get, set):Map<String, SubtitlesData>;
+
+  inline function get_songSubtitlesDatas():Map<String, SubtitlesData> return chart.songSubtitlesDatas;
+
+  inline function set_songSubtitlesDatas(value:Map<String, SubtitlesData>):Map<String, SubtitlesData> return chart.songSubtitlesDatas = value;
+
+  /**
    * The song metadata for the currently selected variation.
    */
   public var currentSongMetadata(get, never):Null<SongMetadata>;
@@ -188,6 +198,13 @@ class CameraEditorState extends UIState implements ConsoleClass
   public var currentSongChartData(get, never):Null<SongChartData>;
 
   inline function get_currentSongChartData():Null<SongChartData> return chart.currentSongChartData;
+
+  /**
+   * The song subtitles data for the currently selected variation.
+   */
+  public var currentSongSubtitlesData(get, never):Null<SubtitlesData>;
+
+  inline function get_currentSongSubtitlesData():Null<SubtitlesData> return chart.currentSongSubtitlesData;
 
   /**
    * The currently playing instrumental track for this chart.

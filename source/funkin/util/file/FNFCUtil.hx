@@ -5,11 +5,13 @@ import funkin.data.song.SongData.SongChartData;
 import funkin.ui.transition.LoadingState;
 import funkin.audio.FunkinSound;
 import funkin.util.assets.SoundUtil;
+import funkin.util.SRTUtil.SRTParser;
 import funkin.data.song.importer.ChartManifestData;
 import funkin.data.song.SongRegistry;
 import funkin.audio.VoicesGroup;
 import funkin.data.song.SongData.SongMetadata;
 import funkin.play.song.Song;
+import funkin.data.subtitles.SubtitlesData;
 import thx.semver.Version as SemverVersion;
 import haxe.io.Bytes;
 
@@ -121,6 +123,7 @@ class FNFCUtil
 
     var songMetadatas:Map<String, SongMetadata> = [];
     var songChartDatas:Map<String, SongChartData> = [];
+    var songSubtitleDatas:Map<String, SubtitlesData> = [];
 
     // Default variation metadata (errors here are critical, since it's required to parse the rest of the file)
     var baseMetadata = loadSongMetadataFromFNFCZipEntries(mappedFileEntries, manifest, Constants.DEFAULT_VARIATION);
@@ -129,6 +132,9 @@ class FNFCUtil
     // Default variation chart data (errors here are critical, since it's required to parse the rest of the file)
     var baseChartData = loadSongChartDataFromFNFCZipEntries(mappedFileEntries, manifest, Constants.DEFAULT_VARIATION);
     songChartDatas.set(Constants.DEFAULT_VARIATION, baseChartData);
+
+    var baseSubtitlesData = loadSongSubtitlesDataFromFNFCZipEntries(mappedFileEntries, manifest, Constants.DEFAULT_VARIATION);
+    songSubtitleDatas.set(Constants.DEFAULT_VARIATION, baseSubtitlesData);
 
     // Additional variation metadata and chart data
     // Errors here are non-critical and placed in the issues list.
@@ -153,6 +159,15 @@ class FNFCUtil
       catch (e)
       {
         issues.push('Failed loading variation chart data "$variation": $e');
+      }
+      try
+      {
+        var subtitlesData = loadSongSubtitlesDataFromFNFCZipEntries(mappedFileEntries, manifest, variation);
+        songSubtitleDatas.set(variation, subtitlesData);
+      }
+      catch (e)
+      {
+        issues.push('Failed loading variation subtitles data "$variation": $e');
       }
     }
 
@@ -222,6 +237,7 @@ class FNFCUtil
 
       songMetadatas: songMetadatas,
       songChartDatas: songChartDatas,
+      songSubtitleDatas: songSubtitleDatas,
 
       instrumentals: instrumentals,
       vocals: vocals,
@@ -277,6 +293,7 @@ class FNFCUtil
     var songManifest:ChartManifestData = new ChartManifestData(songId);
     var songMetadatas:Map<String, SongMetadata> = [];
     var songChartDatas:Map<String, SongChartData> = [];
+    var songSubtitleDatas:Map<String, SubtitlesData> = [];
     var instrumentals:Map<String, Bytes> = [];
     var vocals:Map<String, Bytes> = [];
     var issues:Array<String> = [];
@@ -333,6 +350,7 @@ class FNFCUtil
 
       songMetadatas: songMetadatas,
       songChartDatas: songChartDatas,
+      songSubtitleDatas: songSubtitleDatas,
 
       instrumentals: instrumentals,
       vocals: vocals,
@@ -509,6 +527,28 @@ class FNFCUtil
   }
 
   /**
+   * Load the subtitles data for a song variation from an FNFC file's zip entries.
+   *
+   * @param mappedFileEntries The zip entries from an FNFC file.
+   * @param manifest The chart manifest data, usually parsed from that FNFC file.
+   * @param variation The name of the song variation to load.
+   * @return The subtitles data for that song variation.
+   */
+  static function loadSongSubtitlesDataFromFNFCZipEntries(mappedFileEntries:Map<String, haxe.zip.Entry>,
+    manifest:ChartManifestData,
+    variation:String):SubtitlesData
+  {
+    var subtitlesDataPath:String = manifest.getSubtitlesFileName(variation);
+
+    var subtitlesDataStr:String = loadStringFromFNFCZipEntries(mappedFileEntries, subtitlesDataPath);
+
+    var subtitlesData:Null<SubtitlesData> = new SubtitlesData(SRTParser.parseFromString(subtitlesDataStr));
+    if (subtitlesData == null) throw 'Could not read subtitle data (default).';
+
+    return subtitlesData;
+  }
+
+  /**
    * Read the string data of a file from an FNFC file's zip entries.
    *
    * @param mappedFileEntries The zip entries from an FNFC file.
@@ -573,15 +613,20 @@ class FNFCUtil
       chartData.version = funkin.data.song.SongRegistry.SONG_CHART_DATA_VERSION;
       chartData.generatedBy = funkin.data.song.SongRegistry.DEFAULT_GENERATEDBY;
 
+      var subtitleData:Null<SubtitlesData> = data.songSubtitleDatas.get(variation);
+      if (subtitleData == null) throw 'Could not find subtitle data for variation: $variation';
+
       if (variation == Constants.DEFAULT_VARIATION)
       {
         zipEntries.push(FileUtil.makeZIPEntry('${songId}-metadata.json', metadata.serialize()));
         zipEntries.push(FileUtil.makeZIPEntry('${songId}-chart.json', chartData.serialize()));
+        zipEntries.push(FileUtil.makeZIPEntry('song-lyrics.srt', subtitleData.toFileString()));
       }
       else
       {
         zipEntries.push(FileUtil.makeZIPEntry('${songId}-metadata-${variation}.json', metadata.serialize()));
         zipEntries.push(FileUtil.makeZIPEntry('${songId}-chart-${variation}.json', chartData.serialize()));
+        zipEntries.push(FileUtil.makeZIPEntry('song-lyrics-${variation}.srt', subtitleData.toFileString()));
       }
     }
 
@@ -634,6 +679,8 @@ typedef FNFCData =
   var songMetadatas:Map<String, SongMetadata>;
   // JSON chart data for each variation
   var songChartDatas:Map<String, SongChartData>;
+  // subtitle data for each variation
+  var songSubtitleDatas:Map<String, SubtitlesData>;
   // Instrumental audio tracks
   var instrumentals:Map<String, Bytes>;
   // Vocal audio tracks
