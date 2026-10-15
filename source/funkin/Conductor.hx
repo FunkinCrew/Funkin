@@ -528,7 +528,7 @@ class Conductor
     if (soundToCheck == null) soundToCheck = FlxG.sound.music;
 
     @:privateAccess
-    this.songPosition = soundToCheck._channel.position;
+    this.songPosition = soundToCheck.time;
     return this.songPosition;
   }
 

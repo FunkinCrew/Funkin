@@ -3913,19 +3913,15 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     menubarItemPlaybackSpeed.onChange = event ->
     {
       var pitch:Float = (event.value.toFloat() * 2.0) / 100.0;
-      #if FLX_PITCH
       if (audioInstTrack != null) audioInstTrack.pitch = pitch;
       audioVocalTrackGroup.pitch = pitch;
-      #end
       var pitchDisplay:Float = Std.int(pitch * 100) / 100; // Round to 2 decimal places.
       menubarLabelPlaybackSpeed.text = 'Playback Speed - ${pitchDisplay}x';
     }
     menubarItemPlaybackSpeed.onRightClick = _ ->
     {
-      #if FLX_PITCH
       if (audioInstTrack != null) audioInstTrack.pitch = 1;
       audioVocalTrackGroup.pitch = 1;
-      #end
       menubarItemPlaybackSpeed.value = 50.0;
       menubarLabelPlaybackSpeed.text = 'Playback Speed - 1x';
     }
@@ -7939,18 +7935,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (audioInstTrack != null)
     {
       audioInstTrack.volume = instTargetVolume;
-      #if FLX_PITCH
       audioInstTrack.pitch = playbackRate;
-      #end
       audioInstTrack.onComplete = null;
     }
     if (audioVocalTrackGroup != null)
     {
       audioVocalTrackGroup.playerVolume = vocalPlayerTargetVolume;
       audioVocalTrackGroup.opponentVolume = vocalOpponentTargetVolume;
-      #if FLX_PITCH
       audioVocalTrackGroup.pitch = playbackRate;
-      #end
     }
   }
 
@@ -8275,9 +8267,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         audioVocalTrackGroup.pause();
       };
       audioInstTrack.volume = instTargetVolume;
-      #if FLX_PITCH
       audioInstTrack.pitch = playbackRate;
-      #end
     }
     else
     {
@@ -8318,9 +8308,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       audioVocalTrackGroup.playerVolume = vocalPlayerTargetVolume;
       audioVocalTrackGroup.opponentVolume = vocalOpponentTargetVolume;
-      #if FLX_PITCH
       audioVocalTrackGroup.pitch = playbackRate;
-      #end
     }
   }
 

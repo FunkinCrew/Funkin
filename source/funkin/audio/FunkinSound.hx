@@ -299,20 +299,15 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
       sound.loadEmbedded(embeddedSound, looped, autoDestroy, onComplete);
     }
 
-    if (embeddedSound is String)
+    sound._label = (embeddedSound is String) ? Paths.stripLibrary(embeddedSound) : 'unknown';
+
+    // Call onLoad() because the sound already loaded
+    if (onLoad != null && sound._sound != null)
     {
-      embeddedSound = Paths.stripLibrary(embeddedSound);
-      sound._label = embeddedSound;
-    }
-    else
-    {
-      sound._label = 'unknown';
+      onLoad();
     }
 
-    if (autoPlay) sound.play();
-    sound.volume = volume;
     FlxG.sound.defaultSoundGroup.add(sound);
-    sound.persist = persist;
 
     // Make sure to add the sound to the list.
     // If it's already in, it won't get re-added.
@@ -320,8 +315,13 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     // it will get re-added (then if this was called by playMusic(), removed again)
     FlxG.sound.list.add(sound);
 
-    // Call onLoad() because the sound already loaded
-    if (onLoad != null && sound._sound != null) onLoad();
+    sound.volume = volume;
+    sound.persist = persist;
+
+    if (autoPlay)
+    {
+      sound.play();
+    }
 
     return sound;
   }
@@ -440,7 +440,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   {
     if (value == muted) return value;
     muted = value;
-    updateTransform();
+    updateVolume();
     return value;
   }
 
