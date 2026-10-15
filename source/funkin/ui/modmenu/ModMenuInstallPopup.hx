@@ -219,7 +219,11 @@ class ModMenuInstallPopup extends FunkinSpriteGroup
     }
     else
     {
+      #if html5
+      modIcon.loadGraphic(openfl.display.BitmapData.fromImage(lime.graphics.Image.fromBytes(bytes)));
+      #else
       modIcon.loadGraphic(openfl.display.BitmapData.fromBytes(bytes, true));
+      #end
     }
 
     modIcon.antialiasing = true;
