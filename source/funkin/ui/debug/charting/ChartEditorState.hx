@@ -2,6 +2,7 @@ package funkin.ui.debug.charting;
 
 #if FEATURE_CHART_EDITOR
 import funkin.ui.debug.charting.components.ChartEditorCommandPalette;
+import flixel.FlxBasic;
 import flixel.FlxCamera;
 import flixel.FlxSprite;
 import flixel.FlxSubState;
@@ -94,6 +95,7 @@ import funkin.ui.debug.charting.components.ChartEditorNoteSprite;
 import funkin.ui.debug.charting.components.ChartEditorPlaybarHead;
 import funkin.ui.debug.charting.components.ChartEditorCommentPanel;
 import funkin.ui.debug.charting.components.ChartEditorSelectionSquareSprite;
+import funkin.ui.debug.charting.handlers.ChartEditorToolboxHandler;
 import funkin.ui.debug.charting.toolboxes.ChartEditorDifficultyToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorFreeplayToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorOffsetsToolbox;
@@ -923,6 +925,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * The song event sprite we are currently moving, if any.
    */
   var dragTargetEvent:Null<ChartEditorEventSprite> = null;
+  var dragEventWasSelected:Bool = false;
+
+  var currentOverlappingEvents:Array<ChartEditorEventSprite> = [];
+  var currentOverlappingEventCycleIndex:Int = 0;
 
   /**
    * The amount of vertical steps the note sprite has moved by since the user started dragging.
@@ -933,6 +939,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * The amount of horizontal columns the note sprite has moved by since the user started dragging.
    */
   var dragTargetCurrentColumn:Int = 0;
+  
+  var dragStartCursorStep:Float = 0;
+  var dragStartCursorColumn:Int = 0;
 
   // Hold Note Dragging
 
@@ -4733,7 +4742,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         if (isEventSelected(eventSprite.eventData))
         {
           // Determine if the note is being dragged and offset the position accordingly.
-          if (dragTargetCurrentStep > 0 || dragTargetCurrentColumn > 0)
+          if (dragTargetCurrentStep != 0.0 || dragTargetCurrentColumn != 0)
           {
             var stepTime = (eventSprite.eventData == null) ? 0 : eventSprite.eventData.getStepTime();
             eventSprite.overrideStepTime = (stepTime + dragTargetCurrentStep).clamp(0, songLengthInSteps);
@@ -4744,9 +4753,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           {
             if (eventSprite.overrideStepTime != null)
             {
-              // Reset the note's "ghost" column.
               eventSprite.overrideStepTime = null;
-              // Then reapply the note sprite's position relative to the grid.
               eventSprite.updateEventPosition(renderedEvents);
             }
           }
@@ -4763,6 +4770,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           selectionSquare.height = eventSprite.height;
           selectionSquare.color = FlxColor.WHITE;
         }
+        else
+        {
+          if (eventSprite.overrideStepTime != null)
+          {
+            eventSprite.overrideStepTime = null;
+            eventSprite.updateEventPosition(renderedEvents);
+          }
+        }
 
         // Additional cleanup on notes.
         if (noteTooltipsDirty) eventSprite.updateTooltipText();
@@ -4774,7 +4789,19 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       renderedNotes.sort(FlxSort.byY, FlxSort.DESCENDING); // TODO: .group.insertionSort()
 
       // Sort the events DESCENDING. This keeps the sustain behind the associated note.
-      renderedEvents.sort(FlxSort.byY, FlxSort.DESCENDING); // TODO: .group.insertionSort()
+      renderedEvents.sort(function(order:Int, obj1:FlxBasic, obj2:FlxBasic):Int
+      {
+        var event1:ChartEditorEventSprite = cast obj1;
+        var event2:ChartEditorEventSprite = cast obj2;
+
+        var sel1 = event1.eventData != null && isEventSelected(event1.eventData);
+        var sel2 = event2.eventData != null && isEventSelected(event2.eventData);
+
+        if (sel1 && !sel2) return 1;
+        if (!sel1 && sel2) return -1;
+
+        return FlxSort.byValues(order, event1.y, event2.y);
+      }, FlxSort.DESCENDING);
     }
   }
 
@@ -5195,11 +5222,58 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // Skip this if we're already highlighting a note.
     if (overlapsGrid && !overlapsRenderedNotes && FlxG.mouse.overlaps(renderedEvents))
     {
-      highlightedEvent = renderedEvents.members.find(function(event:ChartEditorEventSprite):Bool
+      var newOverlappingEvents:Array<ChartEditorEventSprite> = renderedEvents.members.filter(function(event:ChartEditorEventSprite):Bool
       {
-        // If event.alive is false, the event is dead and awaiting recycling.
         return event.alive && FlxG.mouse.overlaps(event);
       });
+
+      if (newOverlappingEvents.length > 0)
+      {
+        newOverlappingEvents.sort(function(a:ChartEditorEventSprite, b:ChartEditorEventSprite):Int {
+          return currentSongChartEventData.indexOf(a.eventData) - currentSongChartEventData.indexOf(b.eventData);
+        });
+
+        var eventsChanged:Bool = currentOverlappingEvents.length != newOverlappingEvents.length;
+        if (!eventsChanged)
+        {
+          for (i in 0...newOverlappingEvents.length)
+          {
+            if (newOverlappingEvents[i] != currentOverlappingEvents[i])
+            {
+              eventsChanged = true;
+              break;
+            }
+          }
+        }
+        
+        if (eventsChanged)
+        {
+          currentOverlappingEvents = newOverlappingEvents;
+          currentOverlappingEventCycleIndex = 0;
+          
+          for (i in 0...currentOverlappingEvents.length)
+          {
+            if (isEventSelected(currentOverlappingEvents[i].eventData))
+            {
+              currentOverlappingEventCycleIndex = i;
+              break;
+            }
+          }
+        }
+
+
+        highlightedEvent = currentOverlappingEvents[currentOverlappingEventCycleIndex];
+      }
+      else
+      {
+        currentOverlappingEvents = [];
+        currentOverlappingEventCycleIndex = 0;
+      }
+    }
+    else
+    {
+      currentOverlappingEvents = [];
+      currentOverlappingEventCycleIndex = 0;
     }
 
     if (highlightedEvent == null)
@@ -5640,10 +5714,18 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         }
         var dragDistanceColumns:Int = dragTargetCurrentColumn;
 
-        if (dragDistanceMs == 0 && dragDistanceColumns == 0)
+        if (dragTargetCurrentStep == 0 && dragTargetCurrentColumn == 0)
         {
           // There's no need to move anything.
           // Also prevents the selection boxes on notes from disappearing when they're 'moved' like this.
+
+          if (dragTargetEvent != null && currentOverlappingEvents.length > 1 && dragEventWasSelected)
+          {
+            var nextIndex:Int = (currentOverlappingEventCycleIndex + 1) % currentOverlappingEvents.length;
+            highlightedEvent = currentOverlappingEvents[nextIndex];
+            performCommand(new SetItemSelectionCommand([], [highlightedEvent.eventData]));
+          }
+
           dragTargetNote = null;
           dragTargetEvent = null;
           dragTargetCurrentStep = 0;
@@ -5683,29 +5765,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
         scrollMouseToGrid();
 
-        // Calculate distance between the position dragged to and the original position.
-        var stepTime:Float = 0;
-        if (dragTargetNote != null && dragTargetNote.noteData != null)
-        {
-          stepTime = dragTargetNote.noteData.getStepTime();
-        }
-        else if (dragTargetEvent != null && dragTargetEvent.eventData != null)
-        {
-          stepTime = dragTargetEvent.eventData.getStepTime();
-        }
-        var dragDistanceSteps:Float = Conductor.instance.getTimeInSteps(cursorSnappedMs).clamp(0, songLengthInSteps - (1 * noteSnapRatio)) - stepTime;
-        var data:Int = 0;
-        var noteGridPos:Int = 0;
-        if (dragTargetNote != null && dragTargetNote.noteData != null)
-        {
-          data = dragTargetNote.noteData.data;
-          noteGridPos = noteDataToGridColumn(data);
-        }
-        else if (dragTargetEvent != null)
-        {
-          data = ChartEditorState.STRUMLINE_SIZE * 2 + 1;
-        }
-        var dragDistanceColumns:Int = cursorGridPos - noteGridPos;
+        // calculate distance between the position dragged to and the original position.
+        var dragDistanceSteps:Float = Conductor.instance.getTimeInSteps(cursorSnappedMs).clamp(0, songLengthInSteps - (1 * noteSnapRatio)) - dragStartCursorStep;
+        var dragDistanceColumns:Int = cursorGridPos - dragStartCursorColumn;
 
         if ((dragTargetCurrentColumn != dragDistanceColumns && overlapsGrid) || dragTargetCurrentStep != dragDistanceSteps)
         {
@@ -5848,11 +5910,16 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
               {
                 // Clicked a selected event, start dragging.
                 dragTargetNote = highlightedNote;
+                dragStartCursorStep = Conductor.instance.getTimeInSteps(cursorSnappedMs);
+                dragStartCursorColumn = cursorGridPos;
               }
               else
               {
                 // If you click an unselected note, and aren't holding Control, deselect everything else.
                 performCommand(new SetItemSelectionCommand([highlightedNote.noteData], []));
+                dragTargetNote = highlightedNote;
+                dragStartCursorStep = Conductor.instance.getTimeInSteps(cursorSnappedMs);
+                dragStartCursorColumn = cursorGridPos;
               }
             }
             else if (highlightedEvent != null && highlightedEvent.eventData != null)
@@ -5861,11 +5928,18 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
               {
                 // Clicked a selected event, start dragging.
                 dragTargetEvent = highlightedEvent;
+                dragStartCursorStep = Conductor.instance.getTimeInSteps(cursorSnappedMs);
+                dragStartCursorColumn = cursorGridPos;
+                dragEventWasSelected = true;
               }
               else
               {
                 // If you click an unselected event, and aren't holding Control, deselect everything else.
                 performCommand(new SetItemSelectionCommand([], [highlightedEvent.eventData]));
+                dragTargetEvent = highlightedEvent;
+                dragStartCursorStep = Conductor.instance.getTimeInSteps(cursorSnappedMs);
+                dragStartCursorColumn = cursorGridPos;
+                dragEventWasSelected = false;
               }
             }
             else if (highlightedHoldNote != null && highlightedHoldNote.noteData != null)
@@ -5875,30 +5949,38 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
             }
             else
             {
-              // Click a blank space to place a note and select it.
-
-              if (cursorGridPos == eventColumn)
+              var shouldDeselect:Bool = !wasCursorOverHaxeUI && (currentNoteSelection.length > 0 || currentEventSelection.length > 0);
+              if (shouldDeselect)
               {
-                // Create an event and place it in the chart.
-                // TODO: Figure out configuring event data.
-                var newEventData:SongEventData = new SongEventData(cursorSnappedMs, eventKindToPlace, eventDataToPlace.copy());
-
-                performCommand(new AddEventsCommand([newEventData], pressingControl()));
+                performCommand(new DeselectAllItemsCommand());
               }
               else
               {
-                // Create a note and place it in the chart.
-                var newNoteData:SongNoteData = new SongNoteData(
-                  cursorSnappedMs,
-                  cursorColumn,
-                  0,
-                  noteKindToPlace,
-                  ChartEditorState.cloneNoteParams(noteParamsToPlace)
-                );
-
-                performCommand(new AddNotesCommand([newNoteData], pressingControl()));
-
-                currentPlaceNoteData = newNoteData;
+                // Click a blank space to place a note and select it.
+  
+                if (cursorGridPos == eventColumn)
+                {
+                  // Create an event and place it in the chart.
+                  // TODO: Figure out configuring event data.
+                  var newEventData:SongEventData = new SongEventData(cursorSnappedMs, eventKindToPlace, eventDataToPlace.copy());
+  
+                  performCommand(new AddEventsCommand([newEventData], pressingControl()));
+                }
+                else
+                {
+                  // Create a note and place it in the chart.
+                  var newNoteData:SongNoteData = new SongNoteData(
+                    cursorSnappedMs,
+                    cursorColumn,
+                    0,
+                    noteKindToPlace,
+                    ChartEditorState.cloneNoteParams(noteParamsToPlace)
+                  );
+  
+                  performCommand(new AddNotesCommand([newNoteData], pressingControl()));
+  
+                  currentPlaceNoteData = newNoteData;
+                }
               }
             }
           }
@@ -7330,6 +7412,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       commandHistoryDirty = true;
     }
     if (purgeRedoStack) redoHistory = [];
+
+    ChartEditorToolboxHandler.refreshToolbox(this, ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT);
+    ChartEditorToolboxHandler.refreshToolbox(this, ChartEditorState.CHART_EDITOR_TOOLBOX_NOTE_DATA_LAYOUT);
   }
 
   /**
@@ -7343,6 +7428,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // therefore we don't need to check `shouldAddToHistory(state)`
     redoHistory.push(command);
     commandHistoryDirty = true;
+
+    ChartEditorToolboxHandler.refreshToolbox(this, ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT);
+    ChartEditorToolboxHandler.refreshToolbox(this, ChartEditorState.CHART_EDITOR_TOOLBOX_NOTE_DATA_LAYOUT);
   }
 
   /**

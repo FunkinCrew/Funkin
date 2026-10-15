@@ -9,7 +9,11 @@ import funkin.data.event.SongEventSchema;
 import funkin.play.event.SongEvent;
 import funkin.play.event.SongEventHelper;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
+import funkin.ui.debug.charting.commands.SetItemSelectionCommand;
+import funkin.data.song.SongData.SongEventData;
+import haxe.Timer;
 import haxe.ui.backend.ImageData;
+import haxe.ui.components.Button;
 import haxe.ui.components.CheckBox;
 import haxe.ui.components.DropDown;
 import haxe.ui.components.Image;
@@ -38,6 +42,14 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
 {
   var toolboxEventsEventKind:DropDown;
   var toolboxEventsDataBox:VBox;
+  var toolboxEventsCycleBox:HBox;
+  var toolboxEventsCycleLabel:Label;
+  var toolboxEventsCyclePrev:Button;
+  var toolboxEventsCycleNext:Button;
+
+  var currentOverlappingEventsAtTime:Array<SongEventData> = [];
+  var currentOverlappingEventIndex:Int = 0;
+
   var easeGraphImage:Image;
   var easeDotImage:Image;
   var _easeGraphSprite:Null<flixel.FlxSprite> = null;
@@ -98,6 +110,29 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
     var startingEventValue = ChartEditorDropdowns.populateDropdownWithSongEvents(toolboxEventsEventKind, chartEditorState.eventKindToPlace);
     toolboxEventsEventKind.value = startingEventValue;
 
+    var lastClickTime:Float = 0;
+
+    toolboxEventsCyclePrev.onClick = function(e)
+    {
+      if (Timer.stamp() - lastClickTime < 0.2) return;
+      lastClickTime = Timer.stamp();
+      if (currentOverlappingEventsAtTime.length > 1)
+      {
+        var prevIndex = (currentOverlappingEventIndex - 1 + currentOverlappingEventsAtTime.length) % currentOverlappingEventsAtTime.length;
+        chartEditorState.performCommand(new SetItemSelectionCommand([], [currentOverlappingEventsAtTime[prevIndex]]));
+      }
+    };
+    toolboxEventsCycleNext.onClick = function(e)
+    {
+      if (Timer.stamp() - lastClickTime < 0.2) return;
+      lastClickTime = Timer.stamp();
+      if (currentOverlappingEventsAtTime.length > 1)
+      {
+        var nextIndex = (currentOverlappingEventIndex + 1) % currentOverlappingEventsAtTime.length;
+        chartEditorState.performCommand(new SetItemSelectionCommand([], [currentOverlappingEventsAtTime[nextIndex]]));
+      }
+    };
+
     shouldTriggerOnEventKindChanged = true;
   }
 
@@ -148,6 +183,27 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
   override public function refresh():Void
   {
     super.refresh();
+
+    if (chartEditorState.currentEventSelection.length == 1)
+    {
+      var selectedEvent = chartEditorState.currentEventSelection[0];
+      var time = selectedEvent.time;
+      currentOverlappingEventsAtTime = chartEditorState.currentSongChartData.events.filter(function(e) return Math.abs(e.time - time) < 1.0);
+      if (currentOverlappingEventsAtTime.length > 1)
+      {
+        toolboxEventsCycleBox.show();
+        currentOverlappingEventIndex = currentOverlappingEventsAtTime.indexOf(selectedEvent);
+        toolboxEventsCycleLabel.text = 'Select Event: ' + (currentOverlappingEventIndex + 1) + '/' + currentOverlappingEventsAtTime.length;
+      }
+      else
+      {
+        toolboxEventsCycleBox.hide();
+      }
+    }
+    else
+    {
+      toolboxEventsCycleBox.hide();
+    }
 
     shouldTriggerOnEventKindChanged = false;
 
