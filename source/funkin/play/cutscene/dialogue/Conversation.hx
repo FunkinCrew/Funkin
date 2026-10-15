@@ -110,6 +110,9 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
     currentDialogueLine = 0;
     this.state = ConversationState.Start;
 
+    // Prevents incorrect speaker behavior.
+    showCurrentSpeaker();
+
     // Start the dialogue.
     startConversation();
   }

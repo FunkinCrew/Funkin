@@ -2703,8 +2703,6 @@ class PlayState extends MusicBeatSubState
       if (mayPauseGame) endSong(skipEndingTransition);
     };
 
-    FlxG.sound.music.pause();
-    FlxG.sound.music.time = startTimestamp;
     FlxG.sound.music.pitch = playbackRate;
 
     if (Preferences.subtitles)
@@ -2725,19 +2723,14 @@ class PlayState extends MusicBeatSubState
     {
       add(vocals);
 
-      vocals.time = startTimestamp - Conductor.instance.instrumentalOffset;
       vocals.pitch = playbackRate;
       vocals.playerVolume = playerVocalsVolume;
       vocals.opponentVolume = opponentVocalsVolume;
 
-      // trace('STARTING SONG AT:');
-      // trace('${FlxG.sound.music.time}');
-      // trace('${vocals.time}');
-
-      vocals.play();
+      vocals.play(true, startTimestamp);
     }
 
-    FlxG.sound.music.play();
+    FlxG.sound.music.play(true, startTimestamp);
 
     #if FEATURE_DISCORD_RPC
     // Updating Discord Rich Presence.
