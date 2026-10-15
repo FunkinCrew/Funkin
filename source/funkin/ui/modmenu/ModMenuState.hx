@@ -540,7 +540,7 @@ class ModMenuState extends MusicBeatState
     }
 
     secondCounter += elapsed;
-    if (secondCounter >= 5)
+    if (secondCounter >= 2)
     {
       secondCounter = 0;
       rescanFolder();
@@ -573,6 +573,12 @@ class ModMenuState extends MusicBeatState
     }
 
     installer.update(elapsed);
+  }
+
+  override public function onFocus():Void
+  {
+    super.onFocus();
+    rescanFolder();
   }
 
   // INPUT //
