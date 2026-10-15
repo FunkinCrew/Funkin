@@ -51,16 +51,18 @@ class LevelProp extends Bopper
     this.shouldAlternate = null;
 
     var isAnimated:Bool = propData.animations.length > 0;
+    var assetPath:String = funkin.assets.Paths.formatRelative(propData.assetPath, 'ui/story-mode/props', Constants.EXT_IMAGE);
+
     if (isAnimated)
     {
       // Initalize sprite frames.
       // Sparrow atlas only LEL.
-      this.frames = Paths.getSparrowAtlas(propData.assetPath);
+      this.frames = Paths.getSparrowAtlas(assetPath);
     }
     else
     {
       // Initalize static sprite.
-      this.loadGraphic(Paths.image(propData.assetPath));
+      this.loadGraphic(Paths.image(assetPath));
 
       // Disables calls to update() for a performance boost.
       this.active = false;

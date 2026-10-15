@@ -83,7 +83,12 @@ class CharSelectCharacter extends FunkinSprite implements IBPMSyncedScriptedClas
     return currentPath;
   }
 
-  public function new(playerId:String, x:Float, y:Float, characterType:CharacterSelectType, data:Null<PlayerCharSelectCharacterData>, visualizer:Bool = false)
+  public function new(playerId:String,
+    x:Float,
+    y:Float,
+    characterType:CharacterSelectType,
+    data:Null<PlayerCharSelectCharacterData>,
+    visualizer:Bool = false)
   {
     super(x, y);
 
@@ -172,13 +177,16 @@ class CharSelectCharacter extends FunkinSprite implements IBPMSyncedScriptedClas
     switch (playerData?.renderType ?? 'animateatlas')
     {
       case 'animateatlas':
-        this.loadTextureAtlas(allAssetPaths[0], getAtlasSettings());
+        var atlasPath:String = funkin.assets.Paths.formatRelative(allAssetPaths[0], 'gameplay/playable-characters/$playerId');
+        this.loadTextureAtlas(atlasPath, getAtlasSettings());
 
       case 'sparrow':
-        this.loadSparrow(allAssetPaths[0]);
+        var sparrowPath:String = funkin.assets.Paths.formatRelative(allAssetPaths[0], 'gameplay/playable-characters/$playerId', Constants.EXT_IMAGE);
+        this.loadSparrow(sparrowPath);
 
       case 'packer':
-        this.loadPacker(allAssetPaths[0]);
+        var packerPath:String = funkin.assets.Paths.formatRelative(allAssetPaths[0], 'gameplay/playable-characters/$playerId', Constants.EXT_IMAGE);
+        this.loadPacker(packerPath);
 
       case 'multisparrow':
         // For the multisparrow render type, we create a new frame collection instance and add all the frames from the asset path array.
@@ -188,7 +196,8 @@ class CharSelectCharacter extends FunkinSprite implements IBPMSyncedScriptedClas
 
         for (assetPath in allAssetPaths)
         {
-          var assetFrames:FlxFramesCollection = Paths.getSparrowAtlas(assetPath);
+          var sparrowPath:String = funkin.assets.Paths.formatRelative(assetPath, 'gameplay/playable-characters/$playerId', Constants.EXT_IMAGE);
+          var assetFrames:FlxFramesCollection = Paths.getSparrowAtlas(sparrowPath);
           for (frame in assetFrames.frames) framesCollection.pushFrame(frame.copyTo());
         }
 
