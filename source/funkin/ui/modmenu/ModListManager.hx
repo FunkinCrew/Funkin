@@ -16,6 +16,8 @@ import polymod.Polymod.ModMetadata;
 
 /**
  * Everything about the two mod lists that isn't drawing them is done here!
+ * Plus extra helper stuff! Alot of these functions and whatnot aren't used frequently..
+ * But... it is useful for messing around and during development.
  *
  * Rules: which dependencies come along when enabling or disabling, and what blocks a reorder.
  * Disk management: reconciling the lists with the mods folder, and applying the result to Polymod, very simple tho.
@@ -150,7 +152,7 @@ class ModListManager
   {
     // Backup the user's save data before switching mods.
     var backupSlot:Int = Save.system.archiveBadSaveData(FlxG.save.data);
-    trace('[SAVE] Backed up current save data in case of emergency to $backupSlot!');
+    trace(' MOD MENU '.bold().bg_orange() + ' [SAVE] Backed up current save data in case of emergency to $backupSlot!');
 
     var enabledModIds:Array<String> = getEnabledModIds();
 
@@ -356,13 +358,16 @@ class ModListManager
     }
     catch (e:Dynamic)
     {
-      trace('Failed to read mods folder: ${Std.string(e)}');
+      trace(' MOD MENU '.bold().bg_orange() + ' Failed to read mods folder: ${Std.string(e)}');
       return false;
     }
 
     return newItems.length != itemsInFolder.length;
   }
 
+  /**
+   * Syncs both of the lists with the mod folder, then returns two arrays of newly added disabled/enabled items.
+   */
   public function syncWithDisk():
     {newDisabled:Array<ModMenuItem>, newEnabled:Array<ModMenuItem>}
   {
@@ -384,6 +389,10 @@ class ModListManager
     };
   }
 
+  /**
+   * Syncs the disabled list with the mod folder.
+   * @return Array<ModMenuItem> An array carrying the disabled items.
+   */
   function syncDisabledList():Array<ModMenuItem>
   {
     var disabledMods:Array<ModMetadata> = PolymodHandler.getDisabledModsIncludingIncompatible();
@@ -434,6 +443,10 @@ class ModListManager
     return newItems;
   }
 
+  /**
+   * Syncs the enabled list with the mod folder.
+   * @return Array<ModMenuItem> An array carrying the enabled items.
+   */
   function syncEnabledList():Array<ModMenuItem>
   {
     var enabledMods:Array<ModMetadata> = PolymodHandler.getEnabledMods().filter((m) -> PolymodHandler.isModCompatible(m));
@@ -486,6 +499,14 @@ class ModListManager
 
   // MOVING MODS //
 
+  /**
+   * Enables the given mod.
+   * @param item The mod you want to enable.
+   * @param forcedInsertIndex If not -1, will insert that mod into the index at the list. Optional.
+   * @param batchFutureCount The amount of mods (if there is any) the enabled list will hold, used for dependencies.
+   * @param shouldUpdateSelection Whether to update the menu's selection after enabling it.
+   * @return Bool Whether or not it was successfully enabled.
+   */
   public function enable(item:Null<ModMenuItem>,
     ?forcedInsertIndex:Int = -1,
     ?batchFutureCount:Int = -1,
@@ -496,15 +517,17 @@ class ModListManager
     if (item.getModId() == ModMenuState.BASE_GAME_MOD_ID) return false;
     if (!PolymodHandler.isModCompatible(item.mod))
     {
-      blockedIncompatible(item);
+      FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/menu-deny'), 0.7);
+      item.flashBackground();
       return false;
     }
 
     item.selected = false;
 
     var dependenciesToEnable:Array<String> = getMissingDependencies(item.mod);
-    trace('Dependencies to enable for ${item.getModTitle()}: ${dependenciesToEnable}');
+    trace(' MOD MENU '.bold().bg_orange() + ' Dependencies to enable for ${item.getModTitle()}: ${dependenciesToEnable}');
 
+    // If there's no specified count, just look for it
     if (batchFutureCount == -1)
     {
       batchFutureCount = enabledList.modItems.length + countEnableBatch(item, []);
@@ -514,6 +537,7 @@ class ModListManager
     if (insertIndex == -1) insertIndex = findEnableInsertIndex(item);
 
     var nextInsertIndex = insertIndex;
+    // Check if the dependencies are there or not, if not, YELL AT THEM! KILL THEM! ALL OF THEM!
     for (dependencyId in dependenciesToEnable)
     {
       var dependencyItem = disabledList.modItems.find((it) -> it.getModId() == dependencyId);
@@ -559,6 +583,12 @@ class ModListManager
     return true;
   }
 
+  /**
+   * Disables the given mod.
+   * @param item The mod you want to disable.
+   * @param batchFutureCount The amount of mods (if there is any) the disabled list will hold, used for dependencies.
+   * @param shouldUpdateSelection Whether to update the menu's selection after disabling it.
+   */
   public function disable(item:Null<ModMenuItem>,
     ?batchFutureCount:Int = -1,
     shouldUpdateSelection:Bool = true):Void
@@ -570,6 +600,7 @@ class ModListManager
 
     item.selected = false;
 
+    // If there's no specified count, just look for it
     if (batchFutureCount == -1)
     {
       batchFutureCount = disabledList.modItems.length + countDisableBatch(item, []);
@@ -577,13 +608,13 @@ class ModListManager
 
     // Disable any mods that depend on this mod as well.
     var brokenDependencies = getEnabledDependencies(item.mod);
-    trace('Broken dependencies for ${item.getModTitle()}: ${brokenDependencies}');
+    trace(' MOD MENU '.bold().bg_orange() + ' Broken dependencies for ${item.getModTitle()}: ${brokenDependencies}');
     for (dependencyTitle in brokenDependencies)
     {
       var dependencyItem = enabledList.modItems.find((it) -> it.getModTitle() == dependencyTitle);
       if (dependencyItem != null)
       {
-        trace('Disabling ${dependencyItem.getModTitle()} since it depends on ${item.getModTitle()}');
+        trace(' MOD MENU '.bold().bg_orange() + ' Disabling ${dependencyItem.getModTitle()} since it depends on ${item.getModTitle()}');
         disable(dependencyItem, batchFutureCount, shouldUpdateSelection); // share denominator
       }
     }
@@ -607,6 +638,15 @@ class ModListManager
     }
   }
 
+  /**
+   * Transitions the given item from one item list to another.
+   * @param item The mod to transition.
+   * @param source The list its coming from.
+   * @param dest The list its landing in.
+   * @param insertIndex Which index will it land in.
+   * @param batchFutureCount How many dependencies will follow along with it
+   * @return Int The old index from the list it came from.
+   */
   function flyBetweenLists(item:ModMenuItem, source:ModMenuItemList, dest:ModMenuItemList, insertIndex:Int, batchFutureCount:Int):Int
   {
     var oldIndex:Int = source.modItems.indexOf(item);
@@ -615,7 +655,8 @@ class ModListManager
     source.removeModWithoutLayout(item);
     source.clampScrollToContent();
 
-    if (!isInLayer(item))
+    // Checks if the item is in the transition group
+    if (!(transitionLayer != null && transitionLayer.children.contains(item)))
     {
       putItemInTransitionLayer(item, worldX, worldY);
     }
@@ -635,6 +676,11 @@ class ModListManager
     return oldIndex;
   }
 
+  /**
+   * Nudges the blocked item, flair.
+   * @param item The item thats gonna be nudgin'.
+   * @param moveUp Whether to move it upwards or not.
+   */
   function nudgeBlocked(item:ModMenuItem, moveUp:Bool):Void
   {
     var index:Int = enabledList.modItems.indexOf(item);
@@ -653,19 +699,18 @@ class ModListManager
     });
   }
 
-  function blockedIncompatible(item:ModMenuItem):Void
+  /**
+   * Re-orders the given mod upwards/downwards through the list.
+   * @param item The item to re-order.
+   * @param moveUp Whether we're moving up or not.
+   */
+  public function reorder(item:Null<ModMenuItem>, moveUp:Bool):Void
   {
-    FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/menu-deny'), 0.7);
-    item.flashBackground();
-  }
-
-  public function reorder(modItem:Null<ModMenuItem>, moveUp:Bool):Void
-  {
-    if (modItem == null) return;
-    if (enabledList.isPinnedItem(modItem)) return;
+    if (item == null) return;
+    if (enabledList.isPinnedItem(item)) return;
 
     var modList:Array<ModMenuItem> = enabledList.modItems;
-    var index = modList.indexOf(modItem);
+    var index = modList.indexOf(item);
     if (index == -1) return;
 
     var pinnedItem = enabledList.getPinnedTopItem();
@@ -679,49 +724,52 @@ class ModListManager
 
     if (newIndex < minMovableIndex || newIndex >= modList.length)
     {
-      nudgeBlocked(modItem, moveUp);
+      nudgeBlocked(item, moveUp);
       return;
     }
 
     var otherModItem = modList[newIndex];
 
-    var blocked:Bool = isReorderBlocked(modItem, otherModItem, moveUp);
+    var blocked:Bool = isReorderBlocked(item, otherModItem, moveUp);
 
     if (blocked)
     {
-      trace('Blocked reorder of ${modItem.getModTitle()} (dependency ordering)');
-      nudgeBlocked(modItem, moveUp);
+      trace(' MOD MENU '.bold().bg_orange() + ' Blocked reorder of ${item.getModTitle()} (dependency ordering)');
+      nudgeBlocked(item, moveUp);
       return;
     }
 
-    trace('Moving mod ${modItem.getModTitle()} from index $index to $newIndex');
+    trace(' MOD MENU '.bold().bg_orange() + ' Moving mod ${item.getModTitle()} from index $index to $newIndex');
 
     modList.splice(index, 1);
-    modList.insert(newIndex, modItem);
+    modList.insert(newIndex, item);
 
     enabledList.deselectAll();
-    enabledList.selectModItem(modItem);
+    enabledList.selectModItem(item);
     enabledList.animateItemsToLayout(LIST_REFLOW_DURATION, FlxEase.quartOut);
   }
 
   // TRANSITIONS //
 
   /**
-   * Creates the layer and adds it to the state.
-   * @param zIndex Should be above the lists, so items fly over them.
+   * Creates the transition group and add it to the mod menu.
+   * @param zIndex the zIndex we want to give it.
    */
-  public function attachTransitionLayer(state:FlxState, zIndex:Int):Void
+  public function attachTransitionLayer(zIndex:Int):Void
   {
+    if (ModMenuState.instance == null) return;
+
     transitionLayer = new FunkinSpriteGroup();
     transitionLayer.zIndex = zIndex;
-    state.add(transitionLayer);
+    ModMenuState.instance.add(transitionLayer);
   }
 
-  public function isInLayer(item:ModMenuItem):Bool
-  {
-    return transitionLayer != null && transitionLayer.children.contains(item);
-  }
-
+  /**
+   * Pulls the given item out of its list and puts it in the transition group, to well.. transition.
+   * @param item The mod to move.
+   * @param worldX The X Pos.
+   * @param worldY The Y Pos.
+   */
   public function putItemInTransitionLayer(item:ModMenuItem, worldX:Float, worldY:Float):Void
   {
     if (item == null || transitionLayer == null) return;
@@ -737,6 +785,14 @@ class ModListManager
     item.localY = worldY - transitionLayer.y;
   }
 
+  /**
+   * Initializes the item's transition, by adding it to pending with its destined list and index.
+   * @param item The item to transition.
+   * @param targetX X pos.
+   * @param targetY Y pos.
+   * @param destinationList The list the item will land on.
+   * @param index The index within the list the item will land on.
+   */
   public function startItemTransition(item:ModMenuItem,
     targetX:Float,
     targetY:Float,
@@ -755,6 +811,11 @@ class ModListManager
     item.startFlight(targetX, targetY, FLIGHT_DURATION, FlxEase.quadOut, () -> completeTransition(record));
   }
 
+  /**
+   * Looks for the transition record within our currently pending array of transitions.
+   * @param item The item you want to find the record for.
+   * @return Null<TransitionRecord> The transition record (if there is any).
+   */
   public function findTransition(item:ModMenuItem):Null<TransitionRecord>
   {
     for (record in pending)
@@ -764,6 +825,10 @@ class ModListManager
     return null;
   }
 
+  /**
+   * Completes the transition given.
+   * @param record The TransitionRecord to complete.
+   */
   public function completeTransition(record:TransitionRecord):Void
   {
     if (record == null) return;
@@ -773,15 +838,20 @@ class ModListManager
     landInList(record.item, record.dest, record.index);
   }
 
-  public function completeAll():Void
+  /**
+   * Completes all of the transitions we have right now.
+   */
+  public function completeAllTransitions():Void
   {
     if (pending.length == 0) return;
-    for (record in pending.copy())
-    {
-      record.item.finishFlight();
-    }
+    for (record in pending) record.item.finishFlight();
   }
 
+  /**
+   * Gets the amount of items going into the given list.
+   * @param dest The list to check.
+   * @return Int How many items are currently entering it.
+   */
   public function incomingCount(dest:ModMenuItemList):Int
   {
     var count:Int = 0;
@@ -792,6 +862,13 @@ class ModListManager
     return count;
   }
 
+  /**
+   * Gets the new index value to use for the given list once all the
+   * transitioning items after the given index are done.
+   * @param dest The list to check.
+   * @param index The index we have.
+   * @return Int The final index we'd have.
+   */
   public function landingIndex(dest:ModMenuItemList, index:Int):Int
   {
     var finalIndex:Int = index;
@@ -802,6 +879,12 @@ class ModListManager
     return finalIndex;
   }
 
+  /**
+   * Lands the item inside the given list on the given index.
+   * @param item The item to land.
+   * @param destinationList The list to land in.
+   * @param index The index within the list to land on.
+   */
   function landInList(item:ModMenuItem,
     destinationList:ModMenuItemList,
     index:Int):Void

@@ -137,7 +137,7 @@ class ModMenuState extends MusicBeatState
   /**
    * Drag and drop, and one-click installs handler.
    */
-  var installer:ModMenuInstaller;
+  public var installer:ModMenuInstaller;
 
   var selection:ModMenuSelection = DisabledModList;
   var openFolderAnimator:PropertyAnimator;
@@ -249,14 +249,14 @@ class ModMenuState extends MusicBeatState
     refreshModList(false);
 
     enabledModItems.zIndex = 15;
-    enabledModItems.addElements(this);
+    enabledModItems.addElements();
     add(enabledModItems);
 
     disabledModItems.zIndex = 15;
-    disabledModItems.addElements(this);
+    disabledModItems.addElements();
     add(disabledModItems);
 
-    lists.attachTransitionLayer(this, 20);
+    lists.attachTransitionLayer(20);
 
     enabledModItems.titleText.x = rightRectangle.x + (rightRectangle.width / 2) - (enabledModItems.titleText.width / 2);
     enabledModItems.titleText.y = rightRectangle.y + 14;
@@ -286,11 +286,11 @@ class ModMenuState extends MusicBeatState
       switch (backPressStage)
       {
         case 1:
-          trace('Back button pressed, confirming exit...');
+          trace(' MOD MENU '.bold().bg_orange() + ' Back button pressed, confirming exit...');
           backPressStage = 2;
           playBackButtonAnimation('confirm', true);
         case 2:
-          trace('Back button confirm finished, returning to main menu...');
+          trace(' MOD MENU '.bold().bg_orange() + ' Back button confirm finished, returning to main menu...');
           backPressStage = 3;
         default:
       }
@@ -340,7 +340,7 @@ class ModMenuState extends MusicBeatState
         allowInput = true;
         hideFileDropHover();
       });
-    installer.build(this, camHUD);
+    installer.build(camHUD);
 
     enabledModItems.repositionItems();
     disabledModItems.repositionItems();
@@ -429,7 +429,7 @@ class ModMenuState extends MusicBeatState
   {
     if (lists.hasFolderChanged())
     {
-      trace("Mod folder changed, refreshing list.");
+      trace(' MOD MENU '.bold().bg_orange() + ' Mod folder changed, refreshing list.');
       refreshModList();
     }
   }
@@ -493,14 +493,6 @@ class ModMenuState extends MusicBeatState
   }
 
   /**
-   * Whether a one-click install is currently on screen.
-   */
-  public function isInstalling():Bool
-  {
-    return installer != null && installer.isInstalling();
-  }
-
-  /**
    * Tells the card how many more mods are lined up behind the one it's showing.
    */
   public function setInstallQueueCount(count:Int):Void
@@ -541,11 +533,6 @@ class ModMenuState extends MusicBeatState
   {
     super.update(elapsed);
 
-    if (FlxG.keys.justPressed.C) dropShadowUI.visible = !dropShadowUI.visible;
-    if (FlxG.keys.justPressed.V) dropShadowCharacters.visible = !dropShadowCharacters.visible;
-    if (FlxG.keys.justPressed.B) camCharacters.visible = !camCharacters.visible; // all scenery
-    if (FlxG.keys.justPressed.N) camHUD.visible = !camHUD.visible;
-
     if (backPressStage == 3)
     {
       backTimer += elapsed;
@@ -553,7 +540,7 @@ class ModMenuState extends MusicBeatState
     }
 
     secondCounter += elapsed;
-    if (secondCounter >= 0.5)
+    if (secondCounter >= 5)
     {
       secondCounter = 0;
       rescanFolder();
@@ -771,7 +758,7 @@ class ModMenuState extends MusicBeatState
           selection = EnabledModList;
           lastSelectDir = -1;
         case BackToMenu:
-          trace('lastSelectDir: ' + lastSelectDir);
+          trace(' MOD MENU '.bold().bg_orange() + ' lastSelectDir: ' + lastSelectDir);
           if (lastSelectDir == -1) selection = Done;
           else
             selection = OpenModsFolder;

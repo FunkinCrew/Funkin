@@ -26,32 +26,100 @@ import funkin.modding.install.OneClickInstallHandler;
  */
 class ModMenuInstaller
 {
+  /**
+   * How long would it take to reveal the drop overlay, in seconds.
+   */
   static inline final SHOW_DURATION:Float = 0.5;
+
+  /**
+   * How long would it take to hide the drop overlay, in seconds.
+   */
   static inline final HIDE_DURATION:Float = -0.08;
+
+  /**
+   * The max alpha for the dark background.
+   */
   static inline final DARKNESS_MAX_ALPHA:Float = 0.72;
+
+  /**
+   * The zIndex value for the dark background.
+   */
   static inline final DARKNESS_Z_INDEX:Int = 3000;
 
+  /**
+   * Called when the install finishes
+   */
   final onInstalled:Void->Void;
+
+  /**
+   * Callback to disable/enable input.
+   */
   final setInputEnabled:Bool->Void;
+
+  /**
+   * Called when the prompt is closed.
+   */
   final onPromptClosed:Void->Void;
 
+  /**
+   * Whether the drop overlay is currently visible and hovering or not.
+   */
   public var isHovering(default, null):Bool = false;
+
+  /**
+   * Gets the drop overlay zIndex, which is supposed to be at the very top
+   */
   public var topZIndex(get, never):Int;
 
+  /**
+   * The dark bg behind the drop overlay.
+   */
   var darkness:FunkinSprite;
+
+  /**
+   * The drop here to install overlay.
+   */
   var dropTarget:FunkinSprite;
+
+  /**
+   * Current duration.
+   */
   var duration:Float = SHOW_DURATION;
+
+  /**
+   * elapsed.
+   */
   var elapsed:Float = 0;
-  // Starts finished so the first frames of the menu don't run the animation maths.
+
+  /**
+   * Whether animation is done.
+   * Defaults to finished so the first frames of the menu don't run the animation maths.
+   */
   var animDone:Bool = true;
 
   #if FEATURE_ONE_CLICK_INSTALL
+  /**
+   * The pop up for one click install.
+   */
   public var popup(default, null):ModMenuInstallPopup;
 
+  /**
+   * The pending installation we have.
+   */
   var pendingInstall:Null<OneClickMod> = null;
+
+  /**
+   * Whether the installation was cancelled or not.
+   */
   var installCancelled:Bool = false;
   #end
 
+  /**
+   * Creates a new installer instance.
+   * @param onInstalled What to call once installing finishes.
+   * @param setInputEnabled What to call to toggle the input.
+   * @param onPromptClosed What to call once the prompt is closed.
+   */
   public function new(onInstalled:Void->Void, setInputEnabled:Bool->Void, onPromptClosed:Void->Void)
   {
     this.onInstalled = onInstalled;
@@ -60,84 +128,27 @@ class ModMenuInstaller
   }
 
   /**
-   * God chose me for this fight. God is the teacher, moon is the student and I am the executioner.
-   * When I squeeze your lungs Moon, and you beg me for life, then your heart will open up to the lord.
-   * When u eat through plastic tube, when you paralyze from waist down then your fmaily will gather down
-   * the hostpial bed to see you there. gods lessons are so ebautiful
-   * @param state
-   * @param camera
+   * Builds the drop overlay and the one-click install pop-up.
+   * @param camera The camera to use.
    */
-  public function build(state:FlxState, camera:FlxCamera):Void
+  public function build(camera:FlxCamera):Void
   {
-    buildDropOverlay(state, camera);
+    if (ModMenuState.instance == null) return;
+    buildDropOverlay(camera);
 
     #if FEATURE_ONE_CLICK_INSTALL
     popup = new ModMenuInstallPopup();
     popup.zIndex = topZIndex + 1;
     popup.setCamera(camera);
-    state.add(popup);
+    ModMenuState.instance.add(popup);
     #end
   }
 
+  /**
+   * Updates the installer, duh
+   * @param delta Delta
+   */
   public function update(delta:Float):Void
-  {
-    updateDropOverlay(delta);
-  }
-
-  public function destroy():Void
-  {
-    #if FEATURE_ONE_CLICK_INSTALL
-    destroyOneClick();
-    #end
-  }
-
-  // DRAG AND DROP OVERLAY //
-
-  function buildDropOverlay(state:FlxState, camera:FlxCamera):Void
-  {
-    darkness = new FunkinSprite();
-    darkness.makeSolidColor(FlxG.width, FlxG.height, FlxColor.BLACK);
-    darkness.scrollFactor.set(0, 0);
-    darkness.alpha = 0;
-    darkness.visible = false;
-    darkness.zIndex = DARKNESS_Z_INDEX;
-    darkness.camera = camera;
-    state.add(darkness);
-
-    dropTarget = new FunkinSprite().loadTexture('ui/mods/drop-hover');
-    dropTarget.setGraphicSize(FlxG.width * 0.95, FlxG.height * 0.9);
-    dropTarget.scrollFactor.set(0, 0);
-    dropTarget.updateHitbox();
-    dropTarget.x = FlxG.width / 2 - (dropTarget.width / 2);
-    dropTarget.y = FlxG.height / 2 - (dropTarget.height / 2);
-    dropTarget.visible = false;
-    dropTarget.zIndex = darkness.zIndex + 1;
-    dropTarget.camera = camera;
-    state.add(dropTarget);
-  }
-
-  public function showDropOverlay():Void
-  {
-    isHovering = true;
-    duration = SHOW_DURATION;
-    elapsed = 0;
-    animDone = false;
-
-    dropTarget.visible = true;
-    darkness.visible = true;
-    darkness.alpha = 0;
-    dropTarget.alpha = 0;
-  }
-
-  public function hideDropOverlay():Void
-  {
-    isHovering = false;
-    duration = HIDE_DURATION;
-    elapsed = 0;
-    animDone = false;
-  }
-
-  function updateDropOverlay(delta:Float):Void
   {
     if (animDone) return;
 
@@ -164,8 +175,70 @@ class ModMenuInstaller
     darkness.alpha = FlxMath.lerp(0, DARKNESS_MAX_ALPHA, FlxEase.backOut(adjustT));
   }
 
+  // DRAG AND DROP OVERLAY //
+
+  /**
+   * Builds the drag and drop overlay then adds it to the mod menu.
+   * @param camera The camera to use.
+   */
+  function buildDropOverlay(camera:FlxCamera):Void
+  {
+    if (ModMenuState.instance == null) return;
+
+    darkness = new FunkinSprite();
+    darkness.makeSolidColor(FlxG.width, FlxG.height, FlxColor.BLACK);
+    darkness.scrollFactor.set(0, 0);
+    darkness.alpha = 0;
+    darkness.visible = false;
+    darkness.zIndex = DARKNESS_Z_INDEX;
+    darkness.camera = camera;
+    ModMenuState.instance.add(darkness);
+
+    dropTarget = new FunkinSprite().loadTexture('ui/mods/drop-hover');
+    dropTarget.setGraphicSize(FlxG.width * 0.95, FlxG.height * 0.9);
+    dropTarget.scrollFactor.set(0, 0);
+    dropTarget.updateHitbox();
+    dropTarget.x = FlxG.width / 2 - (dropTarget.width / 2);
+    dropTarget.y = FlxG.height / 2 - (dropTarget.height / 2);
+    dropTarget.visible = false;
+    dropTarget.zIndex = darkness.zIndex + 1;
+    dropTarget.camera = camera;
+    ModMenuState.instance.add(dropTarget);
+  }
+
+  /**
+   * Reveals the drag and drop overlay.
+   */
+  public function showDropOverlay():Void
+  {
+    isHovering = true;
+    duration = SHOW_DURATION;
+    elapsed = 0;
+    animDone = false;
+
+    dropTarget.visible = true;
+    darkness.visible = true;
+    darkness.alpha = 0;
+    dropTarget.alpha = 0;
+  }
+
+  /**
+   * Hides the drag and drop overlay.
+   */
+  public function hideDropOverlay():Void
+  {
+    isHovering = false;
+    duration = HIDE_DURATION;
+    elapsed = 0;
+    animDone = false;
+  }
+
   // DROPPED FILES //
 
+  /**
+   * Installs the dropped zip/folder, rejects it if it is neither.
+   * @param file The file to install
+   */
   public function installDropped(file:lime.utils.DroppedFile):Void
   {
     if (StringTools.endsWith(file.path, '.zip'))
@@ -182,6 +255,10 @@ class ModMenuInstaller
     }
   }
 
+  /**
+   * Installs the zip dropped into the mod folder.
+   * @param path The path to the zip to install.
+   */
   function installZip(path:String):Void
   {
     var fileClean = StringTools.replace(path, '\\', '/');
@@ -194,7 +271,7 @@ class ModMenuInstaller
     }
     catch (e:Dynamic)
     {
-      trace('Failed to move file: ' + e);
+      trace(' MOD MENU '.bold().bg_orange() + ' Failed to move file: ' + e);
       openFailedPrompt();
       return;
     }
@@ -202,6 +279,10 @@ class ModMenuInstaller
     onInstalled();
   }
 
+  /**
+   * Installs the folder dropped into the mod folder
+   * @param path The path to the folder to install.
+   */
   function installFolder(path:String):Void
   {
     if (!FileUtil.pathExists(Path.join([path, PolymodConfig.modMetadataFile])))
@@ -216,7 +297,7 @@ class ModMenuInstaller
     }
     catch (e:Dynamic)
     {
-      trace('Failed to move folder: ' + e);
+      trace(' MOD MENU '.bold().bg_orange() + ' Failed to move folder: ' + e);
       openFailedPrompt(false, true);
       return;
     }
@@ -224,6 +305,9 @@ class ModMenuInstaller
     onInstalled();
   }
 
+  /**
+   * Triggers a prompt that tells you the file you dropped isn't supported.
+   */
   function showInvalidPrompt():Void
   {
     setInputEnabled(false);
@@ -240,6 +324,11 @@ class ModMenuInstaller
     }, [0, 50]);
   }
 
+  /**
+   * Triggers a prompt that tells you installation failed and why.
+   * @param metadata Whether its metadata related or not.
+   * @param folder Whether its folder related or not.
+   */
   function openFailedPrompt(metadata:Bool = false, folder:Bool = false):Void
   {
     var description:String = '';
@@ -269,13 +358,18 @@ class ModMenuInstaller
   }
 
   // ONE-CLICK INSTALL //
+
   #if FEATURE_ONE_CLICK_INSTALL
+  /**
+   * Begins the one click install
+   * @param request The request to use.
+   */
   public function beginOneClick(request:OneClickRequest):Void
   {
     // One at a time. A second link while one is running would fight over the popup.
     if (popup.isBlocking())
     {
-      trace('Ignoring a one-click install, one is already in progress.');
+      trace(' MOD MENU '.bold().bg_orange() + ' Ignoring a one-click install, one is already in progress.');
       return;
     }
 
@@ -313,22 +407,36 @@ class ModMenuInstaller
     });
   }
 
+  /**
+   * Is a one-click install happening right now or not.
+   * @return Bool
+   */
   public function isInstalling():Bool
   {
     return popup.isBlocking();
   }
 
+  /**
+   * Sets the queue amount of installs happening in the pop up.
+   * @param count How many installs there are.
+   */
   public function setQueueCount(count:Int):Void
   {
     popup.setQueueCount(count);
   }
 
+  /**
+   * Cancels the one click install (if one is happening right now).
+   */
   public function cancelOneClick():Void
   {
     stop();
     popup.hide();
   }
 
+  /**
+   * Clears the one click install specifically.
+   */
   function destroyOneClick():Void
   {
     stop();
@@ -336,6 +444,9 @@ class ModMenuInstaller
     OneClickInstallHandler.clearQueue();
   }
 
+  /**
+   * Force stop the one click install.
+   */
   function stop():Void
   {
     installCancelled = true;
@@ -344,6 +455,9 @@ class ModMenuInstaller
     ModInstaller.cancelInstall();
   }
 
+  /**
+   * Starts the download for the one click install.
+   */
   function startDownload():Void
   {
     final mod:Null<OneClickMod> = pendingInstall;
@@ -377,7 +491,8 @@ class ModMenuInstaller
 
         queueRequirements(mod);
 
-        finish(mod);
+        onInstalled();
+        popup.showResult(mod.name, 'Installed!');
       }, function(reason:String):Void
       {
         if (installCancelled) return;
@@ -392,6 +507,10 @@ class ModMenuInstaller
     });
   }
 
+  /**
+   * Queue-install the requirements for the mod we want to download.
+   * @param mod The mod we want to install.
+   */
   function queueRequirements(mod:OneClickMod):Void
   {
     final requests:Array<OneClickRequest> = [];
@@ -408,13 +527,11 @@ class ModMenuInstaller
     OneClickInstallHandler.enqueueNext(requests);
   }
 
-  function finish(mod:OneClickMod):Void
-  {
-    onInstalled();
-
-    popup.showResult(mod.name, 'Installed. Drag it over to turn it on.');
-  }
-
+  /**
+   * Formats the file size to MB.
+   * @param bytes The bytes to format
+   * @return String The string once formatted.
+   */
   function formatFilesize(bytes:Int):String
   {
     if (bytes <= 0) return '';
@@ -424,6 +541,17 @@ class ModMenuInstaller
     return '${Math.round(bytes / (1024 * 1024))} MB';
   }
   #end
+
+  /**
+   * Destroys the installer.
+   * TODO: Make this class a destroyable, maybe.. -Moon.
+   */
+  public function destroy():Void
+  {
+    #if FEATURE_ONE_CLICK_INSTALL
+    destroyOneClick();
+    #end
+  }
 
   // Getters / helpers
 

@@ -103,17 +103,18 @@ class ModMenuItemList extends FunkinSpriteGroup
 
   /**
    * Adds the elements to a Mod Menu instance.
-   * @param state The state to add the elements to.
    */
-  public function addElements(state:FlxState):Void
+  public function addElements():Void
   {
+    if (ModMenuState.instance == null) return;
+
     titleText.zIndex = this.zIndex + 1;
     scrollbarTrack.zIndex = titleText.zIndex + 1;
     scrollbarThumb.zIndex = scrollbarTrack.zIndex + 1;
 
-    state.add(titleText);
-    state.add(scrollbarTrack);
-    state.add(scrollbarThumb);
+    ModMenuState.instance.add(titleText);
+    ModMenuState.instance.add(scrollbarTrack);
+    ModMenuState.instance.add(scrollbarThumb);
   }
 
   override public function update(elapsed:Float):Void

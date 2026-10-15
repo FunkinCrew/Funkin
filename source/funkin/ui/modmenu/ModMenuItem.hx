@@ -288,7 +288,7 @@ class ModMenuItem extends FunkinSpriteGroup
       }
       else
       {
-        trace('No icon found for mod ${mod.id}, using fallback');
+        trace(' MOD MENU '.bold().bg_orange() + ' No icon found for mod ${mod.id}, using fallback');
 
         modIcon.loadGraphic(Paths.image('ui/mods/fallback-icon'));
         modIcon.scrollFactor.set();
