@@ -216,7 +216,16 @@ class LoadingState extends MusicBeatSubState
 
     var daStage = funkin.data.stage.StageRegistry.instance.fetchEntry(daChart?.stage ?? Constants.DEFAULT_STAGE);
 
-    if (funkin.ui.FullScreenScaleMode.instance != null) funkin.ui.FullScreenScaleMode.instance.onMeasurePostAwait();
+    // a few callers run this from a camera fade, resetting cameras here would destroy that camera mid update and cause a crash
+    // resize on the state switch instead to avoid this
+    if (asSubState)
+    {
+      funkin.ui.FullScreenScaleMode.instance?.onMeasurePostAwait();
+    }
+    else
+    {
+      FlxG.signals.preStateSwitch.addOnce(() -> funkin.ui.FullScreenScaleMode.instance?.onMeasurePostAwait());
+    }
 
     var playStateCtor:() -> PlayState = function()
     {
