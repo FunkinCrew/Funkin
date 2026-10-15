@@ -1376,6 +1376,10 @@ class Strumline extends FlxSpriteGroup
       noteSprite.scale.scale(trueScaleX, trueScaleY);
       noteSprite.updateHitbox();
 
+      var noteOffsets:Array<Float> = noteKindStyle.getNoteOffsets();
+      noteSprite.offset.x += noteOffsets[0];
+      noteSprite.offset.y += noteOffsets[1];
+
       noteSprite.direction = note.getDirection();
       noteSprite.noteData = note;
 
