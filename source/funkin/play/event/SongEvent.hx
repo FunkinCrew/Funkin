@@ -163,6 +163,10 @@ class SongEvent implements IPlayStateScriptedClass
   {
   }
 
+  public function onCustom(event:CustomScriptEvent):Void
+  {
+  }
+
   public function onStepHit(event:SongTimeScriptEvent)
   {
   }
