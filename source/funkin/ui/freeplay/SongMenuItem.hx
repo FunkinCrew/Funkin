@@ -803,7 +803,6 @@ class SongMenuItem extends FlxSpriteGroup
   override function destroy():Void
   {
     targetPos.put();
-    targetPos = null;
     difficultyNumbers = [];
     bpmNumbers = [];
     super.destroy();

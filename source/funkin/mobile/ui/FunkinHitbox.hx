@@ -191,7 +191,7 @@ class FunkinHint extends FunkinButton
 
     if (followTarget != null)
     {
-      final widthMultiplier:Float = 1.35;
+      final widthMultiplier:Float = 1.3875;
       final heightMultiplier:Float = 8;
 
       final xOffset:Float = isPixel ? 43.265 : 0;
@@ -200,7 +200,7 @@ class FunkinHint extends FunkinButton
       final baseWidth:Float = followTarget.width * widthMultiplier + (isPixel ? 93.05 : 0);
       final baseHeight:Float = followTarget.height * heightMultiplier + (isPixel ? 118 : 0);
 
-      final hintWidth:Float = Math.max(columnWidth, baseWidth);
+      final hintWidth:Float = columnWidth > 0 ? Math.min(baseWidth, columnWidth * 1.18) : baseWidth;
 
       if (followTargetSize) setSize(hintWidth, baseHeight);
       setPosition((followTarget.x - (followTarget.width * ((widthMultiplier - 1) / 2))) - xOffset - ((hintWidth - baseWidth) / 2), (followTarget.y - 220) - yOffset);
