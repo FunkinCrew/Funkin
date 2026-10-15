@@ -2,6 +2,7 @@ package funkin.play.character;
 
 import flixel.math.FlxPoint;
 import funkin.modding.events.ScriptEvent;
+import funkin.data.animation.AnimationData;
 import funkin.data.character.CharacterData;
 import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.data.character.CharacterData.CharacterRenderType;
@@ -209,26 +210,6 @@ class BaseCharacter extends Bopper
     shouldBop = false;
   }
 
-  public function getDeathCameraOffsets():Array<Float>
-  {
-    return _data.death?.cameraOffsets ?? [0.0, 0.0];
-  }
-
-  public function getBaseScale():Float
-  {
-    return _data.scale;
-  }
-
-  public function getDeathCameraZoom():Float
-  {
-    return _data.death?.cameraZoom ?? 1.0;
-  }
-
-  public function getDeathPreTransitionDelay():Float
-  {
-    return _data.death?.preTransitionDelay ?? 0.0;
-  }
-
   /**
    * Gets the value of flipX from the character data.
    * `!getFlipX()` is the direction Boyfriend should face.
@@ -370,14 +351,49 @@ class BaseCharacter extends Bopper
     this.cameraFocusPoint.set(charCenterX + _data.cameraOffsets[0], charCenterY + _data.cameraOffsets[1]);
   }
 
+  public function getAssetPath():String
+  {
+    return _data?.assetPath ?? '';
+  }
+
+  public function getBaseScale():Float
+  {
+    return _data.scale;
+  }
+
+  public function getCharacterAnimations():Array<AnimationData>
+  {
+    return _data?.animations ?? [];
+  }
+
+  public function getHealthIconData():Null<HealthIconData>
+  {
+    return _data?.healthIcon ?? null;
+  }
+
   public function getHealthIconId():String
   {
-    return _data?.healthIcon?.id ?? Constants.DEFAULT_HEALTH_ICON;
+    return getHealthIconData()?.id ?? Constants.DEFAULT_HEALTH_ICON;
   }
 
   public function getDiscordRPCImage():String
   {
     return _data?.discordRPCImage ?? 'icon-${getHealthIconId()}';
+  }
+
+  public function getDeathCameraOffsets():Array<Float>
+  {
+    return _data.death?.cameraOffsets ?? [0.0, 0.0];
+  }
+
+  public function getDeathCameraZoom():Float
+  {
+    return _data.death?.cameraZoom ?? 1.0;
+  }
+
+  public function getDeathPreTransitionDelay():Float
+  {
+    return _data.death?.preTransitionDelay ?? 0.0;
   }
 
   public function initHealthIcon(isOpponent:Bool):Void
@@ -392,7 +408,7 @@ class BaseCharacter extends Bopper
         log(' WARNING '.warning() + ' Player 1 ($characterId) health icon not found!');
         return;
       }
-      PlayState.instance.iconP1.configure(_data?.healthIcon);
+      PlayState.instance.iconP1.configure(getHealthIconData());
       PlayState.instance.iconP1.flipX = !PlayState.instance.iconP1.flipX; // BF is looking the other way.
     }
     else
@@ -402,7 +418,7 @@ class BaseCharacter extends Bopper
         log(' WARNING '.warning() + ' Player 2 ($characterId) health icon not found!');
         return;
       }
-      PlayState.instance.iconP2.configure(_data?.healthIcon);
+      PlayState.instance.iconP2.configure(getHealthIconData());
     }
   }
 
