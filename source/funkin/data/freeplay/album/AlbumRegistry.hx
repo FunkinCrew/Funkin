@@ -2,12 +2,24 @@ package funkin.data.freeplay.album;
 
 import funkin.ui.freeplay.Album;
 import funkin.data.freeplay.album.AlbumData;
-import funkin.util.tools.ISingleton;
 import funkin.data.DefaultRegistryImpl;
 
 @:nullSafety
-class AlbumRegistry extends BaseRegistry<Album, AlbumData, AlbumEntryParams> implements ISingleton implements DefaultRegistryImpl
+class AlbumRegistry extends BaseRegistry<Album, AlbumData, AlbumEntryParams> implements DefaultRegistryImpl
 {
+  static var _instance:Null<AlbumRegistry>;
+
+  public static var instance(get, never):AlbumRegistry;
+
+  static function get_instance():AlbumRegistry
+  {
+    if (_instance == null)
+    {
+      _instance = new AlbumRegistry();
+    }
+    return _instance;
+  }
+
   /**
    * The current version string for the album data format.
    * Handle breaking changes by incrementing this value

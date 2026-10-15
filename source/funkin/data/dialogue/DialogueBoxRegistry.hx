@@ -2,12 +2,24 @@ package funkin.data.dialogue;
 
 import funkin.play.cutscene.dialogue.DialogueBox;
 import funkin.data.dialogue.DialogueBoxData;
-import funkin.util.tools.ISingleton;
 import funkin.data.DefaultRegistryImpl;
 
 @:nullSafety
-class DialogueBoxRegistry extends BaseRegistry<DialogueBox, DialogueBoxData, DialogueBoxEntryParams> implements ISingleton implements DefaultRegistryImpl
+class DialogueBoxRegistry extends BaseRegistry<DialogueBox, DialogueBoxData, DialogueBoxEntryParams> implements DefaultRegistryImpl
 {
+  static var _instance:Null<DialogueBoxRegistry>;
+
+  public static var instance(get, never):DialogueBoxRegistry;
+
+  static function get_instance():DialogueBoxRegistry
+  {
+    if (_instance == null)
+    {
+      _instance = new DialogueBoxRegistry();
+    }
+    return _instance;
+  }
+
   /**
    * The current version string for the dialogue box data format.
    * Handle breaking changes by incrementing this value
