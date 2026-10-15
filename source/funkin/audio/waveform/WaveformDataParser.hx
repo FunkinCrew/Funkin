@@ -18,27 +18,12 @@ class WaveformDataParser
 
     // Method 1. This only works if the sound has been played before.
     @:privateAccess
-    var soundBuffer:Null<lime.media.AudioBuffer> = sound?._channel?.__audioSource?.buffer;
+    var soundBuffer:Null<lime.media.AudioBuffer> = sound?._source?.buffer;
 
     if (soundBuffer == null)
     {
-      // Method 2. This works if the sound has not been played before.
-      @:privateAccess
-      soundBuffer = sound?._sound?.__buffer;
-
-      if (soundBuffer == null)
-      {
-        trace('[WAVEFORM] Failed to interpret FlxSound: ${sound}');
-        return null;
-      }
-      else
-      {
-        // trace('[WAVEFORM] Method 2 worked.');
-      }
-    }
-    else
-    {
-      // trace('[WAVEFORM] Method 1 worked.');
+      trace('[WAVEFORM] Failed to interpret FlxSound: ${sound}');
+      return null;
     }
 
     return interpretAudioBuffer(soundBuffer);

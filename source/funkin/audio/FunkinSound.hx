@@ -440,7 +440,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   {
     if (value == muted) return value;
     muted = value;
-    updateTransform();
+    updateVolume();
     return value;
   }
 

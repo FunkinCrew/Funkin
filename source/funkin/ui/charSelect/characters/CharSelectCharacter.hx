@@ -290,7 +290,7 @@ class CharSelectCharacter extends FunkinSprite implements IBPMSyncedScriptedClas
     if (enableVisualizer && !initializedVisualizer && FlxG.sound.music != null)
     {
       @:privateAccess
-      analyzer = new SpectralAnalyzer(FlxG.sound.music._channel.__audioSource, 7, 0.1);
+      analyzer = new SpectralAnalyzer(FlxG.sound.music._source, 7, 0.1);
       #if sys
       // On native it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
       // So we want to manually change it!
