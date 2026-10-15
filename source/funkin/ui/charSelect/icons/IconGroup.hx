@@ -165,7 +165,9 @@ class IconGroup extends FunkinGroup<FunkinSprite>
    * @param characterList The list of available characters.
    * @param locksToUnlock The list of locks to unlock.
    */
-  public function loadCharacters(slotCount:Int, characterList:Map<Int, String>, locksToUnlock:Array<Int>):Void
+  public function loadCharacters(slotCount:Int,
+    characterList:Map<Int, String>,
+    locksToUnlock:Array<Int>):Void
   {
     for (i in 0...slotCount)
     {
@@ -257,7 +259,11 @@ class IconGroup extends FunkinGroup<FunkinSprite>
 
     this.y = targetY + 300;
 
-    introTween = FlxTween.tween(this, {y: targetY}, 1, {ease: FlxEase.expoOut});
+    introTween = FlxTween.tween(this, {
+      y: targetY
+    }, 1, {
+      ease: FlxEase.expoOut
+    });
     introTween.start();
   }
 
@@ -268,7 +274,11 @@ class IconGroup extends FunkinGroup<FunkinSprite>
   {
     if (exitTween != null) exitTween.cancel();
 
-    exitTween = FlxTween.tween(this, {y: this.y + 300}, 0.8, {ease: FlxEase.backIn});
+    exitTween = FlxTween.tween(this, {
+      y: this.y + 300
+    }, 0.8, {
+      ease: FlxEase.backIn
+    });
     exitTween.start();
   }
 
@@ -282,8 +292,8 @@ class IconGroup extends FunkinGroup<FunkinSprite>
       var iconX:Float = (index % CharacterSelectState.SLOTS_PER_ROW);
       var iconY:Float = Math.floor(index / CharacterSelectState.SLOTS_PER_ROW);
 
-      member.localX = (iconX * iconSpread.x) + (CharacterSelectState.CUTOUT_SIZE + 450);
-      member.localY = (iconY * iconSpread.y) + 135;
+      member.x = (iconX * iconSpread.x) + (CharacterSelectState.CUTOUT_SIZE + 450);
+      member.y = (iconY * iconSpread.y) + 135;
     }
 
     #if FEATURE_TOUCH_CONTROLS
@@ -424,23 +434,19 @@ class IconGroup extends FunkinGroup<FunkinSprite>
     }
   }
 
-  override public function updateChildren():Void
+  override public function positionChild(child:FunkinSprite):FunkinSprite
   {
-    for (child in children)
+    // In this case, we want to do a lot stuff like scaling ourselves,
+    // but we want FunkinGroup to handle positioning!
+    if (child != null && child.exists && child.active)
     {
-      // In this case, we want to do a lot stuff like scaling ourselves,
-      // but we want FunkinGroup to handle positioning!
-      if (child != null && child.exists && child.active)
-      {
-        var displace:FlxPoint = FlxPoint.get(child.localX, child.localY);
+      child.x = x + child.x;
+      child.y = y + child.y;
 
-        child.x = x + displace.x;
-        child.y = y + displace.y;
-
-        // force child cameras to the group's cameras.
-        if (child.cameras != cameras) child.cameras = cameras;
-      }
+      // force child cameras to the group's cameras.
+      if (child.cameras != cameras) child.cameras = cameras;
     }
+    return child;
   }
 
   var previousPage:Int = -1;
@@ -478,8 +484,7 @@ class IconGroup extends FunkinGroup<FunkinSprite>
     {
       var memberPage:Int = Math.floor(index / CharacterSelectState.SLOTS_PER_PAGE);
       var isNext3:Bool = (index % CharacterSelectState.SLOTS_PER_PAGE) < 3 && memberPage == currentPage + 1;
-      var isLast3:Bool = (index % CharacterSelectState.SLOTS_PER_PAGE) >= (CharacterSelectState.SLOTS_PER_PAGE - 3)
-        && memberPage == currentPage - 1;
+      var isLast3:Bool = (index % CharacterSelectState.SLOTS_PER_PAGE) >= (CharacterSelectState.SLOTS_PER_PAGE - 3) && memberPage == currentPage - 1;
 
       var shouldClip:Bool = isNext3 || isLast3;
 

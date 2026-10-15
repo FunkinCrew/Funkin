@@ -15,32 +15,80 @@ class FlxMacro
     var cls:haxe.macro.Type.ClassType = haxe.macro.Context.getLocalClass().get();
     // The fields of the FlxSprite.
     var fields:Array<haxe.macro.Expr.Field> = haxe.macro.Context.getBuildFields();
+    var fieldsToAdd:Array<haxe.macro.Expr.Field> = (macro class TempClass
+      {
+        public var localX(get, set):Float;
 
-    var fieldsToAdd = [];
-    fieldsToAdd.push({
-      name: 'localX',
-      kind: haxe.macro.Expr.FieldType.FVar(macro :Float, macro $v{0})
-    });
-    fieldsToAdd.push({
-      name: 'localY',
-      kind: haxe.macro.Expr.FieldType.FVar(macro :Float, macro $v{0})
-    });
-    fieldsToAdd.push({
-      name: 'localAngle',
-      kind: haxe.macro.Expr.FieldType.FVar(macro :Float, macro $v{0})
-    });
-    fieldsToAdd.push({
-      name: 'localScale',
-      kind: haxe.macro.Expr.FieldType.FVar(macro :flixel.math.FlxPoint, macro new flixel.math.FlxPoint(1, 1))
-    });
-    fieldsToAdd.push({
-      name: 'localAlpha',
-      kind: haxe.macro.Expr.FieldType.FVar(macro :Float, macro $v{1})
-    });
-    fieldsToAdd.push({
-      name: 'localVisible',
-      kind: haxe.macro.Expr.FieldType.FVar(macro :Bool, macro $v{true})
-    });
+        function get_localX():Float
+        {
+          return this.x;
+        }
+
+        function set_localX(value:Float):Float
+        {
+          return this.x = value;
+        }
+
+        public var localY(get, set):Float;
+
+        function get_localY():Float
+        {
+          return this.y;
+        }
+
+        function set_localY(value:Float):Float
+        {
+          return this.y = value;
+        }
+
+        public var localAngle(get, set):Float;
+
+        function get_localAngle():Float
+        {
+          return this.angle;
+        }
+
+        function set_localAngle(value:Float):Float
+        {
+          return this.angle = value;
+        }
+
+        public var localScale(get, set):flixel.math.FlxPoint;
+
+        function get_localScale():flixel.math.FlxPoint
+        {
+          return this.scale;
+        }
+
+        function set_localScale(value:flixel.math.FlxPoint):flixel.math.FlxPoint
+        {
+          return this.scale = value;
+        }
+
+        public var localAlpha(get, set):Float;
+
+        function get_localAlpha():Float
+        {
+          return this.alpha;
+        }
+
+        function set_localAlpha(value:Float):Float
+        {
+          return this.alpha = value;
+        }
+
+        public var localVisible(get, set):Bool;
+
+        function get_localVisible():Bool
+        {
+          return this.visible;
+        }
+
+        function set_localVisible(value:Bool):Bool
+        {
+          return this.visible = value;
+        }
+      }).fields;
 
     var alreadyOwnedFields = [];
 
@@ -56,12 +104,7 @@ class FlxMacro
     {
       if (alreadyOwnedFields.contains(f.name)) continue;
 
-      fields.push({
-        name: f.name, // Field name.
-        access: [haxe.macro.Expr.Access.APublic], // Access level
-        kind: f.kind, // Variable type and default value
-        pos: pos, // The field's position in code.
-      });
+      fields.push(f);
     }
 
     return fields;

@@ -71,12 +71,12 @@ class CharSelectCursors extends FunkinGroup<FunkinSprite>
 
     cursorConfirmed.frames = Paths.getSparrowAtlas('ui/character-select/interface/char-selector-confirm');
     cursorConfirmed.animation.addByPrefix('idle', 'cursor ACCEPTED instance 1', 24, true);
-    cursorConfirmed.localVisible = false;
+    cursorConfirmed.visible = false;
     add(cursorConfirmed);
 
     cursorDenied.frames = Paths.getSparrowAtlas('ui/character-select/interface/char-selector-denied');
     cursorDenied.animation.addByPrefix('idle', 'cursor DENIED instance 1', 24, false);
-    cursorDenied.localVisible = false;
+    cursorDenied.visible = false;
     add(cursorDenied);
 
     scrollFactor.set();
@@ -129,10 +129,10 @@ class CharSelectCursors extends FunkinGroup<FunkinSprite>
    */
   public function confirm():Void
   {
-    cursorConfirmed.localVisible = true;
+    cursorConfirmed.visible = true;
     cursorConfirmed.animation.play('idle', true);
 
-    main.localVisible = lightBlue.localVisible = darkBlue.localVisible = false;
+    main.visible = lightBlue.visible = darkBlue.visible = false;
   }
 
   /**
@@ -140,7 +140,7 @@ class CharSelectCursors extends FunkinGroup<FunkinSprite>
    */
   public function resetDeny():Void
   {
-    cursorDenied.localVisible = false;
+    cursorDenied.visible = false;
   }
 
   /**
@@ -148,11 +148,11 @@ class CharSelectCursors extends FunkinGroup<FunkinSprite>
    */
   public function deny():Void
   {
-    cursorDenied.localVisible = true;
+    cursorDenied.visible = true;
     cursorDenied.animation.play('idle', true);
     cursorDenied.animation.onFinish.add((_) ->
     {
-      cursorDenied.localVisible = false;
+      cursorDenied.visible = false;
     });
   }
 
@@ -161,8 +161,8 @@ class CharSelectCursors extends FunkinGroup<FunkinSprite>
    */
   public function unconfirm():Void
   {
-    cursorConfirmed.localVisible = false;
-    main.localVisible = lightBlue.localVisible = darkBlue.localVisible = true;
+    cursorConfirmed.visible = false;
+    main.visible = lightBlue.visible = darkBlue.visible = true;
   }
 
   /**
@@ -171,20 +171,20 @@ class CharSelectCursors extends FunkinGroup<FunkinSprite>
    */
   public function snapToLocation(intendedPosition:FlxPoint):Void
   {
-    main.localX = intendedPosition.x;
-    main.localY = intendedPosition.y;
+    main.x = intendedPosition.x;
+    main.y = intendedPosition.y;
 
-    lightBlue.localX = main.localX;
-    lightBlue.localY = main.localY;
+    lightBlue.x = main.x;
+    lightBlue.y = main.y;
 
-    darkBlue.localX = intendedPosition.x;
-    darkBlue.localY = intendedPosition.y;
+    darkBlue.x = intendedPosition.x;
+    darkBlue.y = intendedPosition.y;
 
-    cursorConfirmed.localX = main.localX - 2;
-    cursorConfirmed.localY = main.localY - 4;
+    cursorConfirmed.x = main.x - 2;
+    cursorConfirmed.y = main.y - 4;
 
-    cursorDenied.localX = main.localX - 2;
-    cursorDenied.localY = main.localY - 4;
+    cursorDenied.x = main.x - 2;
+    cursorDenied.y = main.y - 4;
   }
 
   /**
@@ -193,19 +193,19 @@ class CharSelectCursors extends FunkinGroup<FunkinSprite>
    */
   public function lerpToLocation(intendedPosition:FlxPoint):Void
   {
-    main.localX = MathUtil.snap(MathUtil.smoothLerpPrecision(main.localX, intendedPosition.x, FlxG.elapsed, 0.1), intendedPosition.x, 1);
-    main.localY = MathUtil.snap(MathUtil.smoothLerpPrecision(main.localY, intendedPosition.y, FlxG.elapsed, 0.1), intendedPosition.y, 1);
+    main.x = MathUtil.snap(MathUtil.smoothLerpPrecision(main.x, intendedPosition.x, FlxG.elapsed, 0.1), intendedPosition.x, 1);
+    main.y = MathUtil.snap(MathUtil.smoothLerpPrecision(main.y, intendedPosition.y, FlxG.elapsed, 0.1), intendedPosition.y, 1);
 
-    lightBlue.localX = MathUtil.smoothLerpPrecision(lightBlue.localX, main.localX, FlxG.elapsed, 0.202);
-    lightBlue.localY = MathUtil.smoothLerpPrecision(lightBlue.localY, main.localY, FlxG.elapsed, 0.202);
+    lightBlue.x = MathUtil.smoothLerpPrecision(lightBlue.x, main.x, FlxG.elapsed, 0.202);
+    lightBlue.y = MathUtil.smoothLerpPrecision(lightBlue.y, main.y, FlxG.elapsed, 0.202);
 
-    darkBlue.localX = MathUtil.smoothLerpPrecision(darkBlue.localX, intendedPosition.x, FlxG.elapsed, 0.404);
-    darkBlue.localY = MathUtil.smoothLerpPrecision(darkBlue.localY, intendedPosition.y, FlxG.elapsed, 0.404);
+    darkBlue.x = MathUtil.smoothLerpPrecision(darkBlue.x, intendedPosition.x, FlxG.elapsed, 0.404);
+    darkBlue.y = MathUtil.smoothLerpPrecision(darkBlue.y, intendedPosition.y, FlxG.elapsed, 0.404);
 
-    cursorConfirmed.localX = main.localX - 2;
-    cursorConfirmed.localY = main.localY - 4;
+    cursorConfirmed.x = main.x - 2;
+    cursorConfirmed.y = main.y - 4;
 
-    cursorDenied.localX = main.localX - 2;
-    cursorDenied.localY = main.localY - 4;
+    cursorDenied.x = main.x - 2;
+    cursorDenied.y = main.y - 4;
   }
 }

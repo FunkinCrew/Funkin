@@ -133,7 +133,7 @@ class CharSelectCharacterGroup extends FunkinGroup<CharSelectCharacter>
     {
       if (newId == 'locked')
       {
-        oldGF.localVisible = false;
+        oldGF.visible = false;
       }
       else
       {
@@ -151,7 +151,7 @@ class CharSelectCharacterGroup extends FunkinGroup<CharSelectCharacter>
 
     if (newGF != null)
     {
-      newGF.localVisible = newId != 'locked';
+      newGF.visible = newId != 'locked';
       newGF.revive();
       newGF.playAnimation(IDLE);
     }
