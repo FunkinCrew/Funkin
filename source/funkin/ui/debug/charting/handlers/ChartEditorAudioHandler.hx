@@ -156,19 +156,27 @@ class ChartEditorAudioHandler
   public static function playVocals(state:ChartEditorState, charType:CharacterType, variation:String = ''):Bool
   {
     var vocalTrackIds:Array<String> = [];
+    var oppositeVocalTracksIds:Array<String> = [];
 
     // We assume that the `currentSongMetadata` is correctly loaded to retrieve info about what vocal tracks to play.
     switch (charType)
     {
       case BF:
         vocalTrackIds = state.currentSongMetadata.playData.characters.playerVocals ?? [];
+        oppositeVocalTracksIds = state.currentSongMetadata.playData.characters.opponentVocals ?? [];
       case DAD:
         vocalTrackIds = state.currentSongMetadata.playData.characters.opponentVocals ?? [];
+        oppositeVocalTracksIds = state.currentSongMetadata.playData.characters.playerVocals ?? [];
       default:
         // Do nothing.
     }
 
-    if (vocalTrackIds.length == 0)
+    var totalVoicesCount = (vocalTrackIds.length + oppositeVocalTracksIds.length);
+    var shouldUseLegacyVocals = totalVoicesCount == 0 && state.audioVocalTrackData.exists(''); // Setup for Voices.ogg
+    // we set up legacy vocals as the bf side for ease of use
+    var setUpLegacyVocals = shouldUseLegacyVocals && charType == BF;
+
+    if (vocalTrackIds.length == 0 && !setUpLegacyVocals)
     {
       // Didn't play vocals because there are no vocal tracks for this character type on this variation.
       // state.warning('Failed to play vocals', 'No vocal tracks found in chart data for character type $charType.');
@@ -178,6 +186,17 @@ class ChartEditorAudioHandler
     if (state.audioVocalTrackGroup == null) state.audioVocalTrackGroup = new VoicesGroup();
 
     var vocalTracks:Array<FunkinSound> = [];
+
+    if (setUpLegacyVocals)
+    {
+      var vocalTrackData:Null<Bytes> = state.audioVocalTrackData.get('');
+      var vocalTrack:Null<FunkinSound> = SoundUtil.buildSoundFromBytes(vocalTrackData);
+
+      if (vocalTrack != null)
+      {
+        vocalTracks.push(vocalTrack);
+      }
+    }
 
     for (trackBaseKey in vocalTrackIds)
     {
@@ -208,6 +227,12 @@ class ChartEditorAudioHandler
 
     var firstVocalTrack:Null<FunkinSound> = vocalTracks[0];
     if (firstVocalTrack == null) return false;
+
+    if (totalVoicesCount < 2 && vocalTracks.length != totalVoicesCount)
+    {
+      state.audioVocalTrackGroup.legacyVoiceSystem = true;
+      state.audioVocalTrackGroup.legacyVoiceUsesPlayer = charType == BF;
+    }
 
     switch (charType)
     {
