@@ -631,7 +631,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
         var arrow:ArrowData = getClosestArrowAtBeat(b);
 
         var closestBeat:Float = Math.round(b);
-        var diff:Float = closestBeat - b;
+        var diff:Float = b - closestBeat;
         var ms:Float = (diff * msPerBeat);
 
         if (arrow != null) // eric sees this and goes "OMG NULL REF!!!!"
@@ -830,7 +830,8 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     var inputLatencyNs:Int64 = PreciseInputManager.getCurrentTimestamp() - input.timestamp;
     var inputLatencyMs:Float = inputLatencyNs.toFloat() / Constants.NS_PER_MS;
 
-    var noteDiff:Int = Std.int(note.noteData.time - inputPosition - inputLatencyMs);
+    var noteDiff:Int = Std.int(inputPosition - note.noteData.time + inputLatencyMs);
+
     addDifference(noteDiff);
 
     if (noteDiff == 0)
@@ -844,7 +845,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     }
     else
     {
-      jumpInText.text = noteDiff > 0 ? 'Early!\n' + noteDiff + 'ms' : 'Late!\n' + noteDiff + 'ms';
+      jumpInText.text = noteDiff < 0 ? 'Early!\n' + noteDiff + 'ms' : 'Late!\n' + noteDiff + 'ms';
     }
 
     jumpInText.text += '\nAvg: ' + Std.int(getAverage()) + 'ms';
