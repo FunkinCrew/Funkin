@@ -76,6 +76,12 @@ abstract SongEventSchema(SongEventSchemaRaw)
     return this[k] = v;
   }
 
+  @:arrayAccess
+  public inline function push(v:SongEventSchemaField)
+  {
+    this.push(v);
+  }
+
   /**
    * For a given song event field, retrieve its default value.
    * @param name The name of the field to retrieve.

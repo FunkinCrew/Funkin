@@ -1091,9 +1091,27 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
     var eventHandler = getHandler();
     var eventSchema = getSchema();
 
-    if (eventSchema == null) return 'Unknown Event: ${this.eventKind}';
+    var result = 'Unknown Event: ${this.eventKind}';
 
-    var result = '${eventHandler.getTitle()}';
+    if (eventSchema == null)
+    {
+      // Build a tooltip out of the value map instead.
+      var valueStruct:haxe.DynamicAccess<Dynamic> = valueAsStruct();
+
+      for (pair in valueStruct.keyValueIterator())
+      {
+        var key = pair.key;
+        var value = pair.value;
+
+        var title = pair.key ?? 'UnknownField';
+
+        result += '\n- ${title}: ${value}';
+      }
+
+      return result;
+    }
+
+    result = '${eventHandler.getTitle()}';
 
     var valueStruct:haxe.DynamicAccess<Dynamic> = valueAsStruct();
 

@@ -117,8 +117,8 @@ class SelectAllItemsBetweenTimeCommand implements ChartEditorCommand
       state.currentEventSelection.pushUnique(event);
     }
 
-    // I don't think it's necessary to copy this code in, but someone will make an issue out of this if I don't, I'm sure.
-    // If we just selected one or more events (and no notes), then we should make the event data toolbox display the event data for the selected event.
+    // I don't think it's neccesary to copy this code in, but someone will make an issue out of this if I don't, I'm sure.
+    // If we just selected one event (and no notes), then we should make the event data toolbox display the event data for the selected event.
     if (this.notes.length == 0 && this.events.length == 1)
     {
       var eventSelected = this.events[0];
@@ -128,11 +128,9 @@ class SelectAllItemsBetweenTimeCommand implements ChartEditorCommand
       var eventData = eventSelected.valueAsStruct();
 
       state.eventDataToPlace = eventData;
-
-      state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT);
     }
 
-    // If we just selected one or more notes (and no events), then we should make the note data toolbox display the note data for the selected note.
+    // If we just selected one note (and no events), then we should make the note data toolbox display the note data for the selected note.
     if (this.events.length == 0 && this.notes.length == 1)
     {
       var noteSelected = this.notes[0];
@@ -142,6 +140,8 @@ class SelectAllItemsBetweenTimeCommand implements ChartEditorCommand
       // This code is here to parse note data that's not built as a struct for some reason.
       state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_NOTE_DATA_LAYOUT);
     }
+
+    state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT);
 
     state.noteDisplayDirty = true;
     state.notePreviewDirty = true;
@@ -156,6 +156,8 @@ class SelectAllItemsBetweenTimeCommand implements ChartEditorCommand
   {
     state.currentNoteSelection = SongDataUtils.subtractNotes(state.currentNoteSelection, this.notes);
     state.currentEventSelection = SongDataUtils.subtractEvents(state.currentEventSelection, this.events);
+
+    state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT);
 
     state.noteDisplayDirty = true;
     state.notePreviewDirty = true;
