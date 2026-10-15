@@ -999,7 +999,8 @@ class Strumline extends FlxSpriteGroup
     var styleIdByKind:Map<String, String> = [];
     var styleById:Map<String, NoteStyle> = [];
 
-    var resolveStyle = function(kind:Null<String>):NoteStyle {
+    var resolveStyle = function(kind:Null<String>):NoteStyle
+    {
       var key:String = kind ?? '';
       var knownId:Null<String> = styleIdByKind.get(key);
       if (knownId != null) return styleById.get(knownId) ?? this.noteStyle;

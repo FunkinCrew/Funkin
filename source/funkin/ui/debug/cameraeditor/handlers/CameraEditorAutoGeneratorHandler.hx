@@ -19,7 +19,8 @@ class CameraEditorAutoGeneratorHandler
    * @param state The Camera Editor state to generate events in.
    * @param params The parameters to use for the auto generation.
    */
-  public static function autoGenEvents(state:CameraEditorState, params:CameraEditorAutoGenParams):Void
+  public static function autoGenEvents(state:CameraEditorState,
+    params:CameraEditorAutoGenParams):Void
   {
     var chartData:Null<SongChartData> = state.currentSongChartData;
 

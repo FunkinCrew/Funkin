@@ -675,7 +675,10 @@ class VirtualCameraRectangle extends FlxSpriteGroup
     return defaultHUDCameraZoom + (hudCameraZoomIntensity * defaultHUDCameraZoom);
   }
 
-  public function setCameraBop(rate:Float, offset:Float, intensity:Float, preserveCurrentState:Bool = true):Void
+  public function setCameraBop(rate:Float,
+    offset:Float,
+    intensity:Float,
+    preserveCurrentState:Bool = true):Void
   {
     cameraZoomRate = rate;
     cameraZoomRateOffset = offset;

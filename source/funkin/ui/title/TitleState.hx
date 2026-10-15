@@ -282,12 +282,16 @@ class TitleState extends MusicBeatState
       FlxTween.cancelTweensOf(windowWobblePosition);
       windowMoveTimer = 0;
 
-      FlxTween.tween(windowWobblePosition, {x: windowWobblePosition.x + 300}, 1.4, {
+      FlxTween.tween(windowWobblePosition, {
+        x: windowWobblePosition.x + 300
+      }, 1.4, {
         ease: FlxEase.quadInOut,
         type: PINGPONG,
         startDelay: 0.35
       });
-      FlxTween.tween(windowWobblePosition, {y: windowWobblePosition.y + 100}, 0.7, {
+      FlxTween.tween(windowWobblePosition, {
+        y: windowWobblePosition.y + 100
+      }, 0.7, {
         ease: FlxEase.quadInOut,
         type: PINGPONG
       });

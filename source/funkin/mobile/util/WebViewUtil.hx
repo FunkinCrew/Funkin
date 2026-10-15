@@ -26,7 +26,8 @@ class WebViewUtil
    *
    * If the WebView is already open, this function does nothing.
    */
-  public static function openURL(url:String, ?onCloseButtonPressed:Void->Void):Void
+  public static function openURL(url:String,
+    ?onCloseButtonPressed:Void->Void):Void
   {
     if (!WebView.isOpened())
     {

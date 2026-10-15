@@ -527,7 +527,9 @@ class SongMenuItem extends FlxSpriteGroup
     this.y = y;
   }
 
-  public function initData(freeplayData:Null<FreeplaySongData>, ?styleData:FreeplayStyle = null, ?index:Int):Void
+  public function initData(freeplayData:Null<FreeplaySongData>,
+    ?styleData:FreeplayStyle = null,
+    ?index:Int):Void
   {
     this.freeplayData = freeplayData;
 

@@ -308,7 +308,6 @@ class Cursor
       FlxG.mouse.unload();
       return;
     }
-
     @:privateAccess
     if (data.cache != null && !(data.cache.image == null && data.cache.__texture == null))
     {

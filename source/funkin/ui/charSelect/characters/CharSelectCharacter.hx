@@ -83,7 +83,12 @@ class CharSelectCharacter extends FunkinSprite implements IBPMSyncedScriptedClas
     return currentPath;
   }
 
-  public function new(playerId:String, x:Float, y:Float, characterType:CharacterSelectType, data:Null<PlayerCharSelectCharacterData>, visualizer:Bool = false)
+  public function new(playerId:String,
+    x:Float,
+    y:Float,
+    characterType:CharacterSelectType,
+    data:Null<PlayerCharSelectCharacterData>,
+    visualizer:Bool = false)
   {
     super(x, y);
 

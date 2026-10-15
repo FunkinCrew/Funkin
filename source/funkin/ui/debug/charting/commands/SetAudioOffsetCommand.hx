@@ -13,7 +13,9 @@ class SetAudioOffsetCommand implements ChartEditorCommand
   var newOffset:Float;
   var refreshOffsetsToolbox:Bool;
 
-  public function new(type:AudioOffsetType, newOffset:Float, refreshOffsetsToolbox:Bool = true)
+  public function new(type:AudioOffsetType,
+    newOffset:Float,
+    refreshOffsetsToolbox:Bool = true)
   {
     this.type = type;
     this.newOffset = newOffset;

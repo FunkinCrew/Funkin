@@ -173,7 +173,11 @@ class SongDataUtils
    * @param mirrorY Mirror along the Y axis, aka the time of the notes.
    * @return The mirrored array of notes.
    */
-  public static function mirrorNotes(notes:Array<SongNoteData>, strumlineSize:Int = 4, flip:Bool = false, mirrorX:Bool = true, mirrorY:Bool = true):Array<SongNoteData>
+  public static function mirrorNotes(notes:Array<SongNoteData>,
+    strumlineSize:Int = 4,
+    flip:Bool = false,
+    mirrorX:Bool = true,
+    mirrorY:Bool = true):Array<SongNoteData>
   {
     if (notes.length == 0) return notes;
 
@@ -323,7 +327,8 @@ class SongDataUtils
    * @param desc If true, sort in descending order.
    * @return The sorted time changes.
    */
-  public static function sortTimeChanges(timeChanges:Array<SongTimeChange>, desc:Bool = false):Array<SongTimeChange>
+  public static function sortTimeChanges(timeChanges:Array<SongTimeChange>,
+    desc:Bool = false):Array<SongTimeChange>
   {
     // TODO: Modifies the array in place. Is this okay?
     timeChanges.sort(function(a:SongTimeChange, b:SongTimeChange):Int

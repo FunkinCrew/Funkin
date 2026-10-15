@@ -42,7 +42,10 @@ class TurboButtonHandler extends FlxBasic
   var targetGamepad:FlxGamepad;
   var allPressedTime:Float = 0;
 
-  function new(inputs:Array<FlxGamepadInputID>, delay:Float = DEFAULT_DELAY, interval:Float = DEFAULT_INTERVAL, ?targetGamepad:FlxGamepad)
+  function new(inputs:Array<FlxGamepadInputID>,
+    delay:Float = DEFAULT_DELAY,
+    interval:Float = DEFAULT_INTERVAL,
+    ?targetGamepad:FlxGamepad)
   {
     super();
     this.inputs = inputs;
@@ -107,7 +110,9 @@ class TurboButtonHandler extends FlxBasic
    * @param repeatDelay How long to wait between repeats.
    * @return A TurboKeyHandler
    */
-  overload public static extern inline function build(input:FlxGamepadInputID, ?delay:Float = DEFAULT_DELAY, ?interval:Float = DEFAULT_INTERVAL):TurboButtonHandler
+  overload public static extern inline function build(input:FlxGamepadInputID,
+    ?delay:Float = DEFAULT_DELAY,
+    ?interval:Float = DEFAULT_INTERVAL):TurboButtonHandler
   {
     return new TurboButtonHandler([input], delay, interval);
   }
@@ -119,7 +124,9 @@ class TurboButtonHandler extends FlxBasic
    * @param repeatDelay How long to wait between repeats.
    * @return A TurboKeyHandler
    */
-  overload public static extern inline function build(inputs:Array<FlxGamepadInputID>, ?delay:Float = DEFAULT_DELAY, ?interval:Float = DEFAULT_INTERVAL):TurboButtonHandler
+  overload public static extern inline function build(inputs:Array<FlxGamepadInputID>,
+    ?delay:Float = DEFAULT_DELAY,
+    ?interval:Float = DEFAULT_INTERVAL):TurboButtonHandler
   {
     return new TurboButtonHandler(inputs, delay, interval);
   }

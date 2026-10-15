@@ -22,7 +22,8 @@ class FocusCameraContainer extends BaseEventContainer
     bindFloatField(focusCameraYPos, 'y');
     bindFloatField(focusCameraDuration, 'duration');
 
-    focusCameraEaseFrame.easeGraphPreview.registerEvent(UIEvent.CHANGE, function(_:UIEvent):Void {
+    focusCameraEaseFrame.easeGraphPreview.registerEvent(UIEvent.CHANGE, function(_:UIEvent):Void
+    {
       updateCameraPreview();
       updateBlockVisuals();
     });
@@ -73,6 +74,5 @@ class FocusCameraContainer extends BaseEventContainer
     cameraEditorState.selectedSongEvent.set('char', value);
     updateCameraPreview();
   }
-
 }
 #end

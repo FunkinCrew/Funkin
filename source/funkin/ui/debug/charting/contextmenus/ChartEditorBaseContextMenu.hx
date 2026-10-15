@@ -8,7 +8,9 @@ class ChartEditorBaseContextMenu extends Menu
 {
   var chartEditorState:ChartEditorState;
 
-  public function new(chartEditorState:ChartEditorState, xPos:Float = 0, yPos:Float = 0)
+  public function new(chartEditorState:ChartEditorState,
+    xPos:Float = 0,
+    yPos:Float = 0)
   {
     super();
 

@@ -92,7 +92,8 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
    */
   function bindFloatField(stepper:NumberStepper, fieldName:String):Void
   {
-    stepper.registerEvent(UIEvent.CHANGE, function(_:UIEvent):Void {
+    stepper.registerEvent(UIEvent.CHANGE, function(_:UIEvent):Void
+    {
       final selected:Null<SongEventData> = cameraEditorState.selectedSongEvent;
       if (selected == null) return;
       selected.set(fieldName, stepper.value);
@@ -121,7 +122,8 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
    */
   function bindStringField(field:TextField, fieldName:String):Void
   {
-    field.registerEvent(UIEvent.CHANGE, function(_:UIEvent):Void {
+    field.registerEvent(UIEvent.CHANGE, function(_:UIEvent):Void
+    {
       final selected:Null<SongEventData> = cameraEditorState.selectedSongEvent;
       if (selected == null) return;
       selected.set(fieldName, field.text);
@@ -150,7 +152,8 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
    */
   function bindBoolField(field:CheckBox, fieldName:String):Void
   {
-    field.registerEvent(UIEvent.CHANGE, function(_:UIEvent):Void {
+    field.registerEvent(UIEvent.CHANGE, function(_:UIEvent):Void
+    {
       final selected:Null<SongEventData> = cameraEditorState.selectedSongEvent;
       if (selected == null) return;
       selected.set(fieldName, field.selected);

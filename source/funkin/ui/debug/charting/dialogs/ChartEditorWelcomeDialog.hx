@@ -63,7 +63,9 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
    * @param state The current state of the chart editor.
    * @return A newly created `ChartEditorWelcomeDialog`.
    */
-  public static function build(chartEditorState:ChartEditorState, ?closable:Bool, ?modal:Bool):ChartEditorWelcomeDialog
+  public static function build(chartEditorState:ChartEditorState,
+    ?closable:Bool,
+    ?modal:Bool):ChartEditorWelcomeDialog
   {
     var dialog = new ChartEditorWelcomeDialog(chartEditorState, {
       closable: closable ?? false,

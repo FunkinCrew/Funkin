@@ -29,7 +29,8 @@ class LabeledRow extends HBox
   }
 }
 
-@:dox(hide) @:noCompletion
+@:dox(hide)
+@:noCompletion
 private class LabelTextBehaviour extends DataBehaviour
 {
   override function validateData():Void
@@ -40,7 +41,8 @@ private class LabelTextBehaviour extends DataBehaviour
   }
 }
 
-@:dox(hide) @:noCompletion
+@:dox(hide)
+@:noCompletion
 private class LabeledRowBuilder extends CompositeBuilder
 {
   var _row:LabeledRow;

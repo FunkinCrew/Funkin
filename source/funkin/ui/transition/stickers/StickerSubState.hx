@@ -207,7 +207,8 @@ class StickerSubState extends MusicBeatSubState
             {
               FunkinAssetCache.instance.preparePurgeCache();
             });
-            FlxG.signals.postStateSwitch.addOnce(() -> {
+            FlxG.signals.postStateSwitch.addOnce(() ->
+            {
               // TODO: In loading screens, you should be caching BETWEEN these.
               FunkinAssetCache.instance.purgeCache(#if ios DeviceUtil.iPhoneNumber > 12 #else true #end);
             });

@@ -16,6 +16,7 @@ extern class FNFCExtern
    * @param callback A function to be called when the copy operation completes.
    */
   @:native('Apple_FNFCExtern_CopyFNFCIntoCache')
-  static function copyFNFCIntoCache(url:cpp.ConstCharStar, callback:cpp.Callable<(event:cpp.ConstCharStar, value:cpp.ConstCharStar) -> Void>):Void;
+  static function copyFNFCIntoCache(url:cpp.ConstCharStar,
+    callback:cpp.Callable<(event:cpp.ConstCharStar, value:cpp.ConstCharStar) -> Void>):Void;
 }
 #end

@@ -126,12 +126,7 @@ class Constants
   /**
    * Maps the plural path segment in a GameBanana profile URL onto the API's model name.
    */
-  public static final ONE_CLICK_MODELS:Map<String, String> = [
-    'mods' => 'Mod',
-    'tools' => 'Tool',
-    'sounds' => 'Sound',
-    'wips' => 'Wip'
-  ];
+  public static final ONE_CLICK_MODELS:Map<String, String> = ['mods' => 'Mod', 'tools' => 'Tool', 'sounds' => 'Sound', 'wips' => 'Wip'];
 
   /**
    * The GameBanana category that holds mod folders for the base game.

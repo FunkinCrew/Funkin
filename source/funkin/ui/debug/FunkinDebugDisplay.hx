@@ -32,7 +32,6 @@ class FunkinDebugDisplay extends Sprite
 
   var deltaTimeout:Float;
   var times:Array<Float>;
-
   var timesHead:Int = 0;
   var color:Int;
   var fps:Int;

@@ -17,7 +17,8 @@ class LoadFromUrlDialog extends Dialog
   var urlField:TextField;
   var loader:URLLoader;
 
-  override public function new(successCallback:Bytes->Void = null, failCallback:String->Void = null)
+  override public function new(successCallback:Bytes->Void = null,
+    failCallback:String->Void = null)
   {
     super();
     destroyOnClose = true;

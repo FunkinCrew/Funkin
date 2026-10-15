@@ -44,7 +44,6 @@ class NoteKindManager
   #else
   public static var noteKinds:SynchronizedMap<String, NoteKind> = [];
   #end
-
   static var dispatchList:Null<Array<NoteKind>> = null;
 
   /**

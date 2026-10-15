@@ -21,7 +21,8 @@ class CppiaStripMacro
    */
   public static function stripResources():Void
   {
-    Context.onAfterGenerate(function() {
+    Context.onAfterGenerate(function()
+    {
       var path:String = Compiler.getOutput();
 
       if (path == null || !sys.FileSystem.exists(path))
@@ -171,12 +172,10 @@ private class CppiaCursor
     {
       asciiToken();
       var strings:Int = asciiInt();
-      for (_ in 0...strings)
-        skipString();
+      for (_ in 0...strings) skipString();
 
       var types:Int = asciiInt();
-      for (_ in 0...types)
-        skipString();
+      for (_ in 0...types) skipString();
 
       return true;
     }
@@ -192,9 +191,12 @@ private class CppiaCursor
 
     return switch (int())
     {
-      case 77: 'RESOURCES';
-      case 78: 'RESO';
-      default: '';
+      case 77:
+        'RESOURCES';
+      case 78:
+        'RESO';
+      default:
+        '';
     }
   }
 

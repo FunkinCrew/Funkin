@@ -87,7 +87,6 @@ class ResultScore extends FlxTypedSpriteGroup<ScoreNum>
     }
   }
 
-
   public function updateScore(scoreNew:Int)
   {
     scoreShit = scoreNew;

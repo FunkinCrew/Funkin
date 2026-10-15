@@ -172,7 +172,11 @@ class CameraEditorImportExportHandler
    * @param onSaveCb Callback for when the file is saved.
    * @param onCancelCb Callback for when saving is cancelled.
    */
-  public static function exportCurrentChartToFNFC(state:CameraEditorState, force:Bool = false, ?targetPath:String, ?onSaveCb:String->Void, ?onCancelCb:Void->Void):Void
+  public static function exportCurrentChartToFNFC(state:CameraEditorState,
+    force:Bool = false,
+    ?targetPath:String,
+    ?onSaveCb:String->Void,
+    ?onCancelCb:Void->Void):Void
   {
     var fnfcData:FNFCData = CameraEditorImportExportHandler.buildFNFCDataFromCurrentChart(state);
     var zipEntries:Array<haxe.zip.Entry> = FNFCUtil.buildZIPEntriesFromFNFCData(fnfcData);

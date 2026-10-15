@@ -149,7 +149,8 @@ class StepManiaImporter
     return stepNotes;
   }
 
-  static function synchronizeStepTimingPoints(stepStopPoints:Array<StepStop>, stepTimingPoints:Array<StepTimingPoint>):Array<StepTimingPoint>
+  static function synchronizeStepTimingPoints(stepStopPoints:Array<StepStop>,
+    stepTimingPoints:Array<StepTimingPoint>):Array<StepTimingPoint>
   {
     // Initialize startTimestamp/endTimestamp and endBeat for timing points
     for (tpIndex in 0...stepTimingPoints.length)
@@ -451,7 +452,10 @@ class StepManiaImporter
     return stepStop;
   }
 
-  static function beatToTime(beat:Float, offset:Float, stepTimingPoints:Array<StepTimingPoint>, stepStops:Array<StepStop>):Float
+  static function beatToTime(beat:Float,
+    offset:Float,
+    stepTimingPoints:Array<StepTimingPoint>,
+    stepStops:Array<StepStop>):Float
   {
     var time:Float = 0;
     for (tp in stepTimingPoints)
@@ -478,7 +482,11 @@ class StepManiaImporter
     return (time * 1000) - (offset * 1000); // convert to ms
   }
 
-  static function convertStepNotes(offset:Float, type:StepManiaChartType, stepNotes:Array<StepNote>, stepTimingPoints:Array<StepTimingPoint>, stepStops:Array<StepStop>):Array<SongNoteData>
+  static function convertStepNotes(offset:Float,
+    type:StepManiaChartType,
+    stepNotes:Array<StepNote>,
+    stepTimingPoints:Array<StepTimingPoint>,
+    stepStops:Array<StepStop>):Array<SongNoteData>
   {
     var result:Array<SongNoteData> = [];
     var holdArray:Array<Float> = [];

@@ -148,7 +148,8 @@ class OsuManiaImporter
 
   static final STRUMLINE_SIZE = 4;
 
-  static function convertNotes(hitObjects:Array<ManiaHitObject>, keyCount:Int):Array<SongNoteData>
+  static function convertNotes(hitObjects:Array<ManiaHitObject>,
+    keyCount:Int):Array<SongNoteData>
   {
     var result:Array<SongNoteData> = [];
 

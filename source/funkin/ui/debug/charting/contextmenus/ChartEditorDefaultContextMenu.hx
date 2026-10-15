@@ -5,7 +5,9 @@ package funkin.ui.debug.charting.contextmenus;
 @:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/context-menus/default.xml"))
 class ChartEditorDefaultContextMenu extends ChartEditorBaseContextMenu
 {
-  public function new(chartEditorState2:ChartEditorState, xPos2:Float = 0, yPos2:Float = 0)
+  public function new(chartEditorState2:ChartEditorState,
+    xPos2:Float = 0,
+    yPos2:Float = 0)
   {
     super(chartEditorState2, xPos2, yPos2);
   }

@@ -84,7 +84,10 @@ class SongNoteDataUtils
    * @param threshold The note stack threshold. Refer to `doNotesStack` for more details.
    * @return The unsorted resulting array.
    */
-  public static function concatOverwrite(lhs:Array<SongNoteData>, rhs:Array<SongNoteData>, ?overwrittenNotes:Array<SongNoteData>, threshold:Float = 0):Array<SongNoteData>
+  public static function concatOverwrite(lhs:Array<SongNoteData>,
+    rhs:Array<SongNoteData>,
+    ?overwrittenNotes:Array<SongNoteData>,
+    threshold:Float = 0):Array<SongNoteData>
   {
     if (lhs == null || rhs == null || rhs.length == 0) return lhs;
     if (lhs.length == 0) return rhs;

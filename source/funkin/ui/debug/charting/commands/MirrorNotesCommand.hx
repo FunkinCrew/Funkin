@@ -16,7 +16,11 @@ class MirrorNotesCommand implements ChartEditorCommand
   var mirrorX:Bool = true;
   var mirrorY:Bool = true;
 
-  public function new(notes:Array<SongNoteData>, mirrorIndividually:Bool = true, flipMiddle:Bool = false, mirrorX:Bool = true, mirrorY:Bool = true)
+  public function new(notes:Array<SongNoteData>,
+    mirrorIndividually:Bool = true,
+    flipMiddle:Bool = false,
+    mirrorX:Bool = true,
+    mirrorY:Bool = true)
   {
     this.notes = notes;
     this.mirrorX = mirrorX;

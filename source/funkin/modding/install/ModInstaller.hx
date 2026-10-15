@@ -84,14 +84,13 @@ class ModInstaller
 
     if (!isHostAllowed(downloadUrl)) return Rejected('That install link points at a site we don\'t download from.');
 
-    return Accepted(
-      {
-        downloadUrl: downloadUrl,
-        modelName: modelName == '' ? 'Mod' : modelName,
-        itemId: itemId,
-        fileId: extractTrailingId(downloadUrl),
-        enforceCategory: true
-      });
+    return Accepted({
+      downloadUrl: downloadUrl,
+      modelName: modelName == '' ? 'Mod' : modelName,
+      itemId: itemId,
+      fileId: extractTrailingId(downloadUrl),
+      enforceCategory: true
+    });
   }
 
   /**
@@ -132,12 +131,12 @@ class ModInstaller
    * @param fileId The specific file to pick, or null to take the only one.
    * @param enforceCategory Whether to refuse submissions outside the base game mod folder tree.
    */
-  static function fetchProfile(model:String, itemId:String, fileId:Null<String>, enforceCategory:Bool, onSuccess:OneClickMod->Void,
-      onError:String->Void):Void
+  static function fetchProfile(model:String, itemId:String, fileId:Null<String>, enforceCategory:Bool, onSuccess:OneClickMod->Void, onError:String->Void):Void
   {
     final apiUrl:String = '${Constants.ONE_CLICK_API_URL}${model}/${itemId}/ProfilePage';
 
-    loadUrl(apiUrl, URLLoaderDataFormat.TEXT, null, function(data:Dynamic):Void {
+    loadUrl(apiUrl, URLLoaderDataFormat.TEXT, null, function(data:Dynamic):Void
+    {
       var parsed:Null<OneClickMod> = null;
 
       try
@@ -164,12 +163,14 @@ class ModInstaller
         final problem:Null<String> = validate(mod, null);
 
         if (problem != null) onError(problem);
-        else onSuccess(mod);
+        else
+          onSuccess(mod);
 
         return;
       }
 
-      fetchModFolderCategories(function(allowed:Null<Array<Int>>):Void {
+      fetchModFolderCategories(function(allowed:Null<Array<Int>>):Void
+      {
         final problem:Null<String> = validate(mod, allowed);
         if (problem != null)
         {
@@ -179,7 +180,8 @@ class ModInstaller
 
         onSuccess(mod);
       });
-    }, function(reason:String):Void {
+    }, function(reason:String):Void
+    {
       onError('Could not reach GameBanana. ${reason}');
     });
   }
@@ -201,36 +203,37 @@ class ModInstaller
       return;
     }
 
-    loadUrl('${Constants.ONE_CLICK_CATEGORIES_URL}${Constants.ONE_CLICK_CATEGORY_ROOT}', URLLoaderDataFormat.TEXT, null,
-      function(data:Dynamic):Void {
-        final results:Array<Int> = [Constants.ONE_CLICK_CATEGORY_ROOT];
+    loadUrl('${Constants.ONE_CLICK_CATEGORIES_URL}${Constants.ONE_CLICK_CATEGORY_ROOT}', URLLoaderDataFormat.TEXT, null, function(data:Dynamic):Void
+    {
+      final results:Array<Int> = [Constants.ONE_CLICK_CATEGORY_ROOT];
 
-        try
+      try
+      {
+        final categories:Null<Array<Dynamic>> = cast haxe.Json.parse(Std.string(data));
+
+        if (categories != null)
         {
-          final categories:Null<Array<Dynamic>> = cast haxe.Json.parse(Std.string(data));
-
-          if (categories != null)
+          for (category in categories)
           {
-            for (category in categories)
-            {
-              final id:Int = asInt(Reflect.field(category, '_idRow'));
-              if (id != 0) results.push(id);
-            }
+            final id:Int = asInt(Reflect.field(category, '_idRow'));
+            if (id != 0) results.push(id);
           }
         }
-        catch (e:Dynamic)
-        {
-          trace('Failed to parse the mod folder categories: ${e}');
-          onReady(null);
-          return;
-        }
-
-        modFolderCategories = results;
-        onReady(results);
-      }, function(reason:String):Void {
-        trace('Failed to fetch the mod folder categories: ${reason}');
+      }
+      catch (e:Dynamic)
+      {
+        trace('Failed to parse the mod folder categories: ${e}');
         onReady(null);
-      });
+        return;
+      }
+
+      modFolderCategories = results;
+      onReady(results);
+    }, function(reason:String):Void
+    {
+      trace('Failed to fetch the mod folder categories: ${reason}');
+      onReady(null);
+    });
   }
 
   /**
@@ -265,7 +268,8 @@ class ModInstaller
     downloadOnSuccess = onSuccess;
     downloadOnError = onError;
 
-    sys.thread.Thread.create(function():Void {
+    sys.thread.Thread.create(function():Void
+    {
       runDownload(job);
     });
     #else
@@ -296,9 +300,7 @@ class ModInstaller
   static var installOnSuccess:Null<Array<String>->Void> = null;
   static var installOnError:Null<String->Void> = null;
   static var installOnProgress:Null<Float->Void> = null;
-
   static var lastReportedInstallProgress:Float = -1;
-
   #end
 
   /**
@@ -468,10 +470,12 @@ class ModInstaller
       http.setHeader('User-Agent', Constants.ONE_CLICK_USER_AGENT);
 
       var status:Int = 0;
-      http.onStatus = function(value:Int):Void {
+      http.onStatus = function(value:Int):Void
+      {
         status = value;
       };
-      http.onError = function(message:String):Void {
+      http.onError = function(message:String):Void
+      {
         trace('Download error: ${message}');
       };
 
@@ -575,7 +579,8 @@ class ModInstaller
     final url:Null<String> = mod.iconUrl;
     if (url == null || !isHostAllowed(url)) return;
 
-    loadUrl(url, URLLoaderDataFormat.BINARY, null, function(data:Dynamic):Void {
+    loadUrl(url, URLLoaderDataFormat.BINARY, null, function(data:Dynamic):Void
+    {
       try
       {
         onSuccess(cast(data, ByteArray));
@@ -584,7 +589,8 @@ class ModInstaller
       {
         trace('Failed to decode the preview image: ${e}');
       }
-    }, function(reason:String):Void {
+    }, function(reason:String):Void
+    {
       trace('Failed to fetch the preview image: ${reason}');
     });
   }
@@ -614,7 +620,8 @@ class ModInstaller
     installOnProgress = onProgress;
     lastReportedInstallProgress = -1;
 
-    sys.thread.Thread.create(function():Void {
+    sys.thread.Thread.create(function():Void
+    {
       try
       {
         job.succeed(write(mod, archivePath, job));
@@ -729,13 +736,12 @@ class ModInstaller
 
       final nameLength:Int = directory.getUInt16(at + 28);
 
-      entries.push(
-        {
-          name: directory.getString(at + 46, nameLength),
-          offset: directory.getInt32(at + 42),
-          packedSize: directory.getInt32(at + 20),
-          size: directory.getInt32(at + 24)
-        });
+      entries.push({
+        name: directory.getString(at + 46, nameLength),
+        offset: directory.getInt32(at + 42),
+        packedSize: directory.getInt32(at + 20),
+        size: directory.getInt32(at + 24)
+      });
 
       at += 46 + nameLength + directory.getUInt16(at + 30) + directory.getUInt16(at + 32);
     }
@@ -803,8 +809,7 @@ class ModInstaller
       final reader:haxe.zip.Reader = new haxe.zip.Reader(handle);
 
       var total:Float = 0;
-      for (entry in entries)
-        total += entry.size;
+      for (entry in entries) total += entry.size;
 
       FileUtil.createDirIfNotExists(destination);
 
@@ -1025,13 +1030,12 @@ class ModInstaller
         continue;
       }
 
-      results.push(
-        {
-          name: name,
-          url: url,
-          model: target.model,
-          itemId: target.itemId
-        });
+      results.push({
+        name: name,
+        url: url,
+        model: target.model,
+        itemId: target.itemId
+      });
     }
 
     return results;
@@ -1041,19 +1045,32 @@ class ModInstaller
    * Pulls the model and submission ID out of a GameBanana profile URL.
    * @return The parsed pair, both null if the URL isn't a GameBanana submission.
    */
-  static function parseSubmissionUrl(url:Null<String>):{model:Null<String>, itemId:Null<String>}
+  static function parseSubmissionUrl(url:Null<String>):
+    {model:Null<String>, itemId:Null<String>}
   {
-    if (url == null || url == '' || !isHostAllowed(url)) return {model: null, itemId: null};
+    if (url == null || url == '' || !isHostAllowed(url)) return {
+      model: null,
+      itemId: null
+    };
 
     // The plural path segment in a profile URL maps onto the API's model name.
     final pattern:EReg = ~/gamebanana\.com\/([a-z]+)\/([0-9]+)/i;
 
-    if (!pattern.match(url)) return {model: null, itemId: null};
+    if (!pattern.match(url)) return {
+      model: null,
+      itemId: null
+    };
 
     final model:Null<String> = Constants.ONE_CLICK_MODELS.get(pattern.matched(1).toLowerCase());
-    if (model == null) return {model: null, itemId: null};
+    if (model == null) return {
+      model: null,
+      itemId: null
+    };
 
-    return {model: model, itemId: pattern.matched(2)};
+    return {
+      model: model,
+      itemId: pattern.matched(2)
+    };
   }
 
   /**
@@ -1111,13 +1128,12 @@ class ModInstaller
    * @param allowedCategories The categories that count as a base game mod folder, null if none.
    * @return A human readable reason, or null if the file is fine.
    */
-  static function validate(mod:OneClickMod, allowedCategories:Null<Array<Int>>):Null<String>
+  static function validate(mod:OneClickMod,
+    allowedCategories:Null<Array<Int>>):Null<String>
   {
     if (!isHostAllowed(mod.downloadUrl)) return 'The download link points somewhere untrusted.';
 
-    if (allowedCategories != null
-      && !allowedCategories.contains(mod.categoryId)
-      && !allowedCategories.contains(mod.superCategoryId))
+    if (allowedCategories != null && !allowedCategories.contains(mod.categoryId) && !allowedCategories.contains(mod.superCategoryId))
     {
       return 'That\'s a "${mod.categoryName}" upload, not a mod folder for this game.';
     }
@@ -1160,7 +1176,8 @@ class ModInstaller
       loader.__removeAllListeners();
     }
 
-    loader.addEventListener(Event.COMPLETE, function(_:Event):Void {
+    loader.addEventListener(Event.COMPLETE, function(_:Event):Void
+    {
       if (finished) return;
 
       final data:Dynamic = loader.data;
@@ -1169,14 +1186,16 @@ class ModInstaller
       onSuccess(data);
     });
 
-    loader.addEventListener(IOErrorEvent.IO_ERROR, function(event:IOErrorEvent):Void {
+    loader.addEventListener(IOErrorEvent.IO_ERROR, function(event:IOErrorEvent):Void
+    {
       if (finished) return;
 
       cleanup();
       onError(event.text);
     });
 
-    loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, function(event:SecurityErrorEvent):Void {
+    loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, function(event:SecurityErrorEvent):Void
+    {
       if (finished) return;
 
       cleanup();
@@ -1185,7 +1204,8 @@ class ModInstaller
 
     if (onProgress != null)
     {
-      loader.addEventListener(ProgressEvent.PROGRESS, function(event:ProgressEvent):Void {
+      loader.addEventListener(ProgressEvent.PROGRESS, function(event:ProgressEvent):Void
+      {
         if (finished || event.bytesTotal <= 0) return;
 
         onProgress(event.bytesLoaded / event.bytesTotal);
@@ -1287,7 +1307,6 @@ class ModInstaller
 private class InstallJob
 {
   final mutex:sys.thread.Mutex;
-
   var finished:Bool = false;
   var destinations:Array<String> = [];
   var error:Null<String> = null;
@@ -1306,7 +1325,12 @@ private class InstallJob
   {
     mutex.acquire();
 
-    final snapshot:InstallSnapshot = {finished: finished, destinations: destinations, error: error, progress: progress};
+    final snapshot:InstallSnapshot = {
+      finished: finished,
+      destinations: destinations,
+      error: error,
+      progress: progress
+    };
 
     mutex.release();
 
@@ -1373,7 +1397,6 @@ private class DownloadJob
   public final tempPath:String;
 
   final mutex:sys.thread.Mutex;
-
   var bytesLoaded:Int = 0;
   var bytesTotal:Int = 0;
   var finished:Bool = false;
@@ -1397,14 +1420,13 @@ private class DownloadJob
   {
     mutex.acquire();
 
-    final snapshot:DownloadSnapshot =
-      {
-        bytesLoaded: bytesLoaded,
-        bytesTotal: bytesTotal,
-        finished: finished,
-        result: result,
-        error: error
-      };
+    final snapshot:DownloadSnapshot = {
+      bytesLoaded: bytesLoaded,
+      bytesTotal: bytesTotal,
+      finished: finished,
+      result: result,
+      error: error
+    };
 
     mutex.release();
 
@@ -1478,7 +1500,6 @@ private class DownloadOutput extends haxe.io.Output
   final file:sys.io.FileOutput;
   final job:DownloadJob;
   final buffer:haxe.io.Bytes;
-
   var buffered:Int = 0;
   var written:Int = 0;
   var closed:Bool = false;
@@ -1687,7 +1708,6 @@ typedef OneClickMod =
   var categoryId:Int;
 
   var superCategoryId:Int;
-
   var categoryName:String;
 
   /**

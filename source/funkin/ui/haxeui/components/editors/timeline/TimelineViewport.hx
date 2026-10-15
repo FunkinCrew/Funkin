@@ -168,8 +168,12 @@ class TimelineViewport extends Box
     var dy:Float = FlxG.mouse.deltaWheel.y;
     if (dx == 0 && dy == 0) return;
     if (FlxG.keys.pressed.SHIFT) return;
-    if (FlxG.mouse.gameX < screenLeft || FlxG.mouse.gameX > screenLeft + width
-      || FlxG.mouse.gameY < screenTop || FlxG.mouse.gameY > screenTop + height) return;
+    if (
+      FlxG.mouse.gameX < screenLeft
+      || FlxG.mouse.gameX > screenLeft + width
+      || FlxG.mouse.gameY < screenTop
+      || FlxG.mouse.gameY > screenTop + height
+    ) return;
 
     var isTrackpad:Bool = dx != 0 || Math.abs(dy) < TRACKPAD_WHEEL_THRESHOLD;
     if (!isTrackpad) return;
@@ -555,7 +559,6 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
   static inline var PLAYHEAD_GRAB_TOLERANCE_PX:Float = 5.0;
   static inline var DOUBLE_CLICK_MAX_DELAY:Float = 0.4;
   static inline var DOUBLE_CLICK_MAX_DIST_PX:Float = 4.0;
-
   #if FEATURE_MACOS_GESTURES
   static inline var GESTURE_PAN_SCALE_X:Float = 1.0;
   static inline var GESTURE_PAN_SCALE_Y:Float = 1.0;

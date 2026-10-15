@@ -41,7 +41,8 @@ class Events
   }
 
   #if FEATURE_NEWGROUNDS_EVENTS
-  static function onEventLogged(eventName:String, outcome:CallOutcome<LogEventData>)
+  static function onEventLogged(eventName:String,
+    outcome:CallOutcome<LogEventData>)
   {
     switch (outcome)
     {

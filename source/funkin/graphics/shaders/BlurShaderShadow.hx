@@ -27,7 +27,9 @@ class BlurShaderShadow extends FlxShader
       gl_FragColor = vec4(shadowCol * color.a);
     }
   ')
-  public function new(_shadowColor:FlxColor = 0xFF000000, _distX:Float = 5, _distY:Float = 5)
+  public function new(_shadowColor:FlxColor = 0xFF000000,
+    _distX:Float = 5,
+    _distY:Float = 5)
   {
     super();
 

@@ -77,7 +77,8 @@ class NGSaveSlot
     }
   }
 
-  public function load(?onComplete:Null<Dynamic->Void>, ?onError:Null<CallError->Void>):Void
+  public function load(?onComplete:Null<Dynamic->Void>,
+    ?onError:Null<CallError->Void>):Void
   {
     try
     {

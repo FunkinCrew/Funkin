@@ -19,7 +19,8 @@ class VersionUtil
    * @param versionRule The version rule to validate against.
    * @return `true` if the version satisfies the rule, `false` otherwise.
    */
-  public static function validateVersion(version:thx.semver.Version, versionRule:thx.semver.VersionRule):Bool
+  public static function validateVersion(version:thx.semver.Version,
+    versionRule:thx.semver.VersionRule):Bool
   {
     try
     {

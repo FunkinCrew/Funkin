@@ -40,7 +40,9 @@ class TurboKeyHandler extends FlxBasic
   var interval:Float;
   var allPressedTime:Float = 0;
 
-  function new(keys:Array<FlxKey>, delay:Float = DEFAULT_DELAY, interval:Float = DEFAULT_INTERVAL)
+  function new(keys:Array<FlxKey>,
+    delay:Float = DEFAULT_DELAY,
+    interval:Float = DEFAULT_INTERVAL)
   {
     super();
     this.keys = keys;
@@ -96,7 +98,9 @@ class TurboKeyHandler extends FlxBasic
    * @param repeatDelay How long to wait between repeats.
    * @return A TurboKeyHandler
    */
-  overload public static extern inline function build(inputKey:FlxKey, ?delay:Float = DEFAULT_DELAY, ?interval:Float = DEFAULT_INTERVAL):TurboKeyHandler
+  overload public static extern inline function build(inputKey:FlxKey,
+    ?delay:Float = DEFAULT_DELAY,
+    ?interval:Float = DEFAULT_INTERVAL):TurboKeyHandler
   {
     return new TurboKeyHandler([inputKey], delay, interval);
   }
@@ -108,7 +112,9 @@ class TurboKeyHandler extends FlxBasic
    * @param repeatDelay How long to wait between repeats.
    * @return A TurboKeyHandler
    */
-  overload public static extern inline function build(inputKeys:Array<FlxKey>, ?delay:Float = DEFAULT_DELAY, ?interval:Float = DEFAULT_INTERVAL):TurboKeyHandler
+  overload public static extern inline function build(inputKeys:Array<FlxKey>,
+    ?delay:Float = DEFAULT_DELAY,
+    ?interval:Float = DEFAULT_INTERVAL):TurboKeyHandler
   {
     return new TurboKeyHandler(inputKeys, delay, interval);
   }

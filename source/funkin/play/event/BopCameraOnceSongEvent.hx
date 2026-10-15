@@ -99,17 +99,15 @@ class BopCameraOnceSongEvent extends SongEvent
 
   public override function getEventSchema():SongEventSchema
   {
-    return new SongEventSchema([
-      for (i => camName in DEFAULT_CAMERAS) {
-        name: camName,
-        title: '${DEFAULT_CAMERA_TITLES[i]} Intensity',
-        defaultValue: DEFAULT_INTENSITY,
-        min: 0,
-        step: INTENSITY_STEP,
-        type: SongEventFieldType.FLOAT,
-        units: 'x'
-      }
-    ]);
+    return new SongEventSchema([for (i => camName in DEFAULT_CAMERAS) {
+      name: camName,
+      title: '${DEFAULT_CAMERA_TITLES[i]} Intensity',
+      defaultValue: DEFAULT_INTENSITY,
+      min: 0,
+      step: INTENSITY_STEP,
+      type: SongEventFieldType.FLOAT,
+      units: 'x'
+    }]);
   }
 
   /**

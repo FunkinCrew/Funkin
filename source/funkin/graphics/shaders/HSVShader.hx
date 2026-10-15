@@ -13,6 +13,7 @@ class HSVShader extends FlxRuntimeShader
    * The shader source, read once and shared, rather than re-read for every instance.
    */
   static var fragmentSource:Null<String> = null;
+
   static var registeredTrackerProfile:Bool = false;
 
   static function getFragmentSource():String

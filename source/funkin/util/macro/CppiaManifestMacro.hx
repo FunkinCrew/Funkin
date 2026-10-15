@@ -39,33 +39,35 @@ class CppiaManifestMacro
 
     var classRefs:Array<Expr> = [for (className in classNames) macro $p{className.split('.')}];
 
-    Context.defineType(
-      {
-        pack: [],
-        name: MANIFEST_NAME,
-        pos: pos,
-        kind: TDClass(),
-        fields: [
-          {
-            name: 'gameVersion',
-            access: [APublic, AStatic],
-            kind: FVar(macro :String, macro $v{version}),
+    Context.defineType({
+      pack: [],
+      name: MANIFEST_NAME,
+      pos: pos,
+      kind: TDClass(),
+      fields: [
+        {
+          name: 'gameVersion',
+          access: [APublic, AStatic],
+          kind: FVar(macro :String, macro $v{version}),
+          pos: pos
+        },
+        {
+          name: 'classes',
+          access: [APublic, AStatic],
+          kind: FVar(macro :Array<String>, macro $v{classNames}),
+          pos: pos
+        },
+        {
+          name: 'classRefs',
+          access: [APublic, AStatic],
+          kind: FVar(macro :Array<Class<Dynamic>>, {
+            expr: EArrayDecl(classRefs),
             pos: pos
-          },
-          {
-            name: 'classes',
-            access: [APublic, AStatic],
-            kind: FVar(macro :Array<String>, macro $v{classNames}),
-            pos: pos
-          },
-          {
-            name: 'classRefs',
-            access: [APublic, AStatic],
-            kind: FVar(macro :Array<Class<Dynamic>>, {expr: EArrayDecl(classRefs), pos: pos}),
-            pos: pos
-          }
-        ]
-      });
+          }),
+          pos: pos
+        }
+      ]
+    });
 
     Compiler.keep(MANIFEST_NAME);
   }

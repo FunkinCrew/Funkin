@@ -117,7 +117,9 @@ class ChartEditorDropdowns
   /**
    * Populate a dropdown with a list of time changes.
    */
-  public static function populateDropdownWithTimeChanges(dropDown:DropDown, timeChanges:Array<SongTimeChange>, startingTimeChange:Int = 0):DropDownEntry
+  public static function populateDropdownWithTimeChanges(dropDown:DropDown,
+    timeChanges:Array<SongTimeChange>,
+    startingTimeChange:Int = 0):DropDownEntry
   {
     dropDown.dataSource.clear();
 
@@ -266,7 +268,8 @@ class ChartEditorDropdowns
   /**
    * Populate a dropdown with a list of sticker packs.
    */
-  public static function populateDropdownWithStickerPacks(dropDown:DropDown, startingStickerPackId:Null<String>):DropDownEntry
+  public static function populateDropdownWithStickerPacks(dropDown:DropDown,
+    startingStickerPackId:Null<String>):DropDownEntry
   {
     startingStickerPackId = startingStickerPackId ?? Constants.DEFAULT_STICKER_PACK;
     dropDown.dataSource.clear();

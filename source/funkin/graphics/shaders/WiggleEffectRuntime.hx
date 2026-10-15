@@ -66,7 +66,10 @@ class WiggleEffectRuntime extends FlxRuntimeShader
     return time = v;
   }
 
-  public function new(speed:Float, freq:Float, amplitude:Float, ?effect:WiggleEffectType = DREAMY):Void
+  public function new(speed:Float,
+    freq:Float,
+    amplitude:Float,
+    ?effect:WiggleEffectType = DREAMY):Void
   {
     super(Assets.getText(Paths.frag('ui/shaders/wiggle')));
 
