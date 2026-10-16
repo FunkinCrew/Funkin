@@ -466,8 +466,8 @@ class Interp {
 						case EBinop("=>", eKey, eValue): {
 							var key:Dynamic = expr(eKey);
 							var value:Dynamic = expr(eValue);
-							isAllString = isAllString && Std.is(key, String);
-							isAllInt = isAllInt && Std.is(key, Int);
+							isAllString = isAllString && Std.isOfType(key, String);
+							isAllInt = isAllInt && Std.isOfType(key, Int);
 							isAllObject = isAllObject && Reflect.isObject(key);
 							isAllEnum = isAllEnum && Reflect.isEnumValue(key);
 							keys.push(key);
@@ -628,7 +628,7 @@ class Interp {
 	}
 
 	inline function isMap(o:Dynamic):Bool {
-		return Std.is(o, haxe.Constraints.IMap);
+		return Std.isOfType(o, haxe.Constraints.IMap);
 	}
 
 	inline function getMapValue(map:Dynamic, key:Dynamic):Dynamic {

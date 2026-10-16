@@ -53,6 +53,10 @@ class Main extends Sprite
     CrashHandler.initialize();
     CrashHandler.queryStatus();
 
+    // Fase 1.1 de Psych: comprobar que el runtime de Lua funciona.
+    funkin.modding.scripting.LuaRuntimeCheck.run();
+    funkin.modding.scripting.LuaRuntimeCheck.runFile();
+
     Lib.current.addChild(new Main());
   }
 

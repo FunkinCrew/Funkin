@@ -1297,6 +1297,12 @@ class Project extends HXProject
     addHaxelib('jsonpatch'); // JSON parsing
     addHaxelib('thx.core'); // General utility library, "the lodash of Haxe"
     addHaxelib('thx.semver'); // Version string handling
+    addHaxelib('nxscript'); // Scripting language (NXScript)
+
+    if (isDesktop())
+    {
+      addHaxelib('linc_luajit'); // Lua runtime (Psych Engine script compatibility)
+    }
 
     if (isDebug() && isCPP())
     {

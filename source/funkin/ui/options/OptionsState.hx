@@ -69,7 +69,11 @@ class OptionsState extends MusicBeatState
     optionsCodex = new Codex<OptionsMenuPageName>(Options);
     add(optionsCodex);
 
-    var options:OptionsMenu = optionsCodex.addPage(Options, new OptionsMenu());
+    var options:OptionsMenu = optionsCodex.addPage(Options, new OptionsMenu(true));
+    var qtEngine:OptionsMenu = optionsCodex.addPage(QtEngine, new OptionsMenu(false));
+    var gameplay:GameplayMenu = optionsCodex.addPage(Gameplay, new GameplayMenu());
+    var visual:VisualMenu = optionsCodex.addPage(Visual, new VisualMenu());
+    var optimization:OptimizationMenu = optionsCodex.addPage(Optimization, new OptimizationMenu());
     var preferences:PreferencesMenu = optionsCodex.addPage(Preferences, new PreferencesMenu());
     var controls:ControlsMenu = optionsCodex.addPage(Controls, new ControlsMenu());
     #if FEATURE_LAG_ADJUSTMENT
@@ -77,30 +81,23 @@ class OptionsState extends MusicBeatState
     #end
     var saveData:SaveDataMenu = optionsCodex.addPage(SaveData, new SaveDataMenu());
 
-    options.addSaveDataOptionsItem(saveData);
+    // The root menu only holds QT ENGINE and EXIT.
     options.addExitItem();
+    // The engine options live in the QT ENGINE submenu.
+    qtEngine.addSaveDataOptionsItem(saveData);
+    qtEngine.addExitItem();
 
-    if (options.hasMultipleOptions())
-    {
-      options.onExit.add(exitToMainMenu);
-      controls.onExit.add(exitControls);
-      preferences.onExit.add(optionsCodex.switchPage.bind(Options));
-      #if FEATURE_LAG_ADJUSTMENT
-      offsets.onExit.add(exitOffsets);
-      #end
-      saveData.onExit.add(optionsCodex.switchPage.bind(Options));
-    }
-    else
-    {
-      // No need to show Options page
-      #if mobile
-      preferences.onExit.add(exitToMainMenu);
-      optionsCodex.setPage(Preferences);
-      #else
-      controls.onExit.add(exitToMainMenu);
-      optionsCodex.setPage(Controls);
-      #end
-    }
+    options.onExit.add(exitToMainMenu);
+    qtEngine.onExit.add(optionsCodex.switchPage.bind(Options));
+    gameplay.onExit.add(optionsCodex.switchPage.bind(QtEngine));
+    visual.onExit.add(optionsCodex.switchPage.bind(QtEngine));
+    optimization.onExit.add(optionsCodex.switchPage.bind(QtEngine));
+    controls.onExit.add(exitControls);
+    preferences.onExit.add(optionsCodex.switchPage.bind(QtEngine));
+    #if FEATURE_LAG_ADJUSTMENT
+    offsets.onExit.add(exitOffsets);
+    #end
+    saveData.onExit.add(optionsCodex.switchPage.bind(QtEngine));
 
     super.create();
     #if mobile
@@ -125,7 +122,7 @@ class OptionsState extends MusicBeatState
       });
       FlxG.sound.music.fadeIn(0.5, 1);
     });
-    optionsCodex.switchPage(Options);
+    optionsCodex.switchPage(QtEngine);
   }
 
   function exitControls():Void
@@ -134,7 +131,7 @@ class OptionsState extends MusicBeatState
     PlayerSettings.reset();
     PlayerSettings.init();
 
-    optionsCodex.switchPage(Options);
+    optionsCodex.switchPage(QtEngine);
   }
 
   function exitToMainMenu():Void
@@ -164,11 +161,23 @@ class OptionsMenu extends Page<OptionsMenuPageName>
 
   final CAMERA_MARGIN:Int = 150;
 
-  public function new()
+  /**
+   * @param isRoot True for the main Options page (QT ENGINE + EXIT), false for the QT ENGINE submenu.
+   */
+  public function new(isRoot:Bool = true)
   {
     super();
     add(items = new TextMenuList());
 
+    if (isRoot)
+    {
+      createItem('QT ENGINE', function() codex.switchPage(QtEngine));
+    }
+    else
+    {
+    createItem('GAMEPLAY', function() codex.switchPage(Gameplay));
+    createItem('VISUAL', function() codex.switchPage(Visual));
+    createItem('OPTIMIZATION', function() codex.switchPage(Optimization));
     createItem('PREFERENCES', function() codex.switchPage(Preferences));
     #if mobile
     if (ControlsHandler.hasExternalInputDevice)
@@ -252,6 +261,7 @@ class OptionsMenu extends Page<OptionsMenuPageName>
       });
     }
     #end
+    }
 
     // Create an object for the camera to track.
     camFocusPoint = new FlxObject(0, 0, 140, 70);
@@ -350,6 +360,10 @@ class OptionsMenu extends Page<OptionsMenuPageName>
 enum abstract OptionsMenuPageName(String) to PageName
 {
   public var Options = 'options';
+  public var QtEngine = 'qtEngine';
+  public var Gameplay = 'gameplay';
+  public var Visual = 'visual';
+  public var Optimization = 'optimization';
   public var Controls = 'controls';
   public var Colors = 'colors';
   public var Mods = 'mods';

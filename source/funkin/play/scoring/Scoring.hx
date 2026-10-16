@@ -124,6 +124,12 @@ class Scoring
   public static final PBOT1_PERFECT_THRESHOLD:Float = 5.0; // 5ms
 
   /**
+   * The threshold at which a perfect hit is upgraded to flawless (a tier above perfect).
+   * Flawless is a sub-tier of perfect: the judgement stays 'sick' so scripts and combo logic are unchanged.
+   */
+  public static final PBOT1_FLAWLESS_THRESHOLD:Float = 4.0; // 4ms
+
+  /**
    * The threshold at which a note hit is considered missed.
    * `160ms`
    */

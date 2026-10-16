@@ -31,12 +31,13 @@ class PopUpStuff extends FlxTypedGroup<FunkinSprite>
   /**
    * Builds the "perfect" popup. Perfect is a sub-tier of sick, so it follows the sick pixel setting.
    */
-  function buildPerfectSprite():Null<FunkinSprite>
+  function buildTierSprite(tier:String):Null<FunkinSprite>
   {
     final isPixel:Bool = noteStyle.isJudgementSpritePixel('sick');
+    final textureName:String = isPixel ? '$tier-pixel' : tier;
 
     final result:FunkinSprite = new FunkinSprite();
-    result.loadTexture(isPixel ? 'perfect-pixel' : 'perfect');
+    result.loadTexture(textureName);
     result.scale.set(isPixel ? 3 : 0.5, isPixel ? 3 : 0.5);
     result.scrollFactor.set(0.2, 0.2);
     result.antialiasing = !isPixel;
@@ -47,7 +48,7 @@ class PopUpStuff extends FlxTypedGroup<FunkinSprite>
     // In that case, discard the sprite so the caller can fall back to the sick popup.
     if (result.graphic == null)
     {
-      FlxG.log.warn('Perfect texture missing (${isPixel ? 'perfect-pixel' : 'perfect'}), falling back to sick.');
+      FlxG.log.warn('$tier texture missing ($textureName), falling back.');
       result.destroy();
       return null;
     }
@@ -58,10 +59,13 @@ class PopUpStuff extends FlxTypedGroup<FunkinSprite>
   {
     if (daRating == null) daRating = "good";
 
-    // Perfect is a sub-tier of sick, so it reuses the sick style settings.
-    final styleRating:String = daRating == 'perfect' ? 'sick' : daRating;
-    var rating:Null<FunkinSprite> = daRating == 'perfect' ? buildPerfectSprite() : noteStyle.buildJudgementSprite(daRating);
-    if (rating == null && daRating == 'perfect') rating = noteStyle.buildJudgementSprite('sick');
+    // Perfect and flawless are sub-tiers of sick, so they reuse the sick style settings.
+    final isTier:Bool = daRating == 'perfect' || daRating == 'flawless';
+    final styleRating:String = isTier ? 'sick' : daRating;
+    var rating:Null<FunkinSprite> = isTier ? buildTierSprite(daRating) : noteStyle.buildJudgementSprite(daRating);
+    // Flawless falls back to perfect first, then to sick, if its texture is missing.
+    if (rating == null && daRating == 'flawless') rating = buildTierSprite('perfect');
+    if (rating == null && isTier) rating = noteStyle.buildJudgementSprite('sick');
     if (rating == null) return;
 
     rating.zIndex = 1000;

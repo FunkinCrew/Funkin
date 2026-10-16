@@ -45,6 +45,7 @@ class ModuleHandler
         trace('   Failed to instantiate module: ${moduleCls}');
       }
     }
+    funkin.modding.scripting.ScriptLoader.loadModules();
     reorderModuleCache();
 
     trace('[MODULEHANDLER] Module cache loaded.');
@@ -63,6 +64,15 @@ class ModuleHandler
   static function addToModuleCache(module:Module):Void
   {
     moduleCache.set(module.moduleId, module);
+  }
+
+  /**
+   * Adds a module created at runtime, such as one from a script file.
+   */
+  public static function registerModule(module:Module):Void
+  {
+    addToModuleCache(module);
+    reorderModuleCache();
   }
 
   static function reorderModuleCache():Void

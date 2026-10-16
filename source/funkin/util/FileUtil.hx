@@ -845,6 +845,27 @@ class FileUtil
   }
 
   /**
+   * Copies a directory and all of its contents. Only works on native.
+   */
+  public static function copyDirectory(src:String, dest:String):Void
+  {
+    #if sys
+    if (!directoryExists(src)) throw 'Path is not a directory: "$src"';
+
+    createDirIfNotExists(dest);
+    for (entry in readDir(src))
+    {
+      var srcPath = haxe.io.Path.join([src, entry]);
+      var destPath = haxe.io.Path.join([dest, entry]);
+      if (directoryExists(srcPath)) copyDirectory(srcPath, destPath);
+      else sys.io.File.copy(srcPath, destPath);
+    }
+    #else
+    throw 'Directory copying is not supported on this platform.';
+    #end
+  }
+
+  /**
    * Delete a directory, optionally including its contents, and optionally ignoring some paths.
    * Only works on native.
    *

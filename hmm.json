@@ -186,12 +186,6 @@
       "version": "1.1.0"
     },
     {
-      "name": "lime",
-      "type": "git",
-      "ref": "268dacfb2609766e14bef9ea5b669e91501852d2",
-      "url": "https://github.com/FunkinCrew/lime"
-    },
-    {
       "name": "newgrounds",
       "type": "git",
       "dir": null,
@@ -224,6 +218,11 @@
       "dir": null,
       "ref": "bdb191fe7cf745c02a980749906dbf22719e200b",
       "url": "https://github.com/fponticelli/thx.semver"
+    },
+    {
+      "name": "nxscript",
+      "type": "haxelib",
+      "version": "0.5.8"
     }
   ]
 }

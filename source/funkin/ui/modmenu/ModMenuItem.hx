@@ -1,0 +1,407 @@
+package funkin.ui.modmenu;
+
+import flixel.text.FlxText;
+import flixel.util.FlxColor;
+import funkin.graphics.FunkinSprite;
+import funkin.group.FunkinGroup.FunkinSpriteGroup;
+import polymod.Polymod.ModMetadata;
+import polymod.Polymod.ModDependencies;
+import flixel.math.FlxRect;
+import funkin.Paths;
+import flixel.math.FlxMath;
+import flixel.tweens.FlxEase;
+
+/**
+ * Represents an installed mod visually in the mod menu.
+ */
+class ModMenuItem extends FunkinSpriteGroup
+{
+  public static final ITEM_WIDTH:Int = 350;
+  public static final ICON_HEIGHT:Int = 96;
+  public static final DESC_WIDTH:Int = 216;
+  public static final ITEM_WIDTH_PADDING:Int = 24;
+  public static var BG_SLIDE_DISTANCE:Float = 14;
+  public static var BG_SLIDE_LERP:Float = 20;
+  public static var iconStrings:Array<String> = [];
+
+  /**
+   * Whether this mod item is immutable in list operations.
+   */
+  public var locked:Bool = false;
+
+  /**
+   * The metadata for the mod this item represents.
+   */
+  public final mod:Null<ModMetadata>;
+
+  var fallbackModId:String;
+  var fallbackTitle:String;
+  var fallbackDescription:String;
+  var bgOffsetX:Float = 0;
+  var bgOffsetY:Float = 0;
+
+  /**
+   * The icon for the mod's thumbnail.
+   */
+  var modIcon:FunkinSprite;
+
+  /**
+   * The text displaying the title of the mod.
+   */
+  var titleText:FlxText;
+
+  /**
+   * The text displaying the description of the mod.
+   */
+  var descriptionText:FlxText;
+
+  /**
+   * The sprite for the background color.
+   */
+  var background:FunkinSprite;
+
+  /**
+   * Whether this mod is selected (pressing arrows moves it around)
+   */
+  public var selected(default, set):Bool = false;
+
+  function set_selected(value:Bool):Bool
+  {
+    this.selected = value;
+    return selected;
+  }
+
+  /**
+   * Move the background in a direction so it visibly slides into place.
+   * dir: -1 up, 1 down, -2 left, 2 right.
+   */
+  public function slideBackgroundFrom(dir:Int):Void
+  {
+    switch (dir)
+    {
+      case -1:
+        bgOffsetX = 0;
+        bgOffsetY = -BG_SLIDE_DISTANCE;
+      case 1:
+        bgOffsetX = 0;
+        bgOffsetY = BG_SLIDE_DISTANCE;
+      case -2:
+        bgOffsetX = -BG_SLIDE_DISTANCE;
+        bgOffsetY = 0;
+      case 2:
+        bgOffsetX = BG_SLIDE_DISTANCE;
+        bgOffsetY = 0;
+      default:
+        bgOffsetX = 0;
+        bgOffsetY = 0;
+    }
+    background.localX = -bgOffsetX;
+    background.localY = -bgOffsetY;
+  }
+
+  /**
+   * Whether this mod is enabled (it's on the right side)
+   */
+  public var enabled(default, set):Bool = false;
+
+  function set_enabled(value:Bool):Bool
+  {
+    this.enabled = value;
+    return enabled;
+  }
+
+  /**
+   * True while this item is being manually lerped from one list to another (or within a list).
+   */
+  public var isInFlight(default, null):Bool = false;
+
+  var flightStartX:Float = 0;
+  var flightStartY:Float = 0;
+  var flightTargetX:Float = 0;
+  var flightTargetY:Float = 0;
+  var flightElapsed:Float = 0;
+  var flightDuration:Float = 0.2;
+  var flightEase:Float->Float = FlxEase.quadOut;
+  var flightOnComplete:Null<Void->Void> = null;
+
+  /**
+   * Starts a manual lerp from the item's CURRENT position to the given target.
+   * @param targetX Target x position.
+   * @param targetY Target y position.
+   * @param duration Flight duration in seconds.
+   * @param ease Optional ease function (defaults to FlxEase.quadOut).
+   * @param onComplete Optional callback fired once, when the flight finishes (naturally or via finishFlight()).
+   */
+  public function startFlight(targetX:Float, targetY:Float, duration:Float, ?ease:Float->Float, ?onComplete:Void->Void):Void
+  {
+    flightStartX = localX;
+    flightStartY = localY;
+    flightTargetX = targetX;
+    flightTargetY = targetY;
+    flightElapsed = 0;
+    flightDuration = duration > 0 ? duration : 0.0001;
+    flightEase = ease != null ? ease : FlxEase.quadOut;
+    flightOnComplete = onComplete;
+    isInFlight = true;
+  }
+
+  /**
+   * Immediately finishes the flight, snapping to the exact target and firing the
+   * completion callback (if any). Safe to call even when not in flight (no-op then).
+   */
+  public function finishFlight():Void
+  {
+    if (!isInFlight) return;
+
+    isInFlight = false;
+    localX = flightTargetX;
+    localY = flightTargetY;
+
+    var cb = flightOnComplete;
+    flightOnComplete = null;
+
+    if (cb != null) cb();
+  }
+
+  /**
+   * Cancels the flight in place, WITHOUT snapping to the target and WITHOUT firing
+   * the completion callback. Use when something else is about to take over positioning
+   * this frame anyway (e.g. a fresh startFlight() call, or a hard repositionItems()).
+   */
+  public function cancelFlight():Void
+  {
+    isInFlight = false;
+    flightOnComplete = null;
+  }
+
+  function updateFlight(elapsed:Float):Void
+  {
+    if (!isInFlight) return;
+
+    flightElapsed += elapsed;
+    var t:Float = flightElapsed / flightDuration;
+
+    if (t >= 1)
+    {
+      finishFlight();
+      return;
+    }
+
+    var easedT:Float = flightEase(t);
+    localX = FlxMath.lerp(flightStartX, flightTargetX, easedT);
+    localY = FlxMath.lerp(flightStartY, flightTargetY, easedT);
+  }
+
+  var flashElapsed:Float = -1;
+
+  static inline final FLASH_DURATION:Float = 0.5;
+  static inline final FLASH_START_ALPHA:Float = 1.0;
+
+  var flashTargetAlpha:Float = 0.25;
+
+  public function new(mod:Null<ModMetadata>,
+    iconAssetPath:Null<String> = null,
+    fallbackModId:String = '__unknown_mod__',
+    fallbackTitle:String = 'Unknown Mod',
+    fallbackDescription:String = '')
+  {
+    super();
+
+    this.mod = mod;
+    this.fallbackModId = fallbackModId;
+    this.fallbackTitle = fallbackTitle;
+    this.fallbackDescription = fallbackDescription;
+
+    background = new FunkinSprite(0, 0);
+    background.makeGraphic(ITEM_WIDTH - ITEM_WIDTH_PADDING, ICON_HEIGHT, FlxColor.WHITE);
+    background.localX = 0;
+    background.localY = 0;
+    background.localAlpha = 0;
+    add(background);
+
+    modIcon = new FunkinSprite(0, 0);
+    if (iconAssetPath != null)
+    {
+      modIcon.loadGraphic(Paths.image(iconAssetPath));
+      finishModIcon();
+    }
+    else if (mod != null)
+    {
+      if (mod.icon != null)
+      {
+        loadModIcon(mod.icon);
+      }
+      else
+      {
+        trace('No icon found for mod ${mod.id}, using fallback');
+        useFallbackModIcon();
+      }
+    }
+
+    titleText = new FlxText(0, 0, DESC_WIDTH);
+    titleText.setFormat(Paths.font('FunkinLingLong.otf'), 30, FlxColor.WHITE);
+    titleText.localX = ICON_HEIGHT + 8;
+    titleText.fieldHeight = 42;
+    titleText.text = getModTitle();
+    titleText.scale.set(1, 0.8);
+    add(titleText);
+
+    titleText.clipRect = FlxRect.get(0, 0, DESC_WIDTH, 32);
+
+    descriptionText = new FlxText(0, 0, DESC_WIDTH);
+    descriptionText.setFormat(Paths.font('FunkinLingLong.otf'), 20, FlxColor.WHITE);
+    descriptionText.localX = ICON_HEIGHT + 8;
+    descriptionText.fieldHeight = 64;
+    descriptionText.localY = titleText.localY + Math.min(titleText.height, 32) + 4;
+    descriptionText.text = getModDescription();
+    descriptionText.scale.set(1, 0.8);
+    descriptionText.localAlpha = 0.7;
+    add(descriptionText);
+
+    descriptionText.clipRect = FlxRect.get(0, 0, DESC_WIDTH, ICON_HEIGHT - titleText.height - 4);
+  }
+
+  override public function update(elapsed:Float):Void
+  {
+    super.update(elapsed);
+
+    updateFlight(elapsed);
+    updateBackgroundColor();
+    updateFlash(elapsed);
+
+    if (bgOffsetX != 0 || bgOffsetY != 0)
+    {
+      var t = Math.min(1, BG_SLIDE_LERP * elapsed);
+      bgOffsetX += (0 - bgOffsetX) * t;
+      bgOffsetY += (0 - bgOffsetY) * t;
+
+      if (Math.abs(bgOffsetX) < 0.1) bgOffsetX = 0;
+      if (Math.abs(bgOffsetY) < 0.1) bgOffsetY = 0;
+
+      background.localX = -bgOffsetX;
+      background.localY = -bgOffsetY;
+    }
+  }
+
+  function updateBackgroundColor():Void
+  {
+    if (flashElapsed >= 0) return;
+
+    if (this.selected) background.localAlpha = 0.25;
+    else
+      background.localAlpha = 0;
+  }
+
+  /**
+   * Briefly flashes the background to full alpha, then eases back down to its
+   * resting alpha (0.25 if selected, 0 otherwise) over FLASH_DURATION seconds.
+   */
+  public function flashBackground():Void
+  {
+    flashTargetAlpha = this.selected ? 0.25 : 0;
+    background.localAlpha = FLASH_START_ALPHA;
+    flashElapsed = 0;
+  }
+
+  function updateFlash(elapsed:Float):Void
+  {
+    if (flashElapsed < 0) return;
+
+    flashElapsed += elapsed;
+    var t:Float = flashElapsed / FLASH_DURATION;
+
+    if (t >= 1)
+    {
+      background.localAlpha = flashTargetAlpha;
+      flashElapsed = -1;
+      return;
+    }
+
+    var easedT:Float = FlxEase.quintOut(t);
+    background.localAlpha = FlxMath.lerp(FLASH_START_ALPHA, flashTargetAlpha, easedT);
+  }
+
+  function loadModIcon(bytes:haxe.io.Bytes):Void
+  {
+    var future = openfl.utils.ByteArray.loadFromBytes(bytes);
+
+    future.onComplete((openFlBytes:openfl.utils.ByteArray) ->
+    {
+      if (!exists || children == null || modIcon == null) return;
+      try
+      {
+        var bitmapData = openfl.display.BitmapData.fromBytes(openFlBytes);
+        if (bitmapData == null)
+        {
+          useFallbackModIcon();
+          return;
+        }
+        modIcon.loadGraphic(bitmapData);
+        finishModIcon();
+      }
+      catch (error)
+      {
+        trace('Could not decode the icon for mod ${getModId()}: ${error}');
+        useFallbackModIcon();
+      }
+    });
+    future.onError((error) ->
+    {
+      trace('Could not load the icon for mod ${getModId()}: ${error}');
+      useFallbackModIcon();
+    });
+  }
+
+  function useFallbackModIcon():Void
+  {
+    if (!exists || children == null) return;
+    modIcon.loadGraphic(Paths.image('ui/mods/fallback-icon'));
+    finishModIcon();
+  }
+
+  function finishModIcon():Void
+  {
+    if (!exists || children == null) return;
+    if (!children.contains(modIcon)) add(modIcon);
+    modIcon.scrollFactor.set();
+    modIcon.antialiasing = true;
+    modIcon.setGraphicSize(ICON_HEIGHT, ICON_HEIGHT);
+    modIcon.localScale.set(modIcon.scale.x, modIcon.scale.y);
+    modIcon.updateHitbox();
+  }
+
+  public function getModId():String
+  {
+    return mod != null ? mod.id : fallbackModId;
+  }
+
+  public function getModTitle():String
+  {
+    return mod != null ? mod.title : fallbackTitle;
+  }
+
+  public function getModDescription():String
+  {
+    return mod != null ? mod.description : fallbackDescription;
+  }
+
+  public function getDependencies():ModDependencies
+  {
+    return mod != null ? mod.dependencies : cast [];
+  }
+
+  public function getOptionalDependencies():ModDependencies
+  {
+    return mod != null ? mod.optionalDependencies : cast [];
+  }
+
+  public function getModVersion():Dynamic
+  {
+    return mod != null ? mod.modVersion : null;
+  }
+
+  override public function toString():String
+  {
+    return 'ModMenuItem(${getModId()})';
+  }
+}

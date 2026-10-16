@@ -1,5 +1,8 @@
 package funkin.play.stage;
 
+import funkin.Preferences;
+import flixel.FlxG;
+import flixel.addons.display.FlxBackdrop;
 import openfl.display.BlendMode;
 import funkin.graphics.framebuffer.FrameBufferManager;
 import flixel.util.FlxColor;
@@ -149,7 +152,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
         // Reset danceEvery value.
         if (Std.isOfType(prop, Bopper))
         {
-          cast(prop, Bopper).danceEvery = dataProp.danceEvery;
+          cast(prop, Bopper).danceEvery = Preferences.hideAnimatedStages ? 0 : dataProp.danceEvery;
         }
       }
     }
@@ -161,6 +164,22 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    * The default stage construction routine. Called when the stage is going to be played in.
    * Instantiates each prop and adds it to the stage, while setting its parameters.
    */
+  static final FOG_PROP_NAMES:Array<String> = ['fog', 'mist', 'haze', 'niebla', 'smoke', 'grey'];
+
+  /**
+   * Whether a stage prop name looks like a fog/haze layer.
+   */
+  static function isFogPropName(name:String):Bool
+  {
+    if (name == null) return false;
+    var lower:String = name.toLowerCase();
+    for (fogName in FOG_PROP_NAMES)
+    {
+      if (lower.indexOf(fogName) != -1) return true;
+    }
+    return false;
+  }
+
   function buildStage():Void
   {
     log('Building stage "${this.id}" for display...');
@@ -177,12 +196,14 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
       var propSprite:StageProp;
       if (dataProp.danceEvery != 0 || isAnimated)
       {
-        propSprite = new Bopper(dataProp.danceEvery);
+        propSprite = new Bopper(Preferences.hideAnimatedStages ? 0 : dataProp.danceEvery);
       }
       else
       {
         propSprite = new StageProp();
       }
+
+      if (Preferences.hideFogs && isFogPropName(dataProp.name)) propSprite.visible = false;
 
       if (isAnimated)
       {
@@ -355,6 +376,25 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    * Refreshes the stage, by redoing the render order of all props.
    * It does this based on the `zIndex` of each prop.
    */
+  /**
+   * Hides the tiled mist layers (FlxBackdrop) that stage scripts add when Hide Fogs is enabled.
+   * Those layers have no name, so they are found by class.
+   */
+  function hideFogBackdrops():Void
+  {
+    for (member in members)
+    {
+      if (member != null && Std.isOfType(member, FlxBackdrop)) member.visible = false;
+    }
+  }
+
+  override public function update(elapsed:Float):Void
+  {
+    super.update(elapsed);
+    if (Preferences.hideFogs) hideFogBackdrops();
+    if (Preferences.hideRain && FlxG.camera.filters != null) FlxG.camera.filters = null;
+  }
+
   public function refresh():Void
   {
     sort(SortUtil.byZIndex, FlxSort.ASCENDING);
@@ -366,6 +406,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    */
   public function setShader(shader:FlxShader):Void
   {
+    if (Preferences.hideShaders) return;
     forEachAlive(function(prop:FlxSprite)
     {
       prop.shader = shader;

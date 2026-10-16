@@ -614,6 +614,139 @@ class Preferences
   }
 
   /**
+   * If enabled, note splashes are not shown when notes are hit.
+   * @default `false`
+   */
+  public static var hideNoteSplashes(get, set):Bool;
+
+  static function get_hideNoteSplashes():Bool
+  {
+    return Save?.instance?.options?.hideNoteSplashes ?? false;
+  }
+
+  static function set_hideNoteSplashes(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.hideNoteSplashes = value;
+    Save.system.flush();
+    return value;
+  }
+
+  /**
+   * If enabled, hold covers at the end of long notes are not shown.
+   * @default `false`
+   */
+  public static var hideHoldCovers(get, set):Bool;
+
+  static function get_hideHoldCovers():Bool
+  {
+    return Save?.instance?.options?.hideHoldCovers ?? false;
+  }
+
+  static function set_hideHoldCovers(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.hideHoldCovers = value;
+    Save.system.flush();
+    return value;
+  }
+
+  /**
+   * If enabled, the health bar, icons and score are hidden.
+   * @default `false`
+   */
+  public static var hideHud(get, set):Bool;
+
+  static function get_hideHud():Bool
+  {
+    return Save?.instance?.options?.hideHud ?? false;
+  }
+
+  static function set_hideHud(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.hideHud = value;
+    Save.system.flush();
+    return value;
+  }
+
+  /**
+   * If enabled, stage shaders are not applied.
+   * @default `false`
+   */
+  public static var hideShaders(get, set):Bool;
+
+  static function get_hideShaders():Bool
+  {
+    return Save?.instance?.options?.hideShaders ?? false;
+  }
+
+  static function set_hideShaders(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.hideShaders = value;
+    Save.system.flush();
+    return value;
+  }
+
+  /**
+   * If enabled, animated stage props do not play their idle dance.
+   * @default `false`
+   */
+  public static var hideAnimatedStages(get, set):Bool;
+
+  static function get_hideAnimatedStages():Bool
+  {
+    return Save?.instance?.options?.hideAnimatedStages ?? false;
+  }
+
+  static function set_hideAnimatedStages(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.hideAnimatedStages = value;
+    Save.system.flush();
+    return value;
+  }
+
+  /**
+   * If enabled, stage props named like fog, mist or haze are hidden.
+   * @default `false`
+   */
+  public static var hideFogs(get, set):Bool;
+
+  static function get_hideFogs():Bool
+  {
+    return Save?.instance?.options?.hideFogs ?? false;
+  }
+
+  static function set_hideFogs(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.hideFogs = value;
+    Save.system.flush();
+    return value;
+  }
+
+  /**
+   * If enabled, the rain camera filter used by some stages is removed.
+   * @default `false`
+   */
+  public static var hideRain(get, set):Bool;
+
+  static function get_hideRain():Bool
+  {
+    return Save?.instance?.options?.hideRain ?? false;
+  }
+
+  static function set_hideRain(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.hideRain = value;
+    Save.system.flush();
+    return value;
+  }
+
+  /**
    * If enabled, the player's strumline is centered and the opponent's notes are hidden.
    * @default `false`
    */

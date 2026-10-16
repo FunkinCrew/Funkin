@@ -1,5 +1,6 @@
 package funkin.data.character;
 
+import funkin.modding.psych.PsychCharacterAdapter;
 import funkin.data.animation.AnimationData;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
@@ -431,7 +432,16 @@ class CharacterDataParser
 
     try
     {
-      var charData:CharacterData = cast Json.parse(rawJson);
+      var raw:Dynamic = Json.parse(rawJson);
+
+      // Fase 2.3: personajes de Psych Engine se convierten al formato de QT Slice.
+      if (PsychCharacterAdapter.isPsychCharacter(raw))
+      {
+        trace('[PSYCH] Personaje de Psych convertido: ' + charId);
+        return cast PsychCharacterAdapter.convert(raw, charId);
+      }
+
+      var charData:CharacterData = cast raw;
       return charData;
     }
     catch (e)

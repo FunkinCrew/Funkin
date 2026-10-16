@@ -114,12 +114,6 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
       Preferences.naughtyness = value;
     }, Preferences.naughtyness);
     #end
-    createPrefItemCheckbox('Downscroll', 'When enabled, notes move downwards toward the strumline at the bottom of the screen.', function(value:Bool):Void
-    {
-      Preferences.downscroll = value;
-    },
-      Preferences.downscroll, #if mobile ControlsHandler.hasExternalInputDevice
-      || Preferences.controlsScheme != FunkinHitboxControlSchemes.Arrows #end);
     createPrefItemPercentage('Strumline Background', 'Show a semi-transparent background behind the strumline.', function(value:Int):Void
     {
       Preferences.strumlineBackgroundOpacity = value;
@@ -146,23 +140,10 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
       Preferences.hapticsIntensityMultiplier = value;
     }, null, Preferences.hapticsIntensityMultiplier, 0.1, 5, 0.1, 1);
     #end
-    createPrefItemCheckbox('Flashing Lights', 'When disabled, flashing effects are dampened. Useful for people with photosensitive epilepsy.',
-      function(value:Bool):Void
-      {
-        Preferences.flashingLights = value;
-      }, Preferences.flashingLights);
-    createPrefItemCheckbox('Camera Zooms', 'When enabled, the camera bounces during songs.', function(value:Bool):Void
-    {
-      Preferences.zoomCamera = value;
-    }, Preferences.zoomCamera);
     createPrefItemCheckbox('Subtitles', 'When enabled, subtitles appear during some songs and cutscenes.', function(value:Bool):Void
     {
       Preferences.subtitles = value;
     }, Preferences.subtitles);
-    createPrefItemCheckbox('Middlescroll', 'When enabled, your notes are centered and the opponent\'s notes are hidden.', function(value:Bool):Void
-    {
-      Preferences.middlescroll = value;
-    }, Preferences.middlescroll);
     createPrefItemCheckbox('Time Bar', 'When enabled, a bar with the song name and time is shown at the top (downscroll) or bottom (upscroll).', function(value:Bool):Void
     {
       Preferences.timeBar = value;

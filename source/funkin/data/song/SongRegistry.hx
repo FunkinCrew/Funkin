@@ -1,6 +1,7 @@
 package funkin.data.song;
 
 import funkin.data.freeplay.player.PlayerRegistry;
+import funkin.modding.psych.PsychSongAdapter;
 import funkin.data.song.migrator.SongData_v2_0_0.SongMetadata_v2_0_0;
 import funkin.data.song.migrator.SongData_v2_1_0.SongMetadata_v2_1_0;
 import funkin.data.song.SongData.SongChartData;
@@ -85,6 +86,11 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
     {
       return songDataPath.split('/')[0];
     });
+    // Fase 2.2: canciones de Psych (data/<cancion>/) de los mods habilitados.
+    for (psychId in PsychSongAdapter.listSongIds())
+    {
+      if (entryIdList.indexOf(psychId) == -1) entryIdList.push(psychId);
+    }
     var unscriptedEntryIds:Array<String> = entryIdList.filter(function(entryId:String):Bool
     {
       return !entries.exists(entryId);
@@ -467,6 +473,10 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
     var entryFilePath:String = Paths.json('$dataFilePath/$id/$id-metadata${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}');
     if (!openfl.Assets.exists(entryFilePath))
     {
+      // Fase 2.2: si es una canción de Psych, usa su chart convertido.
+      var psychMeta:Null<String> = variation == Constants.DEFAULT_VARIATION ? PsychSongAdapter.metadataJson(id) : null;
+      if (psychMeta != null) return {fileName: 'psych:' + id, contents: psychMeta};
+
       trace('  WARNING '.bold().bg_yellow() + ' Could not locate file $entryFilePath');
       return null;
     }
@@ -491,7 +501,13 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
   {
     variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
     var entryFilePath:String = Paths.json('$dataFilePath/$id/$id-chart${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}');
-    if (!openfl.Assets.exists(entryFilePath)) return null;
+    if (!openfl.Assets.exists(entryFilePath))
+    {
+      // Fase 2.2: si es una canción de Psych, usa su chart convertido.
+      var psychChart:Null<String> = variation == Constants.DEFAULT_VARIATION ? PsychSongAdapter.chartJson(id) : null;
+      if (psychChart != null) return {fileName: 'psych:' + id, contents: psychChart};
+      return null;
+    }
     var rawJson:String = openfl.Assets.getText(entryFilePath);
     if (rawJson == null) return null;
     rawJson = rawJson.trim();

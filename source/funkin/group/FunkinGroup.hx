@@ -19,6 +19,19 @@ typedef FunkinSpriteGroup = FunkinGroup<FlxSprite>;
 class FunkinGroup<T:FlxSprite> extends FlxSprite
 {
   /**
+   * Aplica un recorte (clipRect) local a un hijo. Usado por el mod menu.
+   */
+  public function setChildClipRect(child:FlxSprite, ?localClip:FlxRect):Void
+  {
+    child.clipRect = localClip;
+  }
+
+  /**
+   * Refresca los recortes de los hijos. Stub: no hace nada todavía.
+   */
+  public function updateClipRects():Void {}
+
+  /**
    * The children of this FunkinGroup.
    */
   public var children:Null<Array<T>>;

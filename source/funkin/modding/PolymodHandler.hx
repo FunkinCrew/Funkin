@@ -51,7 +51,7 @@ class PolymodHandler
   /**
    * Where relative to the executable that mods are located.
    */
-  static final MOD_FOLDER:String =
+  public static final MOD_FOLDER:String =
     #if (REDIRECT_ASSETS_FOLDER && mac)
     '../../../../../../../example_mods'
     #elseif REDIRECT_ASSETS_FOLDER
@@ -529,9 +529,36 @@ class PolymodHandler
    * Retrieve a list of metadata for ALL installed mods, including disabled mods.
    * @return An array of mod metadata
    */
-  public static function getAllMods():Array<ModMetadata>
+  /**
+   * Returns the names of the entries inside the mods folder (folders and zips).
+   */
+  public static function getModFolderEntries():Array<String>
+  {
+    #if sys
+    createModRoot();
+    return FileUtil.readDir(MOD_FOLDER);
+    #else
+    return [];
+    #end
+  }
+
+  public static function getAllMods(refresh:Bool = false):Array<ModMetadata>
   {
     trace('Scanning the mods folder...');
+
+    // Fase 2.1: mods de Psych (pack.json) sin metadatos reciben _polymod_meta.json y se activan.
+    var psychCreated:Array<String> = funkin.modding.psych.PsychModAdapter.ensureMetadata(MOD_FOLDER);
+    if (psychCreated.length > 0)
+    {
+      modFileSystem = null;
+      var enabledDirs:Array<String> = Save.instance.enabledModDirs.value.copy();
+      for (dir in psychCreated)
+      {
+        if (enabledDirs.indexOf(dir) == -1) enabledDirs.push(dir);
+      }
+      Save.instance.enabledModDirs.value = enabledDirs;
+      Save.system.flush();
+    }
 
     if (modFileSystem == null) modFileSystem = buildFileSystem();
 
@@ -584,6 +611,55 @@ class PolymodHandler
       }
     }
     return enabledMods;
+  }
+
+  /**
+   * Activa un mod por su ID (lo añade a la lista de mods habilitados).
+   */
+  public static function enableMod(modId:String):Void
+  {
+    var metadata:Null<ModMetadata> = null;
+    for (mod in getAllMods())
+    {
+      if (mod.id == modId)
+      {
+        metadata = mod;
+        break;
+      }
+    }
+    if (metadata == null) return;
+
+    var enabledDirs:Array<String> = Save.instance.enabledModDirs.value.copy();
+    if (enabledDirs.indexOf(metadata.dirName) == -1)
+    {
+      enabledDirs.push(metadata.dirName);
+      Save.instance.enabledModDirs.value = enabledDirs;
+      Save.system.flush();
+    }
+  }
+
+  /**
+   * Desactiva todos los mods.
+   */
+  public static function disableAllMods():Void
+  {
+    Save.instance.enabledModDirs.value = [];
+    Save.system.flush();
+  }
+
+  /**
+   * Devuelve los mods instalados que NO están habilitados, ordenados por título.
+   */
+  public static function getDisabledMods():Array<ModMetadata>
+  {
+    var enabledDirs:Array<String> = Save.instance.enabledModDirs.value;
+    var disabled:Array<ModMetadata> = [];
+    for (mod in getAllMods())
+    {
+      if (enabledDirs.indexOf(mod.dirName) == -1) disabled.push(mod);
+    }
+    disabled.sort((a, b) -> Reflect.compare(a.title.toLowerCase(), b.title.toLowerCase()));
+    return disabled;
   }
 
   /**

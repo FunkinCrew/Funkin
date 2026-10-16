@@ -60,6 +60,9 @@ class DebugMenuSubState extends MusicBeatSubState
     #if FEATURE_ANIMATION_EDITOR
     createItem("ANIMATION EDITOR", openAnimationEditor);
     #end
+    #if FEATURE_POLYMOD_MODS
+    createItem("MOD MENU", openModMenu);
+    #end
     #if FEATURE_STAGE_EDITOR
     createItem("STAGE EDITOR", openStageEditor);
     #end
@@ -147,6 +150,14 @@ class DebugMenuSubState extends MusicBeatSubState
   #end
 
   #if sys
+  #if FEATURE_POLYMOD_MODS
+  function openModMenu():Void
+  {
+    FlxTransitionableState.skipNextTransIn = true;
+    FlxG.switchState(() -> new funkin.ui.modmenu.ModMenuState());
+  }
+  #end
+
   function openLogFolder()
   {
     FileUtil.openFolder(CrashHandler.LOG_FOLDER);

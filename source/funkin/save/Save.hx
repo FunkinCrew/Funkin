@@ -110,6 +110,13 @@ class Save implements ConsoleClass
         timeBar: true,
         judgeCounter: true,
         botPlay: 'Off',
+        hideNoteSplashes: false,
+        hideHoldCovers: false,
+        hideHud: false,
+        hideShaders: false,
+        hideAnimatedStages: false,
+        hideFogs: false,
+        hideRain: false,
         inputOffset: 0,
         timingMeter: true,
         hapticsMode: 'All',
@@ -1187,6 +1194,48 @@ typedef SaveDataOptions =
    * @default `'Off'`
    */
   var botPlay:String;
+
+  /**
+   * If true, note splashes are not shown when notes are hit.
+   * @default `false`
+   */
+  var hideNoteSplashes:Bool;
+
+  /**
+   * If true, hold covers at the end of long notes are not shown.
+   * @default `false`
+   */
+  var hideHoldCovers:Bool;
+
+  /**
+   * If true, the health bar, icons and score are hidden.
+   * @default `false`
+   */
+  var hideHud:Bool;
+
+  /**
+   * If true, stage shaders are not applied.
+   * @default `false`
+   */
+  var hideShaders:Bool;
+
+  /**
+   * If true, animated stage props do not play their idle dance.
+   * @default `false`
+   */
+  var hideAnimatedStages:Bool;
+
+  /**
+   * If true, stage props named like fog, mist or haze are hidden.
+   * @default `false`
+   */
+  var hideFogs:Bool;
+
+  /**
+   * If true, the rain camera filter used by some stages is removed.
+   * @default `false`
+   */
+  var hideRain:Bool;
 
   /**
    * Offset in milliseconds applied only to hit judgement, not to the song or audio.

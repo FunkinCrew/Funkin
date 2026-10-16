@@ -937,6 +937,7 @@ class PlayState extends MusicBeatSubState
       initMinimalMode();
     }
     initStrumlines();
+    applyHideHud();
     initPopups();
 
     #if mobile
@@ -2093,7 +2094,7 @@ class PlayState extends MusicBeatSubState
    */
   function initTimeBar():Void
   {
-    if (!Preferences.timeBar) return;
+    if (!Preferences.timeBar || Preferences.hideHud) return;
 
     final isDownscroll:Bool = #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
       && !ControlsHandler.hasExternalInputDevice)
@@ -2154,9 +2155,22 @@ class PlayState extends MusicBeatSubState
   /**
    * Initializes the judgement counter. Each count is its own line, placed under the score text.
    */
+  /**
+   * Hides the health bar, icons and score when the Hide HUD option is enabled.
+   */
+  function applyHideHud():Void
+  {
+    if (!Preferences.hideHud) return;
+    if (healthBar != null) healthBar.visible = false;
+    if (healthBarBG != null) healthBarBG.visible = false;
+    if (iconP1 != null) iconP1.visible = false;
+    if (iconP2 != null) iconP2.visible = false;
+    if (scoreText != null) scoreText.visible = false;
+  }
+
   function initJudgeCounter():Void
   {
-    if (!Preferences.judgeCounter) return;
+    if (!Preferences.judgeCounter || Preferences.hideHud) return;
 
     for (_ in 0...JUDGE_COUNTER_LINE_COUNT)
     {
@@ -2204,7 +2218,8 @@ class PlayState extends MusicBeatSubState
 
     // Sick is shown without the perfect notes, so Perfect and Sick do not overlap.
     final lines:Array<String> = [
-      'Perfect: ${tallies.perfect}',
+      'Flawless: ${tallies.flawless}',
+      'Perfect: ${tallies.perfect - tallies.flawless}',
       'Sick: ${tallies.sick - tallies.perfect}',
       'Good: ${tallies.good}',
       'Bad: ${tallies.bad}',
@@ -2232,15 +2247,19 @@ class PlayState extends MusicBeatSubState
   {
     if (!note.scoreable) return;
 
-    var noteDiff:Int = Std.int(Conductor.instance.songPosition - note.noteData.time);
+    // The bot hits exactly on the note's time instead of the frame it notices it,
+    // so every bot hit lands in the flawless window.
+    var noteDiff:Int = 0;
     var score:Float = Scoring.scoreNote(noteDiff, PBOT1);
     var daRating:String = Scoring.judgeNote(noteDiff, PBOT1);
     var isPerfect:Bool = daRating == 'sick' && Math.abs(noteDiff) <= Scoring.PBOT1_PERFECT_THRESHOLD;
+    var isFlawless:Bool = isPerfect && Math.abs(noteDiff) <= Scoring.PBOT1_FLAWLESS_THRESHOLD;
 
     Highscore.tallies.totalNotesHit++;
     applyScore(score, daRating, 0.0, false);
     if (isPerfect) Highscore.tallies.perfect++;
-    popUpScore(isPerfect ? 'perfect' : daRating);
+    if (isFlawless) Highscore.tallies.flawless++;
+    popUpScore(isFlawless ? 'flawless' : (isPerfect ? 'perfect' : daRating));
   }
 
   /**
@@ -3392,6 +3411,8 @@ class PlayState extends MusicBeatSubState
     var daRating = Scoring.judgeNote(noteDiff, PBOT1);
     // Perfect is a sub-tier of sick: the judgement stays 'sick' so scripts and combo logic are unchanged.
     var isPerfect:Bool = daRating == 'sick' && Math.abs(noteDiff) <= Scoring.PBOT1_PERFECT_THRESHOLD;
+    // Flawless is a sub-tier of perfect, so it is always perfect too.
+    var isFlawless:Bool = isPerfect && Math.abs(noteDiff) <= Scoring.PBOT1_FLAWLESS_THRESHOLD;
 
     var healthChange = 0.0;
     var isComboBreak = false;
@@ -3418,9 +3439,14 @@ class PlayState extends MusicBeatSubState
 
     // Calling event.cancelEvent() skips all the other logic! Neat!
     if (event.eventCanceled) return;
+
+    // Scripts can change the judgement and hit timing, so re-check the tiers from the final values.
+    isPerfect = event.judgement == 'sick' && Math.abs(event.hitDiff) <= Scoring.PBOT1_PERFECT_THRESHOLD;
+    isFlawless = isPerfect && Math.abs(event.hitDiff) <= Scoring.PBOT1_FLAWLESS_THRESHOLD;
+
     // Display the hit on the strums
     playerStrumline.hitNote(note, !event.isComboBreak);
-    if (event.doesNotesplash) playerStrumline.playNoteSplash(note.noteData.getDirection());
+    if (event.doesNotesplash && !Preferences.hideNoteSplashes) playerStrumline.playNoteSplash(note.noteData.getDirection());
     if (note.isHoldNote && note.holdNoteSprite != null) playerStrumline.playNoteHoldCover(note.holdNoteSprite);
     if (vocals != null)
     {
@@ -3434,7 +3460,15 @@ class PlayState extends MusicBeatSubState
       Highscore.tallies.totalNotesHit++;
       applyScore(event.score, event.judgement, event.healthChange, event.isComboBreak);
       if (isPerfect && event.judgement == 'sick') Highscore.tallies.perfect++;
-      popUpScore(isPerfect && event.judgement == 'sick' ? 'perfect' : event.judgement);
+      if (isFlawless && event.judgement == 'sick') Highscore.tallies.flawless++;
+      if (isFlawless && event.judgement == 'sick')
+      {
+        popUpScore('flawless');
+      }
+      else
+      {
+        popUpScore(isPerfect && event.judgement == 'sick' ? 'perfect' : event.judgement);
+      }
       showTimingTick(noteDiff);
     }
   }

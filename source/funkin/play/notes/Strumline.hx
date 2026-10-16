@@ -4,6 +4,7 @@ import flixel.util.FlxSignal.FlxTypedSignal;
 import flixel.FlxG;
 import funkin.play.notes.NoteVibrationsHandler.NoteStatus;
 import funkin.play.notes.notestyle.NoteStyle;
+import funkin.Preferences;
 import flixel.group.FlxSpriteGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.tweens.FlxEase;
@@ -1076,6 +1077,7 @@ class Strumline extends FlxSpriteGroup
   public function playNoteSplash(direction:NoteDirection):Void
   {
     if (!showNotesplash) return;
+    if (Preferences.hideNoteSplashes) return;
     if (!noteStyle.isNoteSplashEnabled()) return;
 
     var splash:NoteSplash = this.constructNoteSplash();
@@ -1104,6 +1106,7 @@ class Strumline extends FlxSpriteGroup
   public function playNoteHoldCover(holdNote:SustainTrail):Void
   {
     if (!showNotesplash) return;
+    if (Preferences.hideNoteSplashes || Preferences.hideHoldCovers) return;
     if (!noteStyle.isHoldNoteCoverEnabled()) return;
 
     var cover:NoteHoldCover = this.constructNoteHoldCover();
