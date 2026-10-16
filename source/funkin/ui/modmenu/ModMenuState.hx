@@ -8,6 +8,7 @@ import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
+import flixel.util.FlxDirection;
 import funkin.audio.FunkinSound;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
@@ -16,6 +17,7 @@ import funkin.input.Cursor;
 import funkin.modding.PolymodHandler;
 import funkin.ui.FullScreenScaleMode;
 import funkin.ui.MusicBeatState;
+import funkin.ui.UIStateMachine;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.modmenu.ModMenuCharacter.CharacterAnimation;
 import funkin.ui.transition.preload.hotreload.HotReloadState;
@@ -121,10 +123,60 @@ class ModMenuState extends MusicBeatState
   var hitboxOpenFolder:FunkinSprite;
 
   /**
-   * This flag is enabled when returning to the main menu.
-   * This should disable other interaction.
+   * Handles the overall state of the menu, and so what can be interacted with.
    */
-  var exitingMenu:Bool = false;
+  var uiState:UIStateMachine;
+
+  /**
+   * Delay between navigation steps.
+   */
+  static final NAV_DELAY:Float = 0.6;
+
+  /**
+   * Initial value of the multiplier for accelerating the delay timer.
+   */
+  static final NAV_ACCELERATION_INITIAL:Float = 2.5;
+
+  /**
+   * Limit of the multiplier for accelerating the delay timer.
+   */
+  static final NAV_ACCELERATION_LIMIT:Float = 7.5;
+
+  /**
+   * Array of directions used for navigation handling.
+   */
+  static final NAV_DIRECTIONS:Array<FlxDirection> = [FlxDirection.UP, FlxDirection.DOWN, FlxDirection.LEFT, FlxDirection.RIGHT];
+
+  /**
+   * Currently used direction when holding a key.
+   */
+  var heldDirection(default, set):Null<FlxDirection> = null;
+
+  function set_heldDirection(value:Null<FlxDirection>):Null<FlxDirection>
+  {
+    heldDirection = value;
+
+    navDelayTimer = 0;
+    navSpeed = NAV_ACCELERATION_INITIAL;
+
+    return value;
+  }
+
+  /**
+   * Timer of the delay between steps.
+   */
+  var navDelayTimer:Float = 0;
+
+  /**
+   * Current speed of the delay timer.
+   */
+  var navSpeed:Float = NAV_ACCELERATION_INITIAL;
+
+  /**
+   * Whether the last thing selected was in the left column (the disabled list and the open folder button)
+   * or the right column (the enabled list and the done button). The back button uses this to know where to return to.
+   */
+  var lastColumnLeft:Bool = true;
 
   var disabledModItems:ModMenuItemList = new ModMenuItemList();
   var enabledModItems:ModMenuItemList = new ModMenuItemList();
@@ -150,6 +202,17 @@ class ModMenuState extends MusicBeatState
    */
   var loadingThrobber:FunkinSprite;
 
+  /**
+   * Whether the enabled mods were handed to Polymod and a reload was started.
+   * That happens as soon as Done is pressed, while the electrocution plays.
+   */
+  var modsApplying:Bool = false;
+
+  /**
+   * Whether that reload has finished. The crispy part of the electrocution waits for this.
+   */
+  var modsReloaded:Bool = false;
+
   public function new()
   {
     super();
@@ -171,6 +234,10 @@ class ModMenuState extends MusicBeatState
     {
       selection = newSelection;
     });
+
+    // uiState
+    uiState = new UIStateMachine();
+    uiState.onStateChanged(onUIStateChange);
   }
 
   override public function create():Void
@@ -339,10 +406,10 @@ class ModMenuState extends MusicBeatState
 
     installer = new ModMenuInstaller(highlightNewMod, (enabled) ->
     {
-      allowInput = enabled;
+      uiState.transition((enabled) ? Idle : Disabled);
     }, () ->
       {
-        allowInput = true;
+        uiState.transition(Idle);
         hideFileDropHover();
       });
     installer.build(camHUD);
@@ -419,22 +486,21 @@ class ModMenuState extends MusicBeatState
 
   function pressBackButton():Void
   {
-    if (exitingMenu) return;
-    exitingMenu = true;
+    if (uiState.is(Exiting) || !uiState.transition(Exiting)) return;
     backPressStage = 1;
     playBackButtonAnimation('press', true);
   }
 
   function startFileDropHover():Void
   {
-    if (!allowInput) return;
+    if (!canDropFiles()) return;
 
     installer.showDropOverlay();
   }
 
   function hideFileDropHover(x:Float, y:Float):Void
   {
-    if (!allowInput) return;
+    if (!canDropFiles()) return;
 
     installer.hideDropOverlay();
   }
@@ -469,7 +535,7 @@ class ModMenuState extends MusicBeatState
 
   public function onDropFile(file:lime.utils.DroppedFile, state:String, x:Float, y:Float):Void
   {
-    if (!allowInput) return;
+    if (!canDropFiles()) return;
 
     installer.installDropped(file);
   }
@@ -540,7 +606,6 @@ class ModMenuState extends MusicBeatState
   #end
 
   var secondCounter:Float = 0;
-  var allowInput:Bool = true;
   var backTimer:Float = 0;
 
   override public function update(elapsed:Float):Void
@@ -560,14 +625,13 @@ class ModMenuState extends MusicBeatState
       rescanFolder();
     }
 
-    if (!exitingMenu)
-    {
-      scene.updateBlink(elapsed);
-    }
+    if (!uiState.is(Exiting)) scene.updateBlink(elapsed);
+
+    syncInteractionState();
 
     handleInput(elapsed);
 
-    if (!allowInput && !scene.isShocking)
+    if (modsApplying && !scene.isShocking)
     {
       if (scene.updateAftermath(elapsed) && modsReloaded)
       {
@@ -622,7 +686,7 @@ class ModMenuState extends MusicBeatState
     }
     #end
 
-    if (allowInput)
+    if (uiState.canInteract())
     {
       #if FEATURE_TOUCH_CONTROLS
       if (ControlsHandler.lastInputTouch)
@@ -633,20 +697,17 @@ class ModMenuState extends MusicBeatState
       }
       #end
 
-      handleKeyboard();
+      handleKeyboard(elapsed);
     }
-    else
+    else if (uiState.is(Exiting) && scene.isShocking && (controls.ACCEPT_P #if FEATURE_TOUCH_CONTROLS || TouchUtil.justPressed #end))
     {
-      if ((controls.ACCEPT_P #if FEATURE_TOUCH_CONTROLS || TouchUtil.justPressed #end) && scene.isShocking)
-      {
-        scene.skipShock();
-      }
+      scene.skipShock();
     }
   }
 
   function handleMouse():Void
   {
-    if (lists.hasTransitions || exitingMenu) return;
+    if (lists.hasTransitions || !uiState.canInteract()) return;
 
     if (FlxG.mouse.justPressed)
     {
@@ -669,13 +730,9 @@ class ModMenuState extends MusicBeatState
     }
   }
 
-  var holdDirection:Int = 0; // -1 for up, 1 for down, -2 for left, 2 for right
-  var holdTimer:Float = 0;
-  var doHoldAction:Bool = false;
-  var delay:Float = 0;
   var acceptDelay:Float = 0;
   var oldSelection:ModMenuSelection;
-  var lastInput:String = '';
+  var playingElectrocution:Bool = false;
 
   /**
    * Starts the electrocution sequence.
@@ -697,14 +754,247 @@ class ModMenuState extends MusicBeatState
       });
 
     doneButtonAnimator.playAnimation('accept');
-    allowInput = false;
+    uiState.transition(Exiting);
   }
 
-  function handleKeyboard():Void
-  {
-    if (lists.hasTransitions || exitingMenu) return;
+  // NAVIGATION //
 
-    var pressingCtrl:Bool = FlxG.keys.pressed.CONTROL;
+  /**
+   * Where each direction leads from each part of the menu, in the order they should be tried.
+   * The first one that can be selected gets prioritized.
+   * Up and down move through any of the lists first, so for the lists this is only used once you run off the end of one
+   * Going down from the bottom row wraps around to the back button, and going up from it wraps around to the bottom row.
+   * @param from Which selection we're moving from.
+   * @param direction The direction we want to move to.
+   * @return Array<ModMenuSelection> An array containing the list of selections possible
+   */
+  function getNavTargets(from:ModMenuSelection, direction:FlxDirection):Array<ModMenuSelection>
+  {
+    return switch [from, direction]
+    {
+      case [DisabledModList, FlxDirection.UP]:
+        [BackToMenu];
+      case [DisabledModList, FlxDirection.DOWN]:
+        [OpenModsFolder];
+      case [
+        DisabledModList,
+        FlxDirection.LEFT | FlxDirection.RIGHT
+      ]:
+        [EnabledModList];
+
+      case [EnabledModList, FlxDirection.UP]:
+        [BackToMenu];
+      case [EnabledModList, FlxDirection.DOWN]:
+        [Done];
+      case [
+        EnabledModList,
+        FlxDirection.LEFT | FlxDirection.RIGHT
+      ]:
+        [DisabledModList];
+
+      case [OpenModsFolder, FlxDirection.UP]:
+        [DisabledModList, EnabledModList, BackToMenu];
+      case [OpenModsFolder, FlxDirection.DOWN]:
+        [BackToMenu];
+      case [
+        OpenModsFolder,
+        FlxDirection.LEFT | FlxDirection.RIGHT
+      ]:
+        [Done];
+
+      case [Done, FlxDirection.UP]:
+        [EnabledModList, DisabledModList, BackToMenu];
+      case [Done, FlxDirection.DOWN]:
+        [BackToMenu];
+      case [
+        Done,
+        FlxDirection.LEFT | FlxDirection.RIGHT
+      ]:
+        [OpenModsFolder];
+
+      // The back button remembers which column you came from, so its jiffy
+      case [BackToMenu, FlxDirection.DOWN]:
+        lastColumnLeft ? [DisabledModList, EnabledModList] : [EnabledModList, DisabledModList];
+      case [BackToMenu, FlxDirection.UP]:
+        lastColumnLeft ? [OpenModsFolder, Done] : [Done, OpenModsFolder];
+      default:
+        [];
+    }
+  }
+
+  /**
+   * Whether the selection can be selected right now.
+   * gable? Who's gable? *pukes
+   * @param target the selection to check.
+   */
+  function isNavigable(target:ModMenuSelection):Bool
+  {
+    return switch (target)
+    {
+      case DisabledModList:
+        disabledModItems.modItems.length > 0;
+      case EnabledModList:
+        enabledModItems.modItems.length > 0;
+      default:
+        true;
+    }
+  }
+
+  /**
+   * Checks if the UI key for the passed direction was just pressed.
+   * @param direction The direction to check
+   */
+  function isDirectionPressed(direction:FlxDirection):Bool
+  {
+    return switch (direction)
+    {
+      case FlxDirection.UP:
+        controls.UI_UP_P;
+      case FlxDirection.DOWN:
+        controls.UI_DOWN_P;
+      case FlxDirection.LEFT:
+        controls.UI_LEFT_P;
+      case FlxDirection.RIGHT:
+        controls.UI_RIGHT_P;
+    }
+  }
+
+  /**
+   * Checks if the UI key for the passed direction is being held.
+   * @param direction The direction to check
+   */
+  function isDirectionHeld(direction:FlxDirection):Bool
+  {
+    return switch (direction)
+    {
+      case FlxDirection.UP:
+        controls.UI_UP;
+      case FlxDirection.DOWN:
+        controls.UI_DOWN;
+      case FlxDirection.LEFT:
+        controls.UI_LEFT;
+      case FlxDirection.RIGHT:
+        controls.UI_RIGHT;
+    }
+  }
+
+  /**
+   * The direction the highlight slides in from. -1 up, 1 down, -2 left, 2 right.
+   * @param direction The direction to go towards.
+   */
+  function getSlideDirection(direction:FlxDirection):Int
+  {
+    return switch (direction)
+    {
+      case FlxDirection.UP:
+        -1;
+      case FlxDirection.DOWN:
+        1;
+      case FlxDirection.LEFT:
+        -2;
+      case FlxDirection.RIGHT:
+        2;
+    }
+  }
+
+  /**
+   * Reads the direction keys.
+   * @param elapsed Elapsed
+   */
+  function handleNavigation(elapsed:Float):Void
+  {
+    for (direction in NAV_DIRECTIONS)
+    {
+      if (isDirectionPressed(direction))
+      {
+        heldDirection = direction;
+        navigate(direction, false);
+
+        navDelayTimer = NAV_DELAY;
+        return;
+      }
+    }
+
+    if (heldDirection == null) return;
+
+    // Checks that the key is still down, instead of waiting for a release event,
+    // so letting go while the menu wasn't listening can't leave it repeating forever.
+    if (!isDirectionHeld(heldDirection))
+    {
+      heldDirection = null;
+
+      // Another direction may still be held.
+      for (direction in NAV_DIRECTIONS)
+      {
+        if (isDirectionHeld(direction))
+        {
+          heldDirection = direction;
+          navDelayTimer = NAV_DELAY;
+          return;
+        }
+      }
+
+      return;
+    }
+
+    navDelayTimer -= elapsed * navSpeed;
+
+    if (navSpeed < NAV_ACCELERATION_LIMIT) navSpeed += elapsed;
+
+    if (navDelayTimer <= 0)
+    {
+      navigate(heldDirection, true);
+
+      navDelayTimer = NAV_DELAY;
+    }
+  }
+
+  /**
+   * Moves the selection one step in a direction.
+   *
+   * @param direction Which way to go.
+   * @param isRepeat `true` if the key is being held, keep scrolling inside a list but stop at the end.
+   */
+  function navigate(direction:FlxDirection, isRepeat:Bool):Void
+  {
+    var list:Null<ModMenuItemList> = switch (selection)
+    {
+      case DisabledModList:
+        disabledModItems;
+      case EnabledModList:
+        enabledModItems;
+      default:
+        null;
+    };
+
+    var movingUp:Bool = direction == FlxDirection.UP;
+
+    if (list != null && (movingUp || direction == FlxDirection.DOWN))
+    {
+      // Holding control moves the mod itself instead of the selection.
+      if (selection == EnabledModList && FlxG.keys.pressed.CONTROL)
+      {
+        if (!isRepeat) lists.reorder(enabledModItems.selectedModItem, movingUp);
+        return;
+      }
+
+      if (movingUp ? list.moveUp(false) : list.moveDown(false)) return;
+
+      if (isRepeat) return;
+    }
+
+    for (target in getNavTargets(selection, direction))
+    {
+      if (!isNavigable(target)) continue;
+
+      lastSelectDir = getSlideDirection(direction);
+      selection = target;
+      return;
+    }
+  }
+
+  function handleKeyboard(elapsed:Float):Void
+  {
     if (controls.BACK_P)
     {
       FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu'), 0.4);
@@ -714,237 +1004,12 @@ class ModMenuState extends MusicBeatState
 
     oldSelection = selection;
 
-    if (controls.UI_LEFT_P)
-    {
-      switch (selection)
-      {
-        case DisabledModList:
-          selection = Done;
-          lastSelectDir = -2;
-        case EnabledModList:
-          if (disabledModItems.modItems.length > 0)
-          {
-            selection = DisabledModList;
-            lastSelectDir = -2;
-          }
-          else
-            selection = OpenModsFolder;
-        case OpenModsFolder:
-          selection = EnabledModList;
-          lastSelectDir = -2;
-        case Done:
-          selection = OpenModsFolder;
-          lastSelectDir = -2;
-        case BackToMenu:
-          // Nothing
-      }
-    }
+    handleNavigation(elapsed);
 
-    if (controls.UI_RIGHT_P)
+    if (controls.ACCEPT_P && acceptDelay <= 0)
     {
-      switch (selection)
-      {
-        case DisabledModList:
-          if (enabledModItems.modItems.length > 0)
-          {
-            selection = EnabledModList;
-            lastSelectDir = 2;
-          }
-        case EnabledModList:
-          selection = OpenModsFolder;
-          lastSelectDir = 2;
-        case OpenModsFolder:
-          selection = Done;
-          lastSelectDir = 2;
-        case Done:
-          selection = DisabledModList;
-          lastSelectDir = 2;
-        case BackToMenu:
-          // Nothing
-      }
-    }
+      heldDirection = null;
 
-    if (controls.UI_UP_P)
-    {
-      lastInput = 'up';
-      switch (selection)
-      {
-        case DisabledModList:
-          if (!disabledModItems.moveUp(false))
-          {
-            selection = BackToMenu;
-            lastSelectDir = 1;
-          }
-        case EnabledModList:
-          if (pressingCtrl) lists.reorder(enabledModItems.selectedModItem, true);
-          else
-          {
-            if (!enabledModItems.moveUp(false))
-            {
-              selection = BackToMenu;
-              lastSelectDir = -1;
-            }
-          }
-        case OpenModsFolder:
-          selection = DisabledModList;
-          lastSelectDir = -1;
-        case Done:
-          selection = EnabledModList;
-          lastSelectDir = -1;
-        case BackToMenu:
-          trace(' MOD MENU '.bold().bg_orange() + ' lastSelectDir: ' + lastSelectDir);
-          if (lastSelectDir == -1) selection = Done;
-          else
-            selection = OpenModsFolder;
-      }
-    }
-
-    if (controls.UI_DOWN_P)
-    {
-      lastInput = 'down';
-      switch (selection)
-      {
-        case DisabledModList:
-          if (!disabledModItems.moveDown(false))
-          {
-            selection = OpenModsFolder;
-            lastSelectDir = 1;
-          }
-        case EnabledModList:
-          if (pressingCtrl) lists.reorder(enabledModItems.selectedModItem, false);
-          else
-          {
-            if (!enabledModItems.moveDown(false))
-            {
-              selection = Done;
-              lastSelectDir = 1;
-            }
-          }
-        case OpenModsFolder:
-          selection = BackToMenu;
-          lastSelectDir = 1;
-        case Done:
-          selection = BackToMenu;
-          lastSelectDir = -1;
-        case BackToMenu:
-          if (lastSelectDir == -1) selection = EnabledModList;
-          else
-            selection = DisabledModList;
-      }
-    }
-
-    if (controls.UI_UP || controls.UI_DOWN || controls.UI_LEFT || controls.UI_RIGHT)
-    {
-      if (holdDirection == 0)
-      {
-        holdDirection = controls.UI_UP ? -1 : controls.UI_DOWN ? 1 : controls.UI_LEFT ? -2 : 2;
-        holdTimer = 0.5; // initial delay before starting to scroll
-      }
-      else if
-        ((controls.UI_UP && holdDirection == -1)
-          || (controls.UI_DOWN && holdDirection == 1)
-          || (controls.UI_LEFT && holdDirection == -2)
-          || (controls.UI_RIGHT && holdDirection == 2)
-        )
-      {
-        holdTimer -= FlxG.elapsed;
-        if (holdTimer <= 0)
-        {
-          doHoldAction = true;
-        }
-      }
-    }
-    else
-    {
-      holdDirection = 0;
-      doHoldAction = false;
-    }
-
-    if (doHoldAction && delay <= 0)
-    {
-      delay = 0.1;
-      switch (selection)
-      {
-        case DisabledModList:
-          switch (holdDirection)
-          {
-            case -1:
-              disabledModItems.moveUp();
-            case 1:
-              disabledModItems.moveDown();
-            case -2:
-              selection = Done;
-              lastSelectDir = -2;
-            case 2:
-              selection = EnabledModList;
-              lastSelectDir = 2;
-          }
-        case EnabledModList:
-          switch (holdDirection)
-          {
-            case -1:
-              enabledModItems.moveUp();
-            case 1:
-              enabledModItems.moveDown();
-            case -2:
-              if (disabledModItems.modItems.length > 0) selection = DisabledModList;
-              else
-                selection = Done;
-              lastSelectDir = -2;
-            case 2:
-              selection = OpenModsFolder;
-              lastSelectDir = 2;
-          }
-        case OpenModsFolder:
-          switch (holdDirection)
-          {
-            case -1:
-              selection = DisabledModList;
-              lastSelectDir = -1;
-            case 1:
-              selection = DisabledModList;
-              lastSelectDir = 1;
-            case -2:
-              selection = EnabledModList;
-              lastSelectDir = -2;
-            case 2:
-              selection = Done;
-              lastSelectDir = 2;
-          }
-        case Done:
-          switch (holdDirection)
-          {
-            case -1:
-              selection = EnabledModList;
-              lastSelectDir = -1;
-            case 1:
-              selection = EnabledModList;
-              lastSelectDir = 1;
-            case -2:
-              selection = OpenModsFolder;
-              lastSelectDir = -2;
-            case 2:
-              selection = DisabledModList;
-              lastSelectDir = 2;
-          }
-        case BackToMenu:
-          switch (holdDirection)
-          {
-            case -1:
-              if (lastSelectDir == -1) selection = Done; else selection = OpenModsFolder;
-            case 1:
-              if (lastSelectDir == -1) selection = EnabledModList; else selection = DisabledModList;
-            case -2:
-              // Nothing
-            case 2:
-              // Nothing
-          }
-      }
-    }
-    if (delay > 0) delay -= FlxG.elapsed;
-
-    if (controls.ACCEPT_P && !lists.hasTransitions && acceptDelay <= 0)
-    {
       FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
       enabledModItems.repositionItems();
       disabledModItems.repositionItems();
@@ -969,9 +1034,39 @@ class ModMenuState extends MusicBeatState
       acceptDelay = 0.02;
     }
 
-    if (acceptDelay > 0) acceptDelay -= FlxG.elapsed;
+    if (acceptDelay > 0) acceptDelay -= elapsed;
 
     if (oldSelection != selection) handleSelection();
+  }
+
+  // UI STATE //
+
+  /**
+   * Checks if we can drop files in this menu currently.
+   * @return Bool Whether files dropped onto the window should be listened to.
+   */
+  function canDropFiles():Bool
+  {
+    return uiState.is(Idle) || uiState.is(Interacting);
+  }
+
+  /**
+   * Keeps the UI state in step with the items transitioning between the lists.
+   */
+  function syncInteractionState():Void
+  {
+    if (uiState.is(Idle) && lists.hasTransitions) uiState.transition(Interacting);
+    else if (uiState.is(Interacting) && !lists.hasTransitions) uiState.transition(Idle);
+  }
+
+  /**
+   * Calls when the ui state changes.
+   * @param previous The previous state we were in.
+   * @param current The current state we have now.
+   */
+  function onUIStateChange(previous:UIState, current:UIState):Void
+  {
+    heldDirection = null;
   }
 
   #if FEATURE_TOUCH_CONTROLS
@@ -1018,7 +1113,7 @@ class ModMenuState extends MusicBeatState
 
   function handleTouch(elapsed:Float):Void
   {
-    if (lists.hasTransitions || exitingMenu || backPressStage > 0) return;
+    if (lists.hasTransitions || uiState.is(Exiting) || backPressStage > 0) return;
     if (touchScrolling)
     {
       resetTouch();
@@ -1155,7 +1250,7 @@ class ModMenuState extends MusicBeatState
     {
       if (TouchUtil.justReleased && TouchUtil.overlapsComplex(buttonBackToMenu))
       {
-        exitingMenu = true;
+        uiState.transition(Exiting);
         backPressStage = 2;
 
         playBackButtonAnimation('confirm', true);
@@ -1172,6 +1267,16 @@ class ModMenuState extends MusicBeatState
   function handleSelection():Void
   {
     FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
+
+    switch (selection)
+    {
+      case DisabledModList | OpenModsFolder:
+        lastColumnLeft = true;
+      case EnabledModList | Done:
+        lastColumnLeft = false;
+      default:
+        // nothing.
+    }
 
     switch (selection)
     {
@@ -1197,8 +1302,8 @@ class ModMenuState extends MusicBeatState
       case DisabledModList:
         switch(oldSelection)
         {
-          case OpenModsFolder:
-            if(lastInput == 'up') disabledModItems.selectLastItem(lastSelectDir);
+          case OpenModsFolder | Done:
+            disabledModItems.selectLastItem(lastSelectDir);
           case EnabledModList:
             var offset = (disabledModItems.length - 1) - (enabledModItems.length - 1);
 
@@ -1210,8 +1315,8 @@ class ModMenuState extends MusicBeatState
       case EnabledModList:
         switch(oldSelection)
         {
-          case OpenModsFolder:
-            if(lastInput == 'up') enabledModItems.selectLastItem(lastSelectDir);
+          case OpenModsFolder | Done:
+            enabledModItems.selectLastItem(lastSelectDir);
           case DisabledModList:
             var offset = (enabledModItems.length - 1) - (disabledModItems.length - 1);
 
@@ -1228,8 +1333,7 @@ class ModMenuState extends MusicBeatState
         playBackButtonAnimation('hover');
     }
 
-    lastInput = '';
-    if (selection != BackToMenu) lastSelectDir = 0;
+    lastSelectDir = 0;
   }
 
   // MOD LIST BUILDING //
@@ -1379,7 +1483,7 @@ class ModMenuState extends MusicBeatState
    */
   function backToMainMenu():Void
   {
-    exitingMenu = true;
+    uiState.transition(Exiting);
     FlxG.keys.enabled = false;
     Cursor.hide();
     FlxG.switchState(() -> new MainMenuState());
