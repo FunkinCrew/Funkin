@@ -145,6 +145,11 @@ class ModMenuState extends MusicBeatState
   var lastSelectDir:Int = 0;
   var menuBG:FunkinSprite;
 
+  /**
+   * The loading throbber.
+   */
+  var loadingThrobber:FunkinSprite;
+
   public function new()
   {
     super();
@@ -341,6 +346,15 @@ class ModMenuState extends MusicBeatState
         hideFileDropHover();
       });
     installer.build(camHUD);
+
+    loadingThrobber = new FunkinSprite(0, 0).loadTextureAtlas('ui/loading/throbber');
+    loadingThrobber.anim.addBySymbol('wholeTimeline', loadingThrobber.getDefaultSymbol(), loadingThrobber.library.frameRate);
+    loadingThrobber.animation.play('wholeTimeline');
+    loadingThrobber.camera = camHUD;
+    loadingThrobber.zIndex = 1000;
+    loadingThrobber.x = FlxG.width - loadingThrobber.width;
+    loadingThrobber.alpha = 0.0;
+    add(loadingThrobber);
 
     enabledModItems.repositionItems();
     disabledModItems.repositionItems();
@@ -555,7 +569,21 @@ class ModMenuState extends MusicBeatState
 
     if (!allowInput && !scene.isShocking)
     {
-      if (scene.updateAftermath(elapsed)) applyModlist();
+      if (scene.updateAftermath(elapsed) && modsReloaded)
+      {
+        applyModlist();
+      }
+      else
+      {
+        if (loadingThrobber.alpha <= 0.0)
+        {
+          FlxTween.tween(loadingThrobber, {
+            alpha: 1.0
+          }, 0.5, {
+            ease: FlxEase.quadOut
+          });
+        }
+      }
     }
 
     if (fadingItems.length > 0)

@@ -34,7 +34,7 @@ class ModMenuInstaller
   /**
    * How long would it take to hide the drop overlay, in seconds.
    */
-  static inline final HIDE_DURATION:Float = -0.08;
+  static inline final HIDE_DURATION:Float = -0.2;
 
   /**
    * The max alpha for the dark background.

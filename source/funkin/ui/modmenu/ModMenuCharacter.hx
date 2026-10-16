@@ -457,7 +457,6 @@ class ModMenuCharacter extends FunkinSprite
   function hasModdedAssets(modId:String):Bool
   {
     var assetPath:String = Paths.json('ui/mods/characters/$currentCharacterId/Animation');
-    @:privateAccess
     return PolymodAssets.existsInMod(assetPath, modId);
   }
 
