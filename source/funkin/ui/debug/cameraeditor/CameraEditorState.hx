@@ -14,7 +14,7 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
 import funkin.assets.FunkinAssetCache;
-import funkin.data.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterRegistry;
 import funkin.data.event.SongEventRegistry;
 import funkin.data.song.SongData.SongCharacterData;
 import funkin.data.song.SongData.SongChartData;
@@ -753,7 +753,6 @@ class CameraEditorState extends UIState implements ConsoleClass
         }
         return;
       }
-
     }
     else
     {
@@ -1221,11 +1220,11 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     if (songCharacterData == null) return;
 
-    var gf:Null<BaseCharacter> = CharacterDataParser.fetchCharacter(songCharacterData.girlfriend);
+    var gf:Null<BaseCharacter> = CharacterRegistry.instance.fetchEntry(songCharacterData.girlfriend);
 
-    var dad:Null<BaseCharacter> = CharacterDataParser.fetchCharacter(songCharacterData.opponent);
+    var dad:Null<BaseCharacter> = CharacterRegistry.instance.fetchEntry(songCharacterData.opponent);
 
-    var bf:Null<BaseCharacter> = CharacterDataParser.fetchCharacter(songCharacterData.player);
+    var bf:Null<BaseCharacter> = CharacterRegistry.instance.fetchEntry(songCharacterData.player);
 
     FlxG.camera.filters = [];
 
@@ -2827,7 +2826,7 @@ typedef CameraEditorParams =
    */
   var ?loadFromTemplate:String;
 
-/**
+  /**
    * If non-null, load from existing FNFCData.
    */
   var ?loadFromFNFCData:FNFCData;
