@@ -105,7 +105,11 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   @:nullSafety(Off)
   override public function destroy():Void
   {
+    var sound:Null<openfl.media.Sound> = this._sound;
+
     super.destroy();
+
+    funkin.assets.FunkinAssetCache.FunkinAssetCache.instance.releaseSoundIfUnused(sound);
 
     FlxTween.cancelTweensOf(this);
     this._label = 'unknown';

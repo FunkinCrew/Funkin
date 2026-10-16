@@ -132,7 +132,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     stagedSound.onRemove.add((key:String, asset:Sound) ->
     {
       FunkinLimeAssetCache.instance.removeAudio(key);
-      // asset = null;
+      if (!isSoundBufferInUse(asset)) asset.close();
     });
 
     stagedText = new StagedCache<String>();
@@ -274,6 +274,47 @@ class FunkinAssetCache implements OpenFLIAssetCache
     #if (cpp || neko)
     if (garbageCollect) funkin.util.MemoryUtil.collect(true);
     #end
+  }
+
+  /**
+   * Close a Sound if it is not currently in use by any FlxSound.
+   * @param asset The Sound to check and close if unused.
+   */
+  public function releaseSoundIfUnused(asset:Null<Sound>):Void
+  {
+    if (asset == null) return;
+    if (isSoundBufferInUse(asset)) return;
+
+    for (key in stagedSound.keys())
+    {
+      if (stagedSound.get(key, false) == asset) return;
+    }
+
+    asset.close();
+  }
+
+  /**
+   * Whether or not a Sound's buffer is currently in use by any FlxSound.
+   * @param asset The Sound to check.
+   */
+  static function isSoundBufferInUse(asset:Sound):Bool
+  {
+    var buffer:Null<LimeAudioBuffer> = @:privateAccess asset.__buffer;
+    if (buffer == null) return false;
+
+    var sounds:Array<flixel.sound.FlxSound> = flixel.FlxG.sound.list.members.copy();
+    for (sound in flixel.FlxG.sound.defaultSoundGroup.sounds) sounds.push(sound);
+    sounds.push(flixel.FlxG.sound.music);
+
+    for (sound in sounds)
+    {
+      if (sound == null) continue;
+      var current:Null<Sound> = @:privateAccess sound._sound;
+      if (current == null) continue;
+      if (@:privateAccess current.__buffer == buffer) return true;
+    }
+
+    return false;
   }
 
   #if FEATURE_HAXEUI
