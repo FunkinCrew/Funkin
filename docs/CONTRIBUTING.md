@@ -119,7 +119,7 @@ Complete the Issue Checklist at the top of your template!
 Be sure to use the search bar on the Issues page to check that your issue hasn't already been reported by someone else.
 Duplicate issues make it harder to keep track of important issues with the game.
 
-Also only report one issue or enhancement at a time! If you have multiple bug reports or suggestions, split them up into separate submissions so they can be checked off one by one.
+Also, only report one issue or enhancement at a time! If you have multiple bug reports or suggestions, split them up into separate submissions so they can be checked off one by one.
 
 Once you're sure your issue is unique and specific, feel free to submit it.
 
@@ -160,7 +160,7 @@ Our maintenance policy is as follows:
 - After this period, your PR will be closed due to inactivity and labeled `status: stale`.
 - Even after your PR is closed, you may request for us to reopen it. Just be sure to address the issues!
 
-This policy ensures that PRs awaiting review are up to date and ready to merge.
+This policy ensures that PRs awaiting review are up-to-date and ready to merge.
 
 ### Merge conflicts and rebasing
 Some game updates introduce significant breaking changes that may create merge conflicts in your PR. To resolve them, you will need to update or rebase your PR.
