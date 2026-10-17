@@ -56,6 +56,9 @@ class LevelProp extends Bopper
       // Initalize sprite frames.
       // Sparrow atlas only LEL.
       this.frames = Paths.getSparrowAtlas(propData.assetPath);
+
+      // Re-enables calls to update() (in case it was disabled)
+      this.active = true;
     }
     else
     {
