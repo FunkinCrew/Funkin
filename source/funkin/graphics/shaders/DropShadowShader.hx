@@ -88,8 +88,13 @@ class DropShadowShader extends FlxShader
   /**
    * The antialiasing amount.
    */
-  @:deprecated("Not functional with the rewrite, only here for compatibility")
-  public var antialiasAmt:Float = 0.0;
+  @:deprecated("Not fully functional with the rewrite use antialiasing instead, only here for compatibility")
+  public var antialiasAmt(default, set):Float = 2.0;
+
+  /**
+   * The antialiasing flag.
+   */
+  public var antialiasing(default, set):Bool;
 
   /**
    * The hue component of the Adjust Color part of the shader.
@@ -165,6 +170,22 @@ class DropShadowShader extends FlxShader
     baseHue = h;
     baseContrast = c;
     baseSaturation = s;
+  }
+
+  function set_antialiasing(value:Bool):Bool
+  {
+    antialiasing = value;
+
+    enable_antialiasing.value = [value];
+    return antialiasing;
+  }
+
+  function set_antialiasAmt(value:Float):Float
+  {
+    antialiasAmt = value;
+    antialiasing = antialiasAmt > 1.0;
+
+    return antialiasAmt;
   }
 
   function set_baseHue(val:Float):Float
@@ -372,6 +393,8 @@ class DropShadowShader extends FlxShader
       uniform mat3 saturationMatrix;
       uniform float brightness;
 
+      uniform bool enable_antialiasing;
+
       const vec3 lumaValue = vec3(0.2126, 0.7152, 0.0722);
 
       vec3 applyHSBCEffect(vec3 color)
@@ -390,7 +413,7 @@ class DropShadowShader extends FlxShader
 
       vec4 getTexRGBA(vec2 uv)
       {
-        return texture2D(bitmap, uv);
+        return flixel_texture2D(bitmap, uv);
       }
 
       float getLumaTex(vec2 uv)
@@ -402,6 +425,9 @@ class DropShadowShader extends FlxShader
       // Return value range (0.0, 2.0)
       float lwidth_manual(float center, vec2 uv, vec2 px)
       {
+        if (!enable_antialiasing)
+          return 0.0;
+
         vec3 p2x1 = getTexRGBA(uv + vec2( 1.0,  0.0) * px).rgb;
         vec3 p1x2 = getTexRGBA(uv + vec2( 0.0,  1.0) * px).rgb;
         vec3 p2x2 = getTexRGBA(uv + vec2( 1.0,  1.0) * px).rgb;
@@ -429,8 +455,9 @@ class DropShadowShader extends FlxShader
         if (useMask)
         {
           maskIntensity = texture2D(altMask, uv).b;
-          if (maskIntensity > 0.0)
-            threshold = thr2;
+
+          float maskCondition = float(maskIntensity > 0.0);
+          threshold = (thr2 * maskCondition) + (threshold * (1.0 - maskCondition));
         }
 
         return threshold;
@@ -442,7 +469,7 @@ class DropShadowShader extends FlxShader
 
       vec4 createDropShadowEx(vec2 uv, vec2 ratio, vec2 size)
       {
-        vec4 color4 = texture2D(bitmap, uv);
+        vec4 color4 = getTexRGBA(uv);
 
         #ifdef HAS_DERIVATIVES
           // Increase the pixel distance if the screen is smaller than the sprite!
@@ -476,7 +503,7 @@ class DropShadowShader extends FlxShader
           shadowAlpha = texture2D(bitmap, checked).a;
         }
 
-        float rim = (1.0 - (shadowAlpha * str)) * intensity;
+        float rim = (str - (shadowAlpha * str)) * intensity;
 
         color3 += dropColor * rim;
 
@@ -497,6 +524,8 @@ class DropShadowShader extends FlxShader
     strength = 1;
     distance = 15;
     threshold = 0.1;
+
+    antialiasing = true;
 
     baseHue = 0;
     baseSaturation = 0;
