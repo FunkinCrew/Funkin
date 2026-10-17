@@ -18,7 +18,8 @@ import funkin.util.macro.SaveMacro;
 import funkin.util.SerializerUtil;
 import funkin.mobile.ui.FunkinHitbox;
 import thx.semver.Version;
-import funkin.util.tools.ISerializable;
+import flixel.util.FlxSave.SaveFailureType;
+import flixel.util.FlxSave.LoadFailureType;
 #if FEATURE_NEWGROUNDS
 import funkin.api.newgrounds.Medals;
 import funkin.api.newgrounds.Leaderboards;
@@ -966,17 +967,20 @@ class Save implements ConsoleClass implements ISerializable
 
   /**
    * If you set slot to `2`, it will load an independent save file from slot 2.
-   * @param slot
+   * @param slot The save slot to load.
    */
   @:haxe.warning('-WDeprecated')
   static function loadFromSlot(slot:Int):Save
   {
     trace('[SAVE] Loading save from slot $slot...');
+
     FlxG.save.bind(Constants.SAVE_NAME + slot, Constants.SAVE_PATH);
+
     switch (FlxG.save.status)
     {
       case EMPTY:
         trace('[SAVE] Save data in slot ${slot} is empty, checking for legacy save data...');
+
         switch (Save.system.fetchLegacySaveData())
         {
           case None:
@@ -984,38 +988,81 @@ class Save implements ConsoleClass implements ISerializable
             var gameSave:Save = new Save();
             FlxG.save.mergeData(gameSave.data, true);
             return gameSave;
+
           case Some(legacySaveData):
-            trace('[SAVE] Found legacy save data, converting...');
+            trace('[SAVE] Found legacy save data. Converting...');
+
             var gameSave = SaveDataMigrator.migrateFromLegacy(legacySaveData);
             FlxG.save.mergeData(gameSave.data, true);
             return gameSave;
         }
-      case ERROR(_): // This value is deprecated.
-        return handleSaveDataError(slot);
-      case SAVE_ERROR(_):
-        return handleSaveDataError(slot);
-      case LOAD_ERROR(_):
-        return handleSaveDataError(slot);
+
       case BOUND(_, _):
-        trace('[SAVE] Loaded existing save data in slot ${slot}.');
+        trace('[SAVE] Loaded existing save data in slot $slot.');
+
         var gameSave = SaveDataMigrator.migrate(FlxG.save.data);
         FlxG.save.mergeData(gameSave.data, true);
         return gameSave;
+
+      case ERROR(msg):
+        trace('[SAVE] Encountered deprecated save error: $msg');
+        return handleSaveDataError(slot, 'Legacy save error: $msg');
+
+      case SAVE_ERROR(type):
+        var message = switch (type)
+        {
+          case STORAGE:
+            'There is not enough storage space to save the data.';
+
+          case ENCODING(exception):
+            'Failed to encode the save data: ${exception.message}';
+        };
+
+        trace('[SAVE] Save error in slot $slot: $message');
+        return handleSaveDataError(slot, message);
+
+      case LOAD_ERROR(type):
+        var message = switch (type)
+        {
+          case INVALID_NAME(name, optionalMessage):
+            'Invalid save name "$name".' + (optionalMessage != null ? ' $optionalMessage' : '');
+
+          case INVALID_PATH(path, optionalMessage):
+            'Invalid save path "$path".' + (optionalMessage != null ? ' $optionalMessage' : '');
+
+          case IO(exception):
+            'An I/O error occurred while loading the save: ${exception.message}';
+
+          case PARSING(rawData, exception):
+            'Failed to parse the save data: ${exception.message}' + '\nSave data length: ${rawData.length} characters.';
+        };
+
+        trace('[SAVE] Load error in slot $slot: $message');
+        return handleSaveDataError(slot, message);
     }
   }
 
   /**
-   * Call this when there is an error loading the save data in slot X.
+   * Handles save-loading failures by notifying the user and attempting
+   * to load the next available slot.
+   *
+   * @param slot The slot that failed.
+   * @param message A description of the failure.
    */
-  static function handleSaveDataError(slot:Int):Save
+  static function handleSaveDataError(slot:Int, message:String):Save
   {
     var msg = 'There was an error loading your save data in slot ${slot}.';
     msg += '\nPlease report this issue to the developers.';
-    funkin.util.WindowUtil.showError("Save Data Failure", msg);
+    msg += '\n\nReason: $message';
+
+    funkin.util.WindowUtil.showError('Save Data Failure', msg);
+
+    var nextSlot:Int = slot + 1;
+
     // Don't touch that slot anymore.
     // Instead, load the next available slot.
-    var nextSlot:Int = slot + 1;
     if (nextSlot > 1000) throw "End of save data slots. Can't load any more.";
+
     return loadFromSlot(nextSlot);
   }
 

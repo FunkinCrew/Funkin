@@ -285,6 +285,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     if (asset == null) return;
     if (isSoundBufferInUse(asset)) return;
 
+    // NOTE: If this somehow crashing something after all the checks, maybe only close it if it exists in previous. - Moon
     for (key in stagedSound.keys())
     {
       if (stagedSound.get(key, false) == asset) return;
