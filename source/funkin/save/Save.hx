@@ -1009,12 +1009,13 @@ class Save implements ConsoleClass implements ISerializable
         return handleSaveDataError(slot, 'Legacy save error: $msg');
 
       case SAVE_ERROR(type):
-        var message = switch (type)
+        var message:String = switch (type)
         {
           case STORAGE:
             'There is not enough storage space to save the data.';
 
           case ENCODING(exception):
+            trace('[SAVE] Parsing stack trace:\n${exception.stack}');
             'Failed to encode the save data: ${exception.message}';
         };
 
@@ -1022,7 +1023,7 @@ class Save implements ConsoleClass implements ISerializable
         return handleSaveDataError(slot, message);
 
       case LOAD_ERROR(type):
-        var message = switch (type)
+        var message:String = switch (type)
         {
           case INVALID_NAME(name, optionalMessage):
             'Invalid save name "$name".' + (optionalMessage != null ? ' $optionalMessage' : '');
@@ -1031,9 +1032,11 @@ class Save implements ConsoleClass implements ISerializable
             'Invalid save path "$path".' + (optionalMessage != null ? ' $optionalMessage' : '');
 
           case IO(exception):
+            trace('[SAVE] I/O stack trace:\n${exception.stack}');
             'An I/O error occurred while loading the save: ${exception.message}';
 
           case PARSING(rawData, exception):
+            trace('[SAVE] Parsing stack trace:\n${exception.stack}');
             'Failed to parse the save data: ${exception.message}' + '\nSave data length: ${rawData.length} characters.';
         };
 
