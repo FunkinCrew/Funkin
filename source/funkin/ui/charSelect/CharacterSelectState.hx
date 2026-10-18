@@ -201,6 +201,9 @@ class CharacterSelectState extends MusicBeatSubState
 
     currentCharacterId = value;
 
+    var event:CharacterSelectScriptEvent = CharacterSelectScriptEvent.get(CHARACTER_SELECTED, value);
+    dispatchEvent(event);
+
     nametag.loadCharacter(value);
 
     characters.setCharacters(oldId, value);
