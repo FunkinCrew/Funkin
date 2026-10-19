@@ -69,6 +69,11 @@ class ModMenuScene
     return shockTimer.active;
   }
 
+  /**
+   * Whether or not the electrocution sequence has finished.
+   */
+  public var isFinished:Bool = false;
+
   // Otherrrrrr
   final modmenuInstance:ModMenuState;
   final camera:FunkinCamera;
@@ -422,7 +427,6 @@ class ModMenuScene
         });
 
         changeCharacters();
-
         onRestore();
 
         carBattery.visible = true;
@@ -461,6 +465,8 @@ class ModMenuScene
    */
   function showCrispyResult():Void
   {
+    isFinished = true;
+
     var showSmoke:Bool = false;
 
     if (bf.hasAnimation(CRISPY) && bf.previousModId == bf.currentModId)
@@ -521,6 +527,8 @@ class ModMenuScene
    */
   public function updateAftermath(elapsed:Float):Bool
   {
+    if (!isFinished) return false;
+
     crispyTimer += elapsed;
 
     if (bf.getCurrentAnimation() == CRISPY && gf.getCurrentAnimation() == CRISPY)

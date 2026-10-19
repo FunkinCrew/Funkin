@@ -19,7 +19,6 @@ import funkin.ui.FullScreenScaleMode;
 import funkin.ui.MusicBeatState;
 import funkin.ui.UIStateMachine;
 import funkin.ui.mainmenu.MainMenuState;
-import funkin.ui.modmenu.ModMenuCharacter.CharacterAnimation;
 import funkin.ui.transition.preload.hotreload.HotReloadState;
 import funkin.util.FileUtil;
 import funkin.util.PropertyAnimator;
@@ -196,22 +195,6 @@ class ModMenuState extends MusicBeatState
   var doneButtonAnimator:PropertyAnimator;
   var lastSelectDir:Null<FlxDirection> = null;
   var menuBG:FunkinSprite;
-
-  /**
-   * The loading throbber.
-   */
-  var loadingThrobber:FunkinSprite;
-
-  /**
-   * Whether the enabled mods were handed to Polymod and a reload was started.
-   * That happens as soon as Done is pressed, while the electrocution plays.
-   */
-  var modsApplying:Bool = false;
-
-  /**
-   * Whether that reload has finished. The crispy part of the electrocution waits for this.
-   */
-  var modsReloaded:Bool = false;
 
   public function new()
   {
@@ -414,15 +397,6 @@ class ModMenuState extends MusicBeatState
       });
     installer.build(camHUD);
 
-    loadingThrobber = new FunkinSprite(0, 0).loadTextureAtlas('ui/loading/throbber');
-    loadingThrobber.anim.addBySymbol('wholeTimeline', loadingThrobber.getDefaultSymbol(), loadingThrobber.library.frameRate);
-    loadingThrobber.animation.play('wholeTimeline');
-    loadingThrobber.camera = camHUD;
-    loadingThrobber.zIndex = 1000;
-    loadingThrobber.x = FlxG.width - loadingThrobber.width;
-    loadingThrobber.alpha = 0.0;
-    add(loadingThrobber);
-
     enabledModItems.repositionItems();
     disabledModItems.repositionItems();
 
@@ -516,7 +490,7 @@ class ModMenuState extends MusicBeatState
 
   // OVERRIDES //
 
-  public override function destroy():Void
+  override public function destroy():Void
   {
     super.destroy();
 
@@ -533,6 +507,13 @@ class ModMenuState extends MusicBeatState
     instance = null;
   }
 
+  /**
+   * Callback ran when a file is dropped onto the window.
+   * @param file The file that was dropped.
+   * @param state The state that was dropped.
+   * @param x The x position of the dropped file.
+   * @param y The y position of the dropped file.
+   */
   public function onDropFile(file:lime.utils.DroppedFile, state:String, x:Float, y:Float):Void
   {
     if (!canDropFiles()) return;
@@ -562,7 +543,6 @@ class ModMenuState extends MusicBeatState
   #if FEATURE_ONE_CLICK_INSTALL
   /**
    * Begins one click install of a mod from GameBanana. This will fetch the metadata, download the icon, and start the download.
-   *
    * @param request The parsed link.
    */
   public function beginOneClickInstall(request:OneClickRequest):Void
@@ -574,6 +554,7 @@ class ModMenuState extends MusicBeatState
 
   /**
    * Tells the card how many more mods are lined up behind the one it's showing.
+   * @param count The number of mods.
    */
   public function setInstallQueueCount(count:Int):Void
   {
@@ -631,24 +612,7 @@ class ModMenuState extends MusicBeatState
 
     handleInput(elapsed);
 
-    if (modsApplying && !scene.isShocking)
-    {
-      if (scene.updateAftermath(elapsed) && modsReloaded)
-      {
-        applyModlist();
-      }
-      else
-      {
-        if (loadingThrobber.alpha <= 0.0)
-        {
-          FlxTween.tween(loadingThrobber, {
-            alpha: 1.0
-          }, 0.5, {
-            ease: FlxEase.quadOut
-          });
-        }
-      }
-    }
+    if (scene.updateAftermath(elapsed)) applyModlist();
 
     if (fadingItems.length > 0)
     {
@@ -711,10 +675,7 @@ class ModMenuState extends MusicBeatState
 
     if (FlxG.mouse.justPressed)
     {
-      // TODO: Make this less bad
-
-      var target = FlxG.mouse.getWorldPosition();
-
+      var target:FlxPoint = FlxG.mouse.getWorldPosition();
       if (buttonBackToMenu.overlapsPoint(target))
       {
         backToMainMenu();
@@ -770,7 +731,7 @@ class ModMenuState extends MusicBeatState
    */
   function getNavTargets(from:ModMenuSelection, direction:FlxDirection):Array<ModMenuSelection>
   {
-    return switch [from, direction]
+    return switch ([from, direction])
     {
       case [DisabledModList, FlxDirection.UP]:
         [BackToMenu];
@@ -1035,7 +996,6 @@ class ModMenuState extends MusicBeatState
     }
 
     if (acceptDelay > 0) acceptDelay -= elapsed;
-
     if (oldSelection != selection) handleSelection();
   }
 
@@ -1055,8 +1015,14 @@ class ModMenuState extends MusicBeatState
    */
   function syncInteractionState():Void
   {
-    if (uiState.is(Idle) && lists.hasTransitions) uiState.transition(Interacting);
-    else if (uiState.is(Interacting) && !lists.hasTransitions) uiState.transition(Idle);
+    if (uiState.is(Idle) && lists.hasTransitions)
+    {
+      uiState.transition(Interacting);
+    }
+    else if (uiState.is(Interacting) && !lists.hasTransitions)
+    {
+      uiState.transition(Idle);
+    }
   }
 
   /**
@@ -1307,8 +1273,14 @@ class ModMenuState extends MusicBeatState
           case EnabledModList:
             var offset = (disabledModItems.length - 1) - (enabledModItems.length - 1);
 
-            if (disabledModItems.modItems.indexOf(disabledModItems.modItems[lastModIndex + offset]) == -1) disabledModItems.selectLastItem(lastSelectDir);
-            else disabledModItems.selectItem(lastModIndex + offset, lastSelectDir);
+            if (disabledModItems.modItems.indexOf(disabledModItems.modItems[lastModIndex + offset]) == -1)
+            {
+              disabledModItems.selectLastItem(lastSelectDir);
+            }
+            else
+            {
+              disabledModItems.selectItem(lastModIndex + offset, lastSelectDir);
+            }
           default:
             disabledModItems.selectFirstItem(lastSelectDir);
         }
@@ -1318,10 +1290,15 @@ class ModMenuState extends MusicBeatState
           case OpenModsFolder | Done:
             enabledModItems.selectLastItem(lastSelectDir);
           case DisabledModList:
-            var offset = (enabledModItems.length - 1) - (disabledModItems.length - 1);
-
-            if(enabledModItems.modItems.indexOf(enabledModItems.modItems[lastModIndex + offset]) == -1) enabledModItems.selectLastItem(lastSelectDir);
-            else enabledModItems.selectItem(lastModIndex + offset, lastSelectDir);
+            var offset:Int = (enabledModItems.length - 1) - (disabledModItems.length - 1);
+            if (enabledModItems.modItems.indexOf(enabledModItems.modItems[lastModIndex + offset]) == -1)
+            {
+              enabledModItems.selectLastItem(lastSelectDir);
+            }
+            else
+            {
+              enabledModItems.selectItem(lastModIndex + offset, lastSelectDir);
+            }
           default:
             enabledModItems.selectFirstItem(lastSelectDir);
         }
@@ -1364,8 +1341,14 @@ class ModMenuState extends MusicBeatState
   function refreshModList(doFade:Bool = true):Array<ModMenuItem>
   {
     var oldSelectedId:Null<String> = null;
-    if (selection == DisabledModList && disabledModItems.selectedModItem != null) oldSelectedId = disabledModItems.selectedModItem.getModId();
-    else if (selection == EnabledModList && enabledModItems.selectedModItem != null) oldSelectedId = enabledModItems.selectedModItem.getModId();
+    if (selection == DisabledModList && disabledModItems.selectedModItem != null)
+    {
+      oldSelectedId = disabledModItems.selectedModItem.getModId();
+    }
+    else if (selection == EnabledModList && enabledModItems.selectedModItem != null)
+    {
+      oldSelectedId = enabledModItems.selectedModItem.getModId();
+    }
 
     disabledModItems.title = 'DISABLED';
     disabledModItems.x = leftRectangle.x;
@@ -1396,32 +1379,58 @@ class ModMenuState extends MusicBeatState
         if (selection == DisabledModList)
         {
           var itemToSelect = disabledModItems.modItems.find((item) -> item.getModId() == oldSelectedId);
-          if (itemToSelect != null) disabledModItems.selectModItem(itemToSelect);
+          if (itemToSelect != null)
+          {
+            disabledModItems.selectModItem(itemToSelect);
+          }
           else
+          {
             disabledModItems.selectFirstItem();
+          }
         }
         else if (selection == EnabledModList)
         {
           var itemToSelect = enabledModItems.modItems.find((item) -> item.getModId() == oldSelectedId);
-          if (itemToSelect != null) enabledModItems.selectModItem(itemToSelect);
+          if (itemToSelect != null)
+          {
+            enabledModItems.selectModItem(itemToSelect);
+          }
           else
+          {
             enabledModItems.selectFirstItem();
+          }
         }
       }
       else
       {
-        if (selection == DisabledModList) disabledModItems.selectFirstItem();
-        else if (selection == EnabledModList) enabledModItems.selectFirstItem();
+        if (selection == DisabledModList)
+        {
+          disabledModItems.selectFirstItem();
+        }
+        else if (selection == EnabledModList)
+        {
+          enabledModItems.selectFirstItem();
+        }
       }
     }
 
-    if (newDisabledItems.length > 0 && doFade) animateNewItemsIn(disabledModItems, newDisabledItems);
+    if (newDisabledItems.length > 0 && doFade)
+    {
+      animateNewItemsIn(disabledModItems, newDisabledItems);
+    }
     else
+    {
       disabledModItems.repositionItems();
+    }
 
-    if (newEnabledItems.length > 0 && doFade) animateNewItemsIn(enabledModItems, newEnabledItems);
+    if (newEnabledItems.length > 0 && doFade)
+    {
+      animateNewItemsIn(enabledModItems, newEnabledItems);
+    }
     else
+    {
       enabledModItems.repositionItems();
+    }
 
     if (!doFade)
     {
@@ -1491,6 +1500,9 @@ class ModMenuState extends MusicBeatState
   }
 }
 
+/**
+ * The different selections the mod menu can have.
+ */
 enum ModMenuSelection
 {
   DisabledModList;

@@ -9,6 +9,7 @@ import funkin.group.FunkinGroup.FunkinSpriteGroup;
 import funkin.modding.PolymodHandler;
 import funkin.save.Save;
 import funkin.ui.modmenu.ModMenuState.ModMenuSelection;
+import funkin.ui.transition.preload.hotreload.ModReloader;
 import funkin.util.FileUtil;
 import funkin.util.PromptUtil;
 import polymod.Polymod.ModDependencies;
@@ -163,6 +164,20 @@ class ModListManager
     }
 
     InitState.resetTitleState();
+  }
+
+  /**
+   * Applies the list of enabled mods, then reloads the mods, scripts and registries right away.
+   * Unlike hot-reloading, this doesn't purge any assets and it doesn't send you to another state!
+   * So it can run while the menu is still on screen!! YES!
+   *
+   * @param onReloaded Called on the main thread once everything has been reloaded.
+   */
+  public function applyAndReload(onReloaded:Void->Void):Void
+  {
+    applyToPolymod();
+
+    ModReloader.reload(null, onReloaded);
   }
 
   /**
