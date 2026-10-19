@@ -30,6 +30,7 @@ class CameraEditorImportExportHandler
   {
     state.songMetadatas = data.songMetadatas;
     state.songDatas = data.songChartDatas;
+    state.songSubtitlesDatas = data.songSubtitleDatas;
     state.songManifestData = data.manifest;
     state.audioInstTrackData = data.instrumentals;
     state.audioVocalTrackData = data.vocals;
@@ -157,6 +158,7 @@ class CameraEditorImportExportHandler
     return {
       songMetadatas: state.songMetadatas,
       songChartDatas: state.songDatas,
+      songSubtitleDatas: state.songSubtitlesDatas,
       manifest: state.songManifestData,
       instrumentals: state.audioInstTrackData,
       vocals: state.audioVocalTrackData

@@ -28,6 +28,14 @@ class SubtitleEntry
       LabelValuePair.weak("text", text)
     ]);
   }
+
+  public function toFileString():String
+  {
+    var formatedStart:String = DateTools.format(Date.fromTime(start), '%T,%f');
+    var formatedEnd:String = DateTools.format(Date.fromTime(end), '%T,%f');
+
+    return ('${id}\n${formatedStart} --> ${formatedEnd}\n${text}\n');
+  }
 }
 
 class SRTParser

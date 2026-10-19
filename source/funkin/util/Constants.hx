@@ -700,6 +700,11 @@ class Constants
   public static final EXT_DATA:String = 'json';
 
   /**
+   * The file extension used when loading subtitle files.
+   */
+  public static final EXT_SUBTITLE = "srt";
+
+  /**
    * OTHER
    */
   // ==============================

@@ -102,6 +102,13 @@ class ChartManifestData implements ISerializable
     return 'Voices${vocalId}.${Constants.EXT_SOUND}';
   }
 
+  public function getSubtitlesFileName(?variation:String):String
+  {
+    if (variation == null || variation == '') variation = Constants.DEFAULT_VARIATION;
+
+    return 'song-lyrics${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}.${Constants.EXT_SUBTITLE}';
+  }
+
   /**
    * Serialize this ChartManifestData into a JSON string.
    *

@@ -14,6 +14,7 @@ import funkin.data.song.SongData.SongChartData;
 import funkin.data.song.SongData.SongMetadata;
 import funkin.data.song.SongData.SongTimeChange;
 import funkin.data.song.SongRegistry;
+import funkin.data.subtitles.SubtitlesData;
 import funkin.input.Cursor;
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.ui.debug.charting.dialogs.ChartEditorAboutDialog;
@@ -839,6 +840,7 @@ class ChartEditorDialogHandler
 
     var songMetadata:Map<String, SongMetadata> = [];
     var songChartData:Map<String, SongChartData> = [];
+    var songSubtitlesData:Map<String, SubtitlesData> = [];
 
     var buttonContinue:Null<Button> = dialog.findComponent('dialogContinue', Button);
     if (buttonContinue == null) throw 'Could not locate dialogContinue button in Open Chart dialog';
@@ -849,6 +851,7 @@ class ChartEditorDialogHandler
 
         songMetadatas: songMetadata,
         songChartDatas: songChartData,
+        songSubtitleDatas: songSubtitlesData,
 
         instrumentals: [],
         vocals: []
@@ -1250,6 +1253,7 @@ class ChartEditorDialogHandler
 
       var songMetadata:Null<SongMetadata> = null;
       var songChartData:Null<SongChartData> = null;
+      var songSubtitlesData:SubtitlesData = new SubtitlesData([]);
 
       if (path.ext != fileExt)
       {
@@ -1324,6 +1328,9 @@ class ChartEditorDialogHandler
         ],
         songChartDatas: [
           Constants.DEFAULT_VARIATION => songChartData
+        ],
+        songSubtitleDatas: [
+          Constants.DEFAULT_VARIATION => songSubtitlesData
         ],
 
         instrumentals: [],
