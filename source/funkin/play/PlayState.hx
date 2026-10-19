@@ -975,6 +975,12 @@ class PlayState extends MusicBeatSubState
     // Do this last to prevent beatHit from being called before create() is done.
     super.create();
 
+    // Dispatch a create event just for notekinds and song events.
+    var event:ScriptEvent = ScriptEvent.get(CREATE);
+    if (songEvents != null && songEvents.length > 0) SongEventRegistry.callEvent(event);
+    NoteKindManager.callEvent(event);
+    event.finish();
+
     leftWatermarkText.cameras = [camHUD];
     rightWatermarkText.cameras = [camHUD];
 
