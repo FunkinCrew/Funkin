@@ -1,10 +1,9 @@
 package funkin.ui.transition.preload.hotreload;
 
-import flixel.util.FlxDestroyUtil;
 import flixel.util.typeLimit.NextState;
 import funkin.assets.FunkinAssetCache;
-import funkin.graphics.FunkinSprite;
 import funkin.ui.title.TitleState;
+import funkin.ui.transition.progress.FunkinProgressBar;
 import funkin.util.tasks.TaskHandler;
 
 /**
@@ -39,6 +38,11 @@ class HotReloadState extends MusicBeatState
   static final BAR_PAD:Int = 16;
   static final BAR_HEIGHT:Int = 24;
 
+  /**
+   * The progress bar instance.
+   */
+  var progressBar:FunkinProgressBar;
+
   var onComplete:Null<Void->Void> = null;
   var targetState:Null<NextState> = null;
   var purgeOnly:Bool = false;
@@ -47,9 +51,6 @@ class HotReloadState extends MusicBeatState
   var isComplete:Bool = false;
   var transitioning:Bool = false;
   var totalElapsed:Float = 0;
-  // Graphical elements
-  var progressBar:FunkinSprite;
-  var throbber:FunkinSprite;
 
   public function new(?params:HotReloadStateParams)
   {
@@ -58,33 +59,24 @@ class HotReloadState extends MusicBeatState
     {
       this.onComplete = params?.onComplete ?? null;
       this.targetState = params?.targetState ?? null;
-      this.purgeOnly = params?.purgeOnly ?? false;
     }
-    this.progressBar = new FunkinSprite(BAR_PAD, FlxG.height - BAR_HEIGHT - BAR_PAD);
-    throbber = new FunkinSprite(0, 0);
+
+    progressBar = new FunkinProgressBar();
   }
 
   override public function create():Void
   {
     super.create();
 
-    FlxG.keys.enabled = false;
-
     FlxG.plugins.get(funkin.util.plugins.EvacuateDebugPlugin).active = false;
     FlxG.plugins.get(funkin.util.plugins.ReloadAssetsDebugPlugin).active = false;
+  }
 
-    // Fix a specific bug where the game tries to render the 0-character long text,
+  override function createWatermarkText():Void
+  {
+    // Do nothing.
+    // Fixes a specific bug where the game tries to render the 0-character long text,
     // fails and shits its pants.
-    if (leftWatermarkText != null)
-    {
-      remove(leftWatermarkText);
-      leftWatermarkText = FlxDestroyUtil.destroy(leftWatermarkText);
-    }
-    if (rightWatermarkText != null)
-    {
-      remove(rightWatermarkText);
-      rightWatermarkText = FlxDestroyUtil.destroy(rightWatermarkText);
-    }
   }
 
   override public function update(elapsed:Float):Void
@@ -100,84 +92,12 @@ class HotReloadState extends MusicBeatState
       queuePurgeCache();
     }
 
-    updateThrobber(elapsed);
-
     if (isComplete)
     {
       funkin.modding.PolymodErrorHandler.printQueuedErrors();
 
       moveToTitleState();
     }
-  }
-
-  /**
-   * Create and display the progress bar visuals.
-   * Call this only AFTER assets have been purged.
-   */
-  function buildProgressBar():Void
-  {
-    trace('Building progress bar for display...');
-
-    // Build progress bar
-    var progressBarBack = new FunkinSprite(0, 0).makeSolidColor(10, 12, 0xFFCCCCCC);
-    progressBarBack.zIndex = 100;
-    progressBarBack.setGraphicSize(FlxG.width - BAR_PAD - BAR_PAD, BAR_HEIGHT);
-    progressBarBack.updateHitbox();
-    progressBarBack.x = BAR_PAD;
-    progressBarBack.y = FlxG.height - BAR_HEIGHT - BAR_PAD;
-    add(progressBarBack);
-
-    progressBar.makeSolidColor(10, 12, Constants.COLOR_PRELOADER_BAR);
-    progressBar.zIndex = 200;
-    add(progressBar);
-
-    updateProgress(0, 10);
-
-    // You can load textures asynchronously.
-    var throbberFuture = throbber.loadTextureAsync(funkin.assets.Paths.image('ui/loading/throbber'), true);
-    throbberFuture.onComplete((_) ->
-    {
-      throbber.setGraphicSize(64, 64);
-      throbber.updateHitbox();
-      throbber.x = FlxG.width - BAR_PAD - throbber.width;
-      throbber.y = FlxG.height - throbber.height - BAR_PAD - BAR_HEIGHT - BAR_PAD;
-      add(throbber);
-    });
-  }
-
-  /**
-   * Update the visuals for the spinning throbber.
-   * The throbber indicates that work is being done in the background, and the game is not frozen.
-   *
-   * @param elapsed The time that has elapsed since the last frame.
-   */
-  function updateThrobber(elapsed:Float):Void
-  {
-    totalElapsed += elapsed;
-
-    var timesPerSecond:Int = 8;
-    var angleSnaps:Int = 12;
-
-    var rotation:Float = Math.floor(totalElapsed * timesPerSecond) % angleSnaps;
-    throbber.angle = 360 / angleSnaps * rotation;
-  }
-
-  /**
-   * Update the visuals for the progress bar.
-   *
-   * @param loaded The number of items that have been loaded so far.
-   * @param total The total number of items that need to be loaded.
-   */
-  function updateProgress(loaded:Int, total:Int):Void
-  {
-    var currentProgress:Float = (loaded / total).clamp(0, 1);
-
-    // Update progress bar display.
-    var targetWidth:Float = FlxG.width * currentProgress - BAR_PAD - BAR_PAD;
-
-    progressBar.x = BAR_PAD;
-    progressBar.setGraphicSize(targetWidth, BAR_HEIGHT);
-    progressBar.updateHitbox();
   }
 
   /**
@@ -209,9 +129,9 @@ class HotReloadState extends MusicBeatState
     // OK now that we've purged the asset cache, we can display the progress bar
     // without the assets for it getting purged while they're in use.
     // NOTE: onComplete() is run in the main thread.
-    buildProgressBar();
-
-    updateProgress(1, 10);
+    progressBar.build();
+    progressBar.updateProgress(1, 10);
+    add(progressBar);
 
     rebuildSoundTray();
 
@@ -247,9 +167,9 @@ class HotReloadState extends MusicBeatState
 
   function afterRebuildAssetLists():Void
   {
-    ModReloader.cachePersistentAssets(updateProgress, () ->
+    ModReloader.cachePersistentAssets(progressBar.updateProgress, () ->
     {
-      updateProgress(10, 10);
+      progressBar.updateProgress(10, 10);
       isComplete = true;
     });
   }
@@ -260,7 +180,7 @@ class HotReloadState extends MusicBeatState
    */
   function queueLoadEnabledMods():Void
   {
-    ModReloader.reload(updateProgress, () -> isComplete = true);
+    ModReloader.reload(progressBar.updateProgress, () -> isComplete = true);
   }
 
   function rebuildSoundTray():Void
@@ -317,8 +237,8 @@ class HotReloadState extends MusicBeatState
     {
       if (onComplete != null) onComplete();
 
-      Transition.switchState(targetState, {
-        transition: LoadingScreen(Fade(North), Fade(South)),
+      funkin.ui.transition.Transition.switchState(targetState, {
+        transition: None
       });
     }
     else
@@ -333,16 +253,16 @@ class HotReloadState extends MusicBeatState
       // Fallback to TitleState.
       if (InitState.customTitleState != null)
       {
-        Transition.switchState(InitState.customTitleState, {
+        funkin.ui.transition.Transition.switchState(InitState.customTitleState, {
           assetQuery: InitState.customTitleStateAssetsQuery,
-          transition: LoadingScreen(Fade(North), Fade(South)),
+          transition: None
         });
         return;
       }
 
-      Transition.switchState(() -> new TitleState(), {
+      funkin.ui.transition.Transition.switchState(() -> new TitleState(), {
         assetQuery: TitleState.queryAssets,
-        transition: LoadingScreen(Fade(North), Fade(South)),
+        transition: None
       });
     }
   }

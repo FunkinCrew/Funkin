@@ -702,8 +702,8 @@ class StoryMenuState extends MusicBeatState
           targetDifficulty: PlayStatePlaylist.campaignDifficulty,
           targetVariation: targetVariation
         }, {
-          transition: LoadingScreen(Fade(North), Fade(South)),
-          shouldPurgeCache: true,
+          transition: LoadingScreen(None, Fade(South)),
+          shouldPurgeCache: true
         }, false);
       });
     });

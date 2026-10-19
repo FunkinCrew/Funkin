@@ -93,7 +93,7 @@ class FNFCUtil
       playbackRate: 1,
       overrideMusic: true,
     }, {
-      transition: LoadingScreen(Fade(North), Fade(South)),
+      transition: LoadingScreen(None, Fade(South)),
       shouldStopMusic: false,
       onConstruct: function(targetState)
       {

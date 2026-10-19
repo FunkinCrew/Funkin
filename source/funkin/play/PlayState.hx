@@ -2003,7 +2003,7 @@ class PlayState extends MusicBeatSubState
             variation: currentVariation
           });
           funkin.ui.transition.Transition.openPlayState(lastParams, {
-            transition: LoadingScreen(None, None),
+            transition: BlackScreen(None, Fade(South)),
             shouldStopMusic: true,
           });
         }
