@@ -436,7 +436,7 @@ class ModListManager
       var item = new ModMenuItem(mod);
       if (!PolymodHandler.isModCompatible(mod)) item.setIncompatible();
       item.localAlpha = 0;
-      disabledList.addModRawWithoutLayout(item, disabledList.modItems.length);
+      disabledList.addMod(item, disabledList.modItems.length);
       newItems.push(item);
     }
 
@@ -482,7 +482,7 @@ class ModListManager
 
       var item = new ModMenuItem(mod);
       item.localAlpha = 0;
-      enabledList.addModRawWithoutLayout(item, enabledList.modItems.length);
+      enabledList.addMod(item, enabledList.modItems.length);
       newItems.push(item);
     }
 
@@ -491,7 +491,7 @@ class ModListManager
     {
       var baseGameItem = new ModMenuItem(null, ModMenuState.BASE_GAME_MOD_ICON_PATH, ModMenuState.BASE_GAME_MOD_ID, 'Base Game', 'Default game content');
       baseGameItem.locked = true;
-      enabledList.addModRawWithoutLayout(baseGameItem, 0);
+      enabledList.addMod(baseGameItem, 0);
     }
 
     return newItems;
@@ -899,7 +899,7 @@ class ModListManager
     var clamped:Int = index;
     if (clamped > destinationList.modItems.length) clamped = destinationList.modItems.length;
     if (clamped < 0) clamped = 0;
-    destinationList.addModRawWithoutLayout(item, clamped);
+    destinationList.addMod(item, clamped);
 
     item.cancelFlight();
     item.localX = worldX - destinationList.x;

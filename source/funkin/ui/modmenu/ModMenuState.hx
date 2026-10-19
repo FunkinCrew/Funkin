@@ -194,7 +194,7 @@ class ModMenuState extends MusicBeatState
   var selection:ModMenuSelection = DisabledModList;
   var openFolderAnimator:PropertyAnimator;
   var doneButtonAnimator:PropertyAnimator;
-  var lastSelectDir:Int = 0;
+  var lastSelectDir:Null<FlxDirection> = null;
   var menuBG:FunkinSprite;
 
   /**
@@ -978,7 +978,7 @@ class ModMenuState extends MusicBeatState
         return;
       }
 
-      if (movingUp ? list.moveUp(false) : list.moveDown(false)) return;
+      if (movingUp ? list.moveSelectionBy(1, false) : list.moveSelectionBy(-1, false)) return;
 
       if (isRepeat) return;
     }
@@ -987,7 +987,7 @@ class ModMenuState extends MusicBeatState
     {
       if (!isNavigable(target)) continue;
 
-      lastSelectDir = getSlideDirection(direction);
+      lastSelectDir = direction;
       selection = target;
       return;
     }
@@ -1333,7 +1333,7 @@ class ModMenuState extends MusicBeatState
         playBackButtonAnimation('hover');
     }
 
-    lastSelectDir = 0;
+    lastSelectDir = null;
   }
 
   // MOD LIST BUILDING //
