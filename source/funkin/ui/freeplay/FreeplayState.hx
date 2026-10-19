@@ -200,12 +200,11 @@ class FreeplayState extends MusicBeatSubState
   /**
    * Another utility var, this one gets our current selected capsule easily
    */
-  var currentCapsule(get, never):SongMenuItem;
+  var currentCapsule(get, never):Null<SongMenuItem>;
 
-  function get_currentCapsule():SongMenuItem
+  function get_currentCapsule():Null<SongMenuItem>
   {
     // I got a NOR error once while the state was deconstructing.
-    @:nullSafety(Off)
     if (grpCapsules == null || grpCapsules.members == null) return null;
 
     return grpCapsules.members[curSelected];
@@ -664,8 +663,9 @@ class FreeplayState extends MusicBeatSubState
     // Reminder, this is a callback function being set, rather than these being called here in create()
     letterSort.changeSelectionCallback = (str) ->
     {
-      var curSong:Null<FreeplaySongData> = currentCapsule?.freeplayData;
-      currentCapsule.selected = false;
+      var capsuleTarget:Null<SongMenuItem> = this.currentCapsule;
+      var curSong:Null<FreeplaySongData> = capsuleTarget?.freeplayData;
+      if (capsuleTarget != null) capsuleTarget.selected = false;
 
       switch (str)
       {
@@ -745,7 +745,7 @@ class FreeplayState extends MusicBeatSubState
       // when boyfriend hits dat shiii
 
       albumRoll.playIntro();
-      albumRoll.albumId = currentCapsule.freeplayData?.data.getAlbumId(currentDifficulty, currentVariation);
+      albumRoll.albumId = currentCapsule?.freeplayData?.data.getAlbumId(currentDifficulty, currentVariation);
 
       if (!fromCharSelect)
       {
@@ -823,9 +823,10 @@ class FreeplayState extends MusicBeatSubState
       backingImage.visible = true;
       backingCard.introDone();
 
-      if (prepForNewRank && fromResultsParams != null)
+      var capsuleTarget:Null<SongMenuItem> = this.currentCapsule;
+      if (prepForNewRank && fromResultsParams != null && capsuleTarget != null)
       {
-        rankAnimStart(fromResultsParams, currentCapsule);
+        rankAnimStart(fromResultsParams, capsuleTarget);
         albumRoll.skipIntro();
         albumRoll.showStars();
       }
@@ -1055,8 +1056,12 @@ class FreeplayState extends MusicBeatSubState
     changeSelection();
     refreshCapsuleDisplays();
 
-    var event:CapsuleScriptEvent = CapsuleScriptEvent.get(DIFFICULTY_SWITCH, currentCapsule, currentDifficulty, currentVariation);
-    dispatchEvent(event);
+    var capsuleTarget:Null<SongMenuItem> = this.currentCapsule;
+    if (capsuleTarget != null)
+    {
+      var event:CapsuleScriptEvent = CapsuleScriptEvent.get(DIFFICULTY_SWITCH, capsuleTarget, currentDifficulty, currentVariation);
+      dispatchEvent(event);
+    }
   }
 
   /**
@@ -1120,7 +1125,7 @@ class FreeplayState extends MusicBeatSubState
 
   function rankAnimStart(fromResults:FromResultsParams, capsuleToRank:SongMenuItem):Void
   {
-    dispatchEvent(new CapsuleScriptEvent(FREEPLAY_NEW_RANK, currentCapsule, currentDifficulty, currentVariation, fromResults?.newRank));
+    dispatchEvent(new CapsuleScriptEvent(FREEPLAY_NEW_RANK, capsuleToRank, currentDifficulty, currentVariation, fromResults?.newRank));
 
     uiStateMachine.transition(Interacting);
     // We get the current selected capsule, in-case someone changes the song selection during a timer
@@ -1209,7 +1214,7 @@ class FreeplayState extends MusicBeatSubState
   function rankDisplayNew(fromResults:Null<FromResultsParams>,
     capsuleToRank:SongMenuItem):Void
   {
-    dispatchEvent(new CapsuleScriptEvent(FREEPLAY_RANK_SLAM, currentCapsule, currentDifficulty, currentVariation, fromResults?.newRank));
+    dispatchEvent(new CapsuleScriptEvent(FREEPLAY_RANK_SLAM, capsuleToRank, currentDifficulty, currentVariation, fromResults?.newRank));
 
     capsuleToRank.ranking.visible = true;
     capsuleToRank.blurredRanking.visible = true;
@@ -1356,7 +1361,7 @@ class FreeplayState extends MusicBeatSubState
     });
     new FlxTimer().start(0.5, _ ->
     {
-      dispatchEvent(new CapsuleScriptEvent(FREEPLAY_CAPSULE_SLAM, currentCapsule, currentDifficulty, currentVariation, fromResultsParams?.newRank));
+      dispatchEvent(new CapsuleScriptEvent(FREEPLAY_CAPSULE_SLAM, capsuleToRank, currentDifficulty, currentVariation, fromResultsParams?.newRank));
 
       // Capsule slam vibration.
       HapticUtil.vibrate(Constants.DEFAULT_VIBRATION_PERIOD, Constants.DEFAULT_VIBRATION_DURATION, Constants.MAX_VIBRATION_AMPLITUDE);
@@ -1499,7 +1504,7 @@ class FreeplayState extends MusicBeatSubState
     var distance:Int = 30;
     var groupOffset:Float = 14.7;
     var shiftAmt:Float = (distance * amount) / 2;
-    var daSong:Null<FreeplaySongData> = currentCapsule.freeplayData;
+    var daSong:Null<FreeplaySongData> = currentCapsule?.freeplayData;
     final maxDotsPerRow:Int = 8;
 
     if (difficultyDots.group.members.length > maxDotsPerRow)
@@ -1824,7 +1829,7 @@ class FreeplayState extends MusicBeatSubState
       }));
     }
 
-    if (FlxG.keys.justPressed.T)
+    if (currentCapsule != null && FlxG.keys.justPressed.T)
     {
       rankAnimStart(fromResultsParams ?? {
         playRankAnim: true,
@@ -1954,7 +1959,7 @@ class FreeplayState extends MusicBeatSubState
 
     if (controls.ACCEPT_P && uiStateMachine.canInteract())
     {
-      currentCapsule.onConfirm();
+      currentCapsule?.onConfirm();
     }
   }
 
@@ -2217,7 +2222,7 @@ class FreeplayState extends MusicBeatSubState
 
     if (TouchUtil.justPressed)
     {
-      final selected = currentCapsule.theActualHitbox;
+      final selected = currentCapsule?.theActualHitbox;
       _pressedOnSelected = selected != null && TouchUtil.overlaps(selected, funnyCam);
     }
   }
@@ -2225,7 +2230,7 @@ class FreeplayState extends MusicBeatSubState
   function handleTouchSelectionScroll(elapsed:Float):Void
   {
     if (draggingDifficulty || ControlsHandler.usingExternalInputDevice) return;
-    if (TouchUtil.pressAction(currentCapsule.theActualHitbox, funnyCam)) return;
+    if (currentCapsule == null || TouchUtil.pressAction(currentCapsule.theActualHitbox, funnyCam)) return;
 
     if (TouchUtil.justPressed && TouchUtil.overlaps(capsuleHitbox, funnyCam))
     {
@@ -2326,7 +2331,7 @@ class FreeplayState extends MusicBeatSubState
 
           new FlxTimer().start(0.21, (afteranim) ->
           {
-            currentCapsule.doLerp = true;
+            if (currentCapsule != null) currentCapsule.doLerp = true;
             generateSongList(currentFilter, true, false, true);
             FlxG.touches.flickManager.destroy();
           });
@@ -2347,7 +2352,7 @@ class FreeplayState extends MusicBeatSubState
 
           new FlxTimer().start(0.21, (afteranim) ->
           {
-            currentCapsule.doLerp = true;
+            if (currentCapsule != null) currentCapsule.doLerp = true;
             generateSongList(currentFilter, true, false, true);
             FlxG.touches.flickManager.destroy();
           });
@@ -2365,7 +2370,7 @@ class FreeplayState extends MusicBeatSubState
           favoriteSong();
         }
       }
-      else
+      else if (currentCapsule != null)
       {
         currentCapsule.doLerp = true;
       }
@@ -2582,21 +2587,23 @@ class FreeplayState extends MusicBeatSubState
    */
   function changeDiff(change:Int = 0, force:Bool = false, capsuleAnim:Bool = false):Void
   {
+    var capsuleTarget:Null<SongMenuItem> = this.currentCapsule;
+
     if (capsuleAnim)
     {
-      if (currentCapsule != null)
+      if (capsuleTarget != null)
       {
         uiStateMachine.transition(Interacting);
-        currentCapsule.doLerp = false;
+        capsuleTarget.doLerp = false;
 
         var movement:Float = (change > 0) ? 15 : -15;
-        FlxTween.tween(currentCapsule, {
-          x: currentCapsule.x - movement
+        FlxTween.tween(capsuleTarget, {
+          x: capsuleTarget.x - movement
         }, 0.1, {
           ease: FlxEase.expoOut
         });
-        FlxTween.tween(currentCapsule, {
-          x: currentCapsule.x + movement
+        FlxTween.tween(capsuleTarget, {
+          x: capsuleTarget.x + movement
         }, 0.1, {
           ease: FlxEase.expoIn,
           startDelay: 0.1
@@ -2633,9 +2640,10 @@ class FreeplayState extends MusicBeatSubState
       FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
     }
 
+    capsuleTarget = this.currentCapsule;
     var previousVariation:String = currentVariation;
-    var daSong:Null<FreeplaySongData> = currentCapsule.freeplayData;
-    currentCapsule.selected = false;
+    var daSong:Null<FreeplaySongData> = capsuleTarget?.freeplayData;
+    if (capsuleTarget != null) capsuleTarget.selected = false;
 
     // Available variations for current character. We get this since bf is usually `default` variation, and `pico` is `pico`
     // but sometimes pico can be the default variation (weekend 1 songs), and bf can be `bf` variation (darnell)
@@ -2660,7 +2668,7 @@ class FreeplayState extends MusicBeatSubState
     {
       // Switch to the closest song with that difficulty.
       curSelected = findClosestDiff(characterVariations, difficultiesAvailable[currentDifficultyIndex]);
-      daSong = currentCapsule.freeplayData;
+      daSong = currentCapsule?.freeplayData;
       rememberedSongId = daSong?.data.id;
 
       // Update the variation list for the new song.
@@ -2693,7 +2701,7 @@ class FreeplayState extends MusicBeatSubState
       intendedCompletion = Math.max(0, Scoring.tallyCompletion(songScore?.tallies));
       rememberedDifficulty = currentDifficulty;
       if (!capsuleAnim) generateSongList(currentFilter, false, true, true);
-      if (change != 0) currentCapsule.refreshDisplay(!prepForNewRank);
+      if (change != 0) currentCapsule?.refreshDisplay(!prepForNewRank);
     }
     else
     {
@@ -2778,7 +2786,8 @@ class FreeplayState extends MusicBeatSubState
     // Set difficulty star count.
     albumRoll.setDifficultyStars(daSong?.data.getDifficulty(currentDifficulty, currentVariation)?.difficultyRating ?? 0);
 
-    currentCapsule.selected = true; // set selected again, so it can run its getter function to initialize movement
+    capsuleTarget = this.currentCapsule;
+    if (capsuleTarget != null) capsuleTarget.selected = true; // set selected again, so it can run its getter function to initialize movement
   }
 
   #if FEATURE_TOUCH_CONTROLS
@@ -2986,7 +2995,7 @@ class FreeplayState extends MusicBeatSubState
   {
     uiStateMachine.transition(Exiting);
 
-    var event:CapsuleScriptEvent = CapsuleScriptEvent.get(SONG_SELECTED, currentCapsule, currentDifficulty, currentVariation);
+    var event:CapsuleScriptEvent = CapsuleScriptEvent.get(SONG_SELECTED, cap, currentDifficulty, currentVariation);
     dispatchEvent(event);
 
     PlayStatePlaylist.isStoryMode = false;
@@ -3025,8 +3034,8 @@ class FreeplayState extends MusicBeatSubState
     FunkinSound.playOnce(Paths.sound('ui/main-menu/confirm-menu'));
     dj?.onConfirm();
 
-    currentCapsule.forcePosition();
-    currentCapsule.confirm();
+    currentCapsule?.forcePosition();
+    currentCapsule?.confirm();
 
     backingCard.confirm();
     fadeDots(false);
@@ -3183,16 +3192,16 @@ class FreeplayState extends MusicBeatSubState
 
     if (!prepForNewRank && curSelected != prevSelected) FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
 
-    var songScore:Null<SaveScoreData> = Save.instance.getSongScore(currentCapsule.freeplayData?.data.id ?? '', currentDifficulty, currentVariation);
+    var songScore:Null<SaveScoreData> = Save.instance.getSongScore(currentCapsule?.freeplayData?.data.id ?? '', currentDifficulty, currentVariation);
     intendedScore = songScore?.score ?? 0;
 
     intendedCompletion = Scoring.tallyCompletion(songScore?.tallies);
-    rememberedSongId = currentCapsule.freeplayData?.data.id;
+    rememberedSongId = currentCapsule?.freeplayData?.data.id;
 
-    if (currentCapsule.freeplayData == null) albumRoll.albumId = null;
+    if (currentCapsule?.freeplayData == null) albumRoll.albumId = null;
 
     changeDiff();
-    currentCapsule.refreshDisplay(currentCapsule.freeplayData == null);
+    currentCapsule?.refreshDisplay(currentCapsule?.freeplayData == null);
 
     for (index => capsule in grpCapsules.members)
     {
@@ -3215,20 +3224,25 @@ class FreeplayState extends MusicBeatSubState
       if (index < curSelected) capsule.targetPos.y -= 100; // another 100 for good measure
     }
 
+    var capsuleTarget:Null<SongMenuItem> = this.currentCapsule;
+
     if (grpCapsules.countLiving() > 0 && !prepForNewRank && uiStateMachine.canInteract())
     {
       FlxG.sound.music?.pause();
-      FlxTimer.wait(FADE_IN_DELAY, playCurSongPreview.bind(currentCapsule));
-      currentCapsule.selected = true;
+      FlxTimer.wait(FADE_IN_DELAY, playCurSongPreview.bind(capsuleTarget));
+      if (capsuleTarget != null) capsuleTarget.selected = true;
 
-      // switchBackingImage(currentCapsule.freeplayData);
+      // switchBackingImage(capsuleTarget.freeplayData);
     }
 
     // Small vibrations every selection change.
     if (change != 0) HapticUtil.vibrate(0, 0.01, 0.5);
 
-    var event:CapsuleScriptEvent = CapsuleScriptEvent.get(CAPSULE_SELECTED, currentCapsule, currentDifficulty, currentVariation);
-    dispatchEvent(event);
+    if (capsuleTarget != null)
+    {
+      var event:CapsuleScriptEvent = CapsuleScriptEvent.get(CAPSULE_SELECTED, capsuleTarget, currentDifficulty, currentVariation);
+      dispatchEvent(event);
+    }
   }
 
   public function playCurSongPreview(?daSongCapsule:SongMenuItem):Void
@@ -3254,7 +3268,7 @@ class FreeplayState extends MusicBeatSubState
     else
     {
       // Make sure the player is still hovering over the song we want to load preview for
-      if (!daSongCapsule.selected) return;
+      if (daSongCapsule == null || !daSongCapsule.selected) return;
       var previewSong:Null<Song> = daSongCapsule?.freeplayData?.data;
       if (previewSong == null) return;
 
@@ -3352,7 +3366,7 @@ class FreeplayState extends MusicBeatSubState
   {
     var selectedCapsule = currentCapsule;
     var targetSong = selectedCapsule?.freeplayData;
-    if (targetSong != null)
+    if (selectedCapsule != null && targetSong != null)
     {
       var isFav = targetSong.toggleFavorite();
       if (isFav)
@@ -3381,7 +3395,7 @@ class FreeplayState extends MusicBeatSubState
           startDelay: 0.1,
           onComplete: function(_)
           {
-            selectedCapsule.doLerp = true;
+            if (selectedCapsule != null) selectedCapsule.doLerp = true;
             uiStateMachine.transition(Idle);
           }
         });
@@ -3393,6 +3407,8 @@ class FreeplayState extends MusicBeatSubState
         FunkinSound.playOnce(Paths.sound('ui/freeplay/sounds/unfavorite'), 1);
         new FlxTimer().start(0.2, _ ->
         {
+          if (selectedCapsule == null) return;
+
           selectedCapsule.favIcon.visible = false;
           selectedCapsule.favIconBlurred.visible = false;
           selectedCapsule.checkClip();
@@ -3414,7 +3430,7 @@ class FreeplayState extends MusicBeatSubState
           startDelay: 0.1,
           onComplete: function(_)
           {
-            selectedCapsule.doLerp = true;
+            if (selectedCapsule != null) selectedCapsule.doLerp = true;
             uiStateMachine.transition(Idle);
           }
         });
