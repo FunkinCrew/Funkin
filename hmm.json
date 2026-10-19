@@ -3,7 +3,7 @@
     {
       "name": "FlxPartialSound",
       "type": "git",
-      "ref": "ba1274145d5636d1aad53c7188c525bd39a99ee2",
+      "ref": "0eb7e2c28f304e2c2e6d65353d8f9d42590d5951",
       "url": "https://github.com/FunkinCrew/FlxPartialSound"
     },
     {
@@ -61,7 +61,7 @@
     {
       "name": "flixel",
       "type": "git",
-      "ref": "59232d4d10fcb89112eca66dbbe963229f49abac",
+      "ref": "d634dd45aedde32564b514ad097368bca6040610",
       "url": "https://github.com/FunkinCrew/flixel"
     },
     {
@@ -89,7 +89,7 @@
     {
       "name": "funkin.vis",
       "type": "git",
-      "ref": "f99adae2e1aa18ef1b987ca97e49d1b3c6ee9b9f",
+      "ref": "9e21958026fe948d2cfcec7d9435d99cf99d9d98",
       "url": "https://github.com/FunkinCrew/funkVis"
     },
     {
@@ -164,7 +164,7 @@
     {
       "name": "hxvlc",
       "type": "git",
-      "ref": "5ceac764bd21625d1e9d92ea02f9a0d110c6a58c",
+      "ref": "458d07d89aa22a01282c3d79d12e66702fca70d3",
       "url": "https://github.com/MAJigsaw77/hxvlc"
     },
     {
@@ -187,7 +187,7 @@
     {
       "name": "lime",
       "type": "git",
-      "ref": "fc505c84859bf6daf382c01164a4e68746c3d03b",
+      "ref": "e10b5ee384e6335a00dafee946b8445bbda6fd86",
       "url": "https://github.com/FunkinCrew/lime"
     },
     {
@@ -199,7 +199,7 @@
     {
       "name": "openfl",
       "type": "git",
-      "ref": "2d9b10e09429541df449c081577917a965a3a914",
+      "ref": "6fad7eb09ac7ae3b707448c236e3e208d13f20cf",
       "url": "https://github.com/FunkinCrew/openfl"
     },
     {
