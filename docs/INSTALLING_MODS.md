@@ -31,5 +31,5 @@
 4. Extract the mod you downloaded from its ZIP (I.E, .7z, .RAR, etc.) file, and place the mod folder into the game's `mods` folder.
 4. Restart the game (you may have to [force close](https://support.apple.com/en-us/109359) the app first). The game should detect the mod and start with it.
 
-# HTML5/Web
+# HTML5 / WEB BROWSER
 1. Not Implemented.
