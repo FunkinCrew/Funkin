@@ -29,6 +29,8 @@ This guide will cover best practices for each type of contribution.
 
 * [Choosing a base branch](https://github.com/FunkinCrew/Funkin/blob/main/docs/CONTRIBUTING.md#choosing-a-base-branch)
 
+* [Commit names](https://github.com/FunkinCrew/Funkin/blob/main/docs/CONTRIBUTING.md#commit-names)
+
 * [Merge conflicts and rebasing](https://github.com/FunkinCrew/Funkin/blob/main/docs/CONTRIBUTING.md#merge-conflicts-and-rebasing)
 
 * [Code PRs](https://github.com/FunkinCrew/Funkin/blob/main/docs/CONTRIBUTING.md#code-prs)
@@ -149,6 +151,34 @@ Choose the `main` branch if you modify:
 
 Choosing the right base branch helps keep your commit history clean and avoid merge conflicts.
 Once you’re satisfied with the changes you’ve made, open a PR and base it on the same branch you previously chose.
+
+## Commit Names
+Be sure to write brief, descriptive, and easy-to-understand commit names each time you commit your changes. This helps us maintain an orderly commit history.
+
+### Example Commit Names
+#### DO NOT:
+Below are examples of what you SHOULD NOT do when writing commit names.
+```
+- lol
+- Fix this
+- its not great but it works
+- I'm gonna eat a muffin this friday night
+- Fix an issue where the Chart Editor wouldn't let you edit the chart, which is pretty much the whole point of the Chart Editor
+```
+
+#### DO:
+Below are examples on what you SHOULD do when writing commit names.
+
+```
+- Add the new Shoelace Editor
+- Fix Boyfriend not showing up after loading a song
+- Optimize the rimlight shader in Week 7 Erect
+- Remove unused code in FreeplayState
+- Fix a typo in ChartEditorState.hx
+```
+
+> [!TIP]
+> If you'd like, you can include jokes in your branch names and PR descriptions. We like to have fun!
 
 ## Maintaining your pull request
 Keeping your pull request clean and easy to review increases the chance that it will be accepted!
