@@ -460,7 +460,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   function get_isCursorOverHaxeUI():Bool
   {
-    return Screen.instance.hasSolidComponentUnderPoint(FlxG.mouse.viewX, FlxG.mouse.viewY);
+    return Screen.instance.hasSolidComponentUnderPoint(Screen.instance.currentMouseX, Screen.instance.currentMouseY);
   }
 
   /**
