@@ -20,7 +20,7 @@ import haxe.ui.data.ArrayDataSource;
               iconShiftOn="assets/ui/editors/camera-editor/magnet_shift_on.png"
               iconShiftOff="assets/ui/editors/camera-editor/magnet_shift_off.png"
               style="vertical-align: center;" />
-  <button id="btnSnapGrid" text="Snap 1/16" width="90" allowFocus="false" tooltip="The grid dragging snaps to\nClick, [ and ] change it" style="vertical-align: center;" />
+  <button id="btnSnapGrid" text="Snap 1/16" width="124" allowFocus="false" tooltip="The grid dragging snaps to\nClick, [ and ] change it" style="vertical-align: center;" />
   <spacer width="8" />
   <label text="Zoom:" style="vertical-align: center; padding-right: 4px;" />
   <slider id="zoomSlider" min="0.1" max="10.0" pos="1.0" width="120" style="vertical-align: center;" />

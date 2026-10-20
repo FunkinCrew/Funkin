@@ -454,6 +454,20 @@ class CameraEditorState extends UIState implements ConsoleClass
   }
 
   /**
+   * Whether the timeline zooms around the playhead rather than the cursor. Remembered between sessions.
+   */
+  @:bind(menubarItemZoomToPlayhead.selected)
+  public var zoomToPlayhead(default, set):Bool = false;
+
+  function set_zoomToPlayhead(val:Bool):Bool
+  {
+    zoomToPlayhead = val;
+    if (timeline != null && timeline.viewport != null) timeline.viewport.zoomToPlayhead = val;
+    if (Save.instance.cameraEditorZoomToPlayhead.value != val) Save.instance.cameraEditorZoomToPlayhead.value = val;
+    return val;
+  }
+
+  /**
    * Whether the camera preview should display song events.
    */
   @:bind(menubarItemDoSongEvents.selected)
@@ -687,6 +701,9 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     populateLoadVariationMenu();
     populateOpenRecentMenu();
+
+    menubarItemZoomToPlayhead.selected = Save.instance.cameraEditorZoomToPlayhead.value;
+    timeline.viewport.zoomToPlayhead = menubarItemZoomToPlayhead.selected;
 
     registerTimelineEvents();
 

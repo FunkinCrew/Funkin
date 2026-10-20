@@ -47,7 +47,7 @@ class TimelineViewport extends Box
   // A drag held near either side carries the view along at one steady pace.
   public static inline var EDGE_AUTOSCROLL_ZONE_PX:Float = 28.0;
 
-  public static inline var EDGE_AUTOSCROLL_PX_PER_SEC:Float = 420.0;
+  public static inline var EDGE_AUTOSCROLL_PX_PER_SEC:Float = 900.0;
   // The least a wheel notch moves the view along the song, as a share of what is on screen.
   public static inline var SCROLL_STEP_MIN_SHARE:Float = 0.1;
   public static inline var TRACKPAD_TIME_SCROLL_MULT:Float = 100.0;
@@ -92,6 +92,9 @@ class TimelineViewport extends Box
   public var aimLayerScrollOffsetPx:Float = 0;
   @:noCompletion
   public var _easingLayerScroll:Bool = false;
+
+  // Whether a zoom holds the playhead still rather than the cursor.
+  public var zoomToPlayhead:Bool = false;
 
   // Whether the view keeps the playhead in front of it while the song runs.
   // Scrolling turns it off, and the song leaving the view turns it back on.
@@ -386,6 +389,54 @@ class TimelineViewport extends Box
     return stepMs < least ? least : stepMs;
   }
 
+  /**
+   * Where a zoom holds the song still.
+   */
+  public function zoomAnchorX(fallbackX:Float):Float
+  {
+    if (!zoomToPlayhead) return fallbackX;
+
+    var playheadX:Float = msToPixelX(songPositionMs);
+    if (playheadX >= 0 && playheadX <= width) return playheadX;
+    return fallbackX;
+  }
+
+  /**
+   * Zooms the view, and sends it along the song as well so a point stays under the pointer.
+   */
+  public function zoomBy(factor:Float, pointerX:Float):Void
+  {
+    var fromScroll:Float = _easingScroll ? aimScrollOffsetMs : scrollOffsetMs;
+    var fromZoom:Float = _easingZoom ? aimZoomLevel : zoomLevel;
+    var pxFrom:Float = pixelsPerMs * fromZoom;
+    if (pxFrom <= 0) return;
+
+    var holdMs:Float;
+    var anchorX:Float;
+    var playheadX:Float = (songPositionMs - fromScroll) * pxFrom;
+    if (zoomToPlayhead && playheadX >= 0 && playheadX <= width)
+    {
+      holdMs = songPositionMs;
+      anchorX = playheadX;
+    }
+    else
+    {
+      anchorX = pointerX;
+      holdMs = fromScroll + pointerX / pxFrom;
+    }
+
+    var newZoom:Float = fromZoom * factor;
+    if (newZoom < MIN_ZOOM) newZoom = MIN_ZOOM;
+    if (newZoom > MAX_ZOOM) newZoom = MAX_ZOOM;
+
+    var pxTo:Float = pixelsPerMs * newZoom;
+    if (pxTo <= 0) return;
+
+    // A zoom keeps the view on the song, or puts it back on it.
+    chasing = true;
+    easeZoomTo(newZoom, holdMs - anchorX / pxTo);
+  }
+
   public function layerNameAt(layerIndex:Int):String
   {
     return layerIndex >= 0 && layerIndex < layers.length ? layers[layerIndex].name : "Default";
@@ -458,19 +509,8 @@ class TimelineViewport extends Box
 
     if (FlxG.keys.pressed.CONTROL)
     {
-      // Zoom, held where the pointer is. A share of a notch is a share of a notch's zoom.
-      var localX:Float = mouseX - screenLeft;
-      var holdMs:Float = pixelXToMs(localX);
-
-      var newZoom:Float = fromZoom * Math.pow(ZOOM_WHEEL_IN, dy);
-      if (newZoom < MIN_ZOOM) newZoom = MIN_ZOOM;
-      if (newZoom > MAX_ZOOM) newZoom = MAX_ZOOM;
-
-      var pxPerMs:Float = pixelsPerMs * newZoom;
-      var newScroll:Float = pxPerMs > 0 ? holdMs - (localX / pxPerMs) : fromScroll;
-
-      chasing = true;
-      easeZoomTo(newZoom, newScroll);
+      // A share of a notch is a share of a notch's zoom.
+      zoomBy(Math.pow(ZOOM_WHEEL_IN, dy), mouseX - screenLeft);
       return;
     }
 
@@ -1184,8 +1224,8 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
   {
     var localX:Float = e.screenX - _viewport.screenLeft;
     var localY:Float = e.screenY - _viewport.screenTop;
-    // Shift keeps what was already picked and adds to it.
-    var additive:Bool = e.shiftKey || e.ctrlKey;
+
+    var additive:Bool = FlxG.keys.pressed.CONTROL;
 
     var hitBlock:Null<TimelineEventBlock> = _hitTestBlocks(localX, localY);
     if (hitBlock != null)
@@ -1475,18 +1515,7 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
 
     if (e.ctrlKey)
     {
-      var localX:Float = e.screenX - _viewport.screenLeft;
-      var holdMs:Float = _viewport.pixelXToMs(localX);
-
-      var newZoom:Float = fromZoom * (e.delta > 0 ? TimelineViewport.ZOOM_WHEEL_IN : TimelineViewport.ZOOM_WHEEL_OUT);
-      if (newZoom < TimelineViewport.MIN_ZOOM) newZoom = TimelineViewport.MIN_ZOOM;
-      if (newZoom > TimelineViewport.MAX_ZOOM) newZoom = TimelineViewport.MAX_ZOOM;
-
-      var pxPerMs:Float = _viewport.pixelsPerMs * newZoom;
-      var newScroll:Float = pxPerMs > 0 ? holdMs - (localX / pxPerMs) : fromScroll;
-
-      _viewport.chasing = true;
-      _viewport.easeZoomTo(newZoom, newScroll);
+      _viewport.zoomBy(e.delta > 0 ? TimelineViewport.ZOOM_WHEEL_IN : TimelineViewport.ZOOM_WHEEL_OUT, e.screenX - _viewport.screenLeft);
       return;
     }
 

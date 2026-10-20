@@ -434,7 +434,7 @@ private class EventTimelineEvents extends Events
     if (_isEcho(_pushedZoom, slider.pos)) return;
 
     var viewport:TimelineViewport = _timeline.viewport;
-    var anchorX:Float = viewport.width / 2;
+    var anchorX:Float = viewport.zoomAnchorX(viewport.width / 2);
     var anchorMs:Float = viewport.pixelXToMs(anchorX);
 
     viewport.cancelScrollEase();
