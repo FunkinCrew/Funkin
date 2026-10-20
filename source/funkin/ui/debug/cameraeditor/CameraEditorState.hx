@@ -695,12 +695,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       var selectedLayer = timeline.viewport.layers[timeline.viewport.selectedLayerIndex];
       var raw:SongEventDataRaw = eventData;
       raw.editorLayer = selectedLayer.name == "Default" ? null : selectedLayer.name;
-
-      if (timeline.snapEnabled)
-      {
-        var stepMs = timeline.viewport.stepLengthMs;
-        if (stepMs > 0) raw.time = Math.fround(raw.time / stepMs) * stepMs;
-      }
+      raw.time = timeline.snapMs(raw.time);
 
       var cmd = new AddEventCommand(eventData);
       CameraEditorCommandHandler.performCommand(this, cmd);
@@ -1084,7 +1079,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     conductorInUse.update();
 
-    syncSnapShiftState();
+    syncSnapAltState();
 
     // TODO: sync vocals if they desync, im just too lazy to put this in rn
     if (currentInstrumental != null && currentInstrumental.playing)
@@ -1103,7 +1098,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     if (timeline != null && timeline.viewport != null)
     {
-      timeline.viewport.tickEdgeAutoScroll(elapsed);
+      timeline.viewport.tick(elapsed);
       timeline.viewport.handleTrackpadScroll();
     }
     if (mainView != null) mainView.handleTrackpadScroll();
@@ -1981,9 +1976,9 @@ class CameraEditorState extends UIState implements ConsoleClass
     syncTogglePlaybackButton();
   }
 
-  function syncSnapShiftState():Void
+  function syncSnapAltState():Void
   {
-    timeline.toolbar.chkSnap.shiftActive = FlxG.keys.pressed.SHIFT && timeline.viewport.hitTest(Screen.instance.currentMouseX, Screen.instance.currentMouseY);
+    timeline.toolbar.chkSnap.shiftActive = FlxG.keys.pressed.ALT && timeline.viewport.hitTest(Screen.instance.currentMouseX, Screen.instance.currentMouseY);
   }
 
   function syncTogglePlaybackButton():Void
@@ -2480,8 +2475,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       case [FlxKey.COMMA, false, false, false, _]:
         var eventData = new SongEventData(0, 'FocusCamera', 1);
 
-        var stepMs = timeline.viewport.stepLengthMs;
-        if (stepMs > 0) eventData.time = Math.fround(Conductor.instance.songPosition / stepMs) * stepMs;
+        eventData.time = timeline.snapMs(Conductor.instance.songPosition);
 
         var cmd = new AddEventCommand(eventData);
         CameraEditorCommandHandler.performCommand(this, cmd);
@@ -2490,8 +2484,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       case [FlxKey.PERIOD, false, false, false, _]:
         var eventData = new SongEventData(0, 'FocusCamera', 0);
 
-        var stepMs = timeline.viewport.stepLengthMs;
-        if (stepMs > 0) eventData.time = Math.fround(Conductor.instance.songPosition / stepMs) * stepMs;
+        eventData.time = timeline.snapMs(Conductor.instance.songPosition);
 
         var cmd = new AddEventCommand(eventData);
         CameraEditorCommandHandler.performCommand(this, cmd);
@@ -2500,7 +2493,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       // Edit menu
       case [FlxKey.Z, true, false, false, _]: // ctrl + z -> undo
         CameraEditorCommandHandler.undoLastCommand(this);
-      case [FlxKey.Y, true, false, false, _]: // ctrl + y -> redo -- note: I sorta like the ctrl + shift + z method to redo...
+      case [FlxKey.Y, true, false, false, _] | [FlxKey.Z, true, false, true, _]: // ctrl + y or ctrl + shift + z -> redo
         CameraEditorCommandHandler.redoLastCommand(this);
 
       case [FlxKey.A, true, false, false, _]: // ctrl + a -> select all timeline events
@@ -2526,16 +2519,37 @@ class CameraEditorState extends UIState implements ConsoleClass
         var removeCmds:Array<CameraEditorCommand> = [for (ev in selectedSongEvents) new RemoveEventCommand(ev)];
         CameraEditorCommandHandler.performCommand(this, new CompoundCommand(removeCmds, 'Cut ${removeCmds.length} Events', []));
       case [FlxKey.V, true, false, false, _] if (hasClipboardEvent): // ctrl + v -> paste at playhead
-        var pasteMs = Conductor.instance.songPosition;
-
-        if (pasteMs < 0) pasteMs = 0;
-        if (pasteMs > timeline.viewport.songLengthMs) pasteMs = timeline.viewport.songLengthMs;
-
-        CameraEditorCommandHandler.performCommand(this, new PasteEventsCommand(pasteMs));
+        CameraEditorCommandHandler.performCommand(this, new PasteEventsCommand(pastePositionMs()));
+      case [FlxKey.D, true, false, false, true]: // ctrl + d -> duplicate selection at playhead
+        duplicateSelection();
 
       case [FlxKey.DELETE, _, _, _, true] | [FlxKey.BACKSPACE, _, _, _, true]: // delete/backspace (with a note selected) -> delete selected notes
         var removeCmds:Array<CameraEditorCommand> = [for (ev in selectedSongEvents) new RemoveEventCommand(ev)];
         CameraEditorCommandHandler.performCommand(this, new CompoundCommand(removeCmds, 'Delete ${removeCmds.length} Events', []));
+
+      // Timeline
+      case [FlxKey.LBRACKET, false, false, false, _]: // [ -> decrease grid size
+        timeline.stepSnap(-1);
+      case [FlxKey.RBRACKET, false, false, false, _]: // ] -> increase grid size
+        timeline.stepSnap(1);
+      case [FlxKey.LEFT, false, false, true, true]: // shift + arrow (with a selection) -> nudge a grid step or a layer
+        timeline.viewport.nudgeSelection(-1, 0);
+      case [FlxKey.RIGHT, false, false, true, true]:
+        timeline.viewport.nudgeSelection(1, 0);
+      case [FlxKey.UP, false, false, true, true]:
+        timeline.viewport.nudgeSelection(0, -1);
+      case [FlxKey.DOWN, false, false, true, true]:
+        timeline.viewport.nudgeSelection(0, 1);
+      case [FlxKey.LEFT, false, false, false, _]: // arrows -> step the song a beat, shift steps four
+        seekByBeats(-1);
+      case [FlxKey.RIGHT, false, false, false, _]:
+        seekByBeats(1);
+      case [FlxKey.LEFT, false, false, true, _]:
+        seekByBeats(-4);
+      case [FlxKey.RIGHT, false, false, true, _]:
+        seekByBeats(4);
+      case [FlxKey.ESCAPE, false, false, false, true]: // escape -> clear the selection
+        selectedSongEvents = [];
 
       // User Guide
       case [FlxKey.F1, false, false, false, _]: // F1 -> open user guide
@@ -2545,6 +2559,49 @@ class CameraEditorState extends UIState implements ConsoleClass
     }
 
     // @formatter:on
+  }
+
+  /**
+   * Moves the playhead by whole beats, kept inside the song.
+   */
+  function seekByBeats(beats:Float):Void
+  {
+    if (currentInstrumental == null) return;
+
+    var target:Float = conductorInUse.songPosition + beats * conductorInUse.beatLengthMs;
+    if (target < 0) target = 0;
+    if (target > currentInstrumental.length) target = currentInstrumental.length;
+
+    setTimePosition(target);
+  }
+
+  /**
+   * Where a paste lands: the playhead, on the grid, inside the song.
+   */
+  function pastePositionMs():Float
+  {
+    var pasteMs:Float = timeline.snapMs(Conductor.instance.songPosition);
+
+    if (pasteMs < 0) pasteMs = 0;
+    if (pasteMs > timeline.viewport.songLengthMs) pasteMs = timeline.viewport.songLengthMs;
+
+    return pasteMs;
+  }
+
+  /**
+   * Copies the selection and pastes it at the playhead in one go.
+   */
+  function duplicateSelection():Void
+  {
+    if (!hasSelection) return;
+
+    SongDataUtils.writeItemsToClipboard({
+      notes: [],
+      events: selectedSongEvents.copy()
+    });
+    hasClipboardEvent = true;
+
+    CameraEditorCommandHandler.performCommand(this, new PasteEventsCommand(pastePositionMs()));
   }
 
   @:bind(menubarItemPlayPause, MouseEvent.CLICK)
