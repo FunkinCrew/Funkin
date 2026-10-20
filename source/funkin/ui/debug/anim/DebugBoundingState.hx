@@ -567,7 +567,6 @@ class DebugBoundingState extends FlxState
     if (charData.danceEvery == CharacterData.DEFAULT_DANCEEVERY) Reflect.deleteField(charData, "danceEvery");
     if (charData.singTime == CharacterData.DEFAULT_SINGTIME) Reflect.deleteField(charData, "singTime");
     if (charData.flipX == CharacterData.DEFAULT_FLIPX) Reflect.deleteField(charData, "flipX");
-    if (charData.applyStageMatrix == CharacterData.DEFAULT_APPLYSTAGEMATRIX) Reflect.deleteField(charData, "applyStageMatrix");
     if (charData.atlasSettings == CharacterData.DEFAULT_ATLASSETTINGS) Reflect.deleteField(charData, "atlasSettings");
 
     for (charDataAnim in charData.animations)
