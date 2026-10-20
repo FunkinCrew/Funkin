@@ -2896,32 +2896,43 @@ class PlayState extends MusicBeatSubState
     // Process hold notes on the opponent's side.
     for (holdNote in opponentStrumline.holdNotes.members)
     {
-      if (holdNote == null || !holdNote.alive || holdNote.noteData == null) continue;
+      if (holdNote == null || !holdNote.alive || holdNote.finishedNote) continue;
 
-      // While the hold note is being hit, and there is length on the hold note...
-      if (holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0)
+      // While the hold note is being hit...
+      if (holdNote.hitNote && !holdNote.missedNote)
       {
-        // Dispatch the event, which should make the opponent keep singing while the note is held.
-        var event:HoldNoteScriptEvent = HoldNoteScriptEvent.get(NOTE_HOLD_HIT, holdNote, 0, 0, false, 0);
-        dispatchEvent(event, false);
+        if (holdNote.sustainLength <= 0)
+        {
+          // Hold note was exhausted fully.
+          holdNote.finishedNote = true;
 
-        // Drop the held note if the event is cancelled.
-        if (event.eventCanceled) holdNote.missedNote = true;
-        event.finish();
+          var event:HoldNoteScriptEvent = HoldNoteScriptEvent.get(NOTE_HOLD_DROP, holdNote, 0, 0, false, 0);
+          dispatchEvent(event);
+          event.finish();
+
+          opponentStrumline.finishHold(holdNote);
+          continue; // Don't need to stick around.
+        }
+        else
+        {
+          // Dispatch the event, which should make the opponent keep singing while the note is held.
+          var event:HoldNoteScriptEvent = HoldNoteScriptEvent.get(NOTE_HOLD_HIT, holdNote, 0, 0, false, 0);
+          dispatchEvent(event, false);
+
+          // Drop the held note if the event is cancelled.
+          if (event.eventCanceled) holdNote.missedNote = true;
+          event.finish();
+        }
       }
 
-      if (holdNote.missedNote && !holdNote.handledMiss)
+      if (holdNote.missedNote)
       {
-        // When the opponent drops a hold note.
-        holdNote.handledMiss = true;
+        // Well and truly done with this note.
+        holdNote.finishedNote = true;
 
-        if (holdNote.scoreable)
-        {
-          // We dropped a hold note.
-          // Play miss animation, but don't penalize.
-          var event:HoldNoteScriptEvent = HoldNoteScriptEvent.get(NOTE_HOLD_DROP, holdNote, 0, 0, true, 0);
-          dispatchEvent(event);
-        }
+        // Play miss animation, but don't penalize.
+        var event:HoldNoteScriptEvent = HoldNoteScriptEvent.get(NOTE_HOLD_DROP, holdNote, 0, 0, true, 0);
+        dispatchEvent(event);
       }
     }
 
@@ -2995,19 +3006,32 @@ class PlayState extends MusicBeatSubState
     var pendingPoints:Float = 0;
     for (holdNote in playerStrumline.holdNotes.members)
     {
-      if (holdNote == null || !holdNote.alive) continue;
+      if (holdNote == null || !holdNote.alive || holdNote.finishedNote) continue;
 
-      // While the hold note is being hit, and there is length on the hold note...
-      if (holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0)
+      // While the hold note is being hit...
+      if (holdNote.hitNote && !holdNote.missedNote)
       {
-        var healthChange:Float = Constants.HEALTH_HOLD_BONUS_PER_SECOND * elapsed;
-        var scoreChange:Float = Constants.SCORE_HOLD_BONUS_PER_SECOND * elapsed;
+        if (holdNote.sustainLength <= 0)
+        {
+          // Hold note was exhausted fully.
+          holdNote.finishedNote = true;
 
-        var event:HoldNoteScriptEvent = HoldNoteScriptEvent.get(NOTE_HOLD_HIT, holdNote, healthChange, scoreChange, false, Highscore.tallies.combo);
-        dispatchEvent(event, false);
+          if (!isBotPlayMode)
+          {
+            goodNoteHoldRelease(holdNote);
+          }
+          else
+          {
+            var event:HoldNoteScriptEvent = HoldNoteScriptEvent.get(NOTE_HOLD_DROP, holdNote, 0.0, 0.0, false, Highscore.tallies.combo, 0.0);
+            dispatchEvent(event);
+            event.finish();
 
-        // Grant the player health.
-        if (isBotPlayMode)
+            playerStrumline.finishHold(holdNote);
+          }
+
+          continue; // Don't need to stick around.
+        }
+        else if (isBotPlayMode)
         {
           // Dispatch the event, which should make the bot keep singing while the note is held.
           var event:HoldNoteScriptEvent = HoldNoteScriptEvent.get(NOTE_HOLD_HIT, holdNote, 0, 0, false, 0);
@@ -3017,58 +3041,43 @@ class PlayState extends MusicBeatSubState
           if (event.eventCanceled) holdNote.missedNote = true;
           event.finish();
         }
-        else
+        else if (playerStrumline.isKeyHeld(holdNote.noteDirection))
         {
-          // Reward the player.
+          // Still pressing the hold note, so we reward the player.
           goodNoteHoldHit(holdNote, elapsed);
-        }
-      }
-
-      if (holdNote.endedNote && !holdNote.handledEnding)
-      {
-        // The player dropped a hold note.
-        holdNote.handledEnding = true;
-        if (!isBotPlayMode)
-        {
-          goodNoteHoldRelease(holdNote);
+          pendingPoints += holdNote.appliedScore;
         }
         else
         {
-          var event:HoldNoteScriptEvent = HoldNoteScriptEvent.get(NOTE_HOLD_DROP, holdNote, 0.0, 0.0, false, Highscore.tallies.combo, 0.0);
-          dispatchEvent(event);
-          event.finish();
+          // Stopped pressing the hold note.
+          holdNote.missedNote = true;
+          holdNote.visible = true;
+          holdNote.alpha = 0.0; // Completely hide the dropped hold note.
         }
-
-        holdNote.visible = false;
-        holdNote.kill();
       }
 
-      if (holdNote.missedNote && !holdNote.handledMiss)
+      if (holdNote.missedNote)
       {
-        // The player dropped a hold note.
-        holdNote.handledMiss = true;
-        holdNote.endedNote = true;
-        holdNote.handledEnding = true;
-
-        // Mute vocals and play miss animation.
-        // vocals.playerVolume = 0;
-        // if (currentStage != null && currentStage.getBoyfriend() != null) currentStage.getBoyfriend().playSingAnimation(holdNote.noteData.getDirection(), true);
+        // Well and truly done with this note.
+        holdNote.finishedNote = true;
 
         if (!isBotPlayMode)
         {
+          // The player dropped a hold note.
           goodNoteHoldRelease(holdNote, lastReleased[holdNote.noteDirection]);
         }
         else
         {
-          var event:HoldNoteScriptEvent = HoldNoteScriptEvent.get(NOTE_HOLD_DROP, holdNote, 0.0, 0.0, false, Highscore.tallies.combo, 0.0);
+          // Play miss animation, but don't penalize.
+          var event:HoldNoteScriptEvent = HoldNoteScriptEvent.get(NOTE_HOLD_DROP, holdNote, 0, 0, true);
           dispatchEvent(event);
           event.finish();
         }
       }
-
-      pendingPoints += holdNote.appliedScore;
-      SongScore.instance.setPendingScore(pendingPoints);
     }
+
+    // Apply the pending hold note scores.
+    SongScore.instance.setPendingScore(pendingPoints);
   }
 
   function handleSkippedNotes():Void
@@ -3297,7 +3306,17 @@ class PlayState extends MusicBeatSubState
     {
       // If the initial note was missed.
       var lengthSeconds = holdNote.fullSustainLength / Constants.MS_PER_SEC;
-      if (lengthSeconds > Constants.HOLD_DROP_PENALTY_THRESHOLD_MS) event.score = Constants.SCORE_HOLD_DROP_PENALTY_PER_SECOND * lengthSeconds;
+
+      // Since the base note of the hold was missed, don't penalize them more on top of that.
+      var healthChange = lengthSeconds * Constants.HEALTH_HOLD_DROP_PENALTY_PER_SECOND;
+      var healthChangeMax = Constants.HEALTH_HOLD_DROP_PENALTY_MAX;
+
+      if (lengthSeconds > Constants.HOLD_DROP_PENALTY_THRESHOLD_MS)
+      {
+        event.isComboBreak = true;
+        event.healthChange = healthChange.clamp(healthChangeMax, 0);
+        event.score = Constants.SCORE_HOLD_DROP_PENALTY_PER_SECOND * lengthSeconds;
+      }
 
       dispatchEvent(event);
 
@@ -3325,6 +3344,8 @@ class PlayState extends MusicBeatSubState
 
       applyScore(event.score, '', event.healthChange, event.isComboBreak);
       event.finish();
+
+      playerStrumline.finishHold(holdNote);
     }
     else
     {
@@ -3345,14 +3366,11 @@ class PlayState extends MusicBeatSubState
         trace('Player dropped a hold note, penalizing... (has hit: ${holdNote.hitNote})');
         event.isComboBreak = true;
 
-        // Different penalty based on whether the note itself was missed,
-        // or the note was hit and then the hold was dropped.
         var remainingLengthSec = remainingLength / Constants.MS_PER_SEC;
-        var healthChangeUncapped = remainingLengthSec * Constants.HEALTH_HOLD_DROP_PENALTY_PER_SECOND;
+        var healthChange = remainingLengthSec * Constants.HEALTH_HOLD_DROP_PENALTY_PER_SECOND;
+        var healthChangeMax = Constants.HEALTH_HOLD_DROP_PENALTY_MAX + Constants.HEALTH_MISS_PENALTY;
 
-        // If the base note of the hold was missed, don't penalize them more on top of that.
-        var healthChangeMax = Constants.HEALTH_HOLD_DROP_PENALTY_MAX - (holdNote.hitNote ? -Constants.HEALTH_MISS_PENALTY : 0);
-        event.healthChange = healthChangeUncapped.clamp(healthChangeMax, 0);
+        event.healthChange = healthChange.clamp(healthChangeMax, 0);
         event.score += Constants.SCORE_HOLD_DROP_PENALTY_PER_SECOND * remainingLengthSec;
 
         dispatchEvent(event);

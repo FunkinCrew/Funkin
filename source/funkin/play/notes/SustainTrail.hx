@@ -76,6 +76,11 @@ class SustainTrail extends funkin.graphics.FunkinSprite
   public var hitNote:Bool = false;
 
   /**
+   * Set to `true` when the user successfully exhausts the sustain.
+   */
+  public var finishedNote:Bool = false;
+
+  /**
    * Set to `true` if the user missed the note or released the sustain.
    * Should make the trail transparent.
    */
@@ -85,16 +90,6 @@ class SustainTrail extends funkin.graphics.FunkinSprite
    * Set to `true` after handling additional logic for missing notes.
    */
   public var handledMiss:Bool = false;
-
-  /**
-   * Set to `true` when the user successfully exhausts the hold, or if they let go too early.
-   */
-  public var endedNote:Bool = false;
-
-  /**
-   * Set to `true` after handling additional logic for completing/dropping holds.
-   */
-  public var handledEnding:Bool = false;
 
   // maybe BlendMode.MULTIPLY if missed somehow, drawTriangles does not support!
 
@@ -592,7 +587,7 @@ class SustainTrail extends funkin.graphics.FunkinSprite
 
     hitNote = false;
     missedNote = false;
-    endedNote = false;
+    finishedNote = false;
   }
 
   override public function revive():Void
@@ -610,8 +605,7 @@ class SustainTrail extends funkin.graphics.FunkinSprite
     hitNote = false;
     missedNote = false;
     handledMiss = false;
-    endedNote = false;
-    handledEnding = false;
+    finishedNote = false;
   }
 
   override public function destroy():Void
