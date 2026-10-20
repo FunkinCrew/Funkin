@@ -674,57 +674,14 @@ class Strumline extends FlxSpriteGroup
     {
       if (holdNote == null || !holdNote.alive) continue;
 
-      if (conductorInUse.songPosition > holdNote.strumTime && holdNote.hitNote && !holdNote.missedNote)
-      {
-        if (isPlayer && !isKeyHeld(holdNote.noteDirection))
-        {
-          // Stopped pressing the hold note.
-          playStatic(holdNote.noteDirection);
-          holdNote.missedNote = true;
-          holdNote.visible = true;
-          holdNote.alpha = 0.0; // Completely hide the dropped hold note.
-        }
-      }
-
       final magicNumberIGuess:Float = 8;
       var renderWindowEnd:Float = holdNote.strumTime + holdNote.fullSustainLength + Constants.HIT_WINDOW_MS + (renderDistanceMs / magicNumberIGuess);
 
-      if (holdNote.missedNote && conductorInUse.songPosition >= renderWindowEnd)
+      if (holdNote.finishedNote && conductorInUse.songPosition >= renderWindowEnd)
       {
         // Hold note is offscreen, kill it.
         holdNote.visible = false;
         holdNote.kill(); // Do not destroy! Recycling is faster.
-      }
-      else if (holdNote.hitNote && holdNote.sustainLength <= 0)
-      {
-        if (isPlayer)
-        {
-          // Hold note's final vibration.
-          noteVibrations.tryHoldNoteVibration(true);
-        }
-
-        // Hold note is completed, kill it.
-        if (isKeyHeld(holdNote.noteDirection))
-        {
-          playPress(holdNote.noteDirection);
-        }
-        else
-        {
-          playStatic(holdNote.noteDirection);
-        }
-
-        if (holdNote.cover != null && isPlayer)
-        {
-          holdNote.cover.playEnd();
-        }
-        else if (holdNote.cover != null)
-        {
-          // *lightning* *zap* *crackle*
-          holdNote.cover.visible = false;
-          holdNote.cover.kill();
-        }
-
-        holdNote.endedNote = true;
       }
       else if (holdNote.missedNote && (holdNote.fullSustainLength > holdNote.sustainLength))
       {
@@ -1170,6 +1127,43 @@ class Strumline extends FlxSpriteGroup
     #if FEATURE_GHOST_TAPPING
     ghostTapTimer = Constants.GHOST_TAP_DELAY;
     #end
+  }
+
+  /**
+   * Successfully complete a hold note.
+   * @param holdNote The hold note to complete.
+   */
+  public function finishHold(holdNote:SustainTrail):Void
+  {
+    if (isPlayer)
+    {
+      // Hold note's final vibration.
+      noteVibrations.tryHoldNoteVibration(true);
+    }
+
+    if (isKeyHeld(holdNote.noteDirection))
+    {
+      playPress(holdNote.noteDirection);
+    }
+    else
+    {
+      playStatic(holdNote.noteDirection);
+    }
+
+    if (holdNote.cover != null && isPlayer)
+    {
+      holdNote.cover.playEnd();
+    }
+    else if (holdNote.cover != null)
+    {
+      // *lightning* *zap* *crackle*
+      holdNote.cover.visible = false;
+      holdNote.cover.kill();
+    }
+
+    // Hold note is completed, kill it.
+    holdNote.visible = false;
+    holdNote.kill(); // Do not destroy! Recycling is faster.
   }
 
   /**
