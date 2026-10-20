@@ -301,6 +301,8 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       receptor.angle = 0;
 
       _gotMad = false;
+
+      setupCalibrationInput();
     });
     createButtonItem('Test', function()
     {
@@ -392,9 +394,10 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
         jumpInText.y = FlxG.height - 425;
       }
       #end
+
+      PreciseInputManager.instance.onInputPressed.add(onKeyPress);
+      PreciseInputManager.instance.onInputReleased.add(onKeyRelease);
     });
-    PreciseInputManager.instance.onInputPressed.add(onKeyPress);
-    PreciseInputManager.instance.onInputReleased.add(onKeyRelease);
 
     backButton = new FunkinBackButton(FlxG.width - 230, FlxG.height - 200, FlxColor.WHITE, handleMobileExit);
     #if FEATURE_TOUCH_CONTROLS // We do this here because we want to animate the back button (on Mobile), but we don't want it on Desktop.
@@ -430,6 +433,16 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 
   public function exitCalibration(cancel:Bool):Void
   {
+    if (calibrating)
+    {
+      removeCalibrationInput();
+    }
+    else
+    {
+      PreciseInputManager.instance.onInputPressed.remove(onKeyPress);
+      PreciseInputManager.instance.onInputReleased.remove(onKeyRelease);
+    }
+
     backButton.enabled = false;
     shouldOffset = -1;
     #if FEATURE_TOUCH_CONTROLS
@@ -728,6 +741,12 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
         if (differences.length >= 8) createArrow(nextBeat);
       }
 
+      #if FEATURE_TOUCH_CONTROLS
+      if (TouchUtil.justPressed)
+      {
+        tapBeats.push(b);
+      }
+      #else
       // Hit a note (calibration)
       var tapBeats:Array<Float> = [];
       while (inputPressQueue.length > 0)
@@ -739,16 +758,12 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
         tapBeats.push(hitPosition / msPerBeat);
       }
       inputReleaseQueue = [];
+      #end
 
-        if (tapBeats.length == 0 && (FlxG.keys.justPressed.ANY #if FEATURE_TOUCH_CONTROLS || TouchUtil.justPressed #end))
-        {
-          tapBeats.push(b);
-        }
-
-        for (tapBeat in tapBeats)
-        {
-          if (registerCalibrationTap(tapBeat)) return;
-        }
+      for (tapBeat in tapBeats)
+      {
+        if (registerCalibrationTap(tapBeat)) return;
+      }
     }
     // Testing logic
     else if (shouldOffset == 1)
@@ -884,6 +899,29 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       daItem.y = yLerp + ((120 * ind) + 30);
       ind++;
     });
+  }
+
+  public function setupCalibrationInput():Void
+  {
+    FlxG.stage.window.onKeyDownPrecise.add(onCalibrationKeyPress);
+  }
+
+  public function removeCalibrationInput():Void
+  {
+    FlxG.stage.window.onKeyDownPrecise.remove(onCalibrationKeyPress);
+  }
+
+  public function onCalibrationKeyPress(keyCode, _, timestamp:Int64):Void
+  {
+    // Create a new precise input event to use.
+    var input:PreciseInputEvent =
+    {
+      noteDirection: 1, // Doesn't matter.
+      timestamp: timestamp,
+      keyCode: keyCode,
+      position: localConductor?.songPosition ?? 0.0
+    }
+    inputPressQueue.push(input);
   }
 
   function hitNote(note:NoteSprite, input:PreciseInputEvent):Void
