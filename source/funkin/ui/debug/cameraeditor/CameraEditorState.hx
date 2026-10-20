@@ -225,6 +225,44 @@ class CameraEditorState extends UIState implements ConsoleClass
   var cachedEventIndex = 0;
   var cachedNoteIndex = 0;
 
+  public var replayPosition:Float = -1;
+
+  var replayBfAnimTime:Null<Float> = null;
+  var replayDadAnimTime:Null<Float> = null;
+  var replayBfAnimWindowEnd:Float = -1;
+  var replayDadAnimWindowEnd:Float = -1;
+
+  public function invalidateCameraReplay():Void
+  {
+    replayPosition = -1;
+  }
+
+  function trackPlayAnimationEvent(eventData:SongEventData):Void
+  {
+    var targetName:Null<String> = eventData.getString('target');
+    if (targetName == null) targetName = 'boyfriend';
+
+    var eventBeatTime:Float = conductorInUse.getTimeInSteps(eventData.time) / Constants.STEPS_PER_BEAT;
+    var nextBeatIndex:Int = Math.floor(eventBeatTime) + 1;
+    var nextBeatTimeMs:Float = conductorInUse.getBeatTimeInMs(nextBeatIndex);
+    if (nextBeatTimeMs <= eventData.time)
+    {
+      nextBeatIndex += 1;
+      nextBeatTimeMs = conductorInUse.getBeatTimeInMs(nextBeatIndex);
+    }
+
+    switch (targetName)
+    {
+      case 'boyfriend' | 'bf' | 'player':
+        replayBfAnimTime = eventData.time;
+        replayBfAnimWindowEnd = nextBeatTimeMs;
+      case 'dad' | 'opponent':
+        replayDadAnimTime = eventData.time;
+        replayDadAnimWindowEnd = nextBeatTimeMs;
+      default:
+    }
+  }
+
   /**
    * The current stage being displayed in the background.
    */
@@ -424,7 +462,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   function set_doSongEvents(val:Bool):Bool
   {
     doSongEvents = val;
-    replayCameraTimeline(conductorInUse.songPosition);
+    replayCameraTimeline(conductorInUse.songPosition, true);
     return val;
   }
 
@@ -910,6 +948,7 @@ class CameraEditorState extends UIState implements ConsoleClass
           handleSetCameraBopEvent(eventData);
         case 'PlayAnimation':
           handlePlayAnimationEvent(eventData);
+          trackPlayAnimationEvent(eventData);
         default:
           if (doSongEvents)
           {
@@ -934,6 +973,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     }
 
     previousTime = conductorInUse.songPosition;
+    if (replayPosition >= 0) replayPosition = conductorInUse.songPosition;
   }
 
   override public function dispatchEvent(event:ScriptEvent, finish:Bool = true):Void
@@ -1173,6 +1213,7 @@ class CameraEditorState extends UIState implements ConsoleClass
    */
   public function buildStage():Void
   {
+    invalidateCameraReplay();
     cachedEventIndex = 0;
     cachedNoteIndex = 0;
     completedEvents = [];
@@ -1817,6 +1858,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     currentInstrumental.onComplete = function()
     {
       shouldResetScroll = true;
+      invalidateCameraReplay();
       cachedEventIndex = 0;
       cachedNoteIndex = 0;
       completedEvents = [];
@@ -1985,7 +2027,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     }
     else
     {
-      replayCameraTimeline(position);
+      replayCameraTimeline(position, true);
     }
     timeline.songPosition = position;
   }
@@ -2007,33 +2049,37 @@ class CameraEditorState extends UIState implements ConsoleClass
     }
   }
 
-  public function replayCameraTimeline(position:Float):Void
+  public function replayCameraTimeline(position:Float, full:Bool = false):Void
   {
     if (cameraRect == null) return;
 
     if (currentSongChartData == null) return;
 
-    currentStage.onEventReset();
+    var incremental:Bool = !full && replayPosition >= 0 && position >= replayPosition;
+    var fromPosition:Float = replayPosition;
 
-    cameraRect.cancelAllTweens();
-    cameraRect.zoom = defaultStageZoom;
-    cameraRect.setFocusPoint(cameraRect.defaultPosition.x, cameraRect.defaultPosition.y, true);
+    if (!incremental)
+    {
+      currentStage.onEventReset();
 
-    cameraRect.hudCameraZoomIntensity = (Constants.DEFAULT_BOP_INTENSITY - 1.0) * 2.0;
-    cameraRect.cameraBopIntensity = Constants.DEFAULT_BOP_INTENSITY;
-    cameraRect.cameraZoomRate = Constants.DEFAULT_ZOOM_RATE;
+      cameraRect.cancelAllTweens();
+      cameraRect.zoom = defaultStageZoom;
+      cameraRect.setFocusPoint(cameraRect.defaultPosition.x, cameraRect.defaultPosition.y, true);
 
-    conductorInUse.update(0);
-    cameraRect.update(0);
+      cameraRect.hudCameraZoomIntensity = (Constants.DEFAULT_BOP_INTENSITY - 1.0) * 2.0;
+      cameraRect.cameraBopIntensity = Constants.DEFAULT_BOP_INTENSITY;
+      cameraRect.cameraZoomRate = Constants.DEFAULT_ZOOM_RATE;
 
-    previousNoteTime = 0;
+      conductorInUse.update(0);
+      cameraRect.update(0);
 
-    var bfLastPlayAnimationTime:Null<Float> = null;
-    var dadLastPlayAnimationTime:Null<Float> = null;
-    var bfLastPlayAnimationEvent:Null<SongEventData> = null;
-    var dadLastPlayAnimationEvent:Null<SongEventData> = null;
-    var bfPlayAnimationWindowEnd:Float = -1;
-    var dadPlayAnimationWindowEnd:Float = -1;
+      previousNoteTime = 0;
+
+      replayBfAnimTime = null;
+      replayDadAnimTime = null;
+      replayBfAnimWindowEnd = -1;
+      replayDadAnimWindowEnd = -1;
+    }
 
     if (songEvents != null && songEvents.length > 0)
     {
@@ -2041,7 +2087,10 @@ class CameraEditorState extends UIState implements ConsoleClass
       {
         if (eventData == null) return false;
 
-        return eventData.getActivationTime() <= position;
+        var activationTime:Float = eventData.getActivationTime();
+        if (incremental && activationTime <= fromPosition) return false;
+
+        return activationTime <= position;
       });
 
       replayEvents.sort(SortUtil.eventDataByActivationTime.bind(FlxSort.ASCENDING));
@@ -2061,31 +2110,7 @@ class CameraEditorState extends UIState implements ConsoleClass
             handleSetCameraBopEvent(eventData, false);
           case 'PlayAnimation':
             handlePlayAnimationEvent(eventData);
-
-            var targetName:Null<String> = eventData.getString('target');
-            if (targetName == null) targetName = 'boyfriend';
-
-            var eventBeatTime:Float = conductorInUse.getTimeInSteps(eventData.time) / Constants.STEPS_PER_BEAT;
-            var nextBeatIndex:Int = Math.floor(eventBeatTime) + 1;
-            var nextBeatTimeMs:Float = conductorInUse.getBeatTimeInMs(nextBeatIndex);
-            if (nextBeatTimeMs <= eventData.time)
-            {
-              nextBeatIndex += 1;
-              nextBeatTimeMs = conductorInUse.getBeatTimeInMs(nextBeatIndex);
-            }
-
-            switch (targetName)
-            {
-              case 'boyfriend' | 'bf' | 'player':
-                bfLastPlayAnimationTime = eventData.time;
-                bfLastPlayAnimationEvent = eventData;
-                bfPlayAnimationWindowEnd = nextBeatTimeMs;
-              case 'dad' | 'opponent':
-                dadLastPlayAnimationTime = eventData.time;
-                dadLastPlayAnimationEvent = eventData;
-                dadPlayAnimationWindowEnd = nextBeatTimeMs;
-              default:
-            }
+            trackPlayAnimationEvent(eventData);
           default:
             if (doSongEvents)
             {
@@ -2100,7 +2125,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       {
         cachedEventIndex = songEvents.indexOf(lastEvent) + 1;
       }
-      else
+      else if (!incremental)
       {
         cachedEventIndex = 0;
       }
@@ -2151,7 +2176,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
       if (latestDadNote != null)
       {
-        dadHasNoteAfterPlayAnimation = dadLastPlayAnimationTime == null || latestDadNote.time > dadLastPlayAnimationTime;
+        dadHasNoteAfterPlayAnimation = replayDadAnimTime == null || latestDadNote.time > replayDadAnimTime;
 
         if (dadHasNoteAfterPlayAnimation)
         {
@@ -2170,7 +2195,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
       if (latestBFNote != null)
       {
-        bfHasNoteAfterPlayAnimation = bfLastPlayAnimationTime == null || latestBFNote.time > bfLastPlayAnimationTime;
+        bfHasNoteAfterPlayAnimation = replayBfAnimTime == null || latestBFNote.time > replayBfAnimTime;
 
         if (bfHasNoteAfterPlayAnimation)
         {
@@ -2202,8 +2227,8 @@ class CameraEditorState extends UIState implements ConsoleClass
       }
     }
 
-    var dadInPlayAnimationWindow:Bool = dadLastPlayAnimationTime != null && position <= dadPlayAnimationWindowEnd && !dadHasNoteAfterPlayAnimation;
-    var bfInPlayAnimationWindow:Bool = bfLastPlayAnimationTime != null && position <= bfPlayAnimationWindowEnd && !bfHasNoteAfterPlayAnimation;
+    var dadInPlayAnimationWindow:Bool = replayDadAnimTime != null && position <= replayDadAnimWindowEnd && !dadHasNoteAfterPlayAnimation;
+    var bfInPlayAnimationWindow:Bool = replayBfAnimTime != null && position <= replayBfAnimWindowEnd && !bfHasNoteAfterPlayAnimation;
 
     if (!dadShouldKeepSinging && dad != null && !dadInPlayAnimationWindow)
     {
@@ -2226,6 +2251,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     previousTime = conductorInUse.songPosition;
     previousNoteTime = position;
+    replayPosition = position;
   }
 
   // ui function bindings
@@ -2532,6 +2558,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   {
     var playing:Bool = currentInstrumental != null && currentInstrumental.playing;
     togglePlayback(true);
+    invalidateCameraReplay();
     cachedEventIndex = 0;
     cachedNoteIndex = 0;
     previousNotes = [
