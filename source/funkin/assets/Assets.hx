@@ -585,20 +585,6 @@ class Assets implements ConsoleClass
   }
 
   /**
-   * Retrieves a Sound file from the given asset path, with optimizations specific to long-duration music.
-   * May cause stutters or throw an error if the asset is not cached.
-   *
-   * @param assetPath The asset path to load from.
-   * @return The loaded sound.
-   */
-  public static function getMusic(assetPath:MusicAssetPathBuilder):openfl.media.Sound
-  {
-    if (assetPath == null) throw 'Input is not a valid Music AssetPath, did you call Paths.music()?';
-
-    return getSound(assetPath.audio());
-  }
-
-  /**
    * Retrieves the BitmapData from the given asset path, asynchronously.
    *
    * @param assetPath The path of the asset to retrieve.
@@ -661,19 +647,6 @@ class Assets implements ConsoleClass
     if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.sound()?';
 
     return FunkinAssetCache.instance.fetchSound(assetPath);
-  }
-
-  /**
-   * Load a Sound file from the given asset path, with optimizations specific to long-duration music, asynchronously.
-   *
-   * @param assetPath The asset path to load from.
-   * @return A future which promises to return the loaded sound.
-   */
-  public static function loadMusic(assetPath:MusicAssetPathBuilder):Future<openfl.media.Sound>
-  {
-    if (assetPath == null) throw 'Input is not a valid Music AssetPath, did you call Paths.music()?';
-
-    return FunkinAssetCache.instance.fetchSound(assetPath.audio());
   }
 
   /**
