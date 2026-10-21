@@ -438,6 +438,16 @@ class SongPlayData implements ICloneable<SongPlayData>
   public var stage:String;
 
   /**
+   * The default camera zoom multiplier and character focus when the song starts.
+   */
+  @:optional @:default(1.0)
+  public var defaultCameraZoom:Null<Float> = 1.0;
+  @:optional @:default(1)
+  public var defaultCameraFocus:Null<Int> = 1;
+  @:optional @:default(false)
+  public var forceCameraZoom:Null<Bool> = false;
+
+  /**
    * The note style used by this song.
    */
   public var noteStyle:String;
@@ -499,6 +509,9 @@ class SongPlayData implements ICloneable<SongPlayData>
     result.difficulties = this.difficulties.clone();
     result.characters = this.characters.clone();
     result.stage = this.stage;
+    result.defaultCameraZoom = this.defaultCameraZoom;
+    result.defaultCameraFocus = this.defaultCameraFocus;
+    result.forceCameraZoom = this.forceCameraZoom;
     result.noteStyle = this.noteStyle;
     result.ratings = this.ratings.clone();
     result.album = this.album;

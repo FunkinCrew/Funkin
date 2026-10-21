@@ -360,6 +360,9 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
         difficulty.discordRPCImage = metadata.playData.discordRPCImage;
 
         difficulty.stage = metadata.playData.stage;
+        difficulty.defaultCameraZoom = metadata.playData.defaultCameraZoom ?? 1.0;
+        difficulty.defaultCameraFocus = metadata.playData.defaultCameraFocus ?? 1;
+        difficulty.forceCameraZoom = metadata.playData.forceCameraZoom ?? false;
         difficulty.noteStyle = metadata.playData.noteStyle;
 
         difficulty.characters = metadata.playData.characters;
@@ -423,6 +426,9 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
           difficulty.offsets = metadata?.offsets ?? new SongOffsets();
 
           difficulty.stage = metadata.playData.stage;
+          difficulty.defaultCameraZoom = metadata.playData.defaultCameraZoom ?? 1.0;
+          difficulty.defaultCameraFocus = metadata.playData.defaultCameraFocus ?? 1;
+          difficulty.forceCameraZoom = metadata.playData.forceCameraZoom ?? false;
           difficulty.noteStyle = metadata.playData.noteStyle;
 
           difficulty.characters = metadata.playData.characters;
@@ -820,6 +826,9 @@ class SongDifficulty
   public var generatedBy:String = SongRegistry.DEFAULT_GENERATEDBY;
   public var timeChanges:Array<SongTimeChange> = [];
   public var stage:String = Constants.DEFAULT_STAGE;
+  public var defaultCameraZoom:Float = 1.0;
+  public var defaultCameraFocus:Int = 1;
+  public var forceCameraZoom:Bool = false;
   public var noteStyle:String = Constants.DEFAULT_NOTE_STYLE;
   public var characters:SongCharacterData = null;
   public var scrollSpeed:Float = Constants.DEFAULT_SCROLLSPEED;
