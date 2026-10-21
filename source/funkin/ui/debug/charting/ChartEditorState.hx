@@ -4147,13 +4147,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // These ones only happen if the modal dialog is not open.
     handleScrollKeybinds();
 
-    if (dragTargetNote != null || dragTargetEvent != null)
-    {
-      if (gridGhostEvent != null) gridGhostEvent.visible = false;
-      if (gridGhostNote != null) gridGhostNote.visible = false;
-      if (gridGhostHoldNote != null) gridGhostHoldNote.visible = false;
-    }
-
     handleCursor();
 
     if (!(isHaxeUIFocused || isCursorOverHaxeUI))
@@ -5158,6 +5151,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   function handleCursor():Void
   {
+    if (gridGhostNote != null) gridGhostNote.visible = false;
+    if (gridGhostHoldNote != null) gridGhostHoldNote.visible = false;
+    if (gridGhostEvent != null) gridGhostEvent.visible = false;
+
     // Mouse sounds
     if (FlxG.mouse.justPressed) FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/click-down'));
     if (FlxG.mouse.justReleased) FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/click-up'));
@@ -5175,10 +5172,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // early return if we shouldn't handle the cursor at all
     if (!shouldHandleCursor)
     {
-      if (gridGhostNote != null) gridGhostNote.visible = false;
-      if (gridGhostHoldNote != null) gridGhostHoldNote.visible = false;
-      if (gridGhostEvent != null) gridGhostEvent.visible = false;
-
       // Do not set Cursor.cursorMode here, because it will be set by the HaxeUI.
       return;
     }
@@ -5813,7 +5806,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         }
         else
         {
-          gridGhostHoldNote.visible = false;
           gridGhostHoldNote.setHeightDirectly(0);
         }
       }
@@ -6090,9 +6082,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
         if (cursorGridPos == eventColumn)
         {
-          if (gridGhostNote != null) gridGhostNote.visible = false;
-          if (gridGhostHoldNote != null) gridGhostHoldNote.visible = false;
-
           if (gridGhostEvent == null) throw 'ERROR: Tried to handle cursor, but gridGhostEvent is null! Check ChartEditorState.buildGrid()';
 
           var eventData:SongEventData = gridGhostEvent.eventData != null ? gridGhostEvent.eventData : new SongEventData(cursorMs, eventKindToPlace, null);
@@ -6111,8 +6100,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         }
         else
         {
-          if (gridGhostEvent != null) gridGhostEvent.visible = false;
-
           if (gridGhostNote == null) throw 'ERROR: Tried to handle cursor, but gridGhostNote is null! Check ChartEditorState.buildGrid()';
 
           var noteData:SongNoteData = gridGhostNote.noteData != null ? gridGhostNote.noteData : new SongNoteData(
@@ -6139,12 +6126,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
           targetCursorMode = Cell;
         }
-      }
-      else
-      {
-        if (gridGhostNote != null) gridGhostNote.visible = false;
-        if (gridGhostHoldNote != null) gridGhostHoldNote.visible = false;
-        if (gridGhostEvent != null) gridGhostEvent.visible = false;
       }
     }
 
