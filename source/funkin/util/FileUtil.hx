@@ -489,7 +489,7 @@ class FileUtil
   public static function readStringFromPath(path:String):String
   {
     #if sys
-    return Bytes.fromFile(path).toString();
+    return Bytes.fromFile(path)?.toString() ?? '';
     #else
     throw 'Direct file reading by path is not supported on this platform.';
     #end
