@@ -61,6 +61,7 @@ import funkin.ui.debug.cameraeditor.components.AutoSortLayersConfirmDialog.AutoS
 import funkin.ui.debug.cameraeditor.components.AutoSortLayersConfirmDialog.AutoSortPreviewRow;
 import funkin.ui.debug.cameraeditor.components.BackupAvailableDialog;
 import funkin.ui.debug.cameraeditor.components.DeleteLayerConfirmDialog;
+import funkin.ui.debug.cameraeditor.components.DefaultFocusZoomDialog;
 import funkin.ui.debug.cameraeditor.components.UploadChartDialog;
 import funkin.ui.debug.cameraeditor.components.UserGuideDialog;
 import funkin.ui.debug.cameraeditor.components.VirtualCameraRectangle;
@@ -828,6 +829,27 @@ class CameraEditorState extends UIState implements ConsoleClass
     });
   }
 
+  @:bind(menubarItemSetDefaultFocusZoom, MouseEvent.CLICK)
+  function onSetDefaultFocusZoom(_):Void
+  {
+    final MODAL:Bool = true;
+    var dialog:DefaultFocusZoomDialog = new DefaultFocusZoomDialog(this);
+    dialog.showDialog(MODAL);
+  }
+
+  public function setDefaultCameraFocusZoom(zoom:Float, focus:Int, forceZoom:Bool):Void
+  {
+    var metadata = currentSongMetadata;
+    if (metadata == null) throw 'Cannot set default camera focus without song metadata.';
+    if (zoom <= 0) throw 'Default camera zoom must be greater than zero.';
+
+    metadata.playData.defaultCameraZoom = zoom;
+    metadata.playData.defaultCameraFocus = focus;
+    metadata.playData.forceCameraZoom = forceZoom;
+    saved = false;
+    replayCameraTimeline(conductorInUse.songPosition);
+  }
+
   override function onPreHotReload():Void
   {
     performCleanup();
@@ -838,7 +860,10 @@ class CameraEditorState extends UIState implements ConsoleClass
     return {
       targetState: () -> new CameraEditorState({
         loadFromPath: currentWorkingFilePath,
-        loadFromFNFCData: (currentWorkingFilePath == null && chart.songMetadatas.size() > 0) ? CameraEditorImportExportHandler.buildFNFCDataFromCurrentChart(this) : null, // We want to reload the FNFCData so the user doesn't lose progress.
+        loadFromFNFCData: (
+          currentWorkingFilePath == null
+          && chart.songMetadatas.size() > 0
+        ) ? CameraEditorImportExportHandler.buildFNFCDataFromCurrentChart(this) : null, // We want to reload the FNFCData so the user doesn't lose progress.
         targetSongDifficulty: this.currentDifficulty,
         targetSongVariation: this.currentVariation,
         targetSongPosition: Conductor.instance.songPosition
@@ -1319,7 +1344,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     add(cameraRect);
     cameraRect.currentStage = currentStage;
 
-    cameraRect.zoom = currentStage.camZoom;
+    cameraRect.zoom = currentStage.camZoom * (currentSongMetadata.playData.defaultCameraZoom ?? 1.0);
     defaultStageZoom = currentStage.camZoom;
     resetScrollPosition();
     _shouldResetCameraPosition = true;
@@ -1329,7 +1354,31 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   function resetScrollPosition()
   {
-    cameraRect.setFocusPoint(cameraRect.defaultPosition.x, cameraRect.defaultPosition.y, true);
+    var defaultFocus:FlxPoint = getDefaultCameraFocusPoint();
+    cameraRect.setFocusPoint(defaultFocus.x, defaultFocus.y, true);
+    defaultFocus.put();
+  }
+
+  function getDefaultCameraFocusPoint():FlxPoint
+  {
+    if (currentStage == null) return FlxPoint.get();
+
+    var focus:Int = currentSongMetadata?.playData.defaultCameraFocus ?? 1;
+    var character:Null<BaseCharacter> = switch (focus)
+    {
+      case 0:
+        currentStage.getBoyfriend();
+      case 1:
+        currentStage.getDad();
+      case 2:
+        currentStage.getGirlfriend();
+      default:
+        currentStage.getDad();
+    };
+
+    if (character == null) character = currentStage.getDad();
+    if (character == null) return FlxPoint.get();
+    return FlxPoint.get(character.cameraFocusPoint.x, character.cameraFocusPoint.y);
   }
 
   function autosavePerCrash(message:String)
@@ -2066,394 +2115,365 @@ class CameraEditorState extends UIState implements ConsoleClass
     var incremental:Bool = !full && replayPosition >= 0 && position >= replayPosition;
     var fromPosition:Float = replayPosition;
 
-    if (!incremental)
-    {
-      currentStage.onEventReset();
+    cameraRect.cancelAllTweens();
+    cameraRect.zoom = defaultStageZoom * (currentSongMetadata?.playData.defaultCameraZoom ?? 1.0);
+    resetScrollPosition();
 
-      cameraRect.cancelAllTweens();
-      cameraRect.zoom = defaultStageZoom;
-      cameraRect.setFocusPoint(cameraRect.defaultPosition.x, cameraRect.defaultPosition.y, true);
+    cameraRect.hudCameraZoomIntensity = (Constants.DEFAULT_BOP_INTENSITY - 1.0) * 2.0;
+    cameraRect.cameraBopIntensity = Constants.DEFAULT_BOP_INTENSITY;
+    cameraRect.cameraZoomRate = Constants.DEFAULT_ZOOM_RATE;
 
-      cameraRect.hudCameraZoomIntensity = (Constants.DEFAULT_BOP_INTENSITY - 1.0) * 2.0;
-      cameraRect.cameraBopIntensity = Constants.DEFAULT_BOP_INTENSITY;
-      cameraRect.cameraZoomRate = Constants.DEFAULT_ZOOM_RATE;
-
-      conductorInUse.update(0);
-      cameraRect.update(0);
-
-      previousNoteTime = 0;
-
-      replayBfAnimTime = null;
-      replayDadAnimTime = null;
-      replayBfAnimWindowEnd = -1;
-      replayDadAnimWindowEnd = -1;
-    }
-
-    if (songEvents != null && songEvents.length > 0)
-    {
-      var replayEvents:Array<SongEventData> = songEvents.filter(function(eventData:SongEventData):Bool
-      {
-        if (eventData == null) return false;
-
-        var activationTime:Float = eventData.getActivationTime();
-        if (incremental && activationTime <= fromPosition) return false;
-
-        return activationTime <= position;
-      });
-
-      replayEvents.sort(SortUtil.eventDataByActivationTime.bind(FlxSort.ASCENDING));
-
-      for (eventData in replayEvents)
-      {
-        conductorInUse.update(eventData.getActivationTime(conductorInUse));
-        cameraRect.update(0);
-
-        switch (eventData.eventKind)
-        {
-          case 'FocusCamera':
-            cameraRect.handleFocusCamera(eventData);
-          case 'ZoomCamera':
-            cameraRect.handleZoomCamera(defaultStageZoom, eventData);
-          case 'SetCameraBop':
-            handleSetCameraBopEvent(eventData, false);
-          case 'PlayAnimation':
-            handlePlayAnimationEvent(eventData);
-            trackPlayAnimationEvent(eventData);
-          default:
-            if (doSongEvents)
-            {
-              var ev:SongEventScriptEvent = new SongEventScriptEvent(eventData);
-              currentStage.onSongEvent(ev);
-            }
-        }
-      }
-
-      var lastEvent:Null<SongEventData> = replayEvents[replayEvents.length - 1];
-      if (lastEvent != null)
-      {
-        cachedEventIndex = songEvents.indexOf(lastEvent) + 1;
-      }
-      else if (!incremental)
-      {
-        cachedEventIndex = 0;
-      }
-    }
-
-    var notes:Array<SongNoteData> = currentNotes;
-    var dad:BaseCharacter = currentStage != null ? currentStage.getDad() : null;
-    var bf:BaseCharacter = currentStage != null ? currentStage.getBoyfriend() : null;
-
-    var dadShouldKeepSinging:Bool = false;
-    var bfShouldKeepSinging:Bool = false;
-    var dadHasNoteAfterPlayAnimation:Bool = false;
-    var bfHasNoteAfterPlayAnimation:Bool = false;
-
-    var dadSingTime:Float = 0;
-    var bfSingTime:Float = 0;
-
-    if (dad != null) dadSingTime = dad.singTimeSteps * (conductorInUse.stepLengthMs / Constants.MS_PER_SEC);
-    if (bf != null) bfSingTime = bf.singTimeSteps * (conductorInUse.stepLengthMs / Constants.MS_PER_SEC);
-
-    if (notes == null || notes.length > 0 && notes[0].time > position)
-    {
-      cachedNoteIndex = 0;
-    }
-    else
-    {
-      // replay notes
-      var latestDadNote:SongNoteData = null;
-      var latestBFNote:SongNoteData = null;
-
-      for (note in notes)
-      {
-        if (note == null) continue;
-        if (note.time > position) continue;
-
-        previousNotes[note.data] = note;
-
-        var isPlayer = note.getStrumlineIndex() == 0;
-        if (isPlayer)
-        {
-          if (latestBFNote == null || note.time >= latestBFNote.time) latestBFNote = note;
-        }
-        else
-        {
-          if (latestDadNote == null || note.time >= latestDadNote.time) latestDadNote = note;
-        }
-      }
-
-      if (latestDadNote != null)
-      {
-        dadHasNoteAfterPlayAnimation = replayDadAnimTime == null || latestDadNote.time > replayDadAnimTime;
-
-        if (dadHasNoteAfterPlayAnimation)
-        {
-          conductorInUse.update(latestDadNote.time);
-          playSingAnimation(latestDadNote);
-          if (latestDadNote.length == 0)
-          {
-            dadShouldKeepSinging = latestDadNote.time + 300 > position;
-          }
-          else if (latestDadNote.length > 0)
-          {
-            dadShouldKeepSinging = latestDadNote.time + latestDadNote.length > position;
-          }
-        }
-      }
-
-      if (latestBFNote != null)
-      {
-        bfHasNoteAfterPlayAnimation = replayBfAnimTime == null || latestBFNote.time > replayBfAnimTime;
-
-        if (bfHasNoteAfterPlayAnimation)
-        {
-          conductorInUse.update(latestBFNote.time);
-          playSingAnimation(latestBFNote);
-          if (latestBFNote.length == 0)
-          {
-            bfShouldKeepSinging = latestBFNote.time + 300 > position;
-          }
-          else if (latestBFNote.length > 0)
-          {
-            bfShouldKeepSinging = latestBFNote.time + latestBFNote.length > position;
-          }
-        }
-      }
-
-      if (latestDadNote != null && latestBFNote != null)
-      {
-        var latestNote = latestDadNote.time > latestBFNote.time ? latestDadNote : latestBFNote;
-        cachedNoteIndex = notes.indexOf(latestNote);
-      }
-      else if (latestDadNote != null)
-      {
-        cachedNoteIndex = notes.indexOf(latestDadNote);
-      }
-      else if (latestBFNote != null)
-      {
-        cachedNoteIndex = notes.indexOf(latestBFNote);
-      }
-    }
-
-    var dadInPlayAnimationWindow:Bool = replayDadAnimTime != null && position <= replayDadAnimWindowEnd && !dadHasNoteAfterPlayAnimation;
-    var bfInPlayAnimationWindow:Bool = replayBfAnimTime != null && position <= replayBfAnimWindowEnd && !bfHasNoteAfterPlayAnimation;
-
-    if (!dadShouldKeepSinging && dad != null && !dadInPlayAnimationWindow)
-    {
-      if (!StringTools.startsWith(dad.animation.curAnim.name, 'idle')) dad.dance(true);
-    }
-    if (!bfShouldKeepSinging && bf != null && !bfInPlayAnimationWindow)
-    {
-      if (!StringTools.startsWith(bf.animation.curAnim.name, 'idle')) bf.dance(true);
-    }
-
-    noEvents = false;
-
-    conductorInUse.update(position);
-
-    if (dad != null) dad.animation.update(0);
-    if (bf != null) bf.animation.update(0);
-
-    cameraRect.replayBop();
+    conductorInUse.update(0);
     cameraRect.update(0);
 
-    previousTime = conductorInUse.songPosition;
-    previousNoteTime = position;
-    replayPosition = position;
-  }
+    previousNoteTime = 0;
 
-  // ui function bindings
+    replayBfAnimTime = null;
+    replayDadAnimTime = null;
+    replayBfAnimWindowEnd = -1;
+    replayDadAnimWindowEnd = -1;
 
-  @:bind(menubarItemNewChart, MouseEvent.CLICK)
-  function onMenubarNewChart(_)
+  if (songEvents != null && songEvents.length > 0)
   {
-    this.openWelcomeDialog(true);
-  }
-
-  @:bind(menubarItemOpen, MouseEvent.CLICK)
-  function onMenubarOpen(_)
-  {
-    var uploadDialog = new UploadChartDialog(this);
-    uploadDialog.showDialog();
-  }
-
-  function onMenubarOpenRecent(_event:MouseEvent, chartPath:String)
-  {
-    try
+    var replayEvents:Array<SongEventData> = songEvents.filter(function(eventData:SongEventData):Bool
     {
-      CameraEditorImportExportHandler.loadSongFromFNFCPath(this, chartPath);
-    }
-    catch (e)
-    {
-      CameraEditorNotificationHandler.error(this, 'Failure', 'Failed to load chart (${chartPath})');
-    }
-  }
+      if (eventData == null) return false;
 
-  @:bind(menubarItemSave, MouseEvent.CLICK)
-  function onMenubarSave(event:MouseEvent)
-  {
-    if (currentWorkingFilePath != null)
+      var activationTime:Float = eventData.getActivationTime();
+      if (incremental && activationTime <= fromPosition) return false;
+
+      return activationTime <= position;
+    });
+    replayEvents.sort(SortUtil.eventDataByActivationTime.bind(FlxSort.ASCENDING));
+    for (eventData in replayEvents)
     {
-      CameraEditorImportExportHandler.exportCurrentChartToFNFC(this, true, currentWorkingFilePath, function(path:String)
+      conductorInUse.update(eventData.getActivationTime(conductorInUse));
+      cameraRect.update(0);
+      switch (eventData.eventKind)
       {
-        notifyChange('Chart Save', 'This chart has been saved to ${path}');
-      }, function()
-      {
-        // Failed to save backup?
-      });
+        case 'FocusCamera':
+          cameraRect.handleFocusCamera(eventData);
+        case 'ZoomCamera':
+          cameraRect.handleZoomCamera(defaultStageZoom, eventData);
+        case 'SetCameraBop':
+          handleSetCameraBopEvent(eventData, false);
+        case 'PlayAnimation':
+          handlePlayAnimationEvent(eventData);
+          trackPlayAnimationEvent(eventData);
+        default:
+          if (doSongEvents)
+          {
+            var ev:SongEventScriptEvent = new SongEventScriptEvent(eventData);
+            currentStage.onSongEvent(ev);
+          }
+      }
     }
-    else
+    var lastEvent:Null<SongEventData> = replayEvents[replayEvents.length - 1];
+    if (lastEvent != null)
     {
-      this.onMenubarSaveAs(event);
+      cachedEventIndex = songEvents.indexOf(lastEvent) + 1;
+    }
+    else if (!incremental)
+    {
+      cachedEventIndex = 0;
     }
   }
-
-  @:bind(menubarItemSaveAs, MouseEvent.CLICK)
-  function onMenubarSaveAs(_)
+  var notes:Array<SongNoteData> = currentNotes;
+  var dad:BaseCharacter = currentStage != null ? currentStage.getDad() : null;
+  var bf:BaseCharacter = currentStage != null ? currentStage.getBoyfriend() : null;
+  var dadShouldKeepSinging:Bool = false;
+  var bfShouldKeepSinging:Bool = false;
+  var dadHasNoteAfterPlayAnimation:Bool = false;
+  var bfHasNoteAfterPlayAnimation:Bool = false;
+  var dadSingTime:Float = 0;
+  var bfSingTime:Float = 0;
+  if (dad != null) dadSingTime = dad.singTimeSteps * (conductorInUse.stepLengthMs / Constants.MS_PER_SEC);
+  if (bf != null) bfSingTime = bf.singTimeSteps * (conductorInUse.stepLengthMs / Constants.MS_PER_SEC);
+  if (notes == null || notes.length > 0 && notes[0].time > position)
   {
-    CameraEditorImportExportHandler.exportCurrentChartToFNFC(this, false, null, function(path:String)
+    cachedNoteIndex = 0;
+  }
+  else
+  {
+    // replay notes
+    var latestDadNote:SongNoteData = null;
+    var latestBFNote:SongNoteData = null;
+    for (note in notes)
+    {
+      if (note == null) continue;
+      if (note.time > position) continue;
+      previousNotes[note.data] = note;
+      var isPlayer = note.getStrumlineIndex() == 0;
+      if (isPlayer)
+      {
+        if (latestBFNote == null || note.time >= latestBFNote.time) latestBFNote = note;
+      }
+      else
+      {
+        if (latestDadNote == null || note.time >= latestDadNote.time) latestDadNote = note;
+      }
+    }
+    if (latestDadNote != null)
+    {
+      dadHasNoteAfterPlayAnimation = replayDadAnimTime == null || latestDadNote.time > replayDadAnimTime;
+      if (dadHasNoteAfterPlayAnimation)
+      {
+        conductorInUse.update(latestDadNote.time);
+        playSingAnimation(latestDadNote);
+        if (latestDadNote.length == 0)
+        {
+          dadShouldKeepSinging = latestDadNote.time + 300 > position;
+        }
+        else if (latestDadNote.length > 0)
+        {
+          dadShouldKeepSinging = latestDadNote.time + latestDadNote.length > position;
+        }
+      }
+    }
+    if (latestBFNote != null)
+    {
+      bfHasNoteAfterPlayAnimation = replayBfAnimTime == null || latestBFNote.time > replayBfAnimTime;
+      if (bfHasNoteAfterPlayAnimation)
+      {
+        conductorInUse.update(latestBFNote.time);
+        playSingAnimation(latestBFNote);
+        if (latestBFNote.length == 0)
+        {
+          bfShouldKeepSinging = latestBFNote.time + 300 > position;
+        }
+        else if (latestBFNote.length > 0)
+        {
+          bfShouldKeepSinging = latestBFNote.time + latestBFNote.length > position;
+        }
+      }
+    }
+    if (latestDadNote != null && latestBFNote != null)
+    {
+      var latestNote = latestDadNote.time > latestBFNote.time ? latestDadNote : latestBFNote;
+      cachedNoteIndex = notes.indexOf(latestNote);
+    }
+    else if (latestDadNote != null)
+    {
+      cachedNoteIndex = notes.indexOf(latestDadNote);
+    }
+    else if (latestBFNote != null)
+    {
+      cachedNoteIndex = notes.indexOf(latestBFNote);
+    }
+  }
+  var dadInPlayAnimationWindow:Bool = replayDadAnimTime != null && position <= replayDadAnimWindowEnd && !dadHasNoteAfterPlayAnimation;
+  var bfInPlayAnimationWindow:Bool = replayBfAnimTime != null && position <= replayBfAnimWindowEnd && !bfHasNoteAfterPlayAnimation;
+  if (!dadShouldKeepSinging && dad != null && !dadInPlayAnimationWindow)
+  {
+    if (!StringTools.startsWith(dad.animation.curAnim.name, 'idle')) dad.dance(true);
+  }
+  if (!bfShouldKeepSinging && bf != null && !bfInPlayAnimationWindow)
+  {
+    if (!StringTools.startsWith(bf.animation.curAnim.name, 'idle')) bf.dance(true);
+  }
+  noEvents = false;
+  conductorInUse.update(position);
+  if (dad != null) dad.animation.update(0);
+  if (bf != null) bf.animation.update(0);
+  cameraRect.replayBop();
+  cameraRect.update(0);
+  previousTime = conductorInUse.songPosition;
+  previousNoteTime = position;
+  replayPosition = position;
+}
+
+// ui function bindings
+
+@:bind(menubarItemNewChart, MouseEvent.CLICK)
+function onMenubarNewChart(_)
+{
+  this.openWelcomeDialog(true);
+}
+
+@:bind(menubarItemOpen, MouseEvent.CLICK)
+function onMenubarOpen(_)
+{
+  var uploadDialog = new UploadChartDialog(this);
+  uploadDialog.showDialog();
+}
+
+function onMenubarOpenRecent(_event:MouseEvent, chartPath:String)
+{
+  try
+  {
+    CameraEditorImportExportHandler.loadSongFromFNFCPath(this, chartPath);
+  }
+  catch (e)
+  {
+    CameraEditorNotificationHandler.error(this, 'Failure', 'Failed to load chart (${chartPath})');
+  }
+}
+
+@:bind(menubarItemSave, MouseEvent.CLICK)
+function onMenubarSave(event:MouseEvent)
+{
+  if (currentWorkingFilePath != null)
+  {
+    CameraEditorImportExportHandler.exportCurrentChartToFNFC(this, true, currentWorkingFilePath, function(path:String)
     {
       notifyChange('Chart Save', 'This chart has been saved to ${path}');
-      currentWorkingFilePath = path;
     }, function()
     {
       // Failed to save backup?
     });
   }
-
-  @:bind(menubarItemExportChartAsFolder, MouseEvent.CLICK)
-  function onMenubarExportChartAsFolder(_)
+  else
   {
-    CameraEditorImportExportHandler.exportCurrentChartToFolder(this, (path:String) ->
-    {
-      notifyChange('Exported Chart', 'Chart exported successfully to ${path}');
-    }, () -> {
-        // Cancelled
-    });
+    this.onMenubarSaveAs(event);
   }
+}
 
-  @:bind(menubarItemExit, MouseEvent.CLICK)
-  function onMenubarExit(_)
+@:bind(menubarItemSaveAs, MouseEvent.CLICK)
+function onMenubarSaveAs(_)
+{
+  CameraEditorImportExportHandler.exportCurrentChartToFNFC(this, false, null, function(path:String)
   {
-    if (!saved)
+    notifyChange('Chart Save', 'This chart has been saved to ${path}');
+    currentWorkingFilePath = path;
+  }, function()
+  {
+    // Failed to save backup?
+  });
+}
+
+@:bind(menubarItemExportChartAsFolder, MouseEvent.CLICK)
+function onMenubarExportChartAsFolder(_)
+{
+  CameraEditorImportExportHandler.exportCurrentChartToFolder(this, (path:String) ->
+  {
+    notifyChange('Exported Chart', 'Chart exported successfully to ${path}');
+  }, () -> {
+      // Cancelled
+  });
+}
+
+@:bind(menubarItemExit, MouseEvent.CLICK)
+function onMenubarExit(_)
+{
+  if (!saved)
+  {
+    if (exitConfirmDialog == null)
     {
-      if (exitConfirmDialog == null)
-      {
-        exitConfirmDialog = Dialogs.messageBox(
-          'You are about to leave the editor without saving.\n\nAre you sure? ',
-          'Leave Editor',
-          MessageBoxType.TYPE_YESNO,
-          true,
-          function(btn:DialogButton)
+      exitConfirmDialog = Dialogs.messageBox(
+        'You are about to leave the editor without saving.\n\nAre you sure? ',
+        'Leave Editor',
+        MessageBoxType.TYPE_YESNO,
+        true,
+        function(btn:DialogButton)
+        {
+          exitConfirmDialog = null;
+          if (btn == DialogButton.YES)
           {
-            exitConfirmDialog = null;
-            if (btn == DialogButton.YES)
-            {
-              // Write a backup, and remember we have one for next time.
-              saveBackup();
+            // Write a backup, and remember we have one for next time.
+            saveBackup();
 
-              performCleanup();
-              FlxG.switchState(() -> new MainMenuState());
-            }
+            performCleanup();
+            FlxG.switchState(() -> new MainMenuState());
           }
-        );
-      }
+        }
+      );
+    }
 
-      return;
-    }
-    else
-    {
-      // No need to show confirmation, just exit immediately.
-      performCleanup();
-      FlxG.switchState(() -> new MainMenuState());
-    }
+    return;
+  }
+  else
+  {
+    // No need to show confirmation, just exit immediately.
+    performCleanup();
+    FlxG.switchState(() -> new MainMenuState());
+  }
+}
+
+@:bind(menubarItemUndo, MouseEvent.CLICK)
+function onMenubarUndo(_)
+{
+  CameraEditorCommandHandler.undoLastCommand(this);
+}
+
+@:bind(menubarItemRedo, MouseEvent.CLICK)
+function onMenubarRedo(_)
+{
+  CameraEditorCommandHandler.redoLastCommand(this);
+}
+
+@:nullSafety(Off)
+function destroyHaxeUIComponents():Void
+{
+  CameraEditorNotificationHandler.clearNotifications(this);
+}
+
+/**
+ * Called before we exit the editor to perform any necessary cleanup.
+ */
+function performCleanup():Void
+{
+  criticalFailure = true;
+
+  // Remove reference to stage and remove sprites from it to save memory and prevent crashes.
+  if (currentStage != null)
+  {
+    currentStage.vcamPoint = null;
+    ScriptEventDispatcher.callEvent(currentStage, new ScriptEvent(DESTROY, false));
+    remove(currentStage);
+    currentStage.kill();
+    currentStage = null;
+  }
+  FunkinAssetCache.instance.preparePurgeCache();
+
+  destroyHaxeUIComponents();
+
+  FunkinAssetCache.instance.purgeCache(true);
+
+  writePreferences(!saved);
+  resetWindowTitle();
+
+  WindowUtil.windowExit.remove(windowClose);
+  CrashHandler.errorSignal.remove(autosavePerCrash);
+  CrashHandler.criticalErrorSignal.remove(autosavePerCrash);
+
+  Screen.instance.unregisterEvent(KeyboardEvent.KEY_DOWN, onScreenKeyDown);
+
+  Cursor.hide();
+  FlxG?.sound?.music?.stop();
+
+  chart.savedChanged.remove(onChartSavedChanged);
+  chart.workingFileChanged.remove(onChartWorkingFileChanged);
+  chart.recentsChanged.remove(onChartRecentsChanged);
+}
+
+function updateUndoRedoMenuItems():Void
+{
+  if (undoHistory.length == 0)
+  {
+    menubarItemUndo.disabled = true;
+    menubarItemUndo.text = 'Undo';
+  }
+  else
+  {
+    menubarItemUndo.disabled = false;
+    menubarItemUndo.text = 'Undo ${undoHistory[undoHistory.length - 1].toString()}';
   }
 
-  @:bind(menubarItemUndo, MouseEvent.CLICK)
-  function onMenubarUndo(_)
+  if (redoHistory.length == 0)
   {
-    CameraEditorCommandHandler.undoLastCommand(this);
+    menubarItemRedo.disabled = true;
+    menubarItemRedo.text = 'Redo';
   }
-
-  @:bind(menubarItemRedo, MouseEvent.CLICK)
-  function onMenubarRedo(_)
+  else
   {
-    CameraEditorCommandHandler.redoLastCommand(this);
+    menubarItemRedo.disabled = false;
+    menubarItemRedo.text = 'Redo ${redoHistory[redoHistory.length - 1].toString()}';
   }
+}
 
-  @:nullSafety(Off)
-  function destroyHaxeUIComponents():Void
-  {
-    CameraEditorNotificationHandler.clearNotifications(this);
-  }
-
-  /**
-   * Called before we exit the editor to perform any necessary cleanup.
-   */
-  function performCleanup():Void
-  {
-    criticalFailure = true;
-
-    // Remove reference to stage and remove sprites from it to save memory and prevent crashes.
-    if (currentStage != null)
-    {
-      currentStage.vcamPoint = null;
-      ScriptEventDispatcher.callEvent(currentStage, new ScriptEvent(DESTROY, false));
-      remove(currentStage);
-      currentStage.kill();
-      currentStage = null;
-    }
-    FunkinAssetCache.instance.preparePurgeCache();
-
-    destroyHaxeUIComponents();
-
-    FunkinAssetCache.instance.purgeCache(true);
-
-    writePreferences(!saved);
-    resetWindowTitle();
-
-    WindowUtil.windowExit.remove(windowClose);
-    CrashHandler.errorSignal.remove(autosavePerCrash);
-    CrashHandler.criticalErrorSignal.remove(autosavePerCrash);
-
-    Screen.instance.unregisterEvent(KeyboardEvent.KEY_DOWN, onScreenKeyDown);
-
-    Cursor.hide();
-    FlxG?.sound?.music?.stop();
-
-    chart.savedChanged.remove(onChartSavedChanged);
-    chart.workingFileChanged.remove(onChartWorkingFileChanged);
-    chart.recentsChanged.remove(onChartRecentsChanged);
-  }
-
-  function updateUndoRedoMenuItems():Void
-  {
-    if (undoHistory.length == 0)
-    {
-      menubarItemUndo.disabled = true;
-      menubarItemUndo.text = 'Undo';
-    }
-    else
-    {
-      menubarItemUndo.disabled = false;
-      menubarItemUndo.text = 'Undo ${undoHistory[undoHistory.length - 1].toString()}';
-    }
-
-    if (redoHistory.length == 0)
-    {
-      menubarItemRedo.disabled = true;
-      menubarItemRedo.text = 'Redo';
-    }
-    else
-    {
-      menubarItemRedo.disabled = false;
-      menubarItemRedo.text = 'Redo ${redoHistory[redoHistory.length - 1].toString()}';
-    }
-  }
-
-  function onScreenKeyDown(event:KeyboardEvent):Void
-  {
-    if (isHaxeUIFocused) return;
+function onScreenKeyDown(event:KeyboardEvent):Void
+{
+  if (isHaxeUIFocused) return;
 
     // @formatter:off
 
@@ -2572,347 +2592,346 @@ class CameraEditorState extends UIState implements ConsoleClass
     }
 
     // @formatter:on
+}
+
+/**
+ * Moves the playhead by whole beats, kept inside the song.
+ */
+function seekByBeats(beats:Float):Void
+{
+  if (currentInstrumental == null) return;
+
+  var target:Float = conductorInUse.songPosition + beats * conductorInUse.beatLengthMs;
+  if (target < 0) target = 0;
+  if (target > currentInstrumental.length) target = currentInstrumental.length;
+
+  setTimePosition(target);
+}
+
+/**
+ * Where a paste lands: the playhead, on the grid, inside the song.
+ */
+function pastePositionMs():Float
+{
+  var pasteMs:Float = timeline.snapMs(Conductor.instance.songPosition);
+
+  if (pasteMs < 0) pasteMs = 0;
+  if (pasteMs > timeline.viewport.songLengthMs) pasteMs = timeline.viewport.songLengthMs;
+
+  return pasteMs;
+}
+
+/**
+ * Copies the selection and pastes it at the playhead in one go.
+ */
+function duplicateSelection():Void
+{
+  if (!hasSelection) return;
+
+  SongDataUtils.writeItemsToClipboard({
+    notes: [],
+    events: selectedSongEvents.copy()
+  });
+  hasClipboardEvent = true;
+
+  CameraEditorCommandHandler.performCommand(this, new PasteEventsCommand(pastePositionMs()));
+}
+
+@:bind(menubarItemPlayPause, MouseEvent.CLICK)
+function onPlayPause(_)
+{
+  togglePlayback();
+}
+
+@:bind(menubarItemResetPlayback, MouseEvent.CLICK)
+function onStopPlayback(_)
+{
+  var playing:Bool = currentInstrumental != null && currentInstrumental.playing;
+  togglePlayback(true);
+  invalidateCameraReplay();
+  cachedEventIndex = 0;
+  cachedNoteIndex = 0;
+  previousNotes = [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ];
+  setTimePosition(0);
+  resetScrollPosition();
+  if (playing) togglePlayback();
+}
+
+@:bind(menubarItemResetCameraScroll, MouseEvent.CLICK)
+function onResetCameraScroll(_)
+{
+  var offset:FlxPoint = computeViewportCenterOffset();
+
+  goToPoint.x = offset.x;
+  goToPoint.y = offset.y;
+
+  if (!isCameraRelative)
+  {
+    goToPoint.x += cameraRect.vcamPoint.x;
+    goToPoint.y += cameraRect.vcamPoint.y;
   }
 
-  /**
-   * Moves the playhead by whole beats, kept inside the song.
-   */
-  function seekByBeats(beats:Float):Void
+  FlxG.camera.scroll.x = 0;
+  FlxG.camera.scroll.y = 0;
+
+  offset.put();
+}
+
+@:bind(menubarItemResetCameraZoom, MouseEvent.CLICK)
+function onResetCameraZoom(_)
+{
+  var fitZoom:Float = computeViewportFitZoom();
+  pivotZoomOnViewport(() ->
   {
-    if (currentInstrumental == null) return;
-
-    var target:Float = conductorInUse.songPosition + beats * conductorInUse.beatLengthMs;
-    if (target < 0) target = 0;
-    if (target > currentInstrumental.length) target = currentInstrumental.length;
-
-    setTimePosition(target);
-  }
-
-  /**
-   * Where a paste lands: the playhead, on the grid, inside the song.
-   */
-  function pastePositionMs():Float
-  {
-    var pasteMs:Float = timeline.snapMs(Conductor.instance.songPosition);
-
-    if (pasteMs < 0) pasteMs = 0;
-    if (pasteMs > timeline.viewport.songLengthMs) pasteMs = timeline.viewport.songLengthMs;
-
-    return pasteMs;
-  }
-
-  /**
-   * Copies the selection and pastes it at the playhead in one go.
-   */
-  function duplicateSelection():Void
-  {
-    if (!hasSelection) return;
-
-    SongDataUtils.writeItemsToClipboard({
-      notes: [],
-      events: selectedSongEvents.copy()
-    });
-    hasClipboardEvent = true;
-
-    CameraEditorCommandHandler.performCommand(this, new PasteEventsCommand(pastePositionMs()));
-  }
-
-  @:bind(menubarItemPlayPause, MouseEvent.CLICK)
-  function onPlayPause(_)
-  {
-    togglePlayback();
-  }
-
-  @:bind(menubarItemResetPlayback, MouseEvent.CLICK)
-  function onStopPlayback(_)
-  {
-    var playing:Bool = currentInstrumental != null && currentInstrumental.playing;
-    togglePlayback(true);
-    invalidateCameraReplay();
-    cachedEventIndex = 0;
-    cachedNoteIndex = 0;
-    previousNotes = [
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null
-    ];
-    setTimePosition(0);
-    resetScrollPosition();
-    if (playing) togglePlayback();
-  }
-
-  @:bind(menubarItemResetCameraScroll, MouseEvent.CLICK)
-  function onResetCameraScroll(_)
-  {
-    var offset:FlxPoint = computeViewportCenterOffset();
-
-    goToPoint.x = offset.x;
-    goToPoint.y = offset.y;
-
-    if (!isCameraRelative)
+    if (isCameraRelative)
     {
-      goToPoint.x += cameraRect.vcamPoint.x;
-      goToPoint.y += cameraRect.vcamPoint.y;
-    }
-
-    FlxG.camera.scroll.x = 0;
-    FlxG.camera.scroll.y = 0;
-
-    offset.put();
-  }
-
-  @:bind(menubarItemResetCameraZoom, MouseEvent.CLICK)
-  function onResetCameraZoom(_)
-  {
-    var fitZoom:Float = computeViewportFitZoom();
-    pivotZoomOnViewport(() ->
-    {
-      if (isCameraRelative)
-      {
-        relativeZoom = fitZoom;
-      }
-      else
-      {
-        FlxG.camera.zoom = fitZoom;
-      }
-    });
-  }
-
-  static final VIEWPORT_FIT_MARGIN:Float = 0.95;
-
-  function computeViewportFitZoom():Float
-  {
-    if (mainView == null || mainView.width <= 0 || mainView.height <= 0) return defaultStageZoom * 0.8;
-
-    var fitW:Float = (mainView.width * VIEWPORT_FIT_MARGIN) * defaultStageZoom / FlxG.width;
-    var fitH:Float = (mainView.height * VIEWPORT_FIT_MARGIN) * defaultStageZoom / FlxG.height;
-    return Math.min(fitW, fitH);
-  }
-
-  function computeViewportCenterOffset():FlxPoint
-  {
-    // The fit camera to viewport logic does something similar to this just a bit more robust to what it actually aims for
-    // So there's no need to have both together
-    if (menubarItemFitCameraToViewport.selected) return FlxPoint.get(0, 0);
-
-    if (mainView == null || mainView.width <= 0 || mainView.height <= 0) return FlxPoint.get(0, 0);
-
-    var dx:Float = (FlxG.width / 2) - (mainView.screenLeft + mainView.width / 2);
-    var dy:Float = (FlxG.height / 2) - (mainView.screenTop + mainView.height / 2);
-
-    var zoom:Float = isCameraRelative ? (cameraRect.zoom * relativeZoom) : FlxG.camera.zoom;
-    if (zoom <= 0) zoom = 1.0;
-    return FlxPoint.get(dx / zoom, dy / zoom);
-  }
-
-  function pivotZoomOnViewport(mutateZoom:Void->Void):Void
-  {
-    var oldOffset:FlxPoint = computeViewportCenterOffset();
-    goToPoint.x -= oldOffset.x;
-    goToPoint.y -= oldOffset.y;
-    oldOffset.put();
-
-    mutateZoom();
-
-    var newOffset:FlxPoint = computeViewportCenterOffset();
-    goToPoint.x += newOffset.x;
-    goToPoint.y += newOffset.y;
-    newOffset.put();
-  }
-
-  @:bind(menubarItemAutoGen, MouseEvent.CLICK)
-  function onMenubarAutoGen(_)
-  {
-    var autoGenDialog = new AutoGenDialog(this);
-    autoGenDialog.showDialog();
-  }
-
-  @:bind(menubarItemAutoSortByType, MouseEvent.CLICK)
-  function onMenubarAutoSortByType(_)
-  {
-    performAutoSortLayersByType();
-  }
-
-  function onViewportZoom(e:CameraViewportEvent):Void
-  {
-    var scaledDelta:Float = e.zoomDelta * 10.0;
-    var rawScale:Float = Math.exp(scaledDelta / 100.0);
-    rawScale = Math.min(1.25, Math.max(0.75, rawScale));
-
-    pivotZoomOnViewport(() ->
-    {
-      if (isCameraRelative)
-      {
-        relativeZoom *= rawScale;
-        if (relativeZoom < 0.1) relativeZoom = 0.1;
-        if (relativeZoom > 10.0) relativeZoom = 10.0;
-      }
-      else
-      {
-        FlxG.camera.zoom *= rawScale;
-        if (FlxG.camera.zoom < 0.1) FlxG.camera.zoom = 0.1;
-        if (FlxG.camera.zoom > 10.0) FlxG.camera.zoom = 10.0;
-      }
-    });
-  }
-
-  function onViewportPanStart(_:CameraViewportEvent):Void
-  {
-    MouseUtil.mouseCamDrag(goToPoint, true, true);
-  }
-
-  function onViewportPan(_:CameraViewportEvent):Void
-  {
-    MouseUtil.mouseCamDrag(goToPoint, false, true);
-  }
-
-  function onViewportGesturePan(e:CameraViewportEvent):Void
-  {
-    var zoom:Float = FlxG.camera.zoom;
-    if (zoom <= 0) zoom = 1;
-    goToPoint.x -= e.panDeltaX / zoom;
-    goToPoint.y -= e.panDeltaY / zoom;
-  }
-
-  @:bind(menubarItemUserGuide, MouseEvent.CLICK)
-  function onUserGuide(_)
-  {
-    var userGuideDialog = new UserGuideDialog();
-    userGuideDialog.showDialog();
-
-    userGuideDialog.onDialogClosed = (_) -> userGuideDialog = null;
-  }
-
-  @:bind(menubarItemGoToBackupsFolder, MouseEvent.CLICK)
-  function onOpenBackupsFolder(_)
-  {
-    #if sys
-    var absoluteBackupsPath:String = haxe.io.Path.join([Sys.getCwd(), BACKUPS_PATH]);
-    FileUtil.openFolder(absoluteBackupsPath);
-    #end
-  }
-
-  @:bind(menubarItemAbout, MouseEvent.CLICK)
-  function onAbout(_)
-  {
-    aboutDialog = new AboutDialog();
-    aboutDialog.showDialog();
-
-    aboutDialog.onDialogClosed = (_) -> aboutDialog = null;
-  }
-
-  @:bind(menubarItemChartEditor, MouseEvent.CLICK)
-  function onMoveToChartEditor(_)
-  {
-    tryMoveToChartEditor();
-  }
-
-  function tryMoveToChartEditor(hasSaved:Bool = false):Void
-  {
-    if (!hasSaved)
-    {
-      if (currentWorkingFilePath != null)
-      {
-        CameraEditorImportExportHandler.exportCurrentChartToFNFC(this, true, currentWorkingFilePath, function(path:String)
-        {
-          notifyChange('Chart Save', 'This chart has been saved to ${path}');
-          tryMoveToChartEditor(true);
-        }, function()
-        {
-          // Failed to save
-          notifyChange("Can't Move To Camera Editor", 'Camera Editor can only be accessed when the current chart has been saved to a file.', true);
-        });
-      }
-      else
-      {
-        CameraEditorImportExportHandler.exportCurrentChartToFNFC(this, false, null, function(path:String)
-        {
-          notifyChange('Chart Save', 'This chart has been saved to ${path}');
-          currentWorkingFilePath = path;
-          tryMoveToChartEditor(true);
-        }, function()
-        {
-          // Failed to save
-          notifyChange("Can't Move To Camera Editor", 'Camera Editor can only be accessed when the current chart has been saved to a file.', true);
-        });
-      }
+      relativeZoom = fitZoom;
     }
     else
     {
-      if (currentWorkingFilePath == null)
+      FlxG.camera.zoom = fitZoom;
+    }
+  });
+}
+
+static final VIEWPORT_FIT_MARGIN:Float = 0.95;
+
+function computeViewportFitZoom():Float
+{
+  if (mainView == null || mainView.width <= 0 || mainView.height <= 0) return defaultStageZoom * 0.8;
+
+  var fitW:Float = (mainView.width * VIEWPORT_FIT_MARGIN) * defaultStageZoom / FlxG.width;
+  var fitH:Float = (mainView.height * VIEWPORT_FIT_MARGIN) * defaultStageZoom / FlxG.height;
+  return Math.min(fitW, fitH);
+}
+
+function computeViewportCenterOffset():FlxPoint
+{
+  // The fit camera to viewport logic does something similar to this just a bit more robust to what it actually aims for
+  // So there's no need to have both together
+  if (menubarItemFitCameraToViewport.selected) return FlxPoint.get(0, 0);
+
+  if (mainView == null || mainView.width <= 0 || mainView.height <= 0) return FlxPoint.get(0, 0);
+
+  var dx:Float = (FlxG.width / 2) - (mainView.screenLeft + mainView.width / 2);
+  var dy:Float = (FlxG.height / 2) - (mainView.screenTop + mainView.height / 2);
+
+  var zoom:Float = isCameraRelative ? (cameraRect.zoom * relativeZoom) : FlxG.camera.zoom;
+  if (zoom <= 0) zoom = 1.0;
+  return FlxPoint.get(dx / zoom, dy / zoom);
+}
+
+function pivotZoomOnViewport(mutateZoom:Void->Void):Void
+{
+  var oldOffset:FlxPoint = computeViewportCenterOffset();
+  goToPoint.x -= oldOffset.x;
+  goToPoint.y -= oldOffset.y;
+  oldOffset.put();
+
+  mutateZoom();
+
+  var newOffset:FlxPoint = computeViewportCenterOffset();
+  goToPoint.x += newOffset.x;
+  goToPoint.y += newOffset.y;
+  newOffset.put();
+}
+
+@:bind(menubarItemAutoGen, MouseEvent.CLICK)
+function onMenubarAutoGen(_)
+{
+  var autoGenDialog = new AutoGenDialog(this);
+  autoGenDialog.showDialog();
+}
+
+@:bind(menubarItemAutoSortByType, MouseEvent.CLICK)
+function onMenubarAutoSortByType(_)
+{
+  performAutoSortLayersByType();
+}
+
+function onViewportZoom(e:CameraViewportEvent):Void
+{
+  var scaledDelta:Float = e.zoomDelta * 10.0;
+  var rawScale:Float = Math.exp(scaledDelta / 100.0);
+  rawScale = Math.min(1.25, Math.max(0.75, rawScale));
+
+  pivotZoomOnViewport(() ->
+  {
+    if (isCameraRelative)
+    {
+      relativeZoom *= rawScale;
+      if (relativeZoom < 0.1) relativeZoom = 0.1;
+      if (relativeZoom > 10.0) relativeZoom = 10.0;
+    }
+    else
+    {
+      FlxG.camera.zoom *= rawScale;
+      if (FlxG.camera.zoom < 0.1) FlxG.camera.zoom = 0.1;
+      if (FlxG.camera.zoom > 10.0) FlxG.camera.zoom = 10.0;
+    }
+  });
+}
+
+function onViewportPanStart(_:CameraViewportEvent):Void
+{
+  MouseUtil.mouseCamDrag(goToPoint, true, true);
+}
+
+function onViewportPan(_:CameraViewportEvent):Void
+{
+  MouseUtil.mouseCamDrag(goToPoint, false, true);
+}
+
+function onViewportGesturePan(e:CameraViewportEvent):Void
+{
+  var zoom:Float = FlxG.camera.zoom;
+  if (zoom <= 0) zoom = 1;
+  goToPoint.x -= e.panDeltaX / zoom;
+  goToPoint.y -= e.panDeltaY / zoom;
+}
+
+@:bind(menubarItemUserGuide, MouseEvent.CLICK)
+function onUserGuide(_)
+{
+  var userGuideDialog = new UserGuideDialog();
+  userGuideDialog.showDialog();
+
+  userGuideDialog.onDialogClosed = (_) -> userGuideDialog = null;
+}
+
+@:bind(menubarItemGoToBackupsFolder, MouseEvent.CLICK)
+function onOpenBackupsFolder(_)
+{
+  #if sys
+  var absoluteBackupsPath:String = haxe.io.Path.join([Sys.getCwd(), BACKUPS_PATH]);
+  FileUtil.openFolder(absoluteBackupsPath);
+  #end
+}
+
+@:bind(menubarItemAbout, MouseEvent.CLICK)
+function onAbout(_)
+{
+  aboutDialog = new AboutDialog();
+  aboutDialog.showDialog();
+
+  aboutDialog.onDialogClosed = (_) -> aboutDialog = null;
+}
+
+@:bind(menubarItemChartEditor, MouseEvent.CLICK)
+function onMoveToChartEditor(_)
+{
+  tryMoveToChartEditor();
+}
+
+function tryMoveToChartEditor(hasSaved:Bool = false):Void
+{
+  if (!hasSaved)
+  {
+    if (currentWorkingFilePath != null)
+    {
+      CameraEditorImportExportHandler.exportCurrentChartToFNFC(this, true, currentWorkingFilePath, function(path:String)
       {
+        notifyChange('Chart Save', 'This chart has been saved to ${path}');
+        tryMoveToChartEditor(true);
+      }, function()
+      {
+        // Failed to save
         notifyChange("Can't Move To Camera Editor", 'Camera Editor can only be accessed when the current chart has been saved to a file.', true);
-        return;
-      }
-
-      var startTimestamp:Float = timeline.songPosition;
-
-      performCleanup();
-
-      @:nullSafety(Off)
+      });
+    }
+    else
+    {
+      CameraEditorImportExportHandler.exportCurrentChartToFNFC(this, false, null, function(path:String)
       {
-        final f = FocusManager.instance.focus;
-        if (f != null) f.focus = false;
-      }
-
-      FlxG.switchState(() -> new ChartEditorState({
-        loadFromPath: this.currentWorkingFilePath,
-        targetSongDifficulty: this.currentDifficulty,
-        targetSongVariation: this.currentVariation,
-        targetSongPosition: startTimestamp,
-      }));
+        notifyChange('Chart Save', 'This chart has been saved to ${path}');
+        currentWorkingFilePath = path;
+        tryMoveToChartEditor(true);
+      }, function()
+      {
+        // Failed to save
+        notifyChange("Can't Move To Camera Editor", 'Camera Editor can only be accessed when the current chart has been saved to a file.', true);
+      });
     }
   }
-
-  /**
-   * Builds and opens a dialog letting the user create a new chart, open a recent chart, or load from a template.
-   * @param state The current camera editor state.
-   * @param closable Whether the dialog can be closed by the user.
-   * @return The dialog that was opened.
-   */
-  function openWelcomeDialog(closable:Bool = false):WelcomeDialog
+  else
   {
-    if (this.welcomeDialog != null) return this.welcomeDialog;
+    if (currentWorkingFilePath == null)
+    {
+      notifyChange("Can't Move To Camera Editor", 'Camera Editor can only be accessed when the current chart has been saved to a file.', true);
+      return;
+    }
 
-    pauseAudioPlayback();
+    var startTimestamp:Float = timeline.songPosition;
 
-    final MODAL:Bool = true;
+    performCleanup();
 
-    var dialog:WelcomeDialog = new WelcomeDialog(this, closable);
+    @:nullSafety(Off)
+    {
+      final f = FocusManager.instance.focus;
+      if (f != null) f.focus = false;
+    }
 
-    dialog.zIndex = 1_000;
-
-    dialog.showDialog(MODAL);
-
-    this.welcomeDialog = dialog;
-    dialog.onDialogClosed = (_) -> this.welcomeDialog = null;
-
-    return dialog;
-  }
-
-  function openBackupAvailableDialog(?welcomeDialog:WelcomeDialog):BackupAvailableDialog
-  {
-    final MODAL:Bool = true;
-
-    var dialog = new BackupAvailableDialog(this, welcomeDialog);
-
-    dialog.zIndex = 2_000;
-
-    dialog.showDialog(MODAL);
-
-    return dialog;
+    FlxG.switchState(() -> new ChartEditorState({
+      loadFromPath: this.currentWorkingFilePath,
+      targetSongDifficulty: this.currentDifficulty,
+      targetSongVariation: this.currentVariation,
+      targetSongPosition: startTimestamp,
+    }));
   }
 }
 
 /**
+ * Builds and opens a dialog letting the user create a new chart, open a recent chart, or load from a template.
+ * @param state The current camera editor state.
+ * @param closable Whether the dialog can be closed by the user.
+ * @return The dialog that was opened.
+ */
+function openWelcomeDialog(closable:Bool = false):WelcomeDialog
+{
+  if (this.welcomeDialog != null) return this.welcomeDialog;
+
+  pauseAudioPlayback();
+
+  final MODAL:Bool = true;
+
+  var dialog:WelcomeDialog = new WelcomeDialog(this, closable);
+
+  dialog.zIndex = 1_000;
+
+  dialog.showDialog(MODAL);
+
+  this.welcomeDialog = dialog;
+  dialog.onDialogClosed = (_) -> this.welcomeDialog = null;
+
+  return dialog;
+}
+
+function openBackupAvailableDialog(?welcomeDialog:WelcomeDialog):BackupAvailableDialog
+{
+  final MODAL:Bool = true;
+
+  var dialog = new BackupAvailableDialog(this, welcomeDialog);
+
+  dialog.zIndex = 2_000;
+
+  dialog.showDialog(MODAL);
+
+  return dialog;
+}
+} /**
  * Parameters to initialize the Camera Editor with.
  * Most of these are optional.
  */
+
 typedef CameraEditorParams =
 {
   // CHART LOADING

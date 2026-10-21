@@ -1078,6 +1078,7 @@ class PlayState extends MusicBeatSubState
 
       dispatchEvent(retryEvent);
 
+      resetCameraFollowPoint();
       resetCamera();
 
       var fromDeathState = isPlayerDying;
@@ -2129,7 +2130,7 @@ class PlayState extends MusicBeatSubState
   {
     if (isMinimalMode) return;
     // Apply camera zoom level from stage data.
-    currentCameraZoom = stageZoom;
+    currentCameraZoom = stageZoom * (currentChart?.defaultCameraZoom ?? 1.0);
     FlxG.camera.zoom = currentCameraZoom;
 
     // Reset bop multiplier.
@@ -2253,8 +2254,6 @@ class PlayState extends MusicBeatSubState
       if (dad != null)
       {
         currentStage.addCharacter(dad, DAD);
-        // Camera starts at dad.
-        cameraFollowPoint.setPosition(dad.cameraFocusPoint.x, dad.cameraFocusPoint.y);
 
         #if FEATURE_DEBUG_FUNCTIONS
         FlxG.console.registerObject('dad', dad);
@@ -2263,7 +2262,25 @@ class PlayState extends MusicBeatSubState
 
       // Rearrange by z-indexes.
       currentStage.refresh();
+      resetCameraFollowPoint();
     }
+  }
+
+  function resetCameraFollowPoint():Void
+  {
+    if (currentStage == null) return;
+
+    var focusCharacter:Null<BaseCharacter> = switch (currentChart?.defaultCameraFocus ?? 1)
+    {
+      case 0: currentStage.getBoyfriend();
+      case 1: currentStage.getDad();
+      case 2: currentStage.getGirlfriend();
+      default: currentStage.getDad();
+    };
+    if (focusCharacter == null) focusCharacter = currentStage.getDad();
+    if (focusCharacter == null) return;
+
+    cameraFollowPoint.setPosition(focusCharacter.cameraFocusPoint.x, focusCharacter.cameraFocusPoint.y);
   }
 
   /**
@@ -2682,6 +2699,11 @@ class PlayState extends MusicBeatSubState
   function startSong():Void
   {
     startingSong = false;
+
+    if (!isMinimalMode && !(currentChart?.forceCameraZoom ?? false))
+    {
+      tweenCameraZoom(1.0, 0.5, false, FlxEase.sineInOut);
+    }
 
     #if FEATURE_TOUCH_CONTROLS
     if (hitbox != null) hitbox.visible = true;
