@@ -13,6 +13,7 @@ import funkin.ui.debug.charting.ChartEditorState.ChartEditorWaveformPos;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorTheme;
 import funkin.ui.debug.stageeditor.StageEditorState.StageEditorTheme;
 import funkin.util.FileUtil;
+import funkin.util.VersionUtil;
 import funkin.util.macro.ConsoleMacro;
 import funkin.util.macro.SaveMacro;
 import funkin.util.SerializerUtil;
@@ -121,9 +122,8 @@ class Save implements ConsoleClass implements ISerializable
     if (refreshRate < 60) refreshRate = 60;
     #end
     return {
-      // Version number is an abstract(Array) internally.
-      // This means it copies by reference, so merging save data overrides the version number lol.
-      version: thx.Dynamics.clone(Save.SAVE_DATA_VERSION),
+      // Clone the version so merging defaults does not accidentally share the same semver instance.
+      version: VersionUtil.cloneVersion(Save.SAVE_DATA_VERSION),
       volume: 1.0,
       mute: false,
       api: {
@@ -990,6 +990,7 @@ class Save implements ConsoleClass implements ISerializable
             trace('[SAVE] No legacy save data found.');
             var gameSave:Save = new Save();
             FlxG.save.mergeData(gameSave.data, true);
+            FlxG.save.flush();
             return gameSave;
 
           case Some(legacySaveData):
@@ -997,6 +998,7 @@ class Save implements ConsoleClass implements ISerializable
 
             var gameSave = SaveDataMigrator.migrateFromLegacy(legacySaveData);
             FlxG.save.mergeData(gameSave.data, true);
+            FlxG.save.flush();
             return gameSave;
         }
 
@@ -1005,6 +1007,7 @@ class Save implements ConsoleClass implements ISerializable
 
         var gameSave = SaveDataMigrator.migrate(FlxG.save.data);
         FlxG.save.mergeData(gameSave.data, true);
+        FlxG.save.flush();
         return gameSave;
 
       case ERROR(msg):
@@ -1158,7 +1161,7 @@ class Save implements ConsoleClass implements ISerializable
    */
   public function updateVersionToLatest():Void
   {
-    this.data.version = Save.SAVE_DATA_VERSION;
+    this.data.version = VersionUtil.cloneVersion(Save.SAVE_DATA_VERSION);
   }
 
   /**
