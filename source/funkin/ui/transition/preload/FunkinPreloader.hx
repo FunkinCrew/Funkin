@@ -33,7 +33,7 @@ import funkin.data.event.SongEventRegistry;
 import funkin.data.stage.StageRegistry;
 import funkin.data.story.level.LevelRegistry;
 import funkin.modding.module.ModuleHandler;
-import funkin.data.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterRegistry;
 import funkin.play.notes.notekind.NoteKindManager;
 
 using StringTools;
@@ -405,7 +405,7 @@ class FunkinPreloader extends FlxBasePreloader
           futures.push(FreeplayStyleRegistry.instance.loadEntriesAsync());
           futures.push(SongEventRegistry.loadEventCacheAsync());
           futures.push(NoteKindManager.loadNoteKindsAsync());
-          futures.push(CharacterDataParser.loadCharacterCacheAsync());
+          futures.push(CharacterRegistry.instance.loadEntriesAsync());
           futures.push(ModuleHandler.loadModuleCacheAsync());
 
           var registryFuture = lime.app.Promises.allSettled(futures);

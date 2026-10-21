@@ -3,7 +3,7 @@ package funkin.save;
 import funkin.util.tools.ISerializable;
 import flixel.util.FlxSave;
 import funkin.input.Controls.Device;
-import funkin.data.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterRegistry;
 import funkin.play.scoring.Scoring;
 import funkin.play.scoring.Scoring.ScoringRank;
 import funkin.save.migrator.RawSaveData_v1_0_0;
@@ -228,6 +228,7 @@ class Save implements ConsoleClass implements ISerializable
       optionsCameraEditor: {
         previousFiles: [],
         theme: ChartEditorTheme.Light,
+        zoomToPlayhead: false,
       },
       optionsQuickMenu: {
         firstRun: false
@@ -369,7 +370,7 @@ class Save implements ConsoleClass implements ISerializable
   {
     if (
       data.optionsStageEditor.bfChar == null
-      || CharacterDataParser.fetchCharacterData(data.optionsStageEditor.bfChar) == null
+      || CharacterRegistry.instance.fetchCharacterData(data.optionsStageEditor.bfChar) == null
     ) data.optionsStageEditor.bfChar = "bf";
     return data.optionsStageEditor.bfChar;
   }
@@ -388,7 +389,7 @@ class Save implements ConsoleClass implements ISerializable
   {
     if (
       data.optionsStageEditor.gfChar == null
-      || CharacterDataParser.fetchCharacterData(data.optionsStageEditor.gfChar ?? "") == null
+      || CharacterRegistry.instance.fetchCharacterData(data.optionsStageEditor.gfChar ?? "") == null
     ) data.optionsStageEditor.gfChar = "gf";
     return data.optionsStageEditor.gfChar;
   }
@@ -407,7 +408,7 @@ class Save implements ConsoleClass implements ISerializable
   {
     if (
       data.optionsStageEditor.dadChar == null
-      || CharacterDataParser.fetchCharacterData(data.optionsStageEditor.dadChar ?? "") == null
+      || CharacterRegistry.instance.fetchCharacterData(data.optionsStageEditor.dadChar ?? "") == null
     ) data.optionsStageEditor.dadChar = "dad";
     return data.optionsStageEditor.dadChar;
   }
@@ -429,6 +430,8 @@ class Save implements ConsoleClass implements ISerializable
   public var cameraEditorPreviousFiles:SaveProperty<Array<String>>;
   @:saveProperty(data.optionsCameraEditor.hasBackup, false)
   public var cameraEditorHasBackup:SaveProperty<Bool>;
+  @:saveProperty(data.optionsCameraEditor.zoomToPlayhead, false)
+  public var cameraEditorZoomToPlayhead:SaveProperty<Bool>;
 
   /// UTIL FUNCTIONS
 
@@ -1831,6 +1834,12 @@ typedef SaveDataCameraEditorOptions =
    * @default `ChartEditorTheme.Light`
    */
   var ?theme:ChartEditorTheme;
+
+  /**
+   * Whether the timeline zooms around the playhead rather than the cursor.
+   * @default `false`
+   */
+  var ?zoomToPlayhead:Bool;
 }
 
 typedef SaveDataQuickMenuOptions =

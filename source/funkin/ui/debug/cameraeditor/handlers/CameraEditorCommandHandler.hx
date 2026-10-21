@@ -23,6 +23,7 @@ class CameraEditorCommandHandler
   public static function performCommand(state:CameraEditorState, command:CameraEditorCommand, purgeRedoStack:Bool = true):Void
   {
     trace(' CAMERA EDITOR '.bold().bg_bright_yellow() + 'Performing command: ' + command.toString());
+    state.invalidateCameraReplay();
     command.execute(state);
     if (command.shouldAddToHistory(state))
     {
@@ -41,6 +42,7 @@ class CameraEditorCommandHandler
   public static function undoCommand(state:CameraEditorState, command:CameraEditorCommand):Void
   {
     trace(' CAMERA EDITOR '.bold().bg_bright_yellow() + 'Undoing command: ' + command.toString());
+    state.invalidateCameraReplay();
     command.undo(state);
     // Note, if we are undoing a command, it should already be in the history,
     // therefore we don't need to check `shouldAddToHistory(state)`

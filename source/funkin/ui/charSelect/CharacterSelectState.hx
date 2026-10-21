@@ -739,6 +739,9 @@ class CharacterSelectState extends MusicBeatSubState
               @:bypassAccessor
               currentCharacterId = characterId;
 
+              var event:CharacterSelectScriptEvent = CharacterSelectScriptEvent.get(CHARACTER_SELECTED, characterId);
+              dispatchEvent(event);
+
               if (locksToUnlock.isEmpty())
               {
                 @:privateAccess

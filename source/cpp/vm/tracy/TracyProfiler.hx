@@ -109,7 +109,7 @@ class Cppia_TracyProfiler
   public static function setThreadName(_name:String, ?_groupHint:Int = 1) Native_TracyProfiler.setThreadName(_name, _groupHint);
 
   @:inheritDoc(cpp.vm.tracy.Native_TracyProfiler.zoneScoped)
-  public static function zoneScoped(_name:String) Native_TracyProfiler.zoneScoped(_name);
+  public static #if !cppia inline #end function zoneScoped(_name:String):Void Native_TracyProfiler.zoneScoped(_name);
 }
 
 typedef TracyProfiler = Cppia_TracyProfiler;
