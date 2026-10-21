@@ -74,6 +74,11 @@ class PolymodHandler
     #end;
 
   /**
+   * The path containing the currently enabled mods.
+   */
+  public static final ENABLED_MODS_PATH:String = '$MOD_FOLDER/enabled.txt';
+
+  /**
    * Populated with the directories of mods once they're successfully loaded.
    */
   public static var loadedModDirs:Array<String> = [];
@@ -117,7 +122,7 @@ class PolymodHandler
     createModRoot();
     #end
     trace('Initializing Polymod (using configured mods)...');
-    loadModsById(Save.instance.enabledModIds.value);
+    loadModsById(enabledModIds);
   }
 
   /**
@@ -782,12 +787,11 @@ class PolymodHandler
    */
   public static function enableMod(modId:String):Void
   {
-    var enabledModIds:Array<String> = Save.instance.enabledModIds.value;
+    var enabledModIds:Array<String> = PolymodHandler.enabledModIds;
     if (!enabledModIds.contains(modId))
     {
       enabledModIds.push(modId);
-      Save.instance.enabledModIds.value = enabledModIds;
-      Save.system.flush();
+      PolymodHandler.enabledModIds = enabledModIds;
     }
   }
 
@@ -797,19 +801,17 @@ class PolymodHandler
    */
   public static function disableMod(modId:String):Void
   {
-    var enabledModIds:Array<String> = Save.instance.enabledModIds.value;
+    var enabledModIds:Array<String> = PolymodHandler.enabledModIds;
     if (enabledModIds.contains(modId))
     {
       enabledModIds.remove(modId);
-      Save.instance.enabledModIds.value = enabledModIds;
-      Save.system.flush();
+      PolymodHandler.enabledModIds = enabledModIds;
     }
   }
 
   public static function disableAllMods():Void
   {
-    Save.instance.enabledModIds.value = [];
-    Save.system.flush();
+    PolymodHandler.enabledModIds = [];
   }
 
   /**
@@ -818,7 +820,7 @@ class PolymodHandler
    */
   public static function getEnabledMods():Array<ModMetadata>
   {
-    var enabledModIds:Array<String> = Save.instance.enabledModIds.value;
+    var enabledModIds:Array<String> = PolymodHandler.enabledModIds;
     var modMetadata:Array<ModMetadata> = getAllMods();
     var enabledMods:Array<ModMetadata> = modMetadata.filter((item) ->
     {
@@ -841,7 +843,7 @@ class PolymodHandler
   public static function getDisabledMods():Array<ModMetadata>
   {
     var modMetadata:Array<ModMetadata> = getAllMods();
-    var enabledModIds:Array<String> = Save.instance.enabledModIds.value;
+    var enabledModIds:Array<String> = PolymodHandler.enabledModIds;
     var disabledMods:Array<ModMetadata> = modMetadata.filter((item) ->
     {
       return !enabledModIds.contains(item.id);
@@ -864,7 +866,7 @@ class PolymodHandler
   public static function getDisabledModsIncludingIncompatible(force:Bool = false):Array<ModMetadata>
   {
     var modMetadata:Array<ModMetadata> = getAllModsIncludingIncompatible(force);
-    var enabledModIds:Array<String> = Save.instance.enabledModIds.value;
+    var enabledModIds:Array<String> = PolymodHandler.enabledModIds;
     var disabledMods:Array<ModMetadata> = modMetadata.filter((item) ->
     {
       return !enabledModIds.contains(item.id);
@@ -921,5 +923,35 @@ class PolymodHandler
     NoteKindManager.initialize();
     ModuleHandler.loadModuleCache();
     ModuleHandler.callOnCreate();
+  }
+
+  /**
+   * The mods currently enabled.
+   */
+  public static var enabledModIds(get, set):Array<String>;
+
+  static function get_enabledModIds():Array<String>
+  {
+    #if sys
+    if (!FileUtil.fileExists(ENABLED_MODS_PATH)) return [];
+
+    var content:String = FileUtil.readStringFromPath(ENABLED_MODS_PATH);
+    return content.trim().split('\n');
+    #else
+    return Save.instance.enabledModIds.value;
+    #end
+  }
+
+  static function set_enabledModIds(value:Array<String>):Array<String>
+  {
+    #if sys
+    var content:String = value.join('\n');
+    FileUtil.writeStringToPath(ENABLED_MODS_PATH, content, Force);
+    #else
+    Save.instance.enabledModIds.value = value;
+    Save.system.flush();
+    #end
+
+    return value;
   }
 }
