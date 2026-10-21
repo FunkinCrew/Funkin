@@ -5954,33 +5954,30 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
               {
                 performCommand(new DeselectAllItemsCommand());
               }
+              // Click a blank space to place a note and select it.
+  
+              if (cursorGridPos == eventColumn)
+              {
+                // Create an event and place it in the chart.
+                // TODO: Figure out configuring event data.
+                var newEventData:SongEventData = new SongEventData(cursorSnappedMs, eventKindToPlace, eventDataToPlace.copy());
+
+                performCommand(new AddEventsCommand([newEventData], pressingControl()));
+              }
               else
               {
-                // Click a blank space to place a note and select it.
-  
-                if (cursorGridPos == eventColumn)
-                {
-                  // Create an event and place it in the chart.
-                  // TODO: Figure out configuring event data.
-                  var newEventData:SongEventData = new SongEventData(cursorSnappedMs, eventKindToPlace, eventDataToPlace.copy());
-  
-                  performCommand(new AddEventsCommand([newEventData], pressingControl()));
-                }
-                else
-                {
-                  // Create a note and place it in the chart.
-                  var newNoteData:SongNoteData = new SongNoteData(
-                    cursorSnappedMs,
-                    cursorColumn,
-                    0,
-                    noteKindToPlace,
-                    ChartEditorState.cloneNoteParams(noteParamsToPlace)
-                  );
-  
-                  performCommand(new AddNotesCommand([newNoteData], pressingControl()));
-  
-                  currentPlaceNoteData = newNoteData;
-                }
+                // Create a note and place it in the chart.
+                var newNoteData:SongNoteData = new SongNoteData(
+                  cursorSnappedMs,
+                  cursorColumn,
+                  0,
+                  noteKindToPlace,
+                  ChartEditorState.cloneNoteParams(noteParamsToPlace)
+                );
+
+                performCommand(new AddNotesCommand([newNoteData], pressingControl()));
+
+                currentPlaceNoteData = newNoteData;
               }
             }
           }
