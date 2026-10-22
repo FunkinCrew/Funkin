@@ -1597,34 +1597,34 @@ class PlayState extends MusicBeatSubState
           FlxG.sound.music.pause();
           musicPausedBySubState = true;
         }
+      }
 
-        // Pause any sounds that are playing and keep track of them.
-        // Vocals are also paused here but are not included as they are handled separately.
-        if (Std.isOfType(subState, PauseSubState))
+      // Pause any sounds that are playing and keep track of them.
+      // Vocals are also paused here but are not included as they are handled separately.
+      if (Std.isOfType(subState, PauseSubState))
+      {
+        FlxG.sound.list.forEachAlive(function(sound:FlxSound)
         {
-          FlxG.sound.list.forEachAlive(function(sound:FlxSound)
+          if (!sound.active || sound == FlxG.sound.music) return;
+          // In case it's a scheduled sound
+          if (Std.isOfType(sound, FunkinSound))
           {
-            if (!sound.active || sound == FlxG.sound.music) return;
-            // In case it's a scheduled sound
-            if (Std.isOfType(sound, FunkinSound))
-            {
-              var funkinSound:FunkinSound = cast sound;
-              if (funkinSound != null && !funkinSound.isPlaying) return;
-            }
-            if (!sound.playing && sound.time >= 0) return;
-            sound.pause();
-            soundsPausedBySubState.add(sound);
-          });
+            var funkinSound:FunkinSound = cast sound;
+            if (funkinSound != null && !funkinSound.isPlaying) return;
+          }
+          if (!sound.playing && sound.time >= 0) return;
+          sound.pause();
+          soundsPausedBySubState.add(sound);
+        });
 
-          vocals?.forEach(function(voice:FunkinSound)
-          {
-            soundsPausedBySubState.remove(voice);
-          });
-        }
-        else
+        vocals?.forEach(function(voice:FunkinSound)
         {
-          vocals?.pause();
-        }
+          soundsPausedBySubState.remove(voice);
+        });
+      }
+      else
+      {
+        vocals?.pause();
       }
 
       if (!vwooshTimer.finished) vwooshTimer.active = false;
