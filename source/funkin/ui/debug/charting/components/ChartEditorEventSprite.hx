@@ -200,10 +200,25 @@ class ChartEditorEventSprite extends FlxSprite
     {
       tooltipText = '${overlappingEventDatas.length + 1} Event(s)\n\n';
       tooltipText += this.eventData.buildTooltip();
+
+      static var MAX_EVENT_LIMIT = 3;
+      var eventCount:Int = 1; // Start with 1 to include the base event.
       for (event in overlappingEventDatas)
       {
+        eventCount++;
+
         tooltipText += '\n\n';
-        tooltipText += event.buildTooltip();
+
+        // Cut off the tooltip when we're showing 3 events.
+        if (eventCount > MAX_EVENT_LIMIT)
+        {
+          tooltipText += '... (${(overlappingEventDatas.length + 1) - MAX_EVENT_LIMIT} event(s) not showing)';
+          break;
+        }
+        else
+        {
+          tooltipText += event.buildTooltip();
+        }
       }
     }
     this.tooltip.tipData = {
