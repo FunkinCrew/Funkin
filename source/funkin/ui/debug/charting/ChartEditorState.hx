@@ -7287,6 +7287,17 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   function testSongInPlayState(minimal:Bool = false):Void
   {
+    for (component in Screen.instance.rootComponents.copy())
+    {
+      if (component is Menu)
+      {
+        if (cast(component, Menu).menuBar != null) component.dispatch(new UIEvent(UIEvent.CLOSE));
+        else
+          Screen.instance.removeComponent(component, false);
+      }
+      for (dropDown in component.findComponents(null, DropDown, -1)) dropDown.hideDropDown();
+    }
+
     autoSave(true);
 
     if (!wasPlaytesting)
