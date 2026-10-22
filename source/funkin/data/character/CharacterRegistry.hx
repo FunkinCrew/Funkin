@@ -498,10 +498,10 @@ class CharacterRegistry extends BaseRegistry<BaseCharacter, CharacterData, Chara
       var entryCls:String = currentState.entryCls;
       try
       {
-        var character:Null<BaseCharacter> = switch (entryLoadingState)
+        var character:Null<BaseCharacter> = funkin.util.tasks.ScriptLock.run(() -> switch (entryLoadingState)
         {
           case 'sparrow':
-            SparrowCharacter.scriptInit(entryCls, DEFAULT_CHAR_ID);
+            (SparrowCharacter.scriptInit(entryCls, DEFAULT_CHAR_ID) : Null<BaseCharacter>);
           case 'packer':
             PackerCharacter.scriptInit(entryCls, DEFAULT_CHAR_ID);
           case 'animateatlas':
@@ -514,7 +514,7 @@ class CharacterRegistry extends BaseRegistry<BaseCharacter, CharacterData, Chara
             BaseCharacter.scriptInit(entryCls, DEFAULT_CHAR_ID);
           default:
             null;
-        }
+        });
 
         if (character != null)
         {
