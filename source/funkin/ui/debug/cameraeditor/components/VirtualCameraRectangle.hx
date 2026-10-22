@@ -68,7 +68,14 @@ class VirtualCameraRectangle extends FlxSpriteGroup
   }
 
   public var isRelative:Bool = false;
+  public var fitViewportScale(default, set):Float = 1.0;
   public var hudZoom(default, set):Float = 1;
+
+  function set_fitViewportScale(value:Float):Float
+  {
+    fitViewportScale = Math.max(0.01, value);
+    return fitViewportScale;
+  }
 
   var isClassicEase:Bool = false;
   var isClassicZoom:Bool = false;
@@ -675,7 +682,10 @@ class VirtualCameraRectangle extends FlxSpriteGroup
     return defaultHUDCameraZoom + (hudCameraZoomIntensity * defaultHUDCameraZoom);
   }
 
-  public function setCameraBop(rate:Float, offset:Float, intensity:Float, preserveCurrentState:Bool = true):Void
+  public function setCameraBop(rate:Float,
+    offset:Float,
+    intensity:Float,
+    preserveCurrentState:Bool = true):Void
   {
     cameraZoomRate = rate;
     cameraZoomRateOffset = offset;
@@ -840,18 +850,19 @@ class VirtualCameraRectangle extends FlxSpriteGroup
 
     if (!showPassepartout) return;
 
-    var scaleAmt:Float = ((Math.abs(FlxG.camera.scroll.x - vcamPoint.x) * 2) + FlxG.width) / FlxG.camera.zoom;
+    var maskZoom:Float = FlxG.camera.zoom;
     var extraSize:Float = showExtendedBounds ? pieceSize / zoom : 0;
 
     if (isRelative)
     {
-      var safeRelativeZoom:Float = (relativeZoom != 0) ? relativeZoom : 1.0;
-      var zoomFactor:Float = FlxG.camera.zoom / safeRelativeZoom;
-      var compensatedScrollX:Float = FlxG.camera.scroll.x * zoomFactor;
-
-      scaleAmt = ((Math.abs(compensatedScrollX - vcamPoint.x) * 2) + FlxG.width) / safeRelativeZoom;
+      maskZoom = relativeZoom;
       extraSize = showExtendedBounds ? pieceSize : 0;
     }
+
+    var safeMaskZoom:Float = Math.max(0.01, Math.abs(maskZoom));
+    var safeFitViewportScale:Float = Math.max(0.01, Math.abs(fitViewportScale));
+    var wideViewportWidth:Float = FlxG.width + (pieceSize * 2);
+    var scaleAmt:Float = wideViewportWidth / (safeMaskZoom * safeFitViewportScale);
 
     passeT.setGraphicSize(scaleAmt, scaleAmt);
     passeB.setGraphicSize(scaleAmt, scaleAmt);
