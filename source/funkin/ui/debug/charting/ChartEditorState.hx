@@ -152,17 +152,28 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   // ==============================
   // Layouts
-  public static final CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/toolboxes/difficulty').toString();
+  public static final CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT:String = funkin.assets.ValidatedPaths
+    .xml('ui/editors/chart-editor/toolboxes/difficulty')
+    .toString();
 
-  public static final CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/toolbox/player-preview').toString();
-  public static final CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/toolbox/opponent-preview').toString();
+  public static final CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT:String = funkin.assets.ValidatedPaths
+    .xml('ui/editors/chart-editor/toolbox/player-preview')
+    .toString();
+  public static final CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT:String = funkin.assets.ValidatedPaths
+    .xml('ui/editors/chart-editor/toolbox/opponent-preview')
+    .toString();
   public static final CHART_EDITOR_TOOLBOX_METADATA_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/toolboxes/metadata').toString();
   public static final CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/toolboxes/offsets').toString();
-  public static final CHART_EDITOR_TOOLBOX_NOTE_DATA_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/toolboxes/note-data').toString();
-  public static final CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/toolboxes/event-data').toString();
+  public static final CHART_EDITOR_TOOLBOX_NOTE_DATA_LAYOUT:String = funkin.assets.ValidatedPaths
+    .xml('ui/editors/chart-editor/toolboxes/note-data')
+    .toString();
+  public static final CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT:String = funkin.assets.ValidatedPaths
+    .xml('ui/editors/chart-editor/toolboxes/event-data')
+    .toString();
   public static final CHART_EDITOR_TOOLBOX_FREEPLAY_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/toolboxes/freeplay').toString();
-  public static final CHART_EDITOR_TOOLBOX_PLAYTEST_PROPERTIES_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/toolbox/playtest-properties').toString();
-
+  public static final CHART_EDITOR_TOOLBOX_PLAYTEST_PROPERTIES_LAYOUT:String = funkin.assets.ValidatedPaths
+    .xml('ui/editors/chart-editor/toolbox/playtest-properties')
+    .toString();
   // Validation
   public static final SUPPORTED_MUSIC_FORMATS:Array<String> = ['ogg'];
   // Layout
@@ -925,8 +936,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * The song event sprite we are currently moving, if any.
    */
   var dragTargetEvent:Null<ChartEditorEventSprite> = null;
-  var dragEventWasSelected:Bool = false;
 
+  var dragEventWasSelected:Bool = false;
   var currentOverlappingEvents:Array<ChartEditorEventSprite> = [];
   var currentOverlappingEventCycleIndex:Int = 0;
 
@@ -939,10 +950,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * The amount of horizontal columns the note sprite has moved by since the user started dragging.
    */
   var dragTargetCurrentColumn:Int = 0;
-  
+
   var dragStartCursorStep:Float = 0;
   var dragStartCursorColumn:Int = 0;
-
   // Hold Note Dragging
 
   /**
@@ -2594,7 +2604,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     @:privateAccess
     var nextState = () -> new ChartEditorState({
       loadFromPath: currentWorkingFilePath,
-      loadFromFNFCData: (currentWorkingFilePath == null && hasInstrumentalData) ? this.buildFNFCDataFromCurrentChart() : null, // We want to reload the FNFCData so the user doesn't lose progress.
+      loadFromFNFCData: (
+        currentWorkingFilePath == null
+        && hasInstrumentalData
+      ) ? this.buildFNFCDataFromCurrentChart() : null, // We want to reload the FNFCData so the user doesn't lose progress.
       targetSongDifficulty: this.selectedDifficulty,
       targetSongVariation: this.selectedVariation,
       targetSongPosition: scrollPositionInMs + playheadPositionInMs
@@ -4452,6 +4465,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           eventSprite.kill();
         }
       }
+
       // Sort the note data array, using an algorithm that is fast on nearly-sorted data.
       // We need this sorted to optimize indexing later.
       displayedEventData.insertionSort(SortUtil.eventDataByTime.bind(FlxSort.ASCENDING));
@@ -4550,6 +4564,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         // The event sprite handles animation playback and positioning.
         eventSprite.eventData = eventData;
         eventSprite.overrideStepTime = null;
+
+        // Update the tooltip in-case there's overlapping events.
+        eventSprite.overlappingEventDatas = currentSongChartEventData.filter((e) -> return e != eventData && Math.abs(e.time - eventData.time) < 1.0);
 
         // Setting event data resets position relative to the grid so we fix that.
         eventSprite.x += renderedEvents.x;
@@ -5222,7 +5239,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
       if (newOverlappingEvents.length > 0)
       {
-        newOverlappingEvents.sort(function(a:ChartEditorEventSprite, b:ChartEditorEventSprite):Int {
+        newOverlappingEvents.sort(function(a:ChartEditorEventSprite, b:ChartEditorEventSprite):Int
+        {
           return currentSongChartEventData.indexOf(a.eventData) - currentSongChartEventData.indexOf(b.eventData);
         });
 
@@ -5238,12 +5256,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
             }
           }
         }
-        
+
         if (eventsChanged)
         {
           currentOverlappingEvents = newOverlappingEvents;
           currentOverlappingEventCycleIndex = 0;
-          
+
           for (i in 0...currentOverlappingEvents.length)
           {
             if (isEventSelected(currentOverlappingEvents[i].eventData))
@@ -5253,7 +5271,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
             }
           }
         }
-
 
         highlightedEvent = currentOverlappingEvents[currentOverlappingEventCycleIndex];
       }
@@ -5759,7 +5776,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         scrollMouseToGrid();
 
         // calculate distance between the position dragged to and the original position.
-        var dragDistanceSteps:Float = Conductor.instance.getTimeInSteps(cursorSnappedMs).clamp(0, songLengthInSteps - (1 * noteSnapRatio)) - dragStartCursorStep;
+        var dragDistanceSteps:Float =
+          Conductor.instance.getTimeInSteps(cursorSnappedMs).clamp(0, songLengthInSteps - (1 * noteSnapRatio))
+          - dragStartCursorStep;
         var dragDistanceColumns:Int = cursorGridPos - dragStartCursorColumn;
 
         if ((dragTargetCurrentColumn != dragDistanceColumns && overlapsGrid) || dragTargetCurrentStep != dragDistanceSteps)
@@ -5948,7 +5967,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
                 performCommand(new DeselectAllItemsCommand());
               }
               // Click a blank space to place a note and select it.
-  
+
               if (cursorGridPos == eventColumn)
               {
                 // Create an event and place it in the chart.
