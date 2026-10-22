@@ -527,6 +527,10 @@ class StageEditorState extends UIState
 
     Save.instance.stageEditorHasBackup.value = false;
 
+    #if FEATURE_DISCORD_RPC
+    updateDiscordRPC();
+    #end
+
     Cursor.show();
     FunkinSound.playMusic('ui/editors/chart-editor/artistic-expression/artistic-expression', {
       startingVolume: 0.0
@@ -1781,6 +1785,16 @@ class StageEditorState extends UIState
     funkin.play.PauseSubState.reset();
     funkin.play.Countdown.reset();
   }
+
+  #if FEATURE_DISCORD_RPC
+  function updateDiscordRPC():Void
+  {
+    funkin.api.discord.DiscordClient.instance.setPresence({
+      state: null,
+      details: 'Stage Editor [Editing]'
+    });
+  }
+  #end
 
   public function notifyChange(change:String, notif:String, isError:Bool = false)
   {
