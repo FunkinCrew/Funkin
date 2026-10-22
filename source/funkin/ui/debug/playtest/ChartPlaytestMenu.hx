@@ -67,29 +67,27 @@ class ChartPlaytestMenu extends MusicBeatState
     songName.screenCenter(X);
     add(songName);
 
-    variationButton = new ChartPlaytestMenuButtonListToggle(0, FlxG.height * 0.55, "Variation", targetSong.variations, function(value:String)
+    var variationList = targetSong.variations;
+    variationButton = new ChartPlaytestMenuButtonListToggle(0, FlxG.height * 0.55, 'Variation', variationList, function(value:String)
     {
       currentVariation = value;
       variationButton.screenCenter(X);
     });
+    currentVariation = variationList[variationButton.curSelected];
     variationButton.screenCenter(X);
     add(variationButton);
 
-    difficultyButton = new ChartPlaytestMenuButtonListToggle(
-      0,
-      FlxG.height * 0.45,
-      "Difficulty",
-      targetSong.listDifficulties(null, targetSong.variations, true, true),
-      function(value:String)
-      {
-        currentDifficulty = value;
-        difficultyButton.screenCenter(X);
-      }
-    );
+    var diffList = targetSong.listDifficulties(null, targetSong.variations, true, true);
+    difficultyButton = new ChartPlaytestMenuButtonListToggle(0, FlxG.height * 0.45, 'Difficulty', diffList, function(value:String)
+    {
+      currentDifficulty = value;
+      difficultyButton.screenCenter(X);
+    });
+    currentDifficulty = diffList[difficultyButton.curSelected];
     difficultyButton.screenCenter(X);
     add(difficultyButton);
 
-    playtestButton = new ChartPlaytestMenuButton(0, FlxG.height * 0.8, "Playtest Song", function()
+    playtestButton = new ChartPlaytestMenuButton(0, FlxG.height * 0.8, 'Playtest Song', function()
     {
       try
       {

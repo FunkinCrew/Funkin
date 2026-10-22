@@ -21,7 +21,7 @@ import funkin.Highscore.Tallies;
 import funkin.api.newgrounds.Events;
 import funkin.audio.FunkinSound;
 import funkin.audio.VoicesGroup;
-import funkin.data.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterRegistry;
 import funkin.data.dialogue.ConversationRegistry;
 import funkin.data.event.SongEventRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
@@ -2157,7 +2157,7 @@ class PlayState extends MusicBeatSubState
     //
     // GIRLFRIEND
     //
-    var girlfriend:Null<BaseCharacter> = CharacterDataParser.fetchCharacter(currentCharacterData.girlfriend);
+    var girlfriend:Null<BaseCharacter> = CharacterRegistry.instance.fetchEntry(currentCharacterData.girlfriend);
 
     if (girlfriend != null)
     {
@@ -2175,7 +2175,7 @@ class PlayState extends MusicBeatSubState
     //
     // DAD
     //
-    var dad:Null<BaseCharacter> = CharacterDataParser.fetchCharacter(currentCharacterData.opponent);
+    var dad:Null<BaseCharacter> = CharacterRegistry.instance.fetchEntry(currentCharacterData.opponent);
 
     if (dad != null)
     {
@@ -2210,7 +2210,7 @@ class PlayState extends MusicBeatSubState
     //
     // BOYFRIEND
     //
-    var boyfriend:Null<BaseCharacter> = CharacterDataParser.fetchCharacter(currentCharacterData.player);
+    var boyfriend:Null<BaseCharacter> = CharacterRegistry.instance.fetchEntry(currentCharacterData.player);
 
     if (boyfriend != null)
     {
@@ -2703,8 +2703,6 @@ class PlayState extends MusicBeatSubState
       if (mayPauseGame) endSong(skipEndingTransition);
     };
 
-    FlxG.sound.music.pause();
-    FlxG.sound.music.time = startTimestamp;
     FlxG.sound.music.pitch = playbackRate;
 
     if (Preferences.subtitles)
@@ -2725,19 +2723,14 @@ class PlayState extends MusicBeatSubState
     {
       add(vocals);
 
-      vocals.time = startTimestamp - Conductor.instance.instrumentalOffset;
       vocals.pitch = playbackRate;
       vocals.playerVolume = playerVocalsVolume;
       vocals.opponentVolume = opponentVocalsVolume;
 
-      // trace('STARTING SONG AT:');
-      // trace('${FlxG.sound.music.time}');
-      // trace('${vocals.time}');
-
-      vocals.play();
+      vocals.play(true, startTimestamp);
     }
 
-    FlxG.sound.music.play();
+    FlxG.sound.music.play(true, startTimestamp);
 
     #if FEATURE_DISCORD_RPC
     // Updating Discord Rich Presence.
@@ -3210,6 +3203,10 @@ class PlayState extends MusicBeatSubState
       case 'shit':
         healthChange = Constants.HEALTH_SHIT_BONUS;
         isComboBreak = Constants.JUDGEMENT_SHIT_COMBO_BREAK;
+      default:
+        // We missed!
+        // Stop processing this hit immediately.
+        return;
     }
 
     // Send the note hit event.

@@ -46,6 +46,15 @@ class ChartEditorEventSprite extends FlxSprite
     return overrideStepTime;
   }
 
+  public var overlappingEventDatas(default, set):Null<Array<SongEventData>> = null;
+
+  function set_overlappingEventDatas(value:Null<Array<SongEventData>>):Null<Array<SongEventData>>
+  {
+    overlappingEventDatas = value;
+    updateTooltipText();
+    return value;
+  }
+
   public function new(parent:ChartEditorState, isGhost:Bool = false)
   {
     super();
@@ -181,8 +190,39 @@ class ChartEditorEventSprite extends FlxSprite
   {
     if (this.eventData == null) return;
     if (this.isGhost) return;
+
+    var tooltipText:String = '';
+    if (overlappingEventDatas == null || overlappingEventDatas.length == 0)
+    {
+      tooltipText = this.eventData.buildTooltip();
+    }
+    else
+    {
+      tooltipText = '${overlappingEventDatas.length + 1} Event(s)\n\n';
+      tooltipText += this.eventData.buildTooltip();
+
+      static var MAX_EVENT_LIMIT = 3;
+      var eventCount:Int = 1; // Start with 1 to include the base event.
+      for (event in overlappingEventDatas)
+      {
+        eventCount++;
+
+        tooltipText += '\n\n';
+
+        // Cut off the tooltip when we're showing 3 events.
+        if (eventCount > MAX_EVENT_LIMIT)
+        {
+          tooltipText += '... (${(overlappingEventDatas.length + 1) - MAX_EVENT_LIMIT} event(s) not showing)';
+          break;
+        }
+        else
+        {
+          tooltipText += event.buildTooltip();
+        }
+      }
+    }
     this.tooltip.tipData = {
-      text: this.eventData.buildTooltip()
+      text: tooltipText
     };
   }
 
@@ -212,6 +252,8 @@ class ChartEditorEventSprite extends FlxSprite
   override public function kill()
   {
     super.kill();
+
+    overlappingEventDatas = null;
 
     // Remove the tooltip to prevent recently deleted events from showing a tooltip.
     ToolTipManager.instance.unregisterTooltipRegion(this.tooltip);

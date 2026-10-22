@@ -2,7 +2,7 @@ package funkin.ui.debug.charting.util;
 
 #if FEATURE_CHART_EDITOR
 import funkin.data.character.CharacterData;
-import funkin.data.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterRegistry;
 import funkin.data.event.SongEventRegistry;
 import funkin.data.freeplay.album.AlbumRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
@@ -35,7 +35,7 @@ class ChartEditorDropdowns
     dropDown.dataSource.clear();
 
     // TODO: Filter based on charType.
-    var charIds:Array<String> = CharacterDataParser.listCharacterIds();
+    var charIds:Array<String> = CharacterRegistry.instance.listEntryIds();
 
     var returnValue:DropDownEntry = switch (charType)
     {
@@ -64,7 +64,7 @@ class ChartEditorDropdowns
 
     for (charId in charIds)
     {
-      var character:Null<CharacterData> = CharacterDataParser.fetchCharacterData(charId);
+      var character:Null<CharacterData> = CharacterRegistry.instance.fetchCharacterData(charId);
       if (character == null) continue;
 
       var value = {

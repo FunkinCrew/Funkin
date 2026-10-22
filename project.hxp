@@ -32,7 +32,7 @@ class Project extends HXProject
    * REMEMBER TO CHANGE THIS WHEN THE GAME UPDATES!
    * You only have to change it here, the rest of the game will query this value.
    */
-  static final VERSION:String = "0.8.5";
+  static final VERSION:String = "0.8.7";
 
   /**
    * The build's number and version code.
@@ -1649,11 +1649,11 @@ class Project extends HXProject
 
     // removeAssetPath("assets/", "default");
     addAssetLibrary("default", shouldEmbedDefault, shouldPreloadDefault);
-    addAssetPath("assets", "assets", "default", ["*"], exclude, shouldEmbedDefault);
+    addAssetPath("assets", "assets", "default", ["*"], exclude, shouldEmbedDefault, "assets");
 
     if (!HARDCODED_CREDITS.isEnabled(this))
     {
-      addAsset("assets/exclude/ui/credits/credits.json", "assets/ui/credits/credits.json", "default", shouldEmbedDefault);
+      addAsset("assets/exclude/ui/credits/credits.json", "assets/ui/credits/credits.json", "default", shouldEmbedDefault, "assets");
     }
 
     if (!FEATURE_ANIMATION_EDITOR.isEnabled(this)) removeAssetPath('assets/ui/editors/animation-editor', "default");
@@ -1666,7 +1666,7 @@ class Project extends HXProject
 
     // Font assets
     var shouldEmbedFonts = true;
-    addAssetPath("assets/ui/fonts", null, "default", ["*"], exclude, shouldEmbedFonts);
+    addAssetPath("assets/ui/fonts", null, "default", ["*"], exclude, shouldEmbedFonts, "assets");
 
     // Art asset library (where README and CHANGELOG pull from)
     var shouldEmbedArt = false;

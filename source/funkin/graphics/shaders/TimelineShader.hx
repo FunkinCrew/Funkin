@@ -72,6 +72,18 @@ class TimelineShader extends FlxShader
   }
 
   /**
+   * How many grid lines a bar is cut into on the lanes. The ruler keeps its own detail.
+   */
+  public var gridLinesPerBar(default, set):Float = 4;
+
+  public function set_gridLinesPerBar(val:Float):Float
+  {
+    gridLinesPerBar = val;
+    gridSplits.value = [val];
+    return val;
+  }
+
+  /**
    * The length (in pixels) of one beat of the song.
    * This value is used to correctly size the entire timeline horizontally.
    */
@@ -224,6 +236,7 @@ class TimelineShader extends FlxShader
     uniform float timeSigNumerator;
     uniform float timeSigDenominator;
     uniform float detail;
+    uniform float gridSplits;
     const float MAX_DETAIL = 2.0;
     const float MIN_DETAIL = -1.0;
     int getSplits(float change)
@@ -255,8 +268,8 @@ class TimelineShader extends FlxShader
       return applyBoundary(lengths, divisionNum, measureDivisions, 0.4);
     }\n" + "vec2 calculateDivisionOpacity(float divisionNum, float barSplits, float beatDivisions, float measureDivisions)
     {
-      vec2 mults = vec2(0.1);
-      mults = applyBoundary(mults, divisionNum, beatDivisions, 0.25);
+      vec2 mults = vec2(0.22);
+      mults = applyBoundary(mults, divisionNum, beatDivisions, 0.45);
       mults = applyBoundary(mults, divisionNum, barSplits, 0.55);
       return applyBoundary(mults, divisionNum, measureDivisions, 0.80);
     }\n" + "vec2 calculateDecimalText(float num)
@@ -270,7 +283,7 @@ class TimelineShader extends FlxShader
       const vec3 textColor = vec3(0.80);
       col = mix(col, bgColor, 1.0 - step(topBarSize, uv.y));
       if (uv.x < 0.0) return col;
-      float barSplits = float(getSplits(1.0));
+      float barSplits = max(1.0, gridSplits);
       float beatDivisions = barSplits / max(1.0, timeSigNumerator);
       float measureDivisions = barSplits * max(1.0, timeSigDenominator);
       float tickFactor = barWidth / max(1.0, barSplits);
@@ -316,7 +329,7 @@ class TimelineShader extends FlxShader
       const vec3 bar2Color = vec3(0.27);
       const vec3 divisionColor = vec3(0.07);
       float barWidth = beatSize.x * max(1.0, timeSigNumerator);
-      float barSplitsF = max(1.0, float(getSplits(0.0)));
+      float barSplitsF = max(1.0, gridSplits);
       float splitFactor = barWidth / barSplitsF;
       float beatDivisions = barSplitsF / max(1.0, timeSigNumerator);
       float measureDivisions = barSplitsF * max(1.0, timeSigDenominator);
@@ -348,6 +361,7 @@ class TimelineShader extends FlxShader
     areaWidth.value = [100];
     areaHeight.value = [100];
     beatSize.value = [100, 100];
+    gridSplits.value = [4];
 
     zoomDetail = 0;
     layerCount = 1;

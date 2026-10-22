@@ -219,8 +219,9 @@ class GameOverSubState extends MusicBeatSubState
 
     @:privateAccess
     {
-      cameraFollowPoint.x -= Std.int(boyfriend._data.cameraOffsets[0]);
-      cameraFollowPoint.y -= Std.int(boyfriend._data.cameraOffsets[1]);
+      var cameraOffsets:Array<Float> = boyfriend.getDeathCameraOffsets();
+      cameraFollowPoint.x -= Std.int(cameraOffsets[0]);
+      cameraFollowPoint.y -= Std.int(cameraOffsets[1]);
 
       cameraFollowPoint.x -= Std.int((parentPlayState?.currentStage?._data?.characters?.bf?.cameraOffsets ?? [0, 0])[0]);
       cameraFollowPoint.y -= Std.int((parentPlayState?.currentStage?._data?.characters?.bf?.cameraOffsets ?? [0, 0])[1]);
@@ -695,7 +696,7 @@ class GameOverSubState extends MusicBeatSubState
     final playerID:String = PlayerRegistry.instance.getCharacterOwnerId(boyfriend?.characterId) ?? 'bf';
 
     final audioPath:String = 'gameplay/playable-characters/$playerID/game-over/$location';
-    return audioPath;
+    return funkin.assets.Paths.formatRelative(audioPath, 'gameplay/playable-characters/$playerID/game-over', Constants.EXT_SOUND);
   }
 
   /**

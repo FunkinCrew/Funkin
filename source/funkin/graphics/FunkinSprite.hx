@@ -420,7 +420,7 @@ class FunkinSprite extends FlxAnimate
 
       while (true)
       {
-        var bitmap:Null<BitmapData> = Polymod.assetLibrary.getBitmapDataDirectly('assets/$key/spritemap$spritemapCount.png', modId);
+        var bitmap:Null<BitmapData> = funkin.Paths.getBitmapDataFromMod('assets/$key/spritemap$spritemapCount.png', modId);
         var json:Null<String> = Polymod.assetLibrary.getTextDirectly('assets/$key/spritemap$spritemapCount.json', modId);
 
         if (json == null || bitmap == null) break;
@@ -440,6 +440,12 @@ class FunkinSprite extends FlxAnimate
       if (animationJson == null)
       {
         throw 'Could not find Animation.json in path "$key" from mod "$modId"';
+      }
+
+      animationJson = animationJson.replace(String.fromCharCode(0xFEFF), '');
+      for (spritemap in spritemaps)
+      {
+        spritemap.json = spritemap.json.replace(String.fromCharCode(0xFEFF), '');
       }
 
       frames = FlxAnimateFrames.fromAnimate(animationJson, spritemaps, settings.metadataJson, settings.cacheKey, settings.uniqueInCache, {

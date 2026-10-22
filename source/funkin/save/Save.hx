@@ -3,7 +3,7 @@ package funkin.save;
 import funkin.util.tools.ISerializable;
 import flixel.util.FlxSave;
 import funkin.input.Controls.Device;
-import funkin.data.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterRegistry;
 import funkin.play.scoring.Scoring;
 import funkin.play.scoring.Scoring.ScoringRank;
 import funkin.save.migrator.RawSaveData_v1_0_0;
@@ -18,7 +18,8 @@ import funkin.util.macro.SaveMacro;
 import funkin.util.SerializerUtil;
 import funkin.mobile.ui.FunkinHitbox;
 import thx.semver.Version;
-import funkin.util.tools.ISerializable;
+import flixel.util.FlxSave.SaveFailureType;
+import flixel.util.FlxSave.LoadFailureType;
 #if FEATURE_NEWGROUNDS
 import funkin.api.newgrounds.Medals;
 import funkin.api.newgrounds.Leaderboards;
@@ -105,7 +106,18 @@ class Save implements ConsoleClass implements ISerializable
   public static function getDefaultData():RawSaveData
   {
     #if mobile
-    var refreshRate:Int = FlxG.stage.window.displayMode.refreshRate;
+    var refreshRate:Int = 60;
+    try
+    {
+      final window = FlxG.stage?.window;
+      if (window != null) refreshRate = window.displayMode.refreshRate;
+      else
+        refreshRate = lime.system.System.getDisplay(0)?.currentMode?.refreshRate ?? 60;
+    }
+    catch (e:Dynamic)
+    {
+      refreshRate = 60;
+    }
     if (refreshRate < 60) refreshRate = 60;
     #end
     return {
@@ -217,6 +229,7 @@ class Save implements ConsoleClass implements ISerializable
       optionsCameraEditor: {
         previousFiles: [],
         theme: ChartEditorTheme.Light,
+        zoomToPlayhead: false,
       },
       optionsQuickMenu: {
         firstRun: false
@@ -358,7 +371,7 @@ class Save implements ConsoleClass implements ISerializable
   {
     if (
       data.optionsStageEditor.bfChar == null
-      || CharacterDataParser.fetchCharacterData(data.optionsStageEditor.bfChar) == null
+      || CharacterRegistry.instance.fetchCharacterData(data.optionsStageEditor.bfChar) == null
     ) data.optionsStageEditor.bfChar = "bf";
     return data.optionsStageEditor.bfChar;
   }
@@ -377,7 +390,7 @@ class Save implements ConsoleClass implements ISerializable
   {
     if (
       data.optionsStageEditor.gfChar == null
-      || CharacterDataParser.fetchCharacterData(data.optionsStageEditor.gfChar ?? "") == null
+      || CharacterRegistry.instance.fetchCharacterData(data.optionsStageEditor.gfChar ?? "") == null
     ) data.optionsStageEditor.gfChar = "gf";
     return data.optionsStageEditor.gfChar;
   }
@@ -396,7 +409,7 @@ class Save implements ConsoleClass implements ISerializable
   {
     if (
       data.optionsStageEditor.dadChar == null
-      || CharacterDataParser.fetchCharacterData(data.optionsStageEditor.dadChar ?? "") == null
+      || CharacterRegistry.instance.fetchCharacterData(data.optionsStageEditor.dadChar ?? "") == null
     ) data.optionsStageEditor.dadChar = "dad";
     return data.optionsStageEditor.dadChar;
   }
@@ -418,6 +431,8 @@ class Save implements ConsoleClass implements ISerializable
   public var cameraEditorPreviousFiles:SaveProperty<Array<String>>;
   @:saveProperty(data.optionsCameraEditor.hasBackup, false)
   public var cameraEditorHasBackup:SaveProperty<Bool>;
+  @:saveProperty(data.optionsCameraEditor.zoomToPlayhead, false)
+  public var cameraEditorZoomToPlayhead:SaveProperty<Bool>;
 
   /// UTIL FUNCTIONS
 
@@ -955,17 +970,20 @@ class Save implements ConsoleClass implements ISerializable
 
   /**
    * If you set slot to `2`, it will load an independent save file from slot 2.
-   * @param slot
+   * @param slot The save slot to load.
    */
   @:haxe.warning('-WDeprecated')
   static function loadFromSlot(slot:Int):Save
   {
     trace('[SAVE] Loading save from slot $slot...');
+
     FlxG.save.bind(Constants.SAVE_NAME + slot, Constants.SAVE_PATH);
+
     switch (FlxG.save.status)
     {
       case EMPTY:
         trace('[SAVE] Save data in slot ${slot} is empty, checking for legacy save data...');
+
         switch (Save.system.fetchLegacySaveData())
         {
           case None:
@@ -973,38 +991,84 @@ class Save implements ConsoleClass implements ISerializable
             var gameSave:Save = new Save();
             FlxG.save.mergeData(gameSave.data, true);
             return gameSave;
+
           case Some(legacySaveData):
-            trace('[SAVE] Found legacy save data, converting...');
+            trace('[SAVE] Found legacy save data. Converting...');
+
             var gameSave = SaveDataMigrator.migrateFromLegacy(legacySaveData);
             FlxG.save.mergeData(gameSave.data, true);
             return gameSave;
         }
-      case ERROR(_): // This value is deprecated.
-        return handleSaveDataError(slot);
-      case SAVE_ERROR(_):
-        return handleSaveDataError(slot);
-      case LOAD_ERROR(_):
-        return handleSaveDataError(slot);
+
       case BOUND(_, _):
-        trace('[SAVE] Loaded existing save data in slot ${slot}.');
+        trace('[SAVE] Loaded existing save data in slot $slot.');
+
         var gameSave = SaveDataMigrator.migrate(FlxG.save.data);
         FlxG.save.mergeData(gameSave.data, true);
         return gameSave;
+
+      case ERROR(msg):
+        trace('[SAVE] Encountered deprecated save error: $msg');
+        return handleSaveDataError(slot, 'Legacy save error: $msg');
+
+      case SAVE_ERROR(type):
+        var message:String = switch (type)
+        {
+          case STORAGE:
+            'There is not enough storage space to save the data.';
+
+          case ENCODING(exception):
+            trace('[SAVE] Parsing stack trace:\n${exception.stack}');
+            'Failed to encode the save data: ${exception.message}';
+        };
+
+        trace('[SAVE] Save error in slot $slot: $message');
+        return handleSaveDataError(slot, message);
+
+      case LOAD_ERROR(type):
+        var message:String = switch (type)
+        {
+          case INVALID_NAME(name, optionalMessage):
+            'Invalid save name "$name".' + (optionalMessage != null ? ' $optionalMessage' : '');
+
+          case INVALID_PATH(path, optionalMessage):
+            'Invalid save path "$path".' + (optionalMessage != null ? ' $optionalMessage' : '');
+
+          case IO(exception):
+            trace('[SAVE] I/O stack trace:\n${exception.stack}');
+            'An I/O error occurred while loading the save: ${exception.message}';
+
+          case PARSING(rawData, exception):
+            trace('[SAVE] Parsing stack trace:\n${exception.stack}');
+            'Failed to parse the save data: ${exception.message}' + '\nSave data length: ${rawData.length} characters.';
+        };
+
+        trace('[SAVE] Load error in slot $slot: $message');
+        return handleSaveDataError(slot, message);
     }
   }
 
   /**
-   * Call this when there is an error loading the save data in slot X.
+   * Handles save-loading failures by notifying the user and attempting
+   * to load the next available slot.
+   *
+   * @param slot The slot that failed.
+   * @param message A description of the failure.
    */
-  static function handleSaveDataError(slot:Int):Save
+  static function handleSaveDataError(slot:Int, message:String):Save
   {
     var msg = 'There was an error loading your save data in slot ${slot}.';
     msg += '\nPlease report this issue to the developers.';
-    funkin.util.WindowUtil.showError("Save Data Failure", msg);
+    msg += '\n\nReason: $message';
+
+    funkin.util.WindowUtil.showError('Save Data Failure', msg);
+
+    var nextSlot:Int = slot + 1;
+
     // Don't touch that slot anymore.
     // Instead, load the next available slot.
-    var nextSlot:Int = slot + 1;
     if (nextSlot > 1000) throw "End of save data slots. Can't load any more.";
+
     return loadFromSlot(nextSlot);
   }
 
@@ -1820,6 +1884,12 @@ typedef SaveDataCameraEditorOptions =
    * @default `ChartEditorTheme.Light`
    */
   var ?theme:ChartEditorTheme;
+
+  /**
+   * Whether the timeline zooms around the playhead rather than the cursor.
+   * @default `false`
+   */
+  var ?zoomToPlayhead:Bool;
 }
 
 typedef SaveDataQuickMenuOptions =
