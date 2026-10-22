@@ -43,7 +43,6 @@ typedef ArrowData =
 class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 {
   static final BPM:Int = 100;
-
   static final CONDUCTOR_DRIFT_THRESHOLD:Float = 65;
   static final DRUMS_RESYNC_THRESHOLD_MS:Float = 20;
   static final MUSIC_EASE_RATIO:Float = 42;
@@ -91,6 +90,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
   }
 
   var loopBeats(get, never):Int;
+
   function get_loopBeats():Int
   {
     if (FlxG.sound.music == null || FlxG.sound.music.length <= 0) return 128;
@@ -741,14 +741,15 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
         if (differences.length >= 8) createArrow(nextBeat);
       }
 
+      // Hit a note (calibration)
+      var tapBeats:Array<Float> = [];
+
       #if FEATURE_TOUCH_CONTROLS
       if (TouchUtil.justPressed)
       {
         tapBeats.push(b);
       }
       #else
-      // Hit a note (calibration)
-      var tapBeats:Array<Float> = [];
       while (inputPressQueue.length > 0)
       {
         var input:PreciseInputEvent = inputPressQueue.shift();
@@ -914,8 +915,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
   public function onCalibrationKeyPress(keyCode, _, timestamp:Int64):Void
   {
     // Create a new precise input event to use.
-    var input:PreciseInputEvent =
-    {
+    var input:PreciseInputEvent = {
       noteDirection: 1, // Doesn't matter.
       timestamp: timestamp,
       keyCode: keyCode,
