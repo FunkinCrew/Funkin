@@ -4979,8 +4979,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     var funcJumpUp = (playheadOnly:Bool) ->
     {
-      var playheadPosition:Float = scrollPositionInMs + playheadPositionInMs;
-      var currentPositionMeasure:Float = Conductor.instance.currentMeasureTime;
+      var playheadPosition:Float = Conductor.instance.getStepTimeInMs((currentScrollEase + playheadPositionInPixels) / GRID_SIZE);
+      var currentPositionMeasure:Float = Conductor.instance.getTimeInMeasures(playheadPosition);
       var currentPositionMeasureFlooredInMs:Float = Conductor.instance.getMeasureTimeInMs(Math.floor(currentPositionMeasure));
       var targetScrollPosition:Float = 0;
       if (FlxMath.inBounds(
@@ -5030,8 +5030,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     var funcJumpDown = (playheadOnly:Bool) ->
     {
-      var playheadPosition:Float = scrollPositionInMs + playheadPositionInMs;
-      var currentPositionMeasure:Float = Conductor.instance.currentMeasureTime;
+      var playheadPosition:Float = Conductor.instance.getStepTimeInMs((currentScrollEase + playheadPositionInPixels) / GRID_SIZE);
+      var currentPositionMeasure:Float = Conductor.instance.getTimeInMeasures(playheadPosition);
       var targetScrollPosition:Float = Conductor.instance.getMeasureTimeInMs(Math.floor(currentPositionMeasure + 1.0001));
       // Now, why the hell is that .0001 there? It's to fix floating point bullshit that would result in "floor(measure + 1)" giving back
       // the SAME MEASURE NUMBER that you can see in the Flixel F2 debugger.
