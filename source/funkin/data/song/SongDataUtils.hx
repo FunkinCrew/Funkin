@@ -31,7 +31,7 @@ class SongDataUtils
       var data:Int = note.data;
       var length:Float = note.length;
       var kind:Null<String> = note.kind;
-      return new SongNoteData(time, data, length, kind);
+      return new SongNoteData(time, data, length, kind, note.cloneParams());
     });
   }
 
