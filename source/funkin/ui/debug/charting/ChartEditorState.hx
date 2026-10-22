@@ -4902,6 +4902,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     var playheadAmount:Float = 0; // Amount to scroll the playhead relative to the grid.
     var shouldPause:Bool = false; // Whether to pause the song when scrolling.
     var shouldEase:Bool = false; // Whether to ease the scroll.
+    var shouldSnap:Bool = false; // Whether the move is a fixed number of grid steps, so the playhead should land on the grid.
 
     // Handle scroll anchor
     if (scrollAnchorScreenPos != null)
@@ -4930,12 +4931,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       scrollAmount = -GRID_SIZE * 4;
       shouldPause = true;
+      shouldSnap = true;
     }
     // Down Arrow = Scroll Down
     if (downKeyHandler.activated && currentLiveInputStyle == None)
     {
       scrollAmount = GRID_SIZE * 4;
       shouldPause = true;
+      shouldSnap = true;
     }
 
     // W = Scroll Up (doesn't work with Ctrl+Scroll)
@@ -4943,12 +4946,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       scrollAmount = -GRID_SIZE * 4;
       shouldPause = true;
+      shouldSnap = true;
     }
     // S = Scroll Down (doesn't work with Ctrl+Scroll)
     if (sKeyHandler.activated && currentLiveInputStyle == None && !pressingControl())
     {
       scrollAmount = GRID_SIZE * 4;
       shouldPause = true;
+      shouldSnap = true;
     }
 
     // GAMEPAD LEFT STICK UP = Scroll Up by 1 note snap
@@ -4956,12 +4961,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       scrollAmount = -GRID_SIZE * noteSnapRatio;
       shouldPause = true;
+      shouldSnap = true;
     }
     // GAMEPAD LEFT STICK DOWN = Scroll Down by 1 note snap
     if (leftStickDownGamepadHandler.activated)
     {
       scrollAmount = GRID_SIZE * noteSnapRatio;
       shouldPause = true;
+      shouldSnap = true;
     }
 
     // GAMEPAD RIGHT STICK UP = Scroll Up by 1 note snap (playhead only)
@@ -4969,12 +4976,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       playheadAmount = -GRID_SIZE * noteSnapRatio;
       shouldPause = true;
+      shouldSnap = true;
     }
     // GAMEPAD RIGHT STICK DOWN = Scroll Down by 1 note snap (playhead only)
     if (rightStickDownGamepadHandler.activated)
     {
       playheadAmount = GRID_SIZE * noteSnapRatio;
       shouldPause = true;
+      shouldSnap = true;
     }
 
     var funcJumpUp = (playheadOnly:Bool) ->
@@ -5122,10 +5131,30 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     shouldEase = true;
     if (shouldPause && (audioInstTrack?.isPlaying || audioVocalTrackGroup.playing)) stopAudioPlayback(); // Only do this once, not every frame
 
+    if (shouldSnap && currentScrollEase != null)
+    {
+      var playheadAbsolute:Float = currentScrollEase + this.playheadPositionInPixels;
+      if (scrollAmount != 0) scrollAmount = snapStepMove(playheadAbsolute, scrollAmount) - playheadAbsolute;
+      if (playheadAmount != 0) playheadAmount = snapStepMove(playheadAbsolute, playheadAmount) - playheadAbsolute;
+    }
+
     // Resync the conductor and audio tracks.
     if (playheadAmount != 0) this.playheadPositionInPixels += playheadAmount;
 
     if (scrollAmount != 0) currentScrollEase += scrollAmount;
+  }
+
+  /**
+   * Snap a move to the nearest grid step, based on the current note snap ratio.
+   * @param fromPixels The absolute position of the playhead in the song, in pixels.
+   * @param amountPixels How far the move goes, in pixels.
+   * @return The absolute position to land on, in pixels.
+   */
+  function snapStepMove(fromPixels:Float, amountPixels:Float):Float
+  {
+    var gridPixels:Float = Math.min(GRID_SIZE * noteSnapRatio, Math.abs(amountPixels));
+    if (gridPixels <= 0) return fromPixels + amountPixels;
+    return Math.fround((fromPixels + amountPixels) / gridPixels) * gridPixels;
   }
 
   /**

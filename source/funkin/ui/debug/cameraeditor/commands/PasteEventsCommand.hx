@@ -3,6 +3,7 @@ package funkin.ui.debug.cameraeditor.commands;
 #if FEATURE_CAMERA_EDITOR
 import funkin.audio.FunkinSound;
 import funkin.data.song.SongData.SongEventData;
+import funkin.data.song.SongData.SongEventDataRaw;
 import funkin.data.song.SongDataUtils;
 import funkin.util.SortUtil;
 import flixel.util.FlxSort;
@@ -49,8 +50,13 @@ class PasteEventsCommand implements CameraEditorCommand
     addedEvents = SongDataUtils.offsetSongEventData(currentClipboard.events, offset);
     addedEvents = SongDataUtils.clampSongEventData(addedEvents, 0.0, state.timeline.viewport.songLengthMs);
 
+    var selectedLayer = state.timeline.viewport.layers[state.timeline.viewport.selectedLayerIndex];
+    var targetLayer:Null<String> = (selectedLayer == null || selectedLayer.name == 'Default') ? null : selectedLayer.name;
+
     for (event in addedEvents)
     {
+      var raw:SongEventDataRaw = event;
+      raw.editorLayer = targetLayer;
       state.currentSongChartData.events.push(event);
       state.timeline.viewport.addEventBlock(event);
     }

@@ -1724,7 +1724,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   public function loadTimeline():Void
   {
     timeline.setEvents(currentSongChartData.events);
-    timeline.setStepLengthMs(conductorInUse.stepLengthMs);
+    timeline.setConductor(conductorInUse);
   }
 
   function registerTimelineEvents():Void
@@ -1934,7 +1934,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     conductorInUse.mapTimeChanges(currentSongMetadata.timeChanges);
     timeline.songLength = currentInstrumental.length;
     timeline.songPosition = 0;
-    timeline.setStepLengthMs(conductorInUse.stepLengthMs);
+    timeline.setConductor(conductorInUse);
   }
 
   /**
