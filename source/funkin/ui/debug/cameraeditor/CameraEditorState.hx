@@ -85,7 +85,6 @@ import funkin.util.WindowUtil;
 import funkin.util.assets.SoundUtil;
 import funkin.util.file.FNFCUtil.FNFCData;
 import funkin.util.logging.CrashHandler;
-import funkin.util.macro.ConsoleMacro;
 import haxe.io.Bytes;
 import haxe.io.Path;
 import haxe.ui.backend.flixel.MouseHelper;
@@ -115,7 +114,7 @@ using StringTools;
  * The EYES OF GOD......
  */
 @:build(haxe.ui.ComponentBuilder.build('assets/exclude/ui/editors/camera-editor/main-view.xml'))
-class CameraEditorState extends UIState implements ConsoleClass
+class CameraEditorState extends UIState
 {
   /**
    * CONSTANTS

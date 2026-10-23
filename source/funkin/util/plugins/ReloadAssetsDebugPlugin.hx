@@ -93,6 +93,7 @@ class ReloadAssetsDebugPlugin extends FlxBasic
     }
     else
     {
+      #if FEATURE_CPPIA
       var clsName:String = Type.getClassName(Type.getClass(state));
       if (funkin.modding.CppiaScripts.exists(clsName))
       {
@@ -109,6 +110,7 @@ class ReloadAssetsDebugPlugin extends FlxBasic
         FlxG.switchState(() -> new HotReloadState(hotReloadParams));
         return;
       }
+      #end
       // Fallback to using default params.
       hotReloadParams = {
         targetState: state._constructor

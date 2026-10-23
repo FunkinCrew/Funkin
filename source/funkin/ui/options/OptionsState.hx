@@ -148,8 +148,12 @@ class OptionsState extends MusicBeatState
     if (targetState != null)
     {
       funkin.ui.quickpanel.QuickPanelGroup.stopMusic();
+      #if FEATURE_CPPIA
       var isCompiled:Bool = funkin.modding.CppiaScripts.exists(targetState);
       var state:MusicBeatState = isCompiled ? cast funkin.modding.CppiaScripts.create(targetState) : MusicBeatState.scriptInit(targetState);
+      #else
+      var state:MusicBeatState = MusicBeatState.scriptInit(targetState);
+      #end
       if (state != null) FlxG.switchState(state);
       else
       {

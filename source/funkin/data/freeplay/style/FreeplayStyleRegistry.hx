@@ -2,12 +2,24 @@ package funkin.data.freeplay.style;
 
 import funkin.ui.freeplay.FreeplayStyle;
 import funkin.data.freeplay.style.FreeplayStyleData;
-import funkin.util.tools.ISingleton;
 import funkin.data.DefaultRegistryImpl;
 
 @:nullSafety
-class FreeplayStyleRegistry extends BaseRegistry<FreeplayStyle, FreeplayStyleData, FreeplayStyleEntryParams> implements ISingleton implements DefaultRegistryImpl
+class FreeplayStyleRegistry extends BaseRegistry<FreeplayStyle, FreeplayStyleData, FreeplayStyleEntryParams> implements DefaultRegistryImpl
 {
+  static var _instance:Null<FreeplayStyleRegistry>;
+
+  public static var instance(get, never):FreeplayStyleRegistry;
+
+  static function get_instance():FreeplayStyleRegistry
+  {
+    if (_instance == null)
+    {
+      _instance = new FreeplayStyleRegistry();
+    }
+    return _instance;
+  }
+
   /**
    * The current version string for the style data format.
    * Handle breaking changes by incrementing this value

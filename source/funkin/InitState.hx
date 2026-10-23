@@ -325,6 +325,24 @@ class InitState extends FlxState
     funkin.input.Cursor.hide();
   }
 
+  function setupConsoleRegistration():Void
+  {
+    static var CONSOLE_CLASSES:Array<Class<Dynamic>> =
+    [
+      funkin.Assets,
+      funkin.Paths,
+      funkin.assets.Assets,
+      funkin.assets.Paths,
+      funkin.save.Save,
+      funkin.util.plugins.NewgroundsMedalPlugin,
+    ];
+
+    for (cls in CONSOLE_CLASSES)
+    {
+      FlxG.console.registerClass(cls);
+    }
+  }
+
   #if FEATURE_LOST_FOCUS_VOLUME
   @:noCompletion
   var _lastFocusVolume:Null<Float>;
@@ -728,6 +746,8 @@ class InitState extends FlxState
     });
     #end // mobile big butotn crap
     #end
+
+    setupConsoleRegistration();
   }
 
   function defineSong():Null<String>

@@ -2,12 +2,24 @@ package funkin.data.notestyle;
 
 import funkin.play.notes.notestyle.NoteStyle;
 import funkin.data.notestyle.NoteStyleData;
-import funkin.util.tools.ISingleton;
 import funkin.data.DefaultRegistryImpl;
 
 @:nullSafety
-class NoteStyleRegistry extends BaseRegistry<NoteStyle, NoteStyleData, NoteStyleEntryParams> implements ISingleton implements DefaultRegistryImpl
+class NoteStyleRegistry extends BaseRegistry<NoteStyle, NoteStyleData, NoteStyleEntryParams> implements DefaultRegistryImpl
 {
+  static var _instance:Null<NoteStyleRegistry>;
+
+  public static var instance(get, never):NoteStyleRegistry;
+
+  static function get_instance():NoteStyleRegistry
+  {
+    if (_instance == null)
+    {
+      _instance = new NoteStyleRegistry();
+    }
+    return _instance;
+  }
+
   /**
    * The current version string for the note style data format.
    * Handle breaking changes by incrementing this value
