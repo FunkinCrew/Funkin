@@ -61,6 +61,20 @@ class VoicesGroup extends SoundGroup
     return playerVolume = volume;
   }
 
+  override public function play(forceRestart:Bool = false, startTime:Float = 0.0, ?endTime:Float)
+  {
+    playerVoices?.forEachAlive(function(voice:FunkinSound)
+    {
+      var time:Float = startTime - playerVoicesOffset;
+      if (time >= 0 && time <= voice.length) voice.play(forceRestart, time, endTime);
+    });
+    opponentVoices?.forEachAlive(function(voice:FunkinSound)
+    {
+      var time:Float = startTime - opponentVoicesOffset;
+      if (time >= 0 && time <= voice.length) voice.play(forceRestart, time, endTime);
+    });
+  }
+
   override function set_time(time:Float):Float
   {
     forEachAlive(function(snd)
