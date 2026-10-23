@@ -190,13 +190,13 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     {
       var currentTimeChange = refreshTimeChangeInputs();
       var previousTimeChange = chartEditorState.currentSongMetadata.timeChanges[inputTimeChange.selectedIndex - 1];
-      // Set the step of the timestamp to the step.
-      inputTimeStamp.step = ((Constants.SECS_PER_MIN / (previousTimeChange?.bpm ?? currentTimeChange?.bpm ?? 100)) * Constants.MS_PER_SEC) * (4 / (previousTimeChange?.timeSignatureDen ?? currentTimeChange?.timeSignatureDen ?? 4)) / Constants.STEPS_PER_BEAT;
-      // Set the min max values of the input timestamp to previous and next time change timestamps to in the array,
-      // to prevent the conductor from breaking due to time change timestamps not being in ascending order.
-      inputTimeStamp.min = (previousTimeChange?.timeStamp ?? 0);
-      inputTimeStamp.max = (chartEditorState.currentSongMetadata.timeChanges[inputTimeChange.selectedIndex + 1]?.timeStamp ?? chartEditorState.songLengthInMs);
-      inputTimeStamp.max -= 1;
+      var nextTimeChange = chartEditorState.currentSongMetadata.timeChanges[inputTimeChange.selectedIndex + 1];
+      // The stepper edits the start in beats, a step at a time.
+      inputTimeStamp.step = TIME_CHANGE_BEAT_STEP;
+      // Keep the start between the neighbouring time changes, so the conductor never sees them out of order.
+      inputTimeStamp.min = previousTimeChange == null ? 0 : previousTimeChange.beatTime;
+      inputTimeStamp.max = nextTimeChange != null ? nextTimeChange.beatTime : msToBeats(chartEditorState.songLengthInMs, inputTimeChange.selectedIndex);
+      inputTimeStamp.max -= TIME_CHANGE_BEAT_STEP;
 
       // Prevent the inital time change timestamp from being modified (it should always be 0) or removed.
       if (inputTimeChange.selectedIndex == 0)
@@ -207,7 +207,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       }
       else
       {
-        inputTimeStamp.min += 1; // This here so it can't accidentally change the first/0 timechange timestamp to 1.
+        inputTimeStamp.min += TIME_CHANGE_BEAT_STEP; // So it can never land on the first time change's beat.
         labelTimeStamp.hidden = false;
         inputTimeStamp.hidden = false;
         removeTimeChange.disabled = false;
@@ -247,18 +247,20 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       // Use a command so we can undo/redo this action.
       var currentTimeChange = chartEditorState.currentSongMetadata.timeChanges[inputTimeChange.selectedIndex];
       var currentTimeStamp = currentTimeChange.timeStamp;
-      if (inputTimeChange.selectedIndex != 0 && event.value != currentTimeStamp)
+      // The stepper works in beats, the metadata keeps milliseconds.
+      var targetTimeStamp:Float = beatsToMs(event.value, inputTimeChange.selectedIndex);
+      if (inputTimeChange.selectedIndex != 0 && Math.abs(targetTimeStamp - currentTimeStamp) > 0.0001)
       {
         chartEditorState.performCommand(
           new ModifyTimeChangeCommand(
             inputTimeChange.selectedIndex,
-            event.value,
+            targetTimeStamp,
             currentTimeChange.bpm,
             currentTimeChange.timeSignatureNum,
             currentTimeChange.timeSignatureDen
           )
         );
-        inputTimeChange.value.text = '${event.value} ms : BPM: ${currentTimeChange.bpm} in ${currentTimeChange.timeSignatureNum}/${currentTimeChange.timeSignatureDen}';
+        inputTimeChange.value.text = '${currentTimeChange.timeStamp} ms : BPM: ${currentTimeChange.bpm} in ${currentTimeChange.timeSignatureNum}/${currentTimeChange.timeSignatureDen}';
         tcDropdownItemRenderer.data = inputTimeChange.value;
       }
     };
@@ -379,6 +381,42 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     chartEditorState.updateSongTime();
   }
 
+  /**
+   * How far the start of a time change moves per click of its stepper, in beats.
+   */
+  static final TIME_CHANGE_BEAT_STEP:Float = 1 / Constants.STEPS_PER_BEAT;
+
+  /**
+   * How long a beat lasts under the given time change, in milliseconds.
+   */
+  static function beatLengthMs(timeChange:funkin.data.song.SongData.SongTimeChange):Float
+  {
+    return ((Constants.SECS_PER_MIN / timeChange.bpm) * Constants.MS_PER_SEC) * (4 / timeChange.timeSignatureDen);
+  }
+
+  /**
+   * Converts a time change's start from milliseconds to beats.
+   * The stretch up to it runs at the previous time change's tempo, so that one does the measuring.
+   * @param timeChangeIndex The index of the time change being edited.
+   */
+  function msToBeats(ms:Float, timeChangeIndex:Int):Float
+  {
+    var previousTimeChange = chartEditorState.currentSongMetadata.timeChanges[timeChangeIndex - 1];
+    if (previousTimeChange == null) return Conductor.instance.getTimeInSteps(ms) / Constants.STEPS_PER_BEAT;
+    return previousTimeChange.beatTime + (ms - previousTimeChange.timeStamp) / beatLengthMs(previousTimeChange);
+  }
+
+  /**
+   * Converts a time change's start from beats back to the milliseconds the metadata stores.
+   * @param timeChangeIndex The index of the time change being edited.
+   */
+  function beatsToMs(beats:Float, timeChangeIndex:Int):Float
+  {
+    var previousTimeChange = chartEditorState.currentSongMetadata.timeChanges[timeChangeIndex - 1];
+    if (previousTimeChange == null) return Conductor.instance.getBeatTimeInMs(beats);
+    return previousTimeChange.timeStamp + (beats - previousTimeChange.beatTime) * beatLengthMs(previousTimeChange);
+  }
+
   public function refreshTimeChangeInputs(updateDropdownText:Bool = false):Null<funkin.data.song.SongData.SongTimeChange>
   {
     var currentTimeChange = chartEditorState.currentSongMetadata.timeChanges[inputTimeChange.selectedIndex];
@@ -390,7 +428,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     inputBPM.value = currentTimeChange.bpm;
     inputTSNum.value = currentTimeChange.timeSignatureNum;
     inputTSDen.value = currentTimeChange.timeSignatureDen;
-    inputTimeStamp.value = currentTimeChange.timeStamp;
+    inputTimeStamp.value = msToBeats(currentTimeChange.timeStamp, inputTimeChange.selectedIndex);
     if (updateDropdownText)
     {
       inputTimeChange.value.text = '${currentTimeChange.timeStamp} ms : BPM: ${currentTimeChange.bpm} in ${currentTimeChange.timeSignatureNum}/${currentTimeChange.timeSignatureDen}';

@@ -34,7 +34,12 @@ class MultiSparrowFreeplayDJ extends BaseFreeplayDJ
       if (anim.assetPath != null && !assetList.contains(anim.assetPath)) assetList.push(anim.assetPath);
     }
 
-    var texture:FlxAtlasFrames = Paths.getSparrowAtlas(playableCharData.getAssetPath());
+    var assetPath:String = funkin.assets.Paths.formatRelative(
+      playableCharData.getAssetPath(),
+      'gameplay/playable-characters/$characterId',
+      Constants.EXT_IMAGE
+    );
+    var texture:FlxAtlasFrames = Paths.getSparrowAtlas(assetPath);
 
     if (texture == null)
     {
@@ -49,12 +54,15 @@ class MultiSparrowFreeplayDJ extends BaseFreeplayDJ
 
     for (asset in assetList)
     {
-      final subTexture:FlxAtlasFrames = Paths.getSparrowAtlas(asset);
+      var animPath:String = funkin.assets.Paths.formatRelative(asset, 'gameplay/playable-characters/$characterId', Constants.EXT_IMAGE);
+      final subTexture:FlxAtlasFrames = Paths.getSparrowAtlas(animPath);
+
       if (subTexture == null) log('Multi-Sparrow atlas could not load subtexture: ${asset}');
       else
       {
         log('Concatenating multi-sparrow atlas: ${asset}');
         subTexture.parent.destroyOnNoUse = false;
+
         funkin.assets.Assets.cacheFlxGraphic(funkin.assets.Paths.image(asset));
       }
       texture.addAtlas(subTexture);

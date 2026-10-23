@@ -65,7 +65,7 @@ class StickerPack implements IRegistryEntry<StickerData>
    */
   public function getRandomStickerPath(last:Bool):String
   {
-    return FlxG.random.getObject(getStickers());
+    return funkin.assets.Paths.formatRelative(FlxG.random.getObject(getStickers()), 'ui/loading/stickers/stickerpacks', Constants.EXT_IMAGE);
   }
 
   public function toString():String

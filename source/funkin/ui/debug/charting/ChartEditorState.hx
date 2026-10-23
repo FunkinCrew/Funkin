@@ -925,8 +925,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * The song event sprite we are currently moving, if any.
    */
   var dragTargetEvent:Null<ChartEditorEventSprite> = null;
-  var dragEventWasSelected:Bool = false;
 
+  var dragEventWasSelected:Bool = false;
   var currentOverlappingEvents:Array<ChartEditorEventSprite> = [];
   var currentOverlappingEventCycleIndex:Int = 0;
 
@@ -939,10 +939,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * The amount of horizontal columns the note sprite has moved by since the user started dragging.
    */
   var dragTargetCurrentColumn:Int = 0;
-  
+
   var dragStartCursorStep:Float = 0;
   var dragStartCursorColumn:Int = 0;
-
   // Hold Note Dragging
 
   /**
@@ -4452,6 +4451,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           eventSprite.kill();
         }
       }
+
       // Sort the note data array, using an algorithm that is fast on nearly-sorted data.
       // We need this sorted to optimize indexing later.
       displayedEventData.insertionSort(SortUtil.eventDataByTime.bind(FlxSort.ASCENDING));
@@ -4550,6 +4550,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         // The event sprite handles animation playback and positioning.
         eventSprite.eventData = eventData;
         eventSprite.overrideStepTime = null;
+
+        // Update the tooltip in-case there's overlapping events.
+        eventSprite.overlappingEventDatas = currentSongChartEventData.filter((e) -> return e != eventData && Math.abs(e.time - eventData.time) < 1.0);
 
         // Setting event data resets position relative to the grid so we fix that.
         eventSprite.x += renderedEvents.x;
@@ -4899,6 +4902,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     var playheadAmount:Float = 0; // Amount to scroll the playhead relative to the grid.
     var shouldPause:Bool = false; // Whether to pause the song when scrolling.
     var shouldEase:Bool = false; // Whether to ease the scroll.
+    var shouldSnap:Bool = false; // Whether the move is a fixed number of grid steps, so the playhead should land on the grid.
 
     // Handle scroll anchor
     if (scrollAnchorScreenPos != null)
@@ -4927,12 +4931,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       scrollAmount = -GRID_SIZE * 4;
       shouldPause = true;
+      shouldSnap = true;
     }
     // Down Arrow = Scroll Down
     if (downKeyHandler.activated && currentLiveInputStyle == None)
     {
       scrollAmount = GRID_SIZE * 4;
       shouldPause = true;
+      shouldSnap = true;
     }
 
     // W = Scroll Up (doesn't work with Ctrl+Scroll)
@@ -4940,12 +4946,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       scrollAmount = -GRID_SIZE * 4;
       shouldPause = true;
+      shouldSnap = true;
     }
     // S = Scroll Down (doesn't work with Ctrl+Scroll)
     if (sKeyHandler.activated && currentLiveInputStyle == None && !pressingControl())
     {
       scrollAmount = GRID_SIZE * 4;
       shouldPause = true;
+      shouldSnap = true;
     }
 
     // GAMEPAD LEFT STICK UP = Scroll Up by 1 note snap
@@ -4953,12 +4961,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       scrollAmount = -GRID_SIZE * noteSnapRatio;
       shouldPause = true;
+      shouldSnap = true;
     }
     // GAMEPAD LEFT STICK DOWN = Scroll Down by 1 note snap
     if (leftStickDownGamepadHandler.activated)
     {
       scrollAmount = GRID_SIZE * noteSnapRatio;
       shouldPause = true;
+      shouldSnap = true;
     }
 
     // GAMEPAD RIGHT STICK UP = Scroll Up by 1 note snap (playhead only)
@@ -4966,12 +4976,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       playheadAmount = -GRID_SIZE * noteSnapRatio;
       shouldPause = true;
+      shouldSnap = true;
     }
     // GAMEPAD RIGHT STICK DOWN = Scroll Down by 1 note snap (playhead only)
     if (rightStickDownGamepadHandler.activated)
     {
       playheadAmount = GRID_SIZE * noteSnapRatio;
       shouldPause = true;
+      shouldSnap = true;
     }
 
     var funcJumpUp = (playheadOnly:Bool) ->
@@ -5119,10 +5131,30 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     shouldEase = true;
     if (shouldPause && (audioInstTrack?.isPlaying || audioVocalTrackGroup.playing)) stopAudioPlayback(); // Only do this once, not every frame
 
+    if (shouldSnap && currentScrollEase != null)
+    {
+      var playheadAbsolute:Float = currentScrollEase + this.playheadPositionInPixels;
+      if (scrollAmount != 0) scrollAmount = snapStepMove(playheadAbsolute, scrollAmount) - playheadAbsolute;
+      if (playheadAmount != 0) playheadAmount = snapStepMove(playheadAbsolute, playheadAmount) - playheadAbsolute;
+    }
+
     // Resync the conductor and audio tracks.
     if (playheadAmount != 0) this.playheadPositionInPixels += playheadAmount;
 
     if (scrollAmount != 0) currentScrollEase += scrollAmount;
+  }
+
+  /**
+   * Snap a move to the nearest grid step, based on the current note snap ratio.
+   * @param fromPixels The absolute position of the playhead in the song, in pixels.
+   * @param amountPixels How far the move goes, in pixels.
+   * @return The absolute position to land on, in pixels.
+   */
+  function snapStepMove(fromPixels:Float, amountPixels:Float):Float
+  {
+    var gridPixels:Float = Math.min(GRID_SIZE * noteSnapRatio, Math.abs(amountPixels));
+    if (gridPixels <= 0) return fromPixels + amountPixels;
+    return Math.fround((fromPixels + amountPixels) / gridPixels) * gridPixels;
   }
 
   /**
@@ -5222,7 +5254,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
       if (newOverlappingEvents.length > 0)
       {
-        newOverlappingEvents.sort(function(a:ChartEditorEventSprite, b:ChartEditorEventSprite):Int {
+        newOverlappingEvents.sort(function(a:ChartEditorEventSprite, b:ChartEditorEventSprite):Int
+        {
           return currentSongChartEventData.indexOf(a.eventData) - currentSongChartEventData.indexOf(b.eventData);
         });
 
@@ -5238,12 +5271,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
             }
           }
         }
-        
+
         if (eventsChanged)
         {
           currentOverlappingEvents = newOverlappingEvents;
           currentOverlappingEventCycleIndex = 0;
-          
+
           for (i in 0...currentOverlappingEvents.length)
           {
             if (isEventSelected(currentOverlappingEvents[i].eventData))
@@ -5253,7 +5286,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
             }
           }
         }
-
 
         highlightedEvent = currentOverlappingEvents[currentOverlappingEventCycleIndex];
       }
@@ -5759,7 +5791,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         scrollMouseToGrid();
 
         // calculate distance between the position dragged to and the original position.
-        var dragDistanceSteps:Float = Conductor.instance.getTimeInSteps(cursorSnappedMs).clamp(0, songLengthInSteps - (1 * noteSnapRatio)) - dragStartCursorStep;
+        var dragDistanceSteps:Float =
+          Conductor.instance.getTimeInSteps(cursorSnappedMs).clamp(0, songLengthInSteps - (1 * noteSnapRatio))
+          - dragStartCursorStep;
         var dragDistanceColumns:Int = cursorGridPos - dragStartCursorColumn;
 
         if ((dragTargetCurrentColumn != dragDistanceColumns && overlapsGrid) || dragTargetCurrentStep != dragDistanceSteps)
@@ -5948,7 +5982,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
                 performCommand(new DeselectAllItemsCommand());
               }
               // Click a blank space to place a note and select it.
-  
+
               if (cursorGridPos == eventColumn)
               {
                 // Create an event and place it in the chart.

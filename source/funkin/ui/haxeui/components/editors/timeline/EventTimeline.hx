@@ -1,8 +1,11 @@
 package funkin.ui.haxeui.components.editors.timeline;
 
 #if FEATURE_CAMERA_EDITOR
+import funkin.Conductor;
 import funkin.graphics.shaders.TimelineShader;
+import funkin.graphics.shaders.TimelineShader.TimelineSignatureSegment;
 import funkin.data.song.SongData.SongEventData;
+import funkin.data.song.SongData.SongTimeChange;
 import haxe.ui.behaviours.DataBehaviour;
 import haxe.ui.behaviours.DefaultBehaviour;
 import haxe.ui.components.HorizontalScroll;
@@ -66,13 +69,13 @@ class EventTimeline extends VBox
   }
 
   /**
-   * The grid in ms, or zero for none.
+   * The grid in steps, or zero for none.
    */
-  public function snapGridMs():Float
+  public function snapGridSteps():Float
   {
     var beats:Float = SNAP_GRIDS[snapIndex];
-    if (beats <= 0 || viewport == null) return 0;
-    return beats * viewport.stepLengthMs * Constants.STEPS_PER_BEAT;
+    if (beats <= 0) return 0;
+    return beats * Constants.STEPS_PER_BEAT;
   }
 
   /**
@@ -85,21 +88,84 @@ class EventTimeline extends VBox
   }
 
   /**
-   * The grid as the lanes draw it, in lines per bar. A grid finer than a few pixels is drawn a
-   * beat at a time instead, and finer than that a bar at a time.
+   * The grid as the lanes draw it, in lines per beat. A grid finer than a few pixels is drawn a
+   * beat at a time instead, and finer than that a bar at a time (zero).
    */
-  public function gridLinesPerBar():Float
+  public function gridLinesPerBeat():Float
   {
-    if (viewport == null) return Constants.STEPS_PER_BEAT;
+    if (viewport == null) return 1;
 
     var beats:Float = SNAP_GRIDS[snapIndex];
     if (beats <= 0) beats = 1;
 
     var pxPerBeat:Float = viewport.pixelsPerBeat * viewport.zoomLevel;
     if (beats * pxPerBeat < GRID_TIGHT_PX) beats = 1;
-    if (beats * pxPerBeat < GRID_TIGHT_PX) beats = Constants.STEPS_PER_BEAT;
+    if (beats * pxPerBeat < GRID_TIGHT_PX) return 0;
 
-    return Constants.STEPS_PER_BEAT / beats;
+    return 1 / beats;
+  }
+
+  /**
+   * Each time signature stretch in the song, in order, with the pixel position of its start and the bar number at that point.
+   */
+  public function signatureSegments(pxPerStep:Float):Array<TimelineSignatureSegment>
+  {
+    var segments:Array<TimelineSignatureSegment> = [];
+    var conductor:Null<Conductor> = viewport == null ? null : viewport.conductor;
+    var changes:Array<SongTimeChange> = conductor == null ? [] : @:privateAccess conductor.timeChanges;
+
+    var numerator:Int = Constants.DEFAULT_TIME_SIGNATURE_NUM;
+    var denominator:Int = Constants.DEFAULT_TIME_SIGNATURE_DEN;
+    if (changes.length > 0)
+    {
+      numerator = changes[0].timeSignatureNum;
+      denominator = changes[0].timeSignatureDen;
+    }
+
+    var startSteps:Float = 0;
+    var barIndex:Int = 0;
+    segments.push(
+      {
+        startPx: 0,
+        numerator: numerator,
+        denominator: denominator,
+        barIndex: 0
+      });
+
+    for (change in changes)
+    {
+      if (change.timeSignatureNum == numerator && change.timeSignatureDen == denominator) continue;
+
+      var changeSteps:Float = change.beatTime * Constants.STEPS_PER_BEAT;
+      // A stretch cut short mid-bar still counts as a whole bar for the numbering.
+      barIndex += Math.ceil((changeSteps - startSteps) / (numerator * Constants.STEPS_PER_BEAT) - 0.0001);
+      startSteps = changeSteps;
+      numerator = change.timeSignatureNum;
+      denominator = change.timeSignatureDen;
+      segments.push(
+        {
+          startPx: startSteps * pxPerStep,
+          numerator: numerator,
+          denominator: denominator,
+          barIndex: barIndex
+        });
+    }
+
+    return segments;
+  }
+
+  /**
+   * The visible time signature stretches in the song, in order, with the pixel position of their start and the bar number at that point.
+   */
+  public function visibleSignatureSegments(leftEdgePx:Float, pxPerStep:Float):Array<TimelineSignatureSegment>
+  {
+    var all:Array<TimelineSignatureSegment> = signatureSegments(pxPerStep);
+    var first:Int = 0;
+    for (i in 0...all.length)
+    {
+      if (all[i].startPx <= leftEdgePx) first = i;
+    }
+    return all.slice(first, first + TimelineShader.MAX_SEGMENTS);
   }
 
   // Under this and a gridline is closer to its neighbor than it is wide.
@@ -113,10 +179,10 @@ class EventTimeline extends VBox
     // ALT does the opposite of the toggle for as long as it is held.
     if (snapEnabled == FlxG.keys.pressed.ALT) return ms;
 
-    var grid:Float = snapGridMs();
-    if (grid <= 0) return ms;
+    var grid:Float = snapGridSteps();
+    if (grid <= 0 || viewport == null) return ms;
 
-    return Math.fround(ms / grid) * grid;
+    return viewport.stepsToMs(Math.fround(viewport.msToSteps(ms) / grid) * grid);
   }
 
   public function loadTimelineStyles():Void
@@ -214,9 +280,14 @@ class EventTimeline extends VBox
     viewport.rebuildBlocks(events);
   }
 
-  public function setStepLengthMs(stepMs:Float):Void
+  /**
+   * The conductor of the timeline
+   */
+  public function setConductor(conductor:Conductor):Void
   {
-    viewport.stepLengthMs = stepMs;
+    viewport.conductor = conductor;
+    viewport.stepLengthMs = conductor.stepLengthMs;
+    viewport.invalidateTimeCache();
     viewport.refreshLayout();
   }
 }
@@ -442,8 +513,8 @@ private class EventTimelineEvents extends Events
     viewport.chasing = true;
     viewport.zoomLevel = slider.pos;
 
-    var pxPerMs:Float = viewport.pixelsPerMs * viewport.zoomLevel;
-    if (pxPerMs > 0) viewport.scrollOffsetMs = anchorMs - (anchorX / pxPerMs);
+    var pxPerStep:Float = viewport.pixelsPerStep * viewport.zoomLevel;
+    if (pxPerStep > 0) viewport.scrollOffsetMs = viewport.stepsToMs(viewport.msToSteps(anchorMs) - (anchorX / pxPerStep));
     if (viewport.scrollOffsetMs < 0) viewport.scrollOffsetMs = 0;
 
     viewport.refreshLayout();
@@ -475,7 +546,7 @@ private class EventTimelineEvents extends Events
     if (_isEcho(_pushedScroll, _timeline.scrollbar.pos)) return;
     _timeline.viewport.cancelScrollEase();
     _timeline.viewport.chasing = false;
-    _timeline.viewport.scrollOffsetMs = _timeline.scrollbar.pos;
+    _timeline.viewport.scrollOffsetMs = _timeline.viewport.stepsToMs(_timeline.scrollbar.pos);
     _timeline.viewport.refreshLayout();
   }
 
@@ -492,20 +563,21 @@ private class EventTimelineEvents extends Events
   {
     _updatingScrollbar = true;
 
-    var pxPerMs = _timeline.viewport.pixelsPerMs * _timeline.viewport.zoomLevel;
-    if (_timeline.viewport.songLengthMs > 0 && pxPerMs > 0)
+    var pxPerStep = _timeline.viewport.pixelsPerStep * _timeline.viewport.zoomLevel;
+    var songLengthSteps:Float = _timeline.viewport.msToSteps(_timeline.viewport.songLengthMs);
+    if (songLengthSteps > 0 && pxPerStep > 0)
     {
-      var viewWidthMs = _timeline.viewport.width / pxPerMs;
-      _timeline.scrollbar.max = _timeline.viewport.songLengthMs;
-      _timeline.scrollbar.pageSize = viewWidthMs;
-      _timeline.scrollbar.pos = _timeline.viewport.scrollOffsetMs;
+      var viewWidthSteps = _timeline.viewport.width / pxPerStep;
+      _timeline.scrollbar.max = songLengthSteps;
+      _timeline.scrollbar.pageSize = viewWidthSteps;
+      _timeline.scrollbar.pos = _timeline.viewport.scrollOffsetSteps;
       _push(_pushedScroll, _timeline.scrollbar.pos);
     }
 
-    if (_timeline.scrollbarPlayhead != null && _timeline.viewport.songLengthMs > 0)
+    if (_timeline.scrollbarPlayhead != null && songLengthSteps > 0)
     {
       var scrollWidth = _timeline.scrollbar.width;
-      var ratio = _timeline.viewport.songPositionMs / _timeline.viewport.songLengthMs;
+      var ratio = _timeline.viewport.msToSteps(_timeline.viewport.songPositionMs) / songLengthSteps;
       _timeline.scrollbarPlayhead.left = ratio * scrollWidth - 1;
       _timeline.scrollbarPlayhead.top = 2;
       _timeline.scrollbarPlayhead.hidden = ratio < 0 || ratio > 1;
@@ -556,16 +628,19 @@ private class EventTimelineEvents extends Events
     var pxPerBeat = _timeline.viewport.pixelsPerBeat * _timeline.viewport.zoomLevel;
     _timeline.viewport.timelineShader.beatLength = pxPerBeat;
 
-    var correctedOffset = _timeline.viewport.scrollOffsetMs * _timeline.viewport.pixelsPerMs * _timeline.viewport.zoomLevel;
+    var pxPerStep:Float = _timeline.viewport.pixelsPerStep * _timeline.viewport.zoomLevel;
+    var correctedOffset = _timeline.viewport.scrollOffsetSteps * pxPerStep;
     _timeline.viewport.timelineShader.setOffset(correctedOffset, _timeline.viewport.layerScrollOffsetPx);
 
-    var lengthInBeats = (_timeline.viewport.songLengthMs / _timeline.viewport.stepLengthMs) / 4;
+    var lengthInBeats = _timeline.viewport.msToSteps(_timeline.viewport.songLengthMs) / Constants.STEPS_PER_BEAT;
     _timeline.viewport.timelineShader.beatCount = lengthInBeats;
 
     _timeline.viewport.timelineShader.layerCount = _timeline.viewport.layers.length;
 
-    var gridLines:Float = _timeline.gridLinesPerBar();
-    if (_timeline.viewport.timelineShader.gridLinesPerBar != gridLines) _timeline.viewport.timelineShader.gridLinesPerBar = gridLines;
+    var gridLines:Float = _timeline.gridLinesPerBeat();
+    if (_timeline.viewport.timelineShader.gridLinesPerBeat != gridLines) _timeline.viewport.timelineShader.gridLinesPerBeat = gridLines;
+
+    _timeline.viewport.timelineShader.setSegments(_timeline.visibleSignatureSegments(correctedOffset, pxPerStep));
 
     if (_timeline.viewport.timelineShader.layerHeight != _timeline.viewport.layerHeight)
     {
@@ -595,7 +670,7 @@ private class SongPositionBehaviour extends DataBehaviour
     else if (!tl.viewport._autoScrollDragActive && (tl.autoScrollMode : TimelinePlaybackAutoScrollMode) != NONE)
     {
       var viewWidth = tl.viewport.width;
-      var pxPerMs = tl.viewport.pixelsPerMs * tl.viewport.zoomLevel;
+      var pxPerStep = tl.viewport.pixelsPerStep * tl.viewport.zoomLevel;
       var playheadPx = tl.viewport.msToPixelX(pos);
 
       if (!tl.viewport.chasing && playheadPx >= 0 && playheadPx <= viewWidth)
@@ -609,20 +684,20 @@ private class SongPositionBehaviour extends DataBehaviour
       {
         case NONE:
         case PAGE:
-          if (viewWidth > 0 && pxPerMs > 0)
+          if (viewWidth > 0 && pxPerStep > 0)
           {
             if (playheadPx > viewWidth * 0.95 || playheadPx < 0)
             {
               tl.viewport.cancelScrollEase();
-              tl.viewport.scrollOffsetMs = pos - (viewWidth * 0.05 / pxPerMs);
+              tl.viewport.scrollOffsetMs = tl.viewport.offsetMsByPixels(pos, -viewWidth * 0.05);
               if (tl.viewport.scrollOffsetMs < 0) tl.viewport.scrollOffsetMs = 0;
             }
           }
         case SMOOTH:
-          if (viewWidth > 0 && pxPerMs > 0)
+          if (viewWidth > 0 && pxPerStep > 0)
           {
             tl.viewport.cancelScrollEase();
-            tl.viewport.scrollOffsetMs = pos - (viewWidth * 0.5 / pxPerMs);
+            tl.viewport.scrollOffsetMs = tl.viewport.offsetMsByPixels(pos, -viewWidth * 0.5);
             if (tl.viewport.scrollOffsetMs < 0) tl.viewport.scrollOffsetMs = 0;
           }
       }

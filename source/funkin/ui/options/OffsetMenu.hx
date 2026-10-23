@@ -43,7 +43,6 @@ typedef ArrowData =
 class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 {
   static final BPM:Int = 100;
-
   static final CONDUCTOR_DRIFT_THRESHOLD:Float = 65;
   static final DRUMS_RESYNC_THRESHOLD_MS:Float = 20;
   static final MUSIC_EASE_RATIO:Float = 42;
@@ -91,6 +90,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
   }
 
   var loopBeats(get, never):Int;
+
   function get_loopBeats():Int
   {
     if (FlxG.sound.music == null || FlxG.sound.music.length <= 0) return 128;
@@ -410,6 +410,8 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
      */
   function onKeyPress(event:PreciseInputEvent):Void
   {
+    if (calibrating) return;
+
     // Set the current position for further calculation.
     event.position = localConductor.songPosition;
 
@@ -422,6 +424,8 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
      */
   function onKeyRelease(event:PreciseInputEvent):Void
   {
+    if (calibrating) return;
+
     // Set the current position for further calculation.
     event.position = localConductor.songPosition;
 
@@ -433,15 +437,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 
   public function exitCalibration(cancel:Bool):Void
   {
-    if (calibrating)
-    {
-      removeCalibrationInput();
-    }
-    else
-    {
-      PreciseInputManager.instance.onInputPressed.remove(onKeyPress);
-      PreciseInputManager.instance.onInputReleased.remove(onKeyRelease);
-    }
+    removeCalibrationInput();
 
     backButton.enabled = false;
     shouldOffset = -1;
@@ -545,13 +541,6 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
   function registerCalibrationTap(tapBeat:Float):Bool
   {
     var arrow:ArrowData = getClosestArrowAtBeat(tapBeat);
-
-    #if FEATURE_HAPTICS
-    final hapticAmplitude:Float = Constants.MAX_VIBRATION_AMPLITUDE / 4 * 2.5;
-
-    HapticManager.instance?.playVibration(0, 0.01, hapticAmplitude, 1, HapticType.NOTE);
-    #end
-
     var closestBeat:Float = Math.round(tapBeat);
     var diff:Float = closestBeat - tapBeat;
     var ms:Float = (diff * msPerBeat);
@@ -741,14 +730,15 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
         if (differences.length >= 8) createArrow(nextBeat);
       }
 
+      // Hit a note (calibration)
+      var tapBeats:Array<Float> = [];
+
       #if FEATURE_TOUCH_CONTROLS
       if (TouchUtil.justPressed)
       {
         tapBeats.push(b);
       }
       #else
-      // Hit a note (calibration)
-      var tapBeats:Array<Float> = [];
       while (inputPressQueue.length > 0)
       {
         var input:PreciseInputEvent = inputPressQueue.shift();
@@ -914,8 +904,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
   public function onCalibrationKeyPress(keyCode, _, timestamp:Int64):Void
   {
     // Create a new precise input event to use.
-    var input:PreciseInputEvent =
-    {
+    var input:PreciseInputEvent = {
       noteDirection: 1, // Doesn't matter.
       timestamp: timestamp,
       keyCode: keyCode,
@@ -1047,6 +1036,10 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     MenuTypedList.pauseInput = false;
     destroying = true;
     exitCalibration(true);
+
+    PreciseInputManager.instance.onInputPressed.remove(onKeyPress);
+    PreciseInputManager.instance.onInputReleased.remove(onKeyRelease);
+
     super.destroy();
   }
 }

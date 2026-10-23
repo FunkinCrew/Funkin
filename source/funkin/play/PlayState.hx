@@ -3225,6 +3225,10 @@ class PlayState extends MusicBeatSubState
       case 'shit':
         healthChange = Constants.HEALTH_SHIT_BONUS;
         isComboBreak = Constants.JUDGEMENT_SHIT_COMBO_BREAK;
+      default:
+        // We missed!
+        // Stop processing this hit immediately.
+        return;
     }
 
     // Send the note hit event.
@@ -3909,6 +3913,9 @@ class PlayState extends MusicBeatSubState
 
     FlxTween.globalManager.clear();
     FlxTimer.globalManager.clear();
+
+    PreciseInputManager.instance.onInputPressed.remove(onKeyPress);
+    PreciseInputManager.instance.onInputReleased.remove(onKeyRelease);
 
     // Remove reference to stage and remove sprites from it to save memory.
     if (currentStage != null)

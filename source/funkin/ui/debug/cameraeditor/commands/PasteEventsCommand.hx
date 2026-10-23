@@ -3,6 +3,7 @@ package funkin.ui.debug.cameraeditor.commands;
 #if FEATURE_CAMERA_EDITOR
 import funkin.audio.FunkinSound;
 import funkin.data.song.SongData.SongEventData;
+import funkin.data.song.SongData.SongEventDataRaw;
 import funkin.data.song.SongDataUtils;
 import funkin.util.SortUtil;
 import flixel.util.FlxSort;
@@ -49,8 +50,28 @@ class PasteEventsCommand implements CameraEditorCommand
     addedEvents = SongDataUtils.offsetSongEventData(currentClipboard.events, offset);
     addedEvents = SongDataUtils.clampSongEventData(addedEvents, 0.0, state.timeline.viewport.songLengthMs);
 
+    var viewport = state.timeline.viewport;
+    var selectedIndex:Int = viewport.selectedLayerIndex;
+    var sourceIndices:Array<Int> = [];
+    var topmostSource:Int = selectedIndex;
     for (event in addedEvents)
     {
+      var raw:SongEventDataRaw = event;
+      var sourceIndex:Int = viewport.getLayerIndex(raw.editorLayer ?? 'Default');
+      if (sourceIndex < 0) sourceIndex = selectedIndex;
+      sourceIndices.push(sourceIndex);
+      if (sourceIndices.length == 1 || sourceIndex < topmostSource) topmostSource = sourceIndex;
+    }
+    var layerShift:Int = selectedIndex - topmostSource;
+
+    for (i => event in addedEvents)
+    {
+      var raw:SongEventDataRaw = event;
+      var targetIndex:Int = sourceIndices[i] + layerShift;
+      if (targetIndex < 0) targetIndex = 0;
+      if (targetIndex >= viewport.layers.length) targetIndex = viewport.layers.length - 1;
+      var targetLayer = viewport.layers[targetIndex];
+      raw.editorLayer = (targetLayer == null || targetLayer.name == 'Default') ? null : targetLayer.name;
       state.currentSongChartData.events.push(event);
       state.timeline.viewport.addEventBlock(event);
     }
