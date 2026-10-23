@@ -1,7 +1,6 @@
 package funkin.ui.modmenu;
 
 import flixel.FlxG;
-import flixel.FlxState;
 import flixel.tweens.FlxEase;
 import funkin.InitState;
 import funkin.audio.FunkinSound;
@@ -11,7 +10,7 @@ import funkin.save.Save;
 import funkin.ui.modmenu.ModMenuState.ModMenuSelection;
 import funkin.ui.transition.preload.hotreload.ModReloader;
 import funkin.util.FileUtil;
-import funkin.util.PromptUtil;
+import funkin.util.WindowUtil;
 import polymod.Polymod.ModDependencies;
 import polymod.Polymod.ModMetadata;
 
@@ -563,15 +562,10 @@ class ModListManager
       }
       else
       {
-        PromptUtil.openPrompt({
-          icon: 'warning',
-          title: 'MISSING DEPENDENCY!',
-          description: 'Could not find dependency mod with ID "${dependencyId}". Please make sure all required mods are installed.',
-          buttons: [{
-            text: 'Okay',
-            defaultCancel: true
-          }]
-        }, [0, 50]);
+        WindowUtil.showError(
+          'Missing dependency',
+          'Could not find dependency mod with ID "${dependencyId}". Please make sure all required mods are installed.'
+        );
 
         return false;
       }

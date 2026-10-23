@@ -11,12 +11,9 @@ import funkin.data.freeplay.album.AlbumRegistry;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.data.freeplay.style.FreeplayStyleRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
-import funkin.data.options.OptionRegistry;
-import funkin.data.options.OptionsTabRegistry;
 import funkin.data.song.SongRegistry;
 import funkin.data.stage.StageRegistry;
 import funkin.data.stickers.StickerRegistry;
-import funkin.data.story.layout.MapLayoutRegistry;
 import funkin.data.story.level.LevelRegistry;
 import funkin.modding.module.ModuleHandler;
 import funkin.play.notes.notekind.NoteKindManager;
@@ -139,8 +136,6 @@ class ModReloader
 
     var futures:Array<Future<LoadEntriesResult>> = [];
 
-    OptionRegistry.loadOptionCache();
-
     // Do Song retrospeeds still load asynchronously?
     // What.
     // Song retrospeeds.
@@ -148,7 +143,6 @@ class ModReloader
 
     futures.push(SongRegistry.instance.loadEntriesAsync());
     futures.push(LevelRegistry.instance.loadEntriesAsync());
-    futures.push(MapLayoutRegistry.instance.loadEntriesAsync());
     futures.push(NoteStyleRegistry.instance.loadEntriesAsync());
     futures.push(PlayerRegistry.instance.loadEntriesAsync());
     futures.push(ConversationRegistry.instance.loadEntriesAsync());
@@ -158,7 +152,6 @@ class ModReloader
     futures.push(StageRegistry.instance.loadEntriesAsync());
     futures.push(StickerRegistry.instance.loadEntriesAsync());
     futures.push(FreeplayStyleRegistry.instance.loadEntriesAsync());
-    futures.push(OptionsTabRegistry.instance.loadEntriesAsync());
     futures.push(SongEventRegistry.loadEventCacheAsync());
     futures.push(NoteKindManager.loadNoteKindsAsync());
     futures.push(CharacterRegistry.instance.loadEntriesAsync());

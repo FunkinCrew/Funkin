@@ -390,11 +390,7 @@ class ModMenuState extends MusicBeatState
     installer = new ModMenuInstaller(highlightNewMod, (enabled) ->
     {
       uiState.transition((enabled) ? Idle : Disabled);
-    }, () ->
-      {
-        uiState.transition(Idle);
-        hideFileDropHover();
-      });
+    });
     installer.build(camHUD);
 
     enabledModItems.repositionItems();
@@ -435,7 +431,7 @@ class ModMenuState extends MusicBeatState
     FlxG.autoPause = false;
 
     // Adding the dropshadow blacklist here since everything is initialized by this point
-    dropShadowUI.renderer.blacklistSprite(menuBG);
+    dropShadowUI.blacklistSprite(menuBG);
     scene.blacklistFromShadow(dropShadowUI);
 
     scene.changeCharacters();
@@ -1230,6 +1226,7 @@ class ModMenuState extends MusicBeatState
   #end
 
   var lastModIndex:Int = 0;
+
   function handleSelection():Void
   {
     FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
@@ -1266,7 +1263,7 @@ class ModMenuState extends MusicBeatState
     switch (selection)
     {
       case DisabledModList:
-        switch(oldSelection)
+        switch (oldSelection)
         {
           case OpenModsFolder | Done:
             disabledModItems.selectLastItem(lastSelectDir);
@@ -1285,7 +1282,7 @@ class ModMenuState extends MusicBeatState
             disabledModItems.selectFirstItem(lastSelectDir);
         }
       case EnabledModList:
-        switch(oldSelection)
+        switch (oldSelection)
         {
           case OpenModsFolder | Done:
             enabledModItems.selectLastItem(lastSelectDir);

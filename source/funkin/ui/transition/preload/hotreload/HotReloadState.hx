@@ -1,5 +1,7 @@
 package funkin.ui.transition.preload.hotreload;
 
+import flixel.util.FlxDestroyUtil;
+import flixel.util.typeLimit.NextState;
 import funkin.assets.FunkinAssetCache;
 import funkin.graphics.FunkinSprite;
 import funkin.ui.title.TitleState;

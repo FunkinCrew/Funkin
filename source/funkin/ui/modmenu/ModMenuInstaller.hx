@@ -2,20 +2,19 @@ package funkin.ui.modmenu;
 
 import flixel.FlxCamera;
 import flixel.FlxG;
-import flixel.FlxState;
 import flixel.math.FlxMath;
 import flixel.tweens.FlxEase;
 import flixel.util.FlxColor;
 import funkin.graphics.FunkinSprite;
 import funkin.modding.PolymodHandler;
 import funkin.util.FileUtil;
-import funkin.util.PromptUtil;
+import funkin.util.WindowUtil;
 import haxe.io.Path;
 import polymod.PolymodConfig;
 #if FEATURE_ONE_CLICK_INSTALL
-import funkin.modding.install.ModInstaller;
 import funkin.modding.install.ModInstaller.OneClickMod;
 import funkin.modding.install.ModInstaller.OneClickRequest;
+import funkin.modding.install.ModInstaller;
 import funkin.modding.install.OneClickInstallHandler;
 #end
 
@@ -55,11 +54,6 @@ class ModMenuInstaller
    * Callback to disable/enable input.
    */
   final setInputEnabled:Bool->Void;
-
-  /**
-   * Called when the prompt is closed.
-   */
-  final onPromptClosed:Void->Void;
 
   /**
    * Whether the drop overlay is currently visible and hovering or not.
@@ -118,13 +112,11 @@ class ModMenuInstaller
    * Creates a new installer instance.
    * @param onInstalled What to call once installing finishes.
    * @param setInputEnabled What to call to toggle the input.
-   * @param onPromptClosed What to call once the prompt is closed.
    */
-  public function new(onInstalled:Void->Void, setInputEnabled:Bool->Void, onPromptClosed:Void->Void)
+  public function new(onInstalled:Void->Void, setInputEnabled:Bool->Void)
   {
     this.onInstalled = onInstalled;
     this.setInputEnabled = setInputEnabled;
-    this.onPromptClosed = onPromptClosed;
   }
 
   /**
@@ -312,16 +304,7 @@ class ModMenuInstaller
   {
     setInputEnabled(false);
 
-    PromptUtil.openPrompt({
-      icon: 'question',
-      title: 'HEADS UP!',
-      description: 'Only .zip files and mod folders are supported for mod installation.',
-      buttons: [{
-        text: 'Okay',
-        defaultCancel: true,
-        callback: onPromptClosed
-      }]
-    }, [0, 50]);
+    WindowUtil.showError('Failed to install mod', 'Only .zip files and mod folders are supported for mod installation.');
   }
 
   /**
@@ -345,16 +328,7 @@ class ModMenuInstaller
       description = 'Could not move the .zip file to the mods folder. Check the logs for details.';
     }
 
-    PromptUtil.openPrompt({
-      icon: 'warning',
-      title: 'FAILED TO INSTALL!',
-      description: description,
-      buttons: [{
-        text: 'Okay',
-        defaultCancel: true,
-        callback: onPromptClosed
-      }]
-    }, [0, 50]);
+    WindowUtil.showError('Failed to install mod', description);
   }
 
   // ONE-CLICK INSTALL //

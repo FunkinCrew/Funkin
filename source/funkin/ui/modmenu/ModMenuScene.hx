@@ -261,10 +261,10 @@ class ModMenuScene
    */
   public function blacklistFromShadow(uiShadow:DropShadowLayer):Void
   {
-    uiShadow.renderer.blacklistSprite(bgWires);
-    uiShadow.renderer.blacklistSprite(crispySmokeBF);
-    uiShadow.renderer.blacklistSprite(crispySmokeGF);
-    uiShadow.renderer.blacklistSprite(sparks);
+    uiShadow.blacklistSprite(bgWires);
+    uiShadow.blacklistSprite(crispySmokeBF);
+    uiShadow.blacklistSprite(crispySmokeGF);
+    uiShadow.blacklistSprite(sparks);
   }
 
   /**
@@ -385,10 +385,10 @@ class ModMenuScene
 
     whiteColor.colorSet = true;
 
-    dropShadow.renderer.blacklistSprite(gfWire);
-    dropShadow.renderer.blacklistSprite(carBattery);
-    dropShadow.renderer.blacklistSprite(fgWiresBottom);
-    dropShadow.renderer.blacklistSprite(fgWiresTop);
+    dropShadow.blacklistSprite(gfWire);
+    dropShadow.blacklistSprite(carBattery);
+    dropShadow.blacklistSprite(fgWiresBottom);
+    dropShadow.blacklistSprite(fgWiresTop);
 
     var blackFlash:FunkinSprite = new FunkinSprite(0, 0).makeSolidColor(FlxG.width, FlxG.height, BLACKOUT_COLOR);
     blackFlash.zIndex = 0;
@@ -413,10 +413,10 @@ class ModMenuScene
       onBlackout();
 
       dropShadow.visible = false;
-      dropShadow.renderer.whitelistSprite(gfWire);
-      dropShadow.renderer.whitelistSprite(carBattery);
-      dropShadow.renderer.whitelistSprite(fgWiresTop);
-      dropShadow.renderer.whitelistSprite(fgWiresBottom);
+      dropShadow.whitelistSprite(gfWire);
+      dropShadow.whitelistSprite(carBattery);
+      dropShadow.whitelistSprite(fgWiresTop);
+      dropShadow.whitelistSprite(fgWiresBottom);
 
       FlxTimer.wait(BLACKOUT_DURATION, () ->
       {
