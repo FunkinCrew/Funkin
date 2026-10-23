@@ -467,11 +467,12 @@ class ModMenuScene
   {
     isFinished = true;
 
-    var showSmoke:Bool = false;
+    var showSmokeBF:Bool = false;
+    var showSmokeGF:Bool = false;
 
     if (bf.hasAnimation(CRISPY) && bf.previousModId == bf.currentModId)
     {
-      showSmoke = true;
+      showSmokeBF = true;
       bf.playAnimation(CRISPY, true);
     }
     else
@@ -481,7 +482,7 @@ class ModMenuScene
 
     if (gf.hasAnimation(CRISPY) && gf.previousModId == gf.currentModId)
     {
-      showSmoke = true;
+      showSmokeGF = true;
       gf.playAnimation(CRISPY, true);
     }
     else
@@ -490,24 +491,24 @@ class ModMenuScene
       gf.animation.pause();
     }
 
-    if (!showSmoke) return;
-
     crispySmokeBF.x += bf.smokeOffsets[0];
     crispySmokeBF.y += bf.smokeOffsets[1];
     crispySmokeBF.scale.set(bf.smokeScale[0], bf.smokeScale[1]);
+    crispySmokeBF.updateHitbox();
 
     crispySmokeGF.x += gf.smokeOffsets[0];
     crispySmokeGF.y += gf.smokeOffsets[1];
     crispySmokeGF.scale.set(gf.smokeScale[0], gf.smokeScale[1]);
-
-    crispySmokeBF.updateHitbox();
     crispySmokeGF.updateHitbox();
 
     // Do not show the smoke on an empty chair... for obvious reasons.
-    crispySmokeBF.visible = bf.currentCharacterId != 'empty-chair';
-    crispySmokeGF.visible = gf.currentCharacterId != 'empty-chair';
+    crispySmokeBF.visible = showSmokeBF && bf.currentCharacterId != 'empty-chair';
+    crispySmokeGF.visible = showSmokeGF && gf.currentCharacterId != 'empty-chair';
 
-    fgWiresBottom.animation.play('end');
+    if (showSmokeBF)
+    {
+      fgWiresBottom.animation.play('end');
+    }
   }
 
   /**
