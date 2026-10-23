@@ -62,6 +62,11 @@ class Strumline extends FlxSpriteGroup
     return originY + distance * rate + yOffset;
   }
 
+  public static inline function strumlineNoteOpacity():Float
+  {
+    return Preferences.strumlineNoteOpacity / 100.0;
+  }
+
   var renderDistanceMs(get, never):Float;
 
   /**
@@ -190,6 +195,7 @@ class Strumline extends FlxSpriteGroup
       child.x += Strumline.INITIAL_OFFSET;
       child.y = 0;
       noteStyle.applyStrumlineOffsets(child);
+      child.alpha = strumlineNoteOpacity();
       strumlineNotes.add(child);
     }
 
@@ -1293,6 +1299,7 @@ class Strumline extends FlxSpriteGroup
 
     if (splash != null)
     {
+      splash.alpha = splash.baselineAlpha * strumlineNoteOpacity();
       splash.play(direction);
 
       splash.x = this.x;
@@ -1324,6 +1331,8 @@ class Strumline extends FlxSpriteGroup
       cover.holdNote = holdNote;
       holdNote.cover = cover;
       cover.visible = true;
+
+      cover.alpha = cover.baselineAlpha * strumlineNoteOpacity();
 
       cover.playStart();
 
@@ -1392,6 +1401,7 @@ class Strumline extends FlxSpriteGroup
       noteSprite.graphic.destroyOnNoUse = false;
 
       noteSprite.scoreable = noteKind?.scoreable ?? true;
+      noteSprite.alpha = strumlineNoteOpacity();
     }
 
     return noteSprite;
@@ -1426,7 +1436,7 @@ class Strumline extends FlxSpriteGroup
       holdNoteSprite.missedNote = false;
       holdNoteSprite.hitNote = false;
       holdNoteSprite.visible = true;
-      holdNoteSprite.alpha = 1.0;
+      holdNoteSprite.alpha = strumlineNoteOpacity();
 
       holdNoteSprite.x = this.x;
       holdNoteSprite.x += getXPos(DIRECTIONS[note.getDirection() % KEY_COUNT]);
@@ -1623,7 +1633,7 @@ class Strumline extends FlxSpriteGroup
     arrow.alpha = 0.0;
     FlxTween.tween(arrow, {
       y: arrow.y + 10,
-      alpha: 1
+      alpha: strumlineNoteOpacity()
     }, 1, {
       ease: FlxEase.circOut,
       startDelay: 0.5 + (0.2 * index)

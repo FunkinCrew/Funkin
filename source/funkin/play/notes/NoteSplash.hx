@@ -10,6 +10,8 @@ class NoteSplash extends funkin.graphics.FunkinSprite
   public var splashFramerate:Int = 24;
   public var splashFramerateVariance:Int = 2;
 
+  public var baselineAlpha:Float = 1.0;
+
   public function new(noteStyle:NoteStyle)
   {
     super(0, 0);
@@ -27,6 +29,7 @@ class NoteSplash extends funkin.graphics.FunkinSprite
     if (frames == null)
     {
       noteStyle.buildSplashSprite(this);
+      baselineAlpha = this.alpha;
       _variantCounts = [-1, -1, -1, -1];
     }
 

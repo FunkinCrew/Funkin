@@ -153,6 +153,7 @@ class Save implements ConsoleClass implements ISerializable
         autoPause: true,
         vsyncMode: 'Off',
         strumlineBackgroundOpacity: 0,
+        strumlineNoteOpacity: 100,
         autoFullscreen: false,
         globalOffset: 0,
         audioVisualOffset: 0,
@@ -1490,6 +1491,8 @@ typedef SaveDataOptions =
    * @default `0`
    */
   var strumlineBackgroundOpacity:Int;
+
+  var strumlineNoteOpacity:Int;
 
   /**
    * If enabled, the game will automatically launch in fullscreen on startup.

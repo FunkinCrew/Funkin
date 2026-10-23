@@ -475,6 +475,21 @@ class Preferences
     return value;
   }
 
+  public static var strumlineNoteOpacity(get, set):Int;
+
+  static function get_strumlineNoteOpacity():Int
+  {
+    return (Save?.instance?.options?.strumlineNoteOpacity ?? 100);
+  }
+
+  static function set_strumlineNoteOpacity(value:Int):Int
+  {
+    var save:Save = Save.instance;
+    save.options.strumlineNoteOpacity = value;
+    Save.system.flush();
+    return value;
+  }
+
   /**
    * If enabled, the game will hide the mouse when taking a screenshot.
    * @default `true`

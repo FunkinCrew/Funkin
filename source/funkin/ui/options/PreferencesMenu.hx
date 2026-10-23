@@ -125,6 +125,10 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     {
       Preferences.strumlineBackgroundOpacity = value;
     }, Preferences.strumlineBackgroundOpacity);
+    createPrefItemPercentage('Strumline Note Opacity', 'Adjust the opacity of the notes.', function(value:Int):Void
+    {
+      Preferences.strumlineNoteOpacity = value;
+    }, Preferences.strumlineNoteOpacity);
     #if FEATURE_HAPTICS
     createPrefItemEnum('Haptics', 'When enabled, the game plays haptic feedback effects.', [
       "All" => HapticsMode.ALL,

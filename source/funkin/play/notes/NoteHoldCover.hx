@@ -15,6 +15,8 @@ class NoteHoldCover extends FlxTypedSpriteGroup<FlxSprite>
 
   var sparks:FlxSprite;
 
+  public var baselineAlpha:Float = 1.0;
+
   public function new(noteStyle:NoteStyle)
   {
     super(0, 0);
@@ -32,6 +34,7 @@ class NoteHoldCover extends FlxTypedSpriteGroup<FlxSprite>
 
     // TODO: null check here like how NoteSplash does
     noteStyle.buildHoldCoverSprite(this);
+    baselineAlpha = this.alpha;
 
     glow.animation.onFinish.add(this.onAnimationFinished);
 
@@ -81,7 +84,7 @@ class NoteHoldCover extends FlxTypedSpriteGroup<FlxSprite>
     super.revive();
 
     this.visible = true;
-    this.alpha = 1.0;
+    this.alpha = baselineAlpha;
 
     if (glow != null) glow.visible = true;
     if (sparks != null) sparks.visible = true;
