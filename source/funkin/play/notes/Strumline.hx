@@ -158,7 +158,10 @@ class Strumline extends FlxSpriteGroup
    */
   public var strumlineNotes:FlxTypedSpriteGroup<StrumlineNote>;
 
-  var noteSplashes:FlxTypedSpriteGroup<NoteSplash>;
+  /**
+   * Map of note splash sprite pools categorized by NoteStyle ID.
+   */
+  var noteSplashPools:Map<String, FlxTypedSpriteGroup<NoteSplash>> = [];
 
   /**
    * Hold note covers.
@@ -276,10 +279,6 @@ class Strumline extends FlxSpriteGroup
     this.noteHoldCovers = new FlxTypedSpriteGroup<NoteHoldCover>();
     this.noteHoldCovers.zIndex = 40;
     this.add(this.noteHoldCovers);
-
-    this.noteSplashes = new FlxTypedSpriteGroup<NoteSplash>(0, 0, NOTE_SPLASH_CAP);
-    this.noteSplashes.zIndex = 50;
-    this.add(this.noteSplashes);
 
     var backgroundWidth:Float = KEY_COUNT * Strumline.NOTE_SPACING + BACKGROUND_PAD * 2;
     #if FEATURE_TOUCH_CONTROLS
@@ -451,6 +450,31 @@ class Strumline extends FlxSpriteGroup
     }
 
     return null;
+  }
+
+  /**
+   * Get or create a note splash pool for the given style.
+   * @param targetStyle The target note style.
+   * @return The splash pool group.
+   */
+  function getSplashPool(targetStyle:NoteStyle):FlxTypedSpriteGroup<NoteSplash>
+  {
+    var styleId:String = targetStyle.id ?? this.noteStyle.id;
+
+    if (!noteSplashPools.exists(styleId))
+    {
+      var newPool = new FlxTypedSpriteGroup<NoteSplash>(0, 0, NOTE_SPLASH_CAP);
+
+      newPool.zIndex = 50;
+
+      this.add(newPool);
+
+      noteSplashPools.set(styleId, newPool);
+
+      this.refresh();
+    }
+
+    return noteSplashPools.get(styleId);
   }
 
   /**
@@ -946,10 +970,18 @@ class Strumline extends FlxSpriteGroup
       holdNote.kill();
     }
 
-    for (splash in noteSplashes)
+    for (pool in noteSplashPools)
     {
-      if (splash == null) continue;
-      splash.kill();
+      if (pool != null)
+      {
+        for (splash in pool)
+        {
+          if (splash != null)
+          {
+            splash.kill();
+          }
+        }
+      }
     }
 
     for (cover in noteHoldCovers)
@@ -999,7 +1031,8 @@ class Strumline extends FlxSpriteGroup
     var styleIdByKind:Map<String, String> = [];
     var styleById:Map<String, NoteStyle> = [];
 
-    var resolveStyle = function(kind:Null<String>):NoteStyle {
+    var resolveStyle = function(kind:Null<String>):NoteStyle
+    {
       var key:String = kind ?? '';
       var knownId:Null<String> = styleIdByKind.get(key);
       if (knownId != null) return styleById.get(knownId) ?? this.noteStyle;
@@ -1082,6 +1115,20 @@ class Strumline extends FlxSpriteGroup
         warm.kill();
         warm.visible = false;
       }
+
+      if (!style.isNoteSplashEnabled()) continue;
+
+      var splashPool = getSplashPool(style);
+
+      var existingSplashes:Int = splashPool.members.length;
+      var targetSplashes:Int = Math.ceil(peak * 0.5) + 1;
+
+      for (_ in existingSplashes...targetSplashes)
+      {
+        var warmSplash:NoteSplash = new NoteSplash(style);
+        splashPool.add(warmSplash);
+        warmSplash.kill();
+      }
     }
 
     if (peakHolds > 0)
@@ -1101,13 +1148,6 @@ class Strumline extends FlxSpriteGroup
         warm.kill();
         warm.visible = false;
       }
-    }
-
-    for (_ in noteSplashes.members.length...noteSplashes.maxSize)
-    {
-      var warm:NoteSplash = new NoteSplash(noteStyle);
-      noteSplashes.add(warm);
-      warm.kill();
     }
 
     for (_ in noteHoldCovers.members.length...KEY_COUNT)
@@ -1281,28 +1321,36 @@ class Strumline extends FlxSpriteGroup
   }
 
   /**
-   * Play a note splash for a given direction.
-   * @param direction The direction of the note to play the splash animation for.
+   * Play a note splash for a given note data.
+   * @param note The song note data.
    */
-  public function playNoteSplash(direction:NoteDirection):Void
+  public function playNoteSplash(note:SongNoteData):Void
   {
     if (!showNotesplash) return;
-    if (!noteStyle.isNoteSplashEnabled()) return;
 
-    var splash:NoteSplash = this.constructNoteSplash();
+    // Resolve the appropriate NoteStyle based on the note kind.
+    var targetStyle:NoteStyle = NoteKindManager.getNoteStyle(note.kind, this.noteStyle.id);
+    if (targetStyle == null) targetStyle = NoteKindManager.getNoteStyle(note.kind, null);
+    if (targetStyle == null) targetStyle = this.noteStyle;
+
+    if (targetStyle == null || !targetStyle.isNoteSplashEnabled()) return;
+
+    var pool = getSplashPool(targetStyle);
+
+    var splash:NoteSplash = constructNoteSplash(pool, targetStyle);
 
     if (splash != null)
     {
-      splash.play(direction);
+      splash.play(note.getDirection());
 
       splash.x = this.x;
-      splash.x += getXPos(direction);
+      splash.x += getXPos(note.getDirection());
       splash.x += INITIAL_OFFSET;
-      splash.x += noteStyle.getSplashOffsets()[0] * splash.scale.x;
+      splash.x += targetStyle.getSplashOffsets()[0] * splash.scale.x;
 
       splash.y = this.y;
       splash.y -= INITIAL_OFFSET;
-      splash.y += noteStyle.getSplashOffsets()[1] * splash.scale.y;
+      splash.y += targetStyle.getSplashOffsets()[1] * splash.scale.y;
 
       splash.graphic.destroyOnNoUse = false;
     }
@@ -1443,24 +1491,25 @@ class Strumline extends FlxSpriteGroup
   }
 
   /**
-   * Custom recycling behavior for note splashes.
-   */
-  function constructNoteSplash():NoteSplash
+	 * Construct or recycle a note splash from the given pool.
+	 * @param pool The target splash sprite group pool.
+	 * @param targetStyle The note style to instantiate if needed.
+	 */
+  function constructNoteSplash(pool:FlxTypedSpriteGroup<NoteSplash>, targetStyle:NoteStyle):NoteSplash
   {
     var result:NoteSplash = null;
 
-    // If we haven't filled the pool yet...
-    if (noteSplashes.length < noteSplashes.maxSize)
+    // If we haven't filled the specific pool yet...
+    if (pool.length < pool.maxSize)
     {
-      // Create a new note splash.
-      result = new NoteSplash(noteStyle);
-      this.noteSplashes.add(result);
+      // Create a new note splash for the target style.
+      result = new NoteSplash(targetStyle);
+      pool.add(result);
     }
     else
     {
       // Else, find a note splash which is inactive so we can revive it.
-      result = this.noteSplashes.getFirstAvailable();
-
+      result = pool.getFirstAvailable();
       if (result != null)
       {
         result.revive();
@@ -1469,7 +1518,7 @@ class Strumline extends FlxSpriteGroup
       {
         // The note splash pool is full and all note splashes are active,
         // so we just pick one at random to destroy and restart.
-        result = FlxG.random.getObject(this.noteSplashes.members);
+        result = FlxG.random.getObject(pool.members);
       }
     }
 
