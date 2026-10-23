@@ -2272,8 +2272,17 @@ class PlayState extends MusicBeatSubState
   function initStrumlines():Void
   {
     playerStrumline.onNoteIncoming.add(onStrumlineNoteIncoming);
-    opponentStrumline.onNoteIncoming.add(onStrumlineNoteIncoming);
+    playerStrumline.onNoteIncoming.add((noteSprite:NoteSprite) ->
+    {
+      if (noteSprite.holdNoteSprite == null)
+        return;
+
+      // Bind handling sustain trail hits.
+      noteSprite.holdNoteSprite.onLengthChange.add(processSustainTrail.bind(noteSprite.holdNoteSprite));
+    });
     add(playerStrumline);
+
+    opponentStrumline.onNoteIncoming.add(onStrumlineNoteIncoming);
     add(opponentStrumline);
 
     final cutoutSize = FullScreenScaleMode.gameCutoutSize.x / 2.5;
@@ -2982,27 +2991,6 @@ class PlayState extends MusicBeatSubState
     {
       if (holdNote == null || !holdNote.alive) continue;
 
-      // While the hold note is being hit, and there is length on the hold note...
-      if (holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0)
-      {
-        var healthChange:Float = Constants.HEALTH_HOLD_BONUS_PER_SECOND * elapsed;
-        var scoreChange:Float = Constants.SCORE_HOLD_BONUS_PER_SECOND * elapsed;
-
-        var event:HoldNoteScriptEvent = HoldNoteScriptEvent.get(NOTE_HOLD_HIT, holdNote, healthChange, scoreChange, false, Highscore.tallies.combo);
-        dispatchEvent(event, false);
-
-        // Grant the player health.
-        if (!isBotPlayMode && holdNote.scoreable)
-        {
-          health += event.healthChange;
-          songScore += event.score;
-        }
-
-        // Drop the held note if the event is cancelled.
-        if (event.eventCanceled) holdNote.missedNote = true;
-        event.finish();
-      }
-
       if (holdNote.missedNote && !holdNote.handledMiss)
       {
         // The player dropped a hold note.
@@ -3059,6 +3047,36 @@ class PlayState extends MusicBeatSubState
           }
         }
       }
+    }
+  }
+
+  function processSustainTrail(holdNote:SustainTrail, difference:Float):Void
+  {
+    // Process hold notes on the player's side.
+    // This handles scoring so we don't need it on the opponent's side.
+    if (holdNote == null || !holdNote.alive || holdNote.noteData == null) return;
+
+    // While the hold note is being hit, and there is length on the hold note...
+    if (holdNote.hitNote && !holdNote.missedNote && holdNote.lastSustainLength > 0)
+    {
+      var lengthDifference:Float = difference / 1000;
+
+      var healthChange:Float = Constants.HEALTH_HOLD_BONUS_PER_SECOND * lengthDifference;
+      var scoreChange:Float = Constants.SCORE_HOLD_BONUS_PER_SECOND * lengthDifference;
+
+      var event:HoldNoteScriptEvent = HoldNoteScriptEvent.get(NOTE_HOLD_HIT, holdNote, healthChange, scoreChange, false, Highscore.tallies.combo);
+      dispatchEvent(event, false);
+
+      // Grant the player health.
+      if (!isBotPlayMode && holdNote.scoreable)
+      {
+        health += event.healthChange;
+        songScore += event.score;
+      }
+
+      // Drop the held note if the event is cancelled.
+      if (event.eventCanceled) holdNote.missedNote = true;
+      event.finish();
     }
   }
 

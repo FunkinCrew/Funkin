@@ -7,6 +7,7 @@ import flixel.FlxSprite;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.tile.FlxDrawTrianglesItem.DrawData;
 import flixel.math.FlxMath;
+import flixel.util.FlxSignal.FlxTypedSignal;
 
 /**
  * This is based heavily on the `FlxStrip` class. It uses `drawTriangles()` to clip a sustain note
@@ -40,8 +41,12 @@ class SustainTrail extends funkin.graphics.FunkinSprite
 
   public var strumTime:Float = 0; // millis
   public var noteDirection:NoteDirection = 0;
+  public var lastSustainLength:Float = 0;
   public var sustainLength(default, set):Float = 0; // millis
   public var fullSustainLength:Float = 0;
+
+  public var onLengthChange:FlxTypedSignal<Float->Void> = new FlxTypedSignal<Float->Void>();
+
   public var parentStrumline:Strumline;
   public var cover:NoteHoldCover = null;
 
@@ -388,8 +393,11 @@ class SustainTrail extends funkin.graphics.FunkinSprite
   {
     if (s < 0.0) s = 0.0;
 
+    lastSustainLength = this.sustainLength;
     this.sustainLength = s;
     triggerRedraw();
+
+    onLengthChange.dispatch(lastSustainLength - s);
     return this.sustainLength;
   }
 
@@ -564,6 +572,8 @@ class SustainTrail extends funkin.graphics.FunkinSprite
   override public function kill():Void
   {
     super.kill();
+
+    onLengthChange.removeAll();
 
     if (!((cover?.animation?.name ?? '').startsWith('holdCoverEnd'))) cover?.playEnd();
     trailSegments = 0;
