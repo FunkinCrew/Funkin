@@ -410,6 +410,8 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
      */
   function onKeyPress(event:PreciseInputEvent):Void
   {
+    if (calibrating) return;
+
     // Set the current position for further calculation.
     event.position = localConductor.songPosition;
 
@@ -422,6 +424,8 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
      */
   function onKeyRelease(event:PreciseInputEvent):Void
   {
+    if (calibrating) return;
+
     // Set the current position for further calculation.
     event.position = localConductor.songPosition;
 
@@ -433,15 +437,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 
   public function exitCalibration(cancel:Bool):Void
   {
-    if (calibrating)
-    {
-      removeCalibrationInput();
-    }
-    else
-    {
-      PreciseInputManager.instance.onInputPressed.remove(onKeyPress);
-      PreciseInputManager.instance.onInputReleased.remove(onKeyRelease);
-    }
+    removeCalibrationInput();
 
     backButton.enabled = false;
     shouldOffset = -1;
@@ -1047,6 +1043,10 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     MenuTypedList.pauseInput = false;
     destroying = true;
     exitCalibration(true);
+
+    PreciseInputManager.instance.onInputPressed.remove(onKeyPress);
+    PreciseInputManager.instance.onInputReleased.remove(onKeyRelease);
+
     super.destroy();
   }
 }
