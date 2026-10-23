@@ -461,10 +461,6 @@ class PolymodHandler
 
     // Add blacklisting for prohibited classes and packages.
 
-    // `Sys`
-    // Sys.command() can run malicious processes
-    Polymod.blacklistImport('Sys');
-
     // `Reflect`
     // Reflect.callMethod() can access blacklisted packages, but some functions are whitelisted
     Polymod.addImportAlias('Reflect', funkin.util.ReflectUtil);
@@ -531,6 +527,16 @@ class PolymodHandler
     // Disallow direct manipulation of save data.
     Polymod.blacklistStaticFields(flixel.FlxG, ['save']);
 
+    // `Sys`
+    // Prevent scripts from executing system commands or tampering with system environment/paths
+    Polymod.blacklistStaticFields(Sys, [
+        'command', // Can run arbitrary shell processes
+        'putEnv', // No modifying system environment variables
+        'getEnv', // No reading environment variables
+        'setCwd', // No changing working directory (keeps paths isolated)
+        'environment' // No fetching environment map
+    ]);
+    
     /**
      * Using the `AssetManifest` class can get you a `Future` that holds an `AssetLibrary`
      * that you can then use to resolve to blacklisted classes using the `classTypes` field.
