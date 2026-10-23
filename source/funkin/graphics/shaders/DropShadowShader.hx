@@ -1,6 +1,6 @@
 package funkin.graphics.shaders;
 
-import flixel.system.FlxAssets.FlxShader;
+import flixel.addons.display.FlxRuntimeShader;
 import flixel.util.FlxColor;
 import funkin.graphics.FunkinSprite;
 import flixel.math.FlxAngle;
@@ -16,7 +16,7 @@ import openfl.display.BitmapData;
  *
  * Also has an Adjust Color shader in here so they can work together when needed.
  */
-class DropShadowShader extends FlxShader
+class DropShadowShader extends FlxRuntimeShader
 {
   /**
    * The color of the drop shadow.
@@ -153,8 +153,7 @@ class DropShadowShader extends FlxShader
     var cos = Math.cos(newAngle);
     var sin = Math.sin(newAngle);
 
-    angCos.value = [cos];
-    angSin.value = [sin];
+    this.setFloatArray("ang", [cos, sin]);
   }
 
   /**
@@ -176,7 +175,7 @@ class DropShadowShader extends FlxShader
   {
     antialiasing = value;
 
-    enable_antialiasing.value = [value];
+    this.setBool("enable_antialiasing", antialiasing);
     return antialiasing;
   }
 
@@ -192,7 +191,7 @@ class DropShadowShader extends FlxShader
   {
     baseHue = val;
 
-    hueMatrix.value = makeHueMatrix(val * FlxAngle.TO_RAD);
+    this.setFloatArray("hueMatrix", makeHueMatrix(val * FlxAngle.TO_RAD));
     return baseHue;
   }
 
@@ -203,7 +202,7 @@ class DropShadowShader extends FlxShader
     if (val > 0) val *= 3;
     val = 1 + (val / 100);
 
-    saturationMatrix.value = makeSaturationMatrix(val);
+    this.setFloatArray("saturationMatrix", makeSaturationMatrix(val));
     return baseSaturation;
   }
 
@@ -211,7 +210,7 @@ class DropShadowShader extends FlxShader
   {
     baseBrightness = val;
 
-    brightness.value = [val / 255];
+    this.setFloat("brightness", val / 255);
     return baseBrightness;
   }
 
@@ -228,21 +227,21 @@ class DropShadowShader extends FlxShader
       val += 1.0;
     }
 
-    contrast.value = [val];
+    this.setFloat("contrast", val);
     return baseContrast;
   }
 
   function set_threshold(val:Float):Float
   {
     threshold = val;
-    thr.value = [val];
+    this.setFloat("thr", val);
     return val;
   }
 
   function set_color(col:FlxColor):FlxColor
   {
     color = col;
-    dropColor.value = [color.red / 255, color.green / 255, color.blue / 255];
+    this.setFloatArray("dropColor", [color.red / 255, color.green / 255, color.blue / 255]);
 
     return color;
   }
@@ -268,14 +267,14 @@ class DropShadowShader extends FlxShader
   function set_distance(val:Float):Float
   {
     distance = val;
-    dist.value = [val];
+    this.setFloat("dist", val);
     return val;
   }
 
   function set_strength(val:Float):Float
   {
     strength = val;
-    str.value = [val];
+    this.setFloat("str", val);
     return val;
   }
 
@@ -325,7 +324,7 @@ class DropShadowShader extends FlxShader
   public function updateFrameInfo(frame:FlxFrame):Void
   {
     // NOTE: uv.right is actually the right pos and uv.bottom is the bottom pos
-    uFrameBounds.value = [frame.uv.left, frame.uv.top, frame.uv.right, frame.uv.bottom];
+    this.setFloatArray("uFrameBounds", [frame.uv.left, frame.uv.top, frame.uv.right, frame.uv.bottom]);
 
     // if a frame is rotated the shader will look completely wrong lol
     angleOffset = frame.angle;
@@ -333,7 +332,8 @@ class DropShadowShader extends FlxShader
 
   function set_altMaskImage(_bitmapData:BitmapData):BitmapData
   {
-    altMask.input = _bitmapData;
+    altMaskImage = _bitmapData;
+    this.setBitmapData("altMask", _bitmapData);
 
     return _bitmapData;
   }
@@ -341,182 +341,20 @@ class DropShadowShader extends FlxShader
   function set_maskThreshold(val:Float):Float
   {
     maskThreshold = val;
-    thr2.value = [val];
+    this.setFloat("thr2", maskThreshold);
     return val;
   }
 
   function set_useAltMask(val:Bool):Bool
   {
     useAltMask = val;
-    useMask.value = [val];
+    this.setBool("useMask", useAltMask);
     return val;
   }
 
-  @:glFragmentSource('
-      #pragma header
-
-      #ifdef GL_ES
-        #ifdef GL_OES_standard_derivatives
-          #define HAS_DERIVATIVES
-        #endif
-      #else
-        #if __VERSION__ >= 130
-          #define HAS_DERIVATIVES
-        #endif
-      #endif
-
-      // This shader aims to mostly recreate how Adobe Animate/Flash handles drop shadows, but its main use here is for rim lighting.
-
-      // this shader also includes a recreation of the Animate/Flash "Adjust Color" filter,
-      // which was kindly provided and written by Rozebud https://github.com/ThatRozebudDude ( thank u rozebud :) )
-      // Adapted from Andrey-Postelzhuks shader found here: https://forum.unity.com/threads/hue-saturation-brightness-contrast-shader.260649/
-      // Hue rotation stuff is from here: https://www.w3.org/TR/filter-effects/#feColorMatrixElement
-
-      // equals (frame.left, frame.top, frame.right, frame.bottom)
-      uniform vec4 uFrameBounds;
-
-      uniform float dist;
-      uniform float str;
-      uniform float thr;
-
-      uniform float angCos;
-      uniform float angSin;
-
-      uniform sampler2D altMask;
-      uniform bool useMask;
-      uniform float thr2;
-
-      uniform vec3 dropColor;
-
-      uniform mat3 hueMatrix;
-      uniform float contrast;
-      uniform mat3 saturationMatrix;
-      uniform float brightness;
-
-      uniform bool enable_antialiasing;
-
-      const vec3 lumaValue = vec3(0.2126, 0.7152, 0.0722);
-
-      vec3 applyHSBCEffect(vec3 color)
-      {
-        vec3 bh = (brightness + color) * hueMatrix;
-        vec3 c = (bh - 0.25) * contrast + 0.25;
-        vec3 s = c * saturationMatrix;
-
-        return s;
-      }
-
-      float getLumaRGB(vec3 color)
-      {
-        return dot(color.rgb, lumaValue);
-      }
-
-      vec4 getTexRGBA(vec2 uv)
-      {
-        return texture2D(bitmap, uv);
-      }
-
-      float getLumaTex(vec2 uv)
-      {
-        return getLumaRGB(getTexRGBA(uv).rgb);
-      }
-
-      // Used as Difference Based AA.
-      // Return value range (0.0, 2.0)
-      float lwidth_manual(float center, vec2 uv, vec2 px)
-      {
-        if (!enable_antialiasing)
-          return 0.0;
-
-        vec3 p2x1 = getTexRGBA(uv + vec2( 1.0,  0.0) * px).rgb;
-        vec3 p1x2 = getTexRGBA(uv + vec2( 0.0,  1.0) * px).rgb;
-        vec3 p2x2 = getTexRGBA(uv + vec2( 1.0,  1.0) * px).rgb;
-
-        float right     = getLumaRGB(p2x1);
-        float down      = getLumaRGB(p1x2);
-        float diagonal  = getLumaRGB(p2x2);
-
-        float dx = abs(right - center);
-        float dy = abs(down - center);
-        float dd = abs(diagonal - center);
-
-        return ((dx + dy + dd * 0.7) / (1.0 + 1.0 + 0.7)) * 2.0;
-      }
-
-      // ============================
-      // THRESHOLD
-      // ============================
-
-      float getThreshold(vec2 uv)
-      {
-        float threshold = thr;
-        float maskIntensity = 0.0;
-
-        if (useMask)
-        {
-          maskIntensity = texture2D(altMask, uv).b;
-          if (maskIntensity > 0.0)
-            threshold = thr2;
-        }
-
-        return threshold;
-      }
-
-      // ============================
-      // DROP SHADOW / RIM
-      // ============================
-
-      vec4 createDropShadowEx(vec2 uv, vec2 ratio, vec2 size)
-      {
-        vec4 color4 = texture2D(bitmap, uv);
-
-        #ifdef HAS_DERIVATIVES
-          // Increase the pixel distance if the screen is smaller than the sprite!
-          vec2 px = max(ratio, fwidth(uv));
-        #else
-          vec2 px = ratio;
-        #endif
-
-        float color3_light = getLumaRGB(color4.rgb);
-
-        float delta = lwidth_manual(color3_light, uv, px);
-
-        float threshold = getThreshold(uv);
-        float intensity = smoothstep(threshold - delta, threshold + delta, color3_light);
-
-        float shadowAlpha = 0.0;
-
-        vec3 color3_no_effect = color4.a > 0.0 ? color4.rgb / color4.a : color4.rgb;
-        vec3 color3 = applyHSBCEffect(color3_no_effect);
-
-        vec2 checked = vec2(
-          uv.x + (dist * angCos * ratio.x),
-          uv.y - (dist * angSin * ratio.y)
-        );
-
-        if (checked.x > uFrameBounds.x &&
-            checked.y > uFrameBounds.y &&
-            checked.x < uFrameBounds.z &&
-            checked.y < uFrameBounds.w)
-        {
-          shadowAlpha = texture2D(bitmap, checked).a;
-        }
-
-        float rim = (1.0 - (shadowAlpha * str)) * intensity;
-
-        color3 += dropColor * rim;
-
-        return vec4(color3 * color4.a, color4.a);
-      }
-
-      void main()
-      {
-        gl_FragColor = createDropShadowEx(openfl_TextureCoordv, 1.0 / openfl_TextureSize.xy, openfl_TextureSize.xy);
-      }
-    ')
   public function new()
   {
-    super();
+    super(Assets.getText(Paths.frag('ui/shaders/drop-shadow')));
 
     angle = 0;
     angleOffset = 0;
