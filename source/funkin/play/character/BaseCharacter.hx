@@ -710,6 +710,19 @@ class BaseCharacter extends Bopper implements IRegistryEntry<CharacterData>
   function playComboAnimation(comboCount:Int):Void
   {
     var comboAnim = 'combo${comboCount}';
+    // No animation for this exact combo count.
+    // At combo 200, fall back to the last combo animation (combo50).
+    if (!hasAnimation(comboAnim))
+    {
+      if (comboNoteCounts.length == 0) return;
+
+      var repeatComboCount = comboNoteCounts[comboNoteCounts.length - 1];
+      if (repeatComboCount == 0 || comboCount != 200) return;
+
+      log('${comboAnim} animation not found, initializing fallback...');
+      comboAnim = 'combo${repeatComboCount}';
+    }
+
     if (hasAnimation(comboAnim))
     {
       log('Playing combo animation "${comboAnim}"');
@@ -851,6 +864,7 @@ enum CharacterType
    * - If available, `combo###` animations will play when certain combo counts are reached.
    *   - For example, `combo50` will play when the player hits 50 notes in a row.
    *   - Multiple combo animations can be provided for different thresholds.
+   *   - If the combo reaches 200 and there's no animation for it, the highest threshold animation will repeat.
    * - If available, `drop###` animations will play when combos are dropped above certain thresholds.
    *   - For example, `drop10` will play when the player drops a combo larger than 10.
    *   - Multiple drop animations can be provided for different thresholds (i.e. dropping larger combos).
