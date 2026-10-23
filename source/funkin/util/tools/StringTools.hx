@@ -20,6 +20,21 @@ class StringTools
   }
 
   /**
+   * Removes all occurrences of a specified substring from the string.
+   *
+   * @param value The source string.
+   * @param sub The substring to remove.
+   * @return The modified string
+   */
+  public static function remove(value:String, ?sub:String):String
+  {
+    if (sub == null || sub.length == 0)
+      return value;
+
+    return value.replace(sub, "");
+  }
+
+  /**
    * Converts a string to title case. For example, "hello world" becomes "Hello World".
      *
    * @param value The string to convert.
