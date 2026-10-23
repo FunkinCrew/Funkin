@@ -1908,7 +1908,7 @@ class PlayState extends MusicBeatSubState
       var correctSync:Float = Math.min(FlxG.sound.music.length, Math.max(0, Conductor.instance.songPosition - Conductor.instance.combinedOffset));
       var playerVoicesError:Float = 0;
       var opponentVoicesError:Float = 0;
-      if (vocals != null && vocals.playing)
+      if (vocals != null && (vocals.playing || vocals.time < 0))
       {
         @:nullSafety(Off)
         @:privateAccess // todo: maybe make the groups public :thinking:
