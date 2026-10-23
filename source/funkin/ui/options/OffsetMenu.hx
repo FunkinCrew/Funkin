@@ -541,13 +541,6 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
   function registerCalibrationTap(tapBeat:Float):Bool
   {
     var arrow:ArrowData = getClosestArrowAtBeat(tapBeat);
-
-    #if FEATURE_HAPTICS
-    final hapticAmplitude:Float = Constants.MAX_VIBRATION_AMPLITUDE / 4 * 2.5;
-
-    HapticManager.instance?.playVibration(0, 0.01, hapticAmplitude, 1, HapticType.NOTE);
-    #end
-
     var closestBeat:Float = Math.round(tapBeat);
     var diff:Float = closestBeat - tapBeat;
     var ms:Float = (diff * msPerBeat);
