@@ -4809,7 +4809,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // We need to update when comments change OR we scroll.
     if (noteDisplayDirty || commentDisplayDirty)
     {
-      // Current algorithm displays the closest comment within one second before or after the playhead.
+      // Current algorithm displays the closest on-screen comment to the playhead
 
       var playheadPosMs:Float = scrollPositionInMs + playheadPositionInMs;
 
