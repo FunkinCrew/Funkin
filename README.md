@@ -41,7 +41,7 @@ Full credits can be found in-game, or in the `credits.json` file which is locate
 ## Programming
 - [ninjamuffin99](https://twitter.com/ninja_muffin99) - Lead Programmer
 - [EliteMasterEric](https://twitter.com/EliteMasterEric) - Programmer
-- [MtH](https://twitter.com/emmnyaa) - Charting and Additional Programming
+- [MtH](https://bsky.app/profile/ezfollowers.xyz) - Charting and Additional Programming
 - [GeoKureli](https://twitter.com/Geokureli/) - Additional Programming
 - [ZackDroid](https://x.com/ZackDroidCoder) - Lead Mobile Programmer
 - [MAJigsaw77](https://github.com/MAJigsaw77) - Mobile Programmer
