@@ -119,6 +119,7 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
 
   function setupMusic():Void
   {
+    if (music != null) return;
     if (_data == null) return;
 
     if (_data.music == null || (_data.music.asset ?? '') == '') return;
