@@ -54,18 +54,23 @@ class BackupAvailableDialog extends Dialog
   @:bind(buttonOpenBackup, MouseEvent.CLICK)
   function onClickOpenBackup(_:MouseEvent):Void
   {
-    var targetPath = CameraEditorImportExportHandler.getLatestBackupPath();
+    var targetPath:Null<String> = CameraEditorImportExportHandler.getLatestBackupPath();
+
+    if (targetPath == null)
+    {
+      CameraEditorNotificationHandler.failure(this.cameraEditorState, 'No Backup Found', 'No backup file was found to load.');
+      return;
+    }
 
     try
     {
       CameraEditorImportExportHandler.loadSongFromFNFCPath(cameraEditorState, targetPath);
+      this.hideDialog(DialogButton.APPLY);
     }
     catch (e)
     {
-      CameraEditorNotificationHandler.failure(this.cameraEditorState, 'Failed to Load Chart', 'Failed to load chart (${path}): $e');
+      CameraEditorNotificationHandler.failure(this.cameraEditorState, 'Failed to Load Backup', 'Failed to load backup (${targetPath}):\n$e');
       // Song failed to load, don't close the Welcome dialog so we aren't in a broken state.
-      this.hideDialog(DialogButton.APPLY);
-      return;
     }
   }
 
