@@ -361,9 +361,9 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     var partialPath:String = path;
     #end
 
-    function startPartialLoad():Void
+    function startPartialLoad(?preloadedBytes:haxe.io.Bytes):Void
     {
-      var soundRequest = FlxPartialSound.partialLoadFromFile(partialPath, start, end);
+      var soundRequest = preloadedBytes != null ? FlxPartialSound.partialLoadFromBytes(partialPath, preloadedBytes, start, end) : FlxPartialSound.partialLoadFromFile(partialPath, start, end);
 
       if (soundRequest == null)
       {
@@ -405,9 +405,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
         promise.complete(null);
         return;
       }
-
-      funkin.assets.FunkinAssetCache.instance.setBytes(partialPath, bytes);
-      startPartialLoad();
+      startPartialLoad(cast bytes);
     }).onError(function(_)
     {
         promise.complete(null);
