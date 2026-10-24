@@ -1802,28 +1802,10 @@ class Project extends HXProject
       // Adaptive icons
       adaptiveIcon = new AdaptiveIcon('art/icons/android/', true);
     }
-    else if (isIOS())
+    else if (isIOS() || isMac())
     {
-      // Note: the icons on iOS (and likely even android too) support nice P3 colors space
-      // However, lime's IconHelper.hx` and the general accompyaning encoding stuff to automatically
-      // generate icons of different sizes doesnt accomodate for the nice yummy color space
-      // so we do indeed need to make sure we declare the icons here
-      // on iOS
-
-      // addIcon("icon16_noalpha.png", 16);
-      // addIcon("art/icons/icon32_noalpha.png", 32);
-      // addIcon("art/icons/icon64_noalpha.png", 64);
-      // addIcon("art/icons/iconOG_noalpha.png");
-      addIcon("art/icons/bf-iOS-Default-20x20@2x.png", 40);
-      addIcon("art/icons/bf-iOS-Default-20x20@3x.png", 60);
-      addIcon("art/icons/bf-iOS-Default-29x29.png", 29);
-      addIcon("art/icons/bf-iOS-Default-29x29@2x.png", 58);
-      addIcon("art/icons/bf-iOS-Default-29x29@3x.png", 87);
-      addIcon("art/icons/bf-iOS-Default-40x40@2x.png", 80);
-      addIcon("art/icons/bf-iOS-Default-60x60@2x.png", 120);
-      addIcon("art/icons/bf-iOS-Default-60x60@3x.png", 180);
-      addIcon("art/icons/bf-iOS-Default-1024x1024.png", 1024);
-      addIcon("art/icons/bf-iOS-Default-1024x1024.png");
+      // Adaptive icons
+      adaptiveIcon = new AdaptiveIcon('art/icons/bf-iOS.icon', true);
     }
     else
     {
