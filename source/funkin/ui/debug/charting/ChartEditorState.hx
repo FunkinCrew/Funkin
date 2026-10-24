@@ -4813,7 +4813,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
       var playheadPosMs:Float = scrollPositionInMs + playheadPositionInMs;
 
-      var startPos:Float = scrollPositionInMs;
+      var startPos:Float = Conductor.instance.getStepTimeInMs(scrollPositionInSteps - (GRID_TOP_PAD + commentPanel.height) / GRID_SIZE);
       var endPos:Float = Conductor.instance.getStepTimeInMs(scrollPositionInSteps + (FlxG.height - PLAYBAR_HEIGHT - GRID_INITIAL_Y_POS) / GRID_SIZE);
 
       var nearbyCommentData:Array<CommentData> = currentSongChartCommentData.filter((comment) ->
