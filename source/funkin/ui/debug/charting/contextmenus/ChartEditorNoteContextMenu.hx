@@ -9,6 +9,7 @@ import haxe.ui.core.Screen;
 import haxe.ui.events.UIEvent;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.ui.debug.charting.commands.MoveNotesCommand;
+import funkin.ui.debug.charting.commands.SnapNotesCommand;
 import funkin.ui.debug.charting.commands.FlipNotesCommand;
 import funkin.ui.debug.charting.commands.MirrorNotesCommand;
 import funkin.ui.debug.charting.commands.RemoveNotesCommand;
@@ -22,6 +23,7 @@ class ChartEditorNoteContextMenu extends ChartEditorBaseContextMenu
   var contextmenuPosition:NumberStepper;
   var contextmenuUnit:DropDown;
   var contextmenuEdit:MenuItem;
+  var contextmenuSnap:MenuItem;
   var contextmenuFlip:MenuItem;
   var contextmenuMirrorX:MenuItem;
   var contextmenuDelete:MenuItem;
@@ -158,6 +160,11 @@ class ChartEditorNoteContextMenu extends ChartEditorBaseContextMenu
     contextmenuEdit.onClick = function(_)
     {
       chartEditorState.showToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_NOTE_DATA_LAYOUT);
+    }
+
+    contextmenuSnap.onClick = function(_)
+    {
+      chartEditorState.performCommand(new SnapNotesCommand([data], chartEditorState.noteSnapRatio));
     }
 
     contextmenuFlip.onClick = function(_)
