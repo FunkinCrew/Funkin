@@ -185,6 +185,11 @@ class FreeplayState extends MusicBeatSubState
   var previewTimers:Array<FlxTimer> = [];
 
   /**
+   * The pending song timer, cancelled on each selection change.
+   */
+  var previewTransition:Null<FlxTimer> = null;
+
+  /**
    * Bit of a utility var to get the currently displayed DifficultySprite
    *
    * The getter looks like this
@@ -3217,11 +3222,17 @@ class FreeplayState extends MusicBeatSubState
 
     if (grpCapsules.countLiving() > 0 && !prepForNewRank && uiStateMachine.canInteract())
     {
+      clearPreviews();
       FlxG.sound.music?.pause();
-      FlxTimer.wait(FADE_IN_DELAY, playCurSongPreview.bind(currentCapsule));
-      currentCapsule.selected = true;
 
-      // switchBackingImage(currentCapsule.freeplayData);
+      if (previewTransition != null) previewTransition.cancel();
+      // Add a timer to delay the song preview to prevent overlapping or cutting out.
+      previewTransition = new FlxTimer().start(FADE_IN_DELAY, function(_):Void
+      {
+        playCurSongPreview(currentCapsule);
+      });
+
+      previewTimers.push(previewTransition);
     }
 
     // Small vibrations every selection change.
@@ -3320,6 +3331,9 @@ class FreeplayState extends MusicBeatSubState
     }
 
     previewTimers = [];
+
+    if (previewTransition != null) previewTransition.cancel();
+    previewTransition = null;
   }
 
   public function switchBackingImage(?freeplaySongData:FreeplaySongData):Void
