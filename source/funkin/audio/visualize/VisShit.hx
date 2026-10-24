@@ -120,7 +120,7 @@ class VisShit
       {
         // Math.pow3
         @:privateAccess
-        var buf = snd._channel.__audioSource.buffer;
+        var buf = snd._source.buffer;
 
         // @:privateAccess
         audioData = cast buf.data; // jank and hacky lol! kinda busted on HTML5 also!!
