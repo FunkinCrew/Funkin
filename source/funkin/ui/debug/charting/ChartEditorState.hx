@@ -73,6 +73,7 @@ import funkin.ui.debug.charting.commands.ExtendNoteLengthCommand;
 import funkin.ui.debug.charting.commands.FlipNotesCommand;
 import funkin.ui.debug.charting.commands.InvertSelectedItemsCommand;
 import funkin.ui.debug.charting.commands.MirrorNotesCommand;
+import funkin.ui.debug.charting.commands.ModifyNotesLengthCommand;
 import funkin.ui.debug.charting.commands.MoveEventsCommand;
 import funkin.ui.debug.charting.commands.MoveItemsCommand;
 import funkin.ui.debug.charting.commands.MoveNotesCommand;
@@ -6952,6 +6953,21 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         }
       }
     }
+
+    // E = Increase Notes Length
+    if (!pressingControl() && FlxG.keys.justPressed.E && currentNoteSelection.length > 0)
+    {
+      // Increase selected notes length according to the current note snap level
+      performCommand(new ModifyNotesLengthCommand(currentNoteSelection, noteSnapRatio * Conductor.instance.stepLengthMs));
+    }
+
+    // Q = Decrease Notes Length
+    if (!pressingControl() && FlxG.keys.justPressed.Q && currentNoteSelection.length > 0)
+    {
+      // Decrease selected notes length according to the current note snap level
+      performCommand(new ModifyNotesLengthCommand(currentNoteSelection, noteSnapRatio * Conductor.instance.stepLengthMs * -1));
+    }
+
 
     // CTRL + F = Flip Notes
     if (pressingControl() && FlxG.keys.justPressed.F)
