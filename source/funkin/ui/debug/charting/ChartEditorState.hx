@@ -2032,7 +2032,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * The comment panel on the right side.
    * Constructed manually and added to the layout so we can control its position.
    */
-  var commentPanel:Null<ChartEditorCommentPanel> = null;
+  var commentPanels:Array<ChartEditorCommentPanel> = [];
 
   /**
    * The `File -> New Chart` menu item.
@@ -3291,10 +3291,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     add(playbarHeadLayout);
 
-    commentPanel = new ChartEditorCommentPanel(this);
-    commentPanel.zIndex = 10;
-    commentPanel.hidden = true;
-    add(commentPanel);
+    buildCommentPanel();
 
     // Little text that shows up when you copy something.
     txtCopyNotif = new FlxText(0, 0, 0, '', 24);
@@ -4809,11 +4806,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // We need to update when comments change OR we scroll.
     if (noteDisplayDirty || commentDisplayDirty)
     {
-      // Current algorithm displays the closest on-screen comment to the playhead
+      // Current algorithm displays every on-screen comment, starting closest to the playhead
 
       var playheadPosMs:Float = scrollPositionInMs + playheadPositionInMs;
 
-      var startPos:Float = Conductor.instance.getStepTimeInMs(scrollPositionInSteps - (GRID_TOP_PAD + commentPanel.height) / GRID_SIZE);
+      var startPos:Float = Conductor.instance.getStepTimeInMs(scrollPositionInSteps - (GRID_TOP_PAD + commentPanels[0].height) / GRID_SIZE);
       var endPos:Float = Conductor.instance.getStepTimeInMs(scrollPositionInSteps + (FlxG.height - PLAYBAR_HEIGHT - GRID_INITIAL_Y_POS) / GRID_SIZE);
 
       var nearbyCommentData:Array<CommentData> = currentSongChartCommentData.filter((comment) ->
@@ -4831,11 +4828,18 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         return (commentADistance - commentBDistance) > 0 ? 1 : -1;
       });
 
-      var commentToDisplay:Null<CommentData> = nearbyCommentData[0];
+      while (commentPanels.length < nearbyCommentData.length)
+      {
+        buildCommentPanel();
+      }
 
-      commentPanel.commentData = commentToDisplay;
-      commentPanel.updatePosition();
-      commentPanel.updateColor();
+      for (i in 0...commentPanels.length)
+      {
+        var commentPanel:ChartEditorCommentPanel = commentPanels[i];
+        commentPanel.commentData = i < nearbyCommentData.length ? nearbyCommentData[i] : null;
+        commentPanel.updatePosition();
+        commentPanel.updateColor();
+      }
     }
 
     if (commentDisplayDirty)
@@ -4875,6 +4879,16 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         pinSprite.commentData = commentData;
       }
     }
+  }
+
+  function buildCommentPanel():Void
+  {
+    var commentPanel:ChartEditorCommentPanel = new ChartEditorCommentPanel(this);
+    commentPanel.zIndex = 10;
+    commentPanel.hidden = true;
+    add(commentPanel);
+    commentPanels.push(commentPanel);
+    refresh();
   }
 
   /**
@@ -6799,12 +6813,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       playbarHeadLayout.destroy();
       playbarHeadLayout = null;
     }
-    if (commentPanel != null)
+    for (commentPanel in commentPanels)
     {
       remove(commentPanel);
       commentPanel.destroy();
-      commentPanel = null;
     }
+    commentPanels = [];
     if (txtCopyNotif != null)
     {
       remove(txtCopyNotif);
