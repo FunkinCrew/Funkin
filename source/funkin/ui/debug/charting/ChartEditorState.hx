@@ -4888,6 +4888,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     commentPanel.hidden = true;
     add(commentPanel);
     commentPanels.push(commentPanel);
+    refresh();
   }
 
   /**
