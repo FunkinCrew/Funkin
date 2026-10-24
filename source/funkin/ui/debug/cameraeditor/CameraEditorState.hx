@@ -553,6 +553,8 @@ class CameraEditorState extends UIState implements ConsoleClass
    */
   public var exitConfirmDialog:Dialog;
 
+  var userGuideDialog:UserGuideDialog;
+
   var deleteLayerConfirmDialog:Dialog;
   var autoSortLayersDialog:Dialog;
 
@@ -2786,7 +2788,9 @@ class CameraEditorState extends UIState implements ConsoleClass
   @:bind(menubarItemUserGuide, MouseEvent.CLICK)
   function onUserGuide(_)
   {
-    var userGuideDialog = new UserGuideDialog();
+    if (userGuideDialog != null) return;
+
+    userGuideDialog = new UserGuideDialog();
     userGuideDialog.showDialog();
 
     userGuideDialog.onDialogClosed = (_) -> userGuideDialog = null;
