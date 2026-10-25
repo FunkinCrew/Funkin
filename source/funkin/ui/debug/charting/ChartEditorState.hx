@@ -120,6 +120,8 @@ import haxe.ui.components.DropDown;
 import haxe.ui.components.Label;
 import haxe.ui.components.NumberStepper;
 import haxe.ui.components.Slider;
+import haxe.ui.components.TextArea;
+import haxe.ui.components.VerticalScroll;
 import haxe.ui.containers.dialogs.CollapsibleDialog;
 import haxe.ui.containers.menus.Menu;
 import haxe.ui.containers.menus.MenuBar;
@@ -759,6 +761,22 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function get_isCursorOverHaxeUI():Bool
   {
     return Screen.instance.hasSolidComponentUnderPoint(FlxG.mouse.viewX, FlxG.mouse.viewY);
+  }
+
+  /**
+   * Whether the user's mouse cursor is hovering over a comment, and not any other component of the HaxeUI.
+   * If so, we can still scroll underneath.
+   */
+  var canScrollComment(get, never):Bool;
+
+  function get_canScrollComment():Bool
+  {
+    for (component in Screen.instance.findSolidComponentUnderPoint(FlxG.mouse.viewX, FlxG.mouse.viewY))
+    {
+      if (!Std.isOfType(component, ChartEditorCommentPanel) && component.findAncestor(null, ChartEditorCommentPanel) == null) return false;
+      if (Std.isOfType(component, TextArea) && component.findComponent(VerticalScroll, false) != null) return false;
+    }
+    return true;
   }
 
   /**
@@ -4910,7 +4928,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function handleScrollKeybinds():Void
   {
     // Don't scroll when the user is interacting with the UI, unless a playbar button (the << >> ones) is pressed.
-    if ((isHaxeUIFocused || isCursorOverHaxeUI) && playbarButtonPressed == null) return;
+    if ((isHaxeUIFocused || (isCursorOverHaxeUI && !canScrollComment)) && playbarButtonPressed == null) return;
 
     var scrollAmount:Float = 0; // Amount to scroll the grid.
     var playheadAmount:Float = 0; // Amount to scroll the playhead relative to the grid.
