@@ -763,6 +763,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     return Screen.instance.hasSolidComponentUnderPoint(FlxG.mouse.viewX, FlxG.mouse.viewY);
   }
 
+  /**
+   * Whether the user's mouse cursor is hovering over a comment, and not any other component of the HaxeUI.
+   * If so, we can still scroll underneath.
+   */
   var canScrollComment(get, never):Bool;
 
   function get_canScrollComment():Bool
