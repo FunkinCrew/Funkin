@@ -1610,6 +1610,8 @@ class PlayState extends MusicBeatSubState
     persistentUpdate = false;
     shouldSubstatePause = true;
     openSubState(pauseSubState);
+    FlxTransitionableState.skipNextTransIn = true;
+    FlxTransitionableState.skipNextTransOut = true;
   }
 
   function moveToGameOver():Void
