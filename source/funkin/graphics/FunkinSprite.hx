@@ -1,9 +1,9 @@
 package funkin.graphics;
 
 import animate.FlxAnimate;
-import animate.FlxAnimateFrames.FilterQuality;
-import animate.FlxAnimateFrames.SpritemapInput;
 import animate.FlxAnimateFrames;
+import animate.internal.AnimateDrawCommand;
+import animate.internal.RenderTexture;
 import animate.internal.SymbolItem;
 import animate.internal.elements.AtlasInstance;
 import animate.internal.elements.Element;
@@ -114,6 +114,7 @@ typedef AtlasSpriteSettings =
   /**
    * If enabled, the sprite will render as one texture instead of rendering multiple limbs.
    * This is useful for stuff like changing alpha, and shaders that require the whole sprite.
+   *
    * Only enable this if your sprite either:
    * - Changes alpha to something other than 1.0
    * - Has a shader or blend mode
@@ -140,18 +141,6 @@ class FunkinSprite extends FlxAnimate
    * The filters array to be applied to the sprite.
    */
   public var filters(default, set):Null<Array<BitmapFilter>> = null;
-
-  override function set_clipRect(rect:FlxRect):FlxRect
-  {
-    if (!isAnimate) return super.set_clipRect(rect);
-
-    if (rect != null) clipRect = rect.round();
-    else
-      @:nullSafety(Off)
-      clipRect = null;
-
-    return rect;
-  }
 
   /**
    * Only used for mods that don't use the new asset system.
@@ -1332,8 +1321,6 @@ class FunkinSprite extends FlxAnimate
     // Forcefully enable render texture when we have filters.
     if (filters != null && filters.length > 0) return true;
 
-    if (this.isAnimate && this.clipRect != null) return true;
-
     return super.checkRenderTexture();
   }
 
@@ -1364,13 +1351,15 @@ class FunkinSprite extends FlxAnimate
 
   override public function draw():Void
   {
-    if (filters != null)
+    #if FEATURE_DEBUG_TRACY
+    // Hide profiler zones of inner functions, greatly reducing data used representing OpenFL/Flixel internals.
+    final functionZones:Bool = cpp.vm.tracy.TracyProfiler.setFunctionZones(false);
+    #end
+
+    for (filter in filters ?? [])
     {
-      for (filter in filters)
-      {
-        @:privateAccess
-        if (filter.__renderDirty) _renderTextureDirty = true;
-      }
+      @:privateAccess
+      if (filter.__renderDirty) _renderTextureDirty = true;
     }
 
     super.draw();
@@ -1386,91 +1375,67 @@ class FunkinSprite extends FlxAnimate
 
     if (willUseRenderTexture)
     {
-      var bounds:Array<Int> = [Math.ceil(frame.frame.width), Math.ceil(frame.frame.height)];
-      if (_renderTexture == null) _renderTexture = new FunkinRenderTexture(bounds[0], bounds[1], this);
-
-      if (_renderTextureDirty)
-      {
-        _renderTexture.init(bounds[0], bounds[1]);
-        _renderTexture.drawToCamera((camera, mat) ->
-        {
-          camera.drawPixels(frame, framePixels, mat, null, null, antialiasing, null);
-        });
-
-        _renderTexture.render();
-
-        filterRenderer.applyFilters();
-        _renderTextureDirty = false;
-      }
-
-      if (filtered)
-      {
-        matrix.translate(filterOffsets[0] * matrix.a + filterOffsets[1] * matrix.c, filterOffsets[1] * matrix.d + filterOffsets[0] * matrix.b);
-        camera.drawPixels(filterRenderer.graphic?.imageFrame.frame, null, matrix, colorTransform, blend, antialiasing, shader, blendTarget);
-      }
-      else
-      {
-        camera.drawPixels(_renderTexture.graphic.imageFrame.frame, framePixels, matrix, colorTransform, blend, antialiasing, shader, blendTarget);
-      }
+      var bounds:FlxRect = FlxRect.get(0, 0, frame.frame.width, frame.frame.height);
+      setupRenderTexture(camera, bounds, null, matrix);
+      drawRenderTexture(camera, matrix);
+      bounds.put();
     }
     else
     {
-      camera.drawPixels(frame, framePixels, matrix, colorTransform, blend, antialiasing, shader, blendTarget);
+      camera.drawPixels(frame, framePixels, matrix, colorTransform, blend, antialiasing, shader);
     }
   }
 
-  override function drawAnimate(camera:FlxCamera):Void
+  override function setupRenderTexture(camera:FlxCamera, bounds:FlxRect, ?command:AnimateDrawCommand, matrix:FlxMatrix):Void
   {
-    final willUseRenderTexture = checkRenderTexture();
-    final matrix = _matrix;
+    var dirty:Bool = _renderTextureDirty;
 
-    @:privateAccess
-    var bounds = timeline._bounds;
-
-    // Reuses the matrix built by the cull pass when possible.
-    prepareAnimateDrawMatrix(matrix, camera, bounds, willUseRenderTexture);
-
-    if (renderStage) drawStage(camera);
-
-    timeline.currentFrame = animation.frameIndex;
-
-    #if !flash
-    if (willUseRenderTexture)
+    // Small fix for buffer sprite whitelisting/blacklisting
+    if (_renderTexture == null)
     {
-      if (_renderTexture == null)
+      var graphicKey:String = this.graphic.key;
+
+      if (this.isAnimate)
       {
-        _renderTexture = new FunkinRenderTexture(Math.ceil(bounds.width), Math.ceil(bounds.height), this);
+        @:privateAccess
+        graphicKey = cast(this.library.parent, FlxAnimateSpritemapCollection).spritemaps[0].key;
       }
 
-      if (_renderTextureDirty)
-      {
-        _renderTexture.init(Math.ceil(bounds.width), Math.ceil(bounds.height));
-        _renderTexture.drawToCamera((camera, matrix) ->
-        {
-          matrix.translate(-bounds.x, -bounds.y);
-          timeline.draw(camera, matrix, null, null, antialiasing, null);
-        });
-        _renderTexture.render();
+      _renderTexture = new RenderTexture(Math.ceil(bounds.width), Math.ceil(bounds.height), graphicKey);
+      filterRenderer.graphicKey = graphicKey;
+    }
 
-        filterRenderer.applyFilters();
-        _renderTextureDirty = false;
-      }
+    super.setupRenderTexture(camera, bounds, command, matrix);
 
-      if (filtered)
-      {
-        matrix.translate(filterOffsets[0] * matrix.a + filterOffsets[1] * matrix.c, filterOffsets[1] * matrix.d + filterOffsets[0] * matrix.b);
-        camera.drawPixels(filterRenderer.graphic?.imageFrame.frame, null, matrix, colorTransform, blend, antialiasing, shader, blendTarget);
-      }
-      else
-      {
-        camera.drawPixels(_renderTexture.graphic.imageFrame.frame, framePixels, matrix, colorTransform, blend, antialiasing, shader, blendTarget);
-      }
+    if (dirty)
+    {
+      filterRenderer.applyFilters();
+    }
+  }
+
+  override function renderRTT(camera:FlxCamera, matrix:FlxMatrix, bounds:FlxRect, command:AnimateDrawCommand):Void
+  {
+    if (isAnimate)
+    {
+      matrix.translate(-bounds.x, -bounds.y);
+      timeline.draw(camera, matrix, command);
     }
     else
-    #end
     {
-      timeline.draw(camera, matrix, colorTransform, blend, antialiasing, shader);
+      camera.drawPixels(frame, framePixels, matrix, null, null, antialiasing, null);
     }
+  }
+
+  override function drawRenderTexture(camera:FlxCamera, matrix:FlxMatrix):Void
+  {
+    if (filtered)
+    {
+      matrix.translate(filterOffsets[0] * matrix.a + filterOffsets[1] * matrix.c, filterOffsets[1] * matrix.d + filterOffsets[0] * matrix.b);
+      camera.drawPixels(filterRenderer.graphic?.imageFrame.frame, null, matrix, colorTransform, blend, antialiasing, shader, blendTarget);
+      return;
+    }
+
+    super.drawRenderTexture(camera, matrix);
   }
 
   override public function destroy():Void
