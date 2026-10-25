@@ -189,6 +189,7 @@ class StickerTransition extends FlxTransition
     }
 
     customCamera.bgColor = 0x0;
+    customCamera.zIndex = 10;
     FlxG.cameras.add(customCamera, false);
     this.camera = customCamera;
 
