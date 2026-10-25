@@ -435,7 +435,7 @@ class TitleState extends MusicBeatState
 
     funkin.ui.transition.Transition.switchState(() -> new MainMenuState(), {
       assetQuery: MainMenuState.queryAssets,
-      transition: (force ? None : BlackScreen(Fade(North), Fade(South))),
+      transition: (BlackScreen(force ? None : Fade(North), Fade(South))),
     });
   }
 
