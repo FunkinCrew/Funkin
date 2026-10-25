@@ -8,14 +8,15 @@
 1. Run `cd the\directory\you\want\the\source\code\in` to specify which folder the command prompt is working in.
     - For example, `cd C:\Users\YOURNAME\Documents` would instruct the command prompt to perform the next steps in your Documents folder.
 2. Run `git clone https://github.com/FunkinCrew/funkin.git` to clone the base repository.
+    -  To clone branches, run `git clone -b <branch-name> https://github.com/FunkinCrew/Funkin`
 3. Run `cd funkin` to enter the cloned repository's directory.
 4. Run `git submodule update --init --recursive` to download the game's assets.
     - NOTE: By performing this operation, you are downloading Content which is proprietary and protected by national and international copyright and trademark laws. See [the LICENSE.md file for the Funkin.assets](https://github.com/FunkinCrew/funkin.assets/blob/main/LICENSE.md) repo for more information.
 5. Run `haxelib --global install hmm` and then `haxelib --global run hmm setup` to install hmm.json
 6. Run `hmm install` to install all haxelibs of the current branch
     - If you have issues installing Lime, try utilizing Funkin's patched libraries for hmm and haxelib: `haxelib --global git haxelib https://github.com/FunkinCrew/haxelib.git` and `haxelib --global git hmm  https://github.com/FunkinCrew/hmm.git`
-8. Run `haxelib run lime setup` to set up Lime
-9. Perform additional platform setup
+7. Run `haxelib run lime setup` to set up Lime
+8. Perform additional platform setup
    - For Windows, download the [Visual Studio Build Tools](https://aka.ms/vs/17/release/vs_BuildTools.exe)
         - When prompted, select "Individual Components" and make sure to download the following:
         - MSVC v143 VS 2022 C++ x64/x86 build tools
@@ -25,8 +26,8 @@
         - One of Funkin's dependencies uses libVLC, which requires you to install some development packages to be able to compile.
           Command for Ubuntu/Debian based systems: `sudo apt install libvlc-dev libvlccore-dev libvlccore9`, and for other distros, please refer to [hxvlc's documentation](https://github.com/MAJigsaw77/hxvlc?tab=readme-ov-file#dependencies)
     - HTML5: Compiles without any extra setup
-10. If you are targeting for native, you may need to run `lime rebuild <PLATFORM>` and `lime rebuild <PLATFORM> -debug`
-11. `lime test <PLATFORM>` to build and launch the game for your platform (for example, `lime test windows`)
+9. If you are targeting for native, you may need to run `lime rebuild <PLATFORM>` and `lime rebuild <PLATFORM> -debug`
+10. `lime test <PLATFORM>` to build and launch the game for your platform (for example, `lime test windows`)
 
 ## Build Flags
 
