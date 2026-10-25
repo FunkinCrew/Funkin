@@ -8336,6 +8336,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   override function destroy():Void
   {
     trace('Destroying ChartEditorState...');
+    ChartEditorCommandPalette.instance?.close();
     super.destroy();
 
     performCleanup();
