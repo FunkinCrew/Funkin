@@ -1,7 +1,17 @@
 package funkin.assets;
 
+import animate.FlxAnimateFrames;
+import flixel.FlxBasic;
+import flixel.FlxSprite;
+import flixel.FlxState;
 import flixel.graphics.FlxGraphic;
+import flixel.graphics.frames.FlxFrame;
+import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
+import flixel.system.FlxAssets.FlxGraphicAsset;
+import flixel.util.FlxColor;
 import funkin.util.assets.StagedCache;
+import haxe.ds.ObjectMap;
 import openfl.display.BitmapData;
 import animate.FlxAnimateFrames;
 import flixel.util.FlxColor;
@@ -217,6 +227,68 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
     stagedFlxGraphic.previous.set(graphic.key, graphic);
     FunkinAssetCache.instance.stagedBitmapData.onPrePurge.dispatch(graphic.key, graphic.bitmap);
     FunkinAssetCache.instance.stagedBitmapData.previous.set(graphic.key, graphic.bitmap);
+  }
+
+  /**
+   * Walks the CURRENT state tree (state, substates, groups, sprite groups) and returns every FlxGraphic
+   * that a live object is actually using.
+   *
+   * We use this instead of `FlxGraphic.useCount` to decide what is still needed after a state switch.
+   * `useCount` only goes down when a sprite is `destroy()`ed, so any sprite that was dropped without being destroyed
+   * (`remove()`, `group.clear()`, never added to a group...) keeps its graphic "in use" forever.
+   *
+   */
+  public function collectLiveGraphics():ObjectMap<FlxGraphic, Bool>
+  {
+    final live:ObjectMap<FlxGraphic, Bool> = new ObjectMap();
+    final visited:ObjectMap<FlxBasic, Bool> = new ObjectMap();
+
+    var state:Null<FlxState> = FlxG.state;
+    while (state != null)
+    {
+      walkLive(state, live, visited);
+      state = state.subState;
+    }
+    return live;
+  }
+
+  function walkLive(basic:Null<FlxBasic>,
+    live:ObjectMap<FlxGraphic, Bool>,
+    visited:ObjectMap<FlxBasic, Bool>):Void
+  {
+    if (basic == null || visited.exists(basic)) return;
+    visited.set(basic, true);
+
+    if (Std.isOfType(basic, FlxSprite))
+    {
+      final sprite:FlxSprite = cast basic;
+      if (sprite.graphic != null) live.set(sprite.graphic, true);
+
+      final frames:Null<flixel.graphics.frames.FlxFramesCollection> = sprite.frames;
+      if (frames != null)
+      {
+        if (frames.parent != null) live.set(frames.parent, true);
+
+        // Collections made of several graphics (combined atlases, Animate atlases with spritemap1, spritemap2, ...).
+        for (field in ['usedGraphics', 'parents'])
+        {
+          final extra:Null<Array<FlxGraphic>> = Reflect.field(frames, field);
+          if (extra != null) for (graphic in extra) if (graphic != null) live.set(graphic, true);
+        }
+      }
+    }
+
+    if (Std.isOfType(basic, FlxTypedSpriteGroup))
+    {
+      final spriteGroup:FlxTypedSpriteGroup<FlxSprite> = cast basic;
+      walkLive(spriteGroup.group, live, visited);
+    }
+
+    if (Std.isOfType(basic, FlxTypedGroup))
+    {
+      final group:FlxTypedGroup<FlxBasic> = cast basic;
+      for (member in group.members) walkLive(member, live, visited);
+    }
   }
 
   /**

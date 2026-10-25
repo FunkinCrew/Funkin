@@ -274,12 +274,10 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
   /**
    * Purge any assets that were previously cached, but weren't requested again since `preparePurgeCache()` was called.
-   *
    * @param garbageCollect Whether to forcibly invoke the system's garbage collector after purging assets.
    */
   public function purgeCache(garbageCollect:Bool = false):Void
   {
-    // TODO: Cleanup purging to work with Freeplay?
     // IMPORTANT: purgeCache() must only be called after the outgoing state has been destroyed. LoadingState defers this until postStateSwitch so that
     // FlxSprite/FlxFrame/animation objects from the old state cannot reference disposed FlxGraphics or BitmapData.
     for (cache in stagedCaches) cache.purgeCache();
@@ -288,16 +286,61 @@ class FunkinAssetCache implements OpenFLIAssetCache
     purgeHaxeUIAssets();
     #end
 
-    // Clear everything except:
-    // - Stickers, so that graphics don't get lost during sticker transition (TODO: Fix this in LoadingState?)
-    // - `bg_graphic_` is used to render the background color on substates, it's 1x1 pixel so probably not a problem to just keep it.
-    FunkinBitmapFrontend.instance.clearExcept(['stickers/', 'bg_graphic_']);
-    // ^ Clear everything but freeplay as that has its own process, may or may not still be here depending on the future loading changes.
+    // Purge FlxGraphics the new state does not own.
+
+    // NOTE: preparePurgeCache() moved every graphic to `previous`, and loading plus the new state's create() moved everything the
+    // target wants back to `current`. So whatever is still in `previous` right now was NOT requested by the target state.
+    // (remove(), group.clear(), ...) pins its graphic forever. Instead we ask "does a live object in the current state tree use it?".
+    final stagedGraphics:StagedCache<FlxGraphic> = FunkinBitmapFrontend.instance.stagedFlxGraphic;
+    final live = FunkinBitmapFrontend.instance.collectLiveGraphics();
+
+    // Animate atlases use several graphics (spritemap1, spritemap2...) but the sprite may only expose some of them,
+    // so treat every spritemap in the same folder as a live graphic as live too.
+    final liveAtlasDirs:Map<String, Bool> = [];
+    for (graphic in live.keys())
+    {
+      final atlasDir:Null<String> = getAtlasDir(graphic.key);
+      if (atlasDir != null) liveAtlasDirs.set(atlasDir, true);
+    }
+
+    // Rescue graphics that a live object holds but nobody re-requested through the cache, by moving them back to `current`.
+    final rescue:Array<String> = [];
+    for (key => graphic in stagedGraphics.previous)
+    {
+      if (graphic == null) continue;
+      final atlasDir:Null<String> = getAtlasDir(key);
+      if (live.exists(graphic) || (atlasDir != null && liveAtlasDirs.exists(atlasDir))) rescue.push(key);
+    }
+    for (key in rescue)
+    {
+      stagedGraphics.get(key); // Reuses it
+    }
+
+    stagedGraphics.purgeCacheByPredicate((key, graphic) ->
+    {
+      // Prevent background graphics from getting purged (this screws up loading screens!)
+      // Prevent stickers from getting purged while they are in use.
+      if (key.startsWith('bg_graphic_') || key.contains('stickers')) return false;
+
+      return true;
+    });
 
     // Perform garbage collection here, after we deleted a bunch of stuff, to free the memory we're no longer using.
     #if (cpp || neko || js)
     if (garbageCollect) funkin.util.MemoryUtil.collect(true);
     #end
+  }
+
+  /**
+   * Gets the folder of an atlas spritemap.
+   * @param key The folder path to look for.
+   * @return The folder of an Animate atlas spritemap.
+   */
+  static function getAtlasDir(key:String):Null<String>
+  {
+    final slash:Int = key.lastIndexOf('/');
+    if (slash < 0) return null;
+    return key.substr(slash + 1).startsWith('spritemap') ? key.substr(0, slash) : null;
   }
 
   /**

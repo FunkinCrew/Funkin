@@ -17,6 +17,12 @@ import funkin.assets.Paths.AnimateAtlasAssetPathBuilder;
 import funkin.assets.Paths.AssetPath;
 import funkin.assets.Paths.MusicAssetPathBuilder;
 import funkin.assets.ValidatedPaths as Paths;
+import funkin.ui.transition.Transition.TransitionParams;
+import funkin.ui.transition.Transition.TransitionTarget;
+import funkin.util.MemoryUtil;
+import lime.app.Future;
+import lime.app.Promises;
+import openfl.media.Sound;
 
 /**
  * Handles the main logic of loading requested assets asynchronously.
@@ -503,6 +509,9 @@ class LoadingState extends MusicBeatSubState
     switch (target)
     {
       case State(nextState):
+        #if cpp
+        MemoryUtil.collect(true);
+        #end
         schedulePostStatePurge();
         FlxG.switchState(nextState);
 
