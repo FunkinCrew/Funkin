@@ -293,35 +293,42 @@ class ModMenuScene
       }
     }
 
-    bf.switchCharacter();
-    gf.switchCharacter();
-
-    gfWire.visible = !gf.hasCustomWires;
-    fgWiresTop.visible = !bf.hasCustomWires;
-
-    if (gf.currentCharacterId == 'empty-chair')
+    var pendingCharacters:Int = 2;
+    var onCharacterLoaded = () ->
     {
-      gfWire.zIndex = gf.zIndex + 1;
-      gfWire.animation.play('idle-emptychair');
-    }
-    else
-    {
-      gfWire.zIndex = carBattery.zIndex + 1;
-      gfWire.animation.play('idle');
-    }
+      pendingCharacters--;
+      if (pendingCharacters > 0) return;
 
-    fgWiresTop.animation.play('idle');
+      gfWire.visible = !gf.hasCustomWires;
+      fgWiresTop.visible = !bf.hasCustomWires;
 
-    if (bf.useSmallWire)
-    {
-      fgWiresBottom.animation.play('idle-pinhead');
-    }
-    else
-    {
-      fgWiresBottom.animation.play('idle');
-    }
+      if (gf.currentCharacterId == 'empty-chair')
+      {
+        gfWire.zIndex = gf.zIndex + 1;
+        gfWire.animation.play('idle-emptychair');
+      }
+      else
+      {
+        gfWire.zIndex = carBattery.zIndex + 1;
+        gfWire.animation.play('idle');
+      }
 
-    modmenuInstance.refresh();
+      fgWiresTop.animation.play('idle');
+
+      if (bf.useSmallWire)
+      {
+        fgWiresBottom.animation.play('idle-pinhead');
+      }
+      else
+      {
+        fgWiresBottom.animation.play('idle');
+      }
+
+      modmenuInstance.refresh();
+    };
+
+    bf.switchCharacter(onCharacterLoaded);
+    gf.switchCharacter(onCharacterLoaded);
   }
 
   /**

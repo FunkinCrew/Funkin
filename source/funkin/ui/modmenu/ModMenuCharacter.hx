@@ -169,6 +169,15 @@ class ModMenuCharacter extends FunkinSprite
    */
   var playedStartingFrame:Bool = false;
 
+  var hasLoadedCharacter:Bool = false;
+
+  #if html5
+  /** 
+   * Prevents an older character/data request from replacing a newer selection.
+   */
+  var characterLoadToken:Int = 0;
+  #end
+
   /**
    * @return Gets a random color for Pinhead.
    */
@@ -236,16 +245,8 @@ class ModMenuCharacter extends FunkinSprite
     this.initialPosition.set(x, y);
 
     if (characterId == '') characterId = 'pinhead';
-    applyShader();
-
     this.currentCharacterId = characterId;
     this.isGF = gf;
-
-    loadCharacterData();
-    loadGraphics();
-    loadAnimations();
-
-    playAnimation(IDLE, true);
 
     animation.onFinish.add((name:String) ->
     {
@@ -254,6 +255,15 @@ class ModMenuCharacter extends FunkinSprite
         playAnimation(CRISPY_LOOP, true);
       }
     });
+
+    #if html5
+    // The web asset backend cannot synchronously read data or mod atlases.
+    loadCharacterAsync();
+    #else
+    loadCharacterData();
+    loadGraphics();
+    completeCharacterLoad(true);
+    #end
   }
 
   /**
@@ -293,6 +303,8 @@ class ModMenuCharacter extends FunkinSprite
    */
   public function playAnimation(name:CharacterAnimation, force:Bool = false, reversed:Bool = false, frame:Int = 0):Void
   {
+    // The HTML5 atlas is not available until the async loading pipeline completes.
+    if (!hasLoadedCharacter) return;
     if ((getCurrentAnimation() == CRISPY && name != CRISPY_LOOP) && !force) return;
 
     if (name == IDLE && startingIdleFrame > 0 && !playedStartingFrame)
@@ -398,10 +410,14 @@ class ModMenuCharacter extends FunkinSprite
    * Switches out the character.
    * Call this AFTER `prepareToSwitch()`
    */
-  public function switchCharacter():Void
+  public function switchCharacter(?onComplete:Void->Void):Void
   {
     trace(' MOD MENU '.bold().bg_orange() + ' Switched to character $currentCharacterId with mod $currentModId.');
+    hasLoadedCharacter = false;
 
+    #if html5
+    loadCharacterAsync(onComplete);
+    #else
     loadCharacterData();
 
     try
@@ -420,6 +436,13 @@ class ModMenuCharacter extends FunkinSprite
       loadGraphics();
     }
 
+    completeCharacterLoad(true);
+    if (onComplete != null) onComplete();
+    #end
+  }
+
+  function completeCharacterLoad(playIdle:Bool):Void
+  {
     loadAnimations();
 
     hasCustomWires = data?.hasCustomWires ?? false;
@@ -439,7 +462,141 @@ class ModMenuCharacter extends FunkinSprite
     smokeOffsets = data?.smokeOffsets ?? [0, 0];
     smokeScale = data?.smokeScale ?? [0.5, 0.5];
     startingIdleFrame = isGF ? data?.startingFrame?.gf ?? 0 : data?.startingFrame?.bf ?? 0;
+
+    hasLoadedCharacter = true;
+    if (playIdle) playAnimation(IDLE, true);
   }
+
+  #if html5
+  function loadCharacterAsync(?onComplete:Void->Void):Void
+  {
+    hasLoadedCharacter = false;
+    var token:Int = ++characterLoadToken;
+    loadCharacterAttempt(token, onComplete, true);
+  }
+
+  function loadCharacterAttempt(token:Int, onComplete:Null<Void->Void>, allowFallback:Bool):Void
+  {
+    loadCharacterDataAsync(token, () ->
+    {
+      if (token != characterLoadToken) return;
+
+      loadGraphicsAsync(token, () ->
+      {
+        if (token != characterLoadToken) return;
+        completeCharacterLoad(true);
+        if (onComplete != null) onComplete();
+      }, (error:Dynamic) ->
+        {
+          if (token != characterLoadToken) return;
+
+          trace(' MOD MENU '.bold().bg_orange() + ' Failed to load $currentCharacterId from mod $currentModId: $error');
+          if (allowFallback && currentCharacterId != 'pinhead')
+          {
+            currentCharacterId = 'pinhead';
+            currentModId = 'basegame';
+            isPinhead = true;
+            loadCharacterAttempt(token, onComplete, false);
+          }
+          else
+          {
+            // Finish with default animation data if even the fallback graphic is absent.
+            completeCharacterLoad(true);
+            if (onComplete != null) onComplete();
+          }
+        });
+    });
+  }
+
+  function loadCharacterDataAsync(token:Int, onComplete:Void->Void):Void
+  {
+    data = null;
+
+    var modId:String = currentModId;
+    if (modId == 'basegame') modId = '';
+
+    var assetPath = Paths.json('ui/mods/characters/$currentCharacterId', false);
+    var modExists:Bool = modId != '' && PolymodAssets.existsInMod(assetPath.toString(), modId);
+
+    if (!modExists && !assetPath.exists())
+    {
+      trace(' MOD MENU '.bold().bg_orange() + ' No character data found for $currentCharacterId in mod $modId! (asset path: $assetPath)');
+      onComplete();
+      return;
+    }
+
+    var dataFuture = modExists ? PolymodAssets.loadTextFromMod(assetPath.toString(), modId) : Assets.loadText(assetPath);
+    dataFuture.onComplete((jsonString:String) ->
+    {
+      if (token != characterLoadToken) return;
+
+      if (jsonString == null || jsonString == '')
+      {
+        trace(' MOD MENU '.bold().bg_orange() + ' Character data for $currentCharacterId was empty or not loaded! (asset path: $assetPath)');
+      }
+      else
+      {
+        var parser:JsonParser<ModMenuCharacterData> = new JsonParser<ModMenuCharacterData>({
+          ignoreUnknownVariables: false
+        });
+        parser.fromJson(jsonString, assetPath.toString());
+
+        if (parser.errors.length > 0)
+        {
+          trace(' MOD MENU '.bold().bg_orange() + ' Failed to parse character data! (asset path: $assetPath)');
+          for (error in parser.errors) funkin.data.DataError.printError(error);
+        }
+        else
+        {
+          data = parser.value;
+        }
+      }
+
+      onComplete();
+    }).onError((error:Dynamic) ->
+      {
+        if (token != characterLoadToken) return;
+        trace(' MOD MENU '.bold().bg_orange() + ' Failed to load character data for $currentCharacterId: $error');
+        onComplete();
+      });
+  }
+
+  function loadGraphicsAsync(token:Int, onComplete:Void->Void, onError:Dynamic->Void):Void
+  {
+    var modId:String = currentModId;
+    if (modId == 'basegame') modId = '';
+
+    var assetPath:String = 'ui/mods/characters/$currentCharacterId';
+    previousAssetPath = currentAssetPath;
+
+    if (assetPath == currentAssetPath && modId == currentAssetModId)
+    {
+      onComplete();
+      return;
+    }
+
+    trace(' MOD MENU '.bold().bg_orange() + ' Loading graphics asynchronously for $currentCharacterId with mod $modId. Asset path: $assetPath');
+
+    try
+    {
+      loadAtlasAsync(assetPath, data?.renderType ?? 'animateatlas', getAtlasSettings(), modId).onComplete((_sprite:FunkinSprite) ->
+      {
+        if (token != characterLoadToken) return;
+        currentAssetPath = assetPath;
+        currentAssetModId = modId;
+        onComplete();
+      }).onError((error:Dynamic) ->
+        {
+          if (token != characterLoadToken) return;
+          onError(error);
+        });
+    }
+    catch (error:Dynamic)
+    {
+      if (token == characterLoadToken) onError(error);
+    }
+  }
+  #end
 
   /**
    * Get the configuration for the texture atlas.
@@ -462,6 +619,7 @@ class ModMenuCharacter extends FunkinSprite
     return PolymodAssets.existsInMod(assetPath, modId);
   }
 
+  #if !html5
   function loadGraphics():Void
   {
     var modId:String = currentModId;
@@ -493,9 +651,12 @@ class ModMenuCharacter extends FunkinSprite
         this.loadPacker(assetPath, modId);
     }
   }
+  #end
 
   function loadAnimations():Void
   {
+    animationOffsetsList = new Map<String, Array<Float>>();
+
     var animationData:Array<AnimationData> = data?.animations ?? getDefaultAnimations();
     if (animationData == null || (animationData?.length ?? 0) == 0) return;
 
@@ -519,6 +680,7 @@ class ModMenuCharacter extends FunkinSprite
     trace(' MOD MENU '.bold().bg_orange() + ' Character offsets: ' + globalOffsets);
   }
 
+  #if !html5
   function loadCharacterData():Void
   {
     data = null;
@@ -527,7 +689,7 @@ class ModMenuCharacter extends FunkinSprite
     if (modId == 'basegame') modId = '';
 
     var assetPath = Paths.json('ui/mods/characters/$currentCharacterId');
-    var modExists:Bool = PolymodAssets.existsInMod(assetPath.toString(), modId);
+    var modExists:Bool = modId != '' && PolymodAssets.existsInMod(assetPath.toString(), modId);
     var tryBase:Bool = !modExists;
 
     if ((tryBase && !assetPath.exists()) || (!tryBase && !modExists))
@@ -539,30 +701,15 @@ class ModMenuCharacter extends FunkinSprite
     var jsonString:Null<String> = null;
     if (tryBase)
     {
-      #if html5
-      // Polymod can't read a file straight off the disk here. The asset query should have loaded it already,
-      // but if it didn't , asking for it anyways throws instead of returning nothing.
-      var assetExistOnLime = lime.utils.Assets.isLocal(assetPath.toString(), lime.utils.AssetType.TEXT);
-      var assetExistOnFunkinCache = Assets.isAssetCached(assetPath);
-      if (!(assetExistOnLime || assetExistOnFunkinCache))
-      {
-        trace(
-          ' MOD MENU '.bold().bg_orange() + ' Character data for $currentCharacterId is not preloaded, using the defaults for now. (asset path: $assetPath)'
-        );
-        return;
-      }
-      jsonString = assetExistOnLime ? lime.utils.Assets.getText(assetPath.toString()) : Assets.getText(assetPath);
-      #else
       @:privateAccess
       jsonString = Polymod.assetLibrary.getTextDirectly(assetPath.toString(), '');
-      #end
     }
     else
     {
       jsonString = PolymodAssets.getTextFromMod(assetPath.toString(), modId);
     }
 
-    // Nothing was loade for this path, which the parser can't handle. Carry on with the defaults.
+    // Nothing was loaded for this path, which the parser can't handle. Carry on with the defaults.
     if (jsonString == null || jsonString == '')
     {
       trace(' MOD MENU '.bold().bg_orange() + ' Character data for $currentCharacterId was empty or not loaded! (asset path: $assetPath)');
@@ -584,6 +731,7 @@ class ModMenuCharacter extends FunkinSprite
       data = parser.value;
     }
   }
+  #end
 
   override function getScreenPosition(?result:FlxPoint, ?camera:FlxCamera):FlxPoint
   {

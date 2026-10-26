@@ -11,9 +11,7 @@ import animate.internal.elements.SymbolInstance;
 import flixel.FlxCamera;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxFrame;
-#if html5
 import flixel.graphics.frames.FlxAtlasFrames;
-#end
 import flixel.math.FlxMatrix;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
@@ -24,10 +22,8 @@ import funkin.assets.Assets;
 import funkin.assets.Paths;
 import funkin.graphics.framebuffer.FunkinFilterRenderer;
 import haxe.io.Path;
-#if html5
 import lime.app.Future;
 import lime.app.Promise;
-#end
 import openfl.display.BitmapData;
 import openfl.display3D.textures.TextureBase;
 import openfl.filters.BitmapFilter;
@@ -135,10 +131,8 @@ typedef AtlasSpriteSettings =
 @:access(polymod.Polymod)
 class FunkinSprite extends FlxAnimate
 {
-  #if html5
   // Prevents stale web asset loads from replacing newer ones. Kinda
   var asyncLoadToken:Int = 0;
-  #end
 
   public var vcamPoint:Null<FlxPoint> = null;
 
@@ -493,7 +487,32 @@ class FunkinSprite extends FlxAnimate
     return this;
   }
 
-  #if html5
+  /**
+   * Load an animated atlas asynchronously, selecting its format from given argument.
+   *
+   * @param key Asset path relative to the images directory.
+   * @param renderType Atlas format: `animateatlas`, `sparrow`, or `packer`.
+   * @param settings Optional Adobe Animate atlas settings.
+   * @param modId Optional mod ID to load assets from.
+   */
+  public function loadAtlasAsync(key:String,
+    renderType:String = 'animateatlas',
+    settings:Null<AtlasSpriteSettings> = null,
+    modId:String = ''):lime.app.Future<FunkinSprite>
+  {
+    return switch (renderType.toLowerCase())
+    {
+      case 'animateatlas':
+        loadTextureAtlasAsync(key, settings, modId);
+      case 'sparrow':
+        loadSparrowAsync(key, modId);
+      case 'packer':
+        loadPackerAsync(key, modId);
+      default:
+        cast Future.withError('Unsupported atlas render type "$renderType" for "$key"');
+    }
+  }
+
   public function loadTextureAtlasAsync(key:Null<String>,
     settings:Null<AtlasSpriteSettings> = null,
     modId:String = ''):lime.app.Future<FunkinSprite>
@@ -831,7 +850,6 @@ class FunkinSprite extends FlxAnimate
 
     return result.future;
   }
-  #end
 
   /**
    * Load an animated texture (Sparrow atlas spritesheet) as the sprite's texture.
@@ -1457,9 +1475,7 @@ class FunkinSprite extends FlxAnimate
 
   override public function destroy():Void
   {
-    #if html5
     asyncLoadToken++;
-    #end
 
     // @:nullSafety(Off)
     // frames = null;
