@@ -627,7 +627,7 @@
       "comment": "Specifies a specific naming format for method parameter names.",
       "props": {
         "ignoreExtern": true,
-        "format": "^(_|[a-z][a-zA-Z0-9]*)$",
+        "format": "^(_|_?[a-z][a-zA-Z0-9]*)$",
         "tokens": [],
         "severity": "INFO"
       },
