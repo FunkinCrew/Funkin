@@ -649,6 +649,8 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
       }
       else
       {
+        left += child.origin.x * (1 - child.scale.x) - child.offset.x;
+        top += child.origin.y * (1 - child.scale.y) - child.offset.y;
         right = left + child.frameWidth * Math.abs(child.scale.x);
         bottom = top + child.frameHeight * Math.abs(child.scale.y);
       }

@@ -88,7 +88,7 @@ class IconGroup extends FunkinGroup<FunkinSprite>
     }
 
     this.scrollFactor.set();
-    this.clipRect = FlxRect.get(300, 90, 500, 430);
+    this.clipRect = FlxRect.get(CharacterSelectState.CUTOUT_SIZE + 300, 90, 500, 430);
 
     this.shader = new VerticalFadeShader(0.05, BOTH, 0.10);
   }

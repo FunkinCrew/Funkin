@@ -7,18 +7,36 @@ import flixel.util.FlxColor;
 import funkin.data.animation.AnimationData;
 import funkin.data.modmenu.ModMenuCharacterData;
 import funkin.graphics.FunkinSprite;
-import funkin.ui.FullScreenScaleMode;
 import funkin.util.assets.FlxAnimationUtil;
 import json2object.JsonParser;
+import polymod.Polymod;
 import polymod.PolymodAssets;
 
 using StringTools;
 
+/**
+ * The animations that this character can play.
+ */
 enum abstract CharacterAnimation(String) to String
 {
+  /**
+   * Idle.
+   */
   public var IDLE = 'idle';
+
+  /**
+   * Electrocuted.
+   */
   public var ELECTROCUTED = 'electrocuted';
+
+  /**
+   * Crispy.
+   */
   public var CRISPY = 'crispy';
+
+  /**
+   * Crispy (looping).
+   */
   public var CRISPY_LOOP = 'crispy-loop';
 }
 
@@ -128,6 +146,11 @@ class ModMenuCharacter extends FunkinSprite
    * Used for iterating through multiple modded assets.
    */
   var shortestIndex:Int = 0;
+
+  /**
+   * The mod ID of the current asset.
+   */
+  var currentAssetModId:String = '';
 
   /**
    * The shader used to replace the Pinhead colors.
@@ -336,7 +359,10 @@ class ModMenuCharacter extends FunkinSprite
         continue;
       }
 
-      if (hasModdedAssets(mod))
+      var found:Bool = hasModdedAssets(mod);
+      trace(' MOD MENU '.bold().bg_orange() + ' Checking mod #$i "$mod" for $currentCharacterId: ${found ? "has character" : "no character"}');
+
+      if (found)
       {
         shortestIndex = i;
 
@@ -431,7 +457,6 @@ class ModMenuCharacter extends FunkinSprite
   function hasModdedAssets(modId:String):Bool
   {
     var assetPath:String = Paths.json('ui/mods/characters/$currentCharacterId/Animation');
-    @:privateAccess
     return PolymodAssets.existsInMod(assetPath, modId);
   }
 
@@ -443,13 +468,14 @@ class ModMenuCharacter extends FunkinSprite
     previousAssetPath = currentAssetPath;
 
     var assetPath:Null<String> = 'ui/mods/characters/$currentCharacterId';
-    if (assetPath == previousAssetPath)
+    if (assetPath == previousAssetPath && modId == currentAssetModId)
     {
       // No need to load any new assets.
       return;
     }
 
     currentAssetPath = assetPath;
+    currentAssetModId = modId;
 
     trace(' MOD MENU '.bold().bg_orange() + ' Loading graphics for $currentCharacterId with mod $modId. Asset path: $assetPath');
 
@@ -500,7 +526,7 @@ class ModMenuCharacter extends FunkinSprite
 
     var assetPath:String = Paths.json('ui/mods/characters/$currentCharacterId');
     var modExists:Bool = PolymodAssets.existsInMod(assetPath, modId);
-    var tryBase = !modExists;
+    var tryBase:Bool = !modExists;
 
     if ((tryBase && !Assets.exists(assetPath)) || (!tryBase && !modExists))
     {
@@ -511,7 +537,8 @@ class ModMenuCharacter extends FunkinSprite
     var jsonString:String = '';
     if (tryBase)
     {
-      jsonString = Assets.getText(assetPath);
+      @:privateAccess
+      jsonString = Polymod.assetLibrary.getTextDirectly(assetPath, '');
     }
     else
     {

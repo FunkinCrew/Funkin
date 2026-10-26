@@ -120,6 +120,8 @@ import haxe.ui.components.DropDown;
 import haxe.ui.components.Label;
 import haxe.ui.components.NumberStepper;
 import haxe.ui.components.Slider;
+import haxe.ui.components.TextArea;
+import haxe.ui.components.VerticalScroll;
 import haxe.ui.containers.dialogs.CollapsibleDialog;
 import haxe.ui.containers.menus.Menu;
 import haxe.ui.containers.menus.MenuBar;
@@ -759,6 +761,22 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function get_isCursorOverHaxeUI():Bool
   {
     return Screen.instance.hasSolidComponentUnderPoint(FlxG.mouse.viewX, FlxG.mouse.viewY);
+  }
+
+  /**
+   * Whether the user's mouse cursor is hovering over a comment, and not any other component of the HaxeUI.
+   * If so, we can still scroll underneath.
+   */
+  var canScrollComment(get, never):Bool;
+
+  function get_canScrollComment():Bool
+  {
+    for (component in Screen.instance.findSolidComponentUnderPoint(FlxG.mouse.viewX, FlxG.mouse.viewY))
+    {
+      if (!Std.isOfType(component, ChartEditorCommentPanel) && component.findAncestor(null, ChartEditorCommentPanel) == null) return false;
+      if (Std.isOfType(component, TextArea) && component.findComponent(VerticalScroll, false) != null) return false;
+    }
+    return true;
   }
 
   /**
@@ -2032,7 +2050,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * The comment panel on the right side.
    * Constructed manually and added to the layout so we can control its position.
    */
-  var commentPanel:Null<ChartEditorCommentPanel> = null;
+  var commentPanels:Array<ChartEditorCommentPanel> = [];
 
   /**
    * The `File -> New Chart` menu item.
@@ -3291,10 +3309,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     add(playbarHeadLayout);
 
-    commentPanel = new ChartEditorCommentPanel(this);
-    commentPanel.zIndex = 10;
-    commentPanel.hidden = true;
-    add(commentPanel);
+    buildCommentPanel();
 
     // Little text that shows up when you copy something.
     txtCopyNotif = new FlxText(0, 0, 0, '', 24);
@@ -4809,12 +4824,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // We need to update when comments change OR we scroll.
     if (noteDisplayDirty || commentDisplayDirty)
     {
-      // Current algorithm displays the closest comment within one second before or after the playhead.
+      // Current algorithm displays every on-screen comment, starting closest to the playhead
 
       var playheadPosMs:Float = scrollPositionInMs + playheadPositionInMs;
 
-      var startPos = playheadPosMs - 1000;
-      var endPos = playheadPosMs + 1000;
+      var startPos:Float = Conductor.instance.getStepTimeInMs(scrollPositionInSteps - (GRID_TOP_PAD + commentPanels[0].height) / GRID_SIZE);
+      var endPos:Float = Conductor.instance.getStepTimeInMs(scrollPositionInSteps + (FlxG.height - PLAYBAR_HEIGHT - GRID_INITIAL_Y_POS) / GRID_SIZE);
 
       var nearbyCommentData:Array<CommentData> = currentSongChartCommentData.filter((comment) ->
       {
@@ -4831,11 +4846,18 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         return (commentADistance - commentBDistance) > 0 ? 1 : -1;
       });
 
-      var commentToDisplay:Null<CommentData> = nearbyCommentData[0];
+      while (commentPanels.length < nearbyCommentData.length)
+      {
+        buildCommentPanel();
+      }
 
-      commentPanel.commentData = commentToDisplay;
-      commentPanel.updatePosition();
-      commentPanel.updateColor();
+      for (i in 0...commentPanels.length)
+      {
+        var commentPanel:ChartEditorCommentPanel = commentPanels[i];
+        commentPanel.commentData = i < nearbyCommentData.length ? nearbyCommentData[i] : null;
+        commentPanel.updatePosition();
+        commentPanel.updateColor();
+      }
     }
 
     if (commentDisplayDirty)
@@ -4877,6 +4899,16 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
   }
 
+  function buildCommentPanel():Void
+  {
+    var commentPanel:ChartEditorCommentPanel = new ChartEditorCommentPanel(this);
+    commentPanel.zIndex = 10;
+    commentPanel.hidden = true;
+    add(commentPanel);
+    commentPanels.push(commentPanel);
+    refresh();
+  }
+
   /**
    * Migrates old event data with ease and without easeDir fields, so we split them into ease and easeDir here.
    */
@@ -4896,7 +4928,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function handleScrollKeybinds():Void
   {
     // Don't scroll when the user is interacting with the UI, unless a playbar button (the << >> ones) is pressed.
-    if ((isHaxeUIFocused || isCursorOverHaxeUI) && playbarButtonPressed == null) return;
+    if ((isHaxeUIFocused || (isCursorOverHaxeUI && !canScrollComment)) && playbarButtonPressed == null) return;
 
     var scrollAmount:Float = 0; // Amount to scroll the grid.
     var playheadAmount:Float = 0; // Amount to scroll the playhead relative to the grid.
@@ -4988,8 +5020,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     var funcJumpUp = (playheadOnly:Bool) ->
     {
-      var playheadPosition:Float = scrollPositionInMs + playheadPositionInMs;
-      var currentPositionMeasure:Float = Conductor.instance.currentMeasureTime;
+      var playheadPosition:Float = Conductor.instance.getStepTimeInMs((currentScrollEase + playheadPositionInPixels) / GRID_SIZE);
+      var currentPositionMeasure:Float = Conductor.instance.getTimeInMeasures(playheadPosition);
       var currentPositionMeasureFlooredInMs:Float = Conductor.instance.getMeasureTimeInMs(Math.floor(currentPositionMeasure));
       var targetScrollPosition:Float = 0;
       if (FlxMath.inBounds(
@@ -5039,8 +5071,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     var funcJumpDown = (playheadOnly:Bool) ->
     {
-      var playheadPosition:Float = scrollPositionInMs + playheadPositionInMs;
-      var currentPositionMeasure:Float = Conductor.instance.currentMeasureTime;
+      var playheadPosition:Float = Conductor.instance.getStepTimeInMs((currentScrollEase + playheadPositionInPixels) / GRID_SIZE);
+      var currentPositionMeasure:Float = Conductor.instance.getTimeInMeasures(playheadPosition);
       var targetScrollPosition:Float = Conductor.instance.getMeasureTimeInMs(Math.floor(currentPositionMeasure + 1.0001));
       // Now, why the hell is that .0001 there? It's to fix floating point bullshit that would result in "floor(measure + 1)" giving back
       // the SAME MEASURE NUMBER that you can see in the Flixel F2 debugger.
@@ -6799,12 +6831,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       playbarHeadLayout.destroy();
       playbarHeadLayout = null;
     }
-    if (commentPanel != null)
+    for (commentPanel in commentPanels)
     {
       remove(commentPanel);
       commentPanel.destroy();
-      commentPanel = null;
     }
+    commentPanels = [];
     if (txtCopyNotif != null)
     {
       remove(txtCopyNotif);
@@ -7316,6 +7348,17 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   function testSongInPlayState(minimal:Bool = false):Void
   {
+    for (component in Screen.instance.rootComponents.copy())
+    {
+      if (component is Menu)
+      {
+        if (cast(component, Menu).menuBar != null) component.dispatch(new UIEvent(UIEvent.CLOSE));
+        else
+          Screen.instance.removeComponent(component, false);
+      }
+      for (dropDown in component.findComponents(null, DropDown, -1)) dropDown.hideDropDown();
+    }
+
     autoSave(true);
 
     if (!wasPlaytesting)
@@ -8325,6 +8368,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   override function destroy():Void
   {
     trace('Destroying ChartEditorState...');
+    ChartEditorCommandPalette.instance?.close();
     super.destroy();
 
     performCleanup();

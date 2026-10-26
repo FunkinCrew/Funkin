@@ -194,7 +194,7 @@ class OneClickInstallHandler
 
     awaitingMenu = false;
 
-    if (!menu.isInstalling())
+    if (!menu.installer.isInstalling())
     {
       final request:Null<OneClickRequest> = queue.shift();
       if (request != null) menu.beginOneClickInstall(request);
