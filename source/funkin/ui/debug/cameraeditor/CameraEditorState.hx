@@ -14,7 +14,7 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
 import funkin.assets.FunkinAssetCache;
-import funkin.data.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterRegistry;
 import funkin.data.event.SongEventRegistry;
 import funkin.data.song.SongData.SongCharacterData;
 import funkin.data.song.SongData.SongChartData;
@@ -225,6 +225,44 @@ class CameraEditorState extends UIState implements ConsoleClass
   var cachedEventIndex = 0;
   var cachedNoteIndex = 0;
 
+  public var replayPosition:Float = -1;
+
+  var replayBfAnimTime:Null<Float> = null;
+  var replayDadAnimTime:Null<Float> = null;
+  var replayBfAnimWindowEnd:Float = -1;
+  var replayDadAnimWindowEnd:Float = -1;
+
+  public function invalidateCameraReplay():Void
+  {
+    replayPosition = -1;
+  }
+
+  function trackPlayAnimationEvent(eventData:SongEventData):Void
+  {
+    var targetName:Null<String> = eventData.getString('target');
+    if (targetName == null) targetName = 'boyfriend';
+
+    var eventBeatTime:Float = conductorInUse.getTimeInSteps(eventData.time) / Constants.STEPS_PER_BEAT;
+    var nextBeatIndex:Int = Math.floor(eventBeatTime) + 1;
+    var nextBeatTimeMs:Float = conductorInUse.getBeatTimeInMs(nextBeatIndex);
+    if (nextBeatTimeMs <= eventData.time)
+    {
+      nextBeatIndex += 1;
+      nextBeatTimeMs = conductorInUse.getBeatTimeInMs(nextBeatIndex);
+    }
+
+    switch (targetName)
+    {
+      case 'boyfriend' | 'bf' | 'player':
+        replayBfAnimTime = eventData.time;
+        replayBfAnimWindowEnd = nextBeatTimeMs;
+      case 'dad' | 'opponent':
+        replayDadAnimTime = eventData.time;
+        replayDadAnimWindowEnd = nextBeatTimeMs;
+      default:
+    }
+  }
+
   /**
    * The current stage being displayed in the background.
    */
@@ -268,7 +306,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   function set_selectedSongEvents(value:Array<SongEventData>):Array<SongEventData>
   {
     selectedSongEvents = value ?? [];
-    CameraEditorPropertiesPanelHandler.loadSelectedSongEvent(this);
+    this.loadSelectedSongEvent();
     if (timeline != null && timeline.viewport != null) timeline.viewport.setSelectedEvents(selectedSongEvents);
     return selectedSongEvents;
   }
@@ -416,6 +454,20 @@ class CameraEditorState extends UIState implements ConsoleClass
   }
 
   /**
+   * Whether the timeline zooms around the playhead rather than the cursor. Remembered between sessions.
+   */
+  @:bind(menubarItemZoomToPlayhead.selected)
+  public var zoomToPlayhead(default, set):Bool = false;
+
+  function set_zoomToPlayhead(val:Bool):Bool
+  {
+    zoomToPlayhead = val;
+    if (timeline != null && timeline.viewport != null) timeline.viewport.zoomToPlayhead = val;
+    if (Save.instance.cameraEditorZoomToPlayhead.value != val) Save.instance.cameraEditorZoomToPlayhead.value = val;
+    return val;
+  }
+
+  /**
    * Whether the camera preview should display song events.
    */
   @:bind(menubarItemDoSongEvents.selected)
@@ -424,7 +476,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   function set_doSongEvents(val:Bool):Bool
   {
     doSongEvents = val;
-    replayCameraTimeline(conductorInUse.songPosition);
+    replayCameraTimeline(conductorInUse.songPosition, true);
     return val;
   }
 
@@ -460,7 +512,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   function get_isCursorOverHaxeUI():Bool
   {
-    return Screen.instance.hasSolidComponentUnderPoint(FlxG.mouse.viewX, FlxG.mouse.viewY);
+    return Screen.instance.hasSolidComponentUnderPoint(Screen.instance.currentMouseX, Screen.instance.currentMouseY);
   }
 
   /**
@@ -500,6 +552,8 @@ class CameraEditorState extends UIState implements ConsoleClass
    * The dialog which warns the user that they are about to leave the editor without saving.
    */
   public var exitConfirmDialog:Dialog;
+
+  var userGuideDialog:UserGuideDialog;
 
   var deleteLayerConfirmDialog:Dialog;
   var autoSortLayersDialog:Dialog;
@@ -634,7 +688,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     WindowManager.instance.container = root;
     Screen.instance.addComponent(root);
 
-    CameraEditorNotificationHandler.setupNotifications(this);
+    this.setupNotifications();
     applyCanQuickSave();
 
     WindowUtil.windowExit.add(windowClose);
@@ -650,6 +704,9 @@ class CameraEditorState extends UIState implements ConsoleClass
     populateLoadVariationMenu();
     populateOpenRecentMenu();
 
+    menubarItemZoomToPlayhead.selected = Save.instance.cameraEditorZoomToPlayhead.value;
+    timeline.viewport.zoomToPlayhead = menubarItemZoomToPlayhead.selected;
+
     registerTimelineEvents();
 
     addEventMenu = new AddEventMenu(function(eventData)
@@ -657,15 +714,10 @@ class CameraEditorState extends UIState implements ConsoleClass
       var selectedLayer = timeline.viewport.layers[timeline.viewport.selectedLayerIndex];
       var raw:SongEventDataRaw = eventData;
       raw.editorLayer = selectedLayer.name == "Default" ? null : selectedLayer.name;
-
-      if (timeline.snapEnabled)
-      {
-        var stepMs = timeline.viewport.stepLengthMs;
-        if (stepMs > 0) raw.time = Math.fround(raw.time / stepMs) * stepMs;
-      }
+      raw.time = timeline.snapMs(raw.time);
 
       var cmd = new AddEventCommand(eventData);
-      CameraEditorCommandHandler.performCommand(this, cmd);
+      this.performCommand(cmd);
       selectedSongEvent = eventData;
     });
 
@@ -680,7 +732,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     mainView.registerEvent(CameraViewportEvent.GESTURE_PAN, onViewportGesturePan);
 
     CameraEditorPropertiesPanelHandler.initialize();
-    CameraEditorPropertiesPanelHandler.initializePropertiesPanel(this);
+    this.initializePropertiesPanel();
 
     Screen.instance.registerEvent(KeyboardEvent.KEY_DOWN, onScreenKeyDown);
 
@@ -695,14 +747,14 @@ class CameraEditorState extends UIState implements ConsoleClass
       try
       {
         // Camera editor was opened from the command line. Open the FNFC file now!
-        CameraEditorImportExportHandler.loadSongFromFNFCPath(this, params.loadFromPath);
+        this.loadSongFromFNFCPath(params.loadFromPath);
         if (params.targetSongVariation != null) switchVariation(params.targetSongVariation);
         if (params.targetSongDifficulty != null) currentDifficulty = params.targetSongDifficulty;
         if (params.targetSongPosition != null) setTimePosition(params.targetSongPosition);
       }
       catch (e)
       {
-        CameraEditorNotificationHandler.failure(this, 'Failed to Load Chart', '$e');
+        this.failure('Failed to Load Chart', '$e');
         // Song failed to load, open the Welcome dialog so we aren't in a broken state.
         var welcomeDialog = this.openWelcomeDialog();
         if (shouldShowBackupAvailableDialog)
@@ -719,11 +771,11 @@ class CameraEditorState extends UIState implements ConsoleClass
 
       try
       {
-        CameraEditorImportExportHandler.loadSongFromTemplate(this, targetSongId, targetSongDifficulty, targetSongVariation);
+        this.loadSongFromTemplate(targetSongId, targetSongDifficulty, targetSongVariation);
       }
       catch (e)
       {
-        CameraEditorNotificationHandler.failure(this, 'Failed to Load Song', '$e');
+        this.failure('Failed to Load Song', '$e');
         // Song failed to load, open the Welcome dialog so we aren't in a broken state.
         var welcomeDialog = this.openWelcomeDialog();
         if (shouldShowBackupAvailableDialog)
@@ -737,14 +789,14 @@ class CameraEditorState extends UIState implements ConsoleClass
     {
       try
       {
-        CameraEditorImportExportHandler.loadSongFromFNFCData(this, params.loadFromFNFCData);
+        this.loadSongFromFNFCData(params.loadFromFNFCData);
         if (params.targetSongVariation != null) switchVariation(params.targetSongVariation);
         if (params.targetSongDifficulty != null) currentDifficulty = params.targetSongDifficulty;
         if (params.targetSongPosition != null) setTimePosition(params.targetSongPosition);
       }
       catch (e)
       {
-        CameraEditorNotificationHandler.failure(this, 'Failed to Load Song', '$e');
+        this.failure('Failed to Load Song', '$e');
         // Song failed to load, open the Welcome dialog so we aren't in a broken state.
         var welcomeDialog = this.openWelcomeDialog();
         if (shouldShowBackupAvailableDialog)
@@ -791,7 +843,7 @@ class CameraEditorState extends UIState implements ConsoleClass
         loadFromFNFCData: (
           currentWorkingFilePath == null
           && chart.songMetadatas.size() > 0
-        ) ? CameraEditorImportExportHandler.buildFNFCDataFromCurrentChart(this) : null, // We want to reload the FNFCData so the user doesn't lose progress.
+        ) ? this.buildFNFCDataFromCurrentChart() : null, // We want to reload the FNFCData so the user doesn't lose progress.
         targetSongDifficulty: this.currentDifficulty,
         targetSongVariation: this.currentVariation,
         targetSongPosition: Conductor.instance.songPosition
@@ -913,6 +965,7 @@ class CameraEditorState extends UIState implements ConsoleClass
           handleSetCameraBopEvent(eventData);
         case 'PlayAnimation':
           handlePlayAnimationEvent(eventData);
+          trackPlayAnimationEvent(eventData);
         default:
           if (doSongEvents)
           {
@@ -937,6 +990,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     }
 
     previousTime = conductorInUse.songPosition;
+    if (replayPosition >= 0) replayPosition = conductorInUse.songPosition;
   }
 
   override public function dispatchEvent(event:ScriptEvent, finish:Bool = true):Void
@@ -1047,7 +1101,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     conductorInUse.update();
 
-    syncSnapShiftState();
+    syncSnapAltState();
 
     // TODO: sync vocals if they desync, im just too lazy to put this in rn
     if (currentInstrumental != null && currentInstrumental.playing)
@@ -1066,10 +1120,10 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     if (timeline != null && timeline.viewport != null)
     {
-      timeline.viewport.tickEdgeAutoScroll(elapsed);
+      timeline.viewport.tick(elapsed);
       timeline.viewport.handleTrackpadScroll();
     }
-    if (mainView != null) mainView.handleTrackpadScroll();
+    if (mainView != null && !isCursorOverHaxeUI) mainView.handleTrackpadScroll();
 
     super.update(elapsed);
 
@@ -1176,6 +1230,7 @@ class CameraEditorState extends UIState implements ConsoleClass
    */
   public function buildStage():Void
   {
+    invalidateCameraReplay();
     cachedEventIndex = 0;
     cachedNoteIndex = 0;
     completedEvents = [];
@@ -1223,11 +1278,11 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     if (songCharacterData == null) return;
 
-    var gf:Null<BaseCharacter> = CharacterDataParser.fetchCharacter(songCharacterData.girlfriend);
+    var gf:Null<BaseCharacter> = CharacterRegistry.instance.fetchEntry(songCharacterData.girlfriend);
 
-    var dad:Null<BaseCharacter> = CharacterDataParser.fetchCharacter(songCharacterData.opponent);
+    var dad:Null<BaseCharacter> = CharacterRegistry.instance.fetchEntry(songCharacterData.opponent);
 
-    var bf:Null<BaseCharacter> = CharacterDataParser.fetchCharacter(songCharacterData.player);
+    var bf:Null<BaseCharacter> = CharacterRegistry.instance.fetchEntry(songCharacterData.player);
 
     FlxG.camera.filters = [];
 
@@ -1455,7 +1510,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   {
     FileUtil.createDirIfNotExists(BACKUPS_PATH);
 
-    CameraEditorImportExportHandler.exportCurrentChartToFNFC(this, true, null, function(path:String)
+    this.exportCurrentChartToFNFC(true, null, function(path:String)
     {
       notifyChange('Auto-Save', 'A Backup of this Chart has been made.');
     }, function()
@@ -1606,7 +1661,7 @@ class CameraEditorState extends UIState implements ConsoleClass
    */
   function performAutoSortLayersByType():Void
   {
-    CameraEditorCommandHandler.performCommand(this, new AutoSortLayersCommand());
+    this.performCommand(new AutoSortLayersCommand());
   }
 
   /**
@@ -1673,7 +1728,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   public function loadTimeline():Void
   {
     timeline.setEvents(currentSongChartData.events);
-    timeline.setStepLengthMs(conductorInUse.stepLengthMs);
+    timeline.setConductor(conductorInUse);
   }
 
   function registerTimelineEvents():Void
@@ -1692,7 +1747,7 @@ class CameraEditorState extends UIState implements ConsoleClass
         finalSelection.push(d.event);
       }
 
-      CameraEditorCommandHandler.performCommand(this, new CompoundCommand(children, 'Move ${children.length} Events', finalSelection));
+      this.performCommand(new CompoundCommand(children, 'Move ${children.length} Events', finalSelection));
 
       songEvents.sort(SortUtil.eventDataByTime.bind(FlxSort.ASCENDING));
       cachedEventIndex = 0;
@@ -1701,10 +1756,10 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     timeline.viewport.registerEvent(TimelineEvent.EVENT_RESIZED, function(e:TimelineEvent)
     {
-      CameraEditorPropertiesPanelHandler.loadSelectedSongEvent(this);
+      this.loadSelectedSongEvent();
       var layerName:String = e.eventData.editorLayer ?? 'Default';
       var cmd = new MoveResizeEventCommand(e.eventData, e.oldTime, e.oldDuration, layerName, e.newTime, e.newDuration, layerName);
-      CameraEditorCommandHandler.performCommand(this, cmd);
+      this.performCommand(cmd);
 
       songEvents.sort(SortUtil.eventDataByTime.bind(FlxSort.ASCENDING));
       cachedEventIndex = 0;
@@ -1736,7 +1791,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     timeline.registerEvent(TimelineEvent.LAYER_ADDED, function(e:TimelineEvent)
     {
       var cmd = new AddLayerCommand(e.layerData, e.layerIndex);
-      CameraEditorCommandHandler.performCommand(this, cmd);
+      this.performCommand(cmd);
     });
 
     timeline.registerEvent(TimelineEvent.LAYER_REMOVED, function(e:TimelineEvent)
@@ -1758,11 +1813,11 @@ class CameraEditorState extends UIState implements ConsoleClass
           var dialog = new DeleteLayerConfirmDialog(layerName, eventCount, () ->
           {
             var cmd = new FlattenLayerCommand(e.layerData, e.layerIndex);
-            CameraEditorCommandHandler.performCommand(this, cmd);
+            this.performCommand(cmd);
           }, () ->
             {
               var cmd = new RemoveLayerCommand(e.layerData, e.layerIndex);
-              CameraEditorCommandHandler.performCommand(this, cmd);
+              this.performCommand(cmd);
             });
           dialog.showDialog(true);
           deleteLayerConfirmDialog = dialog;
@@ -1772,25 +1827,22 @@ class CameraEditorState extends UIState implements ConsoleClass
       else
       {
         var cmd = new RemoveLayerCommand(e.layerData, e.layerIndex);
-        CameraEditorCommandHandler.performCommand(this, cmd);
+        this.performCommand(cmd);
       }
     });
 
     timeline.registerEvent(TimelineEvent.LAYER_RENAMED, function(e:TimelineEvent)
     {
       var cmd:RenameLayerCommand = new RenameLayerCommand(e.layerData, e.oldLayerName, e.newLayerName);
-      CameraEditorCommandHandler.performCommand(this, cmd);
+      this.performCommand(cmd);
     });
 
     timeline.registerEvent(
       TimelineEvent.DEFAULT_LAYER_PROTECTED,
-      (_:TimelineEvent) -> CameraEditorNotificationHandler.warning(this, 'Default Layer', 'Default layer cannot be renamed or removed')
+      (_:TimelineEvent) -> this.warning('Default Layer', 'Default layer cannot be renamed or removed')
     );
 
-    timeline.registerEvent(
-      TimelineEvent.LAYER_NAME_INVALID,
-      (e:TimelineEvent) -> CameraEditorNotificationHandler.warning(this, 'Invalid Layer Name', e.message ?? 'Layer name is invalid.')
-    );
+    timeline.registerEvent(TimelineEvent.LAYER_NAME_INVALID, (e:TimelineEvent) -> this.warning('Invalid Layer Name', e.message ?? 'Layer name is invalid.'));
   }
 
   var shouldResetScroll:Bool = false;
@@ -1822,6 +1874,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     currentInstrumental.onComplete = function()
     {
       shouldResetScroll = true;
+      invalidateCameraReplay();
       cachedEventIndex = 0;
       cachedNoteIndex = 0;
       completedEvents = [];
@@ -1864,6 +1917,10 @@ class CameraEditorState extends UIState implements ConsoleClass
     // Default to the character ID if the array is null, but NOT if the array is empty.
     buildVocal(currentCharactersData.playerVocals ?? [currentCharactersData.player]);
     buildVocal(currentCharactersData.opponentVocals ?? [currentCharactersData.opponent]);
+    if (currentVocals.length == 0) // Try to load legacy vocals if none are loaded
+    {
+      buildVocal(['']);
+    }
 
     trace('    Instrumental:' + (currentInstrumental != null ? ' Loaded' : ' Missing'));
     trace('    Vocals: ' + currentVocals.length + ' loaded');
@@ -1881,7 +1938,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     conductorInUse.mapTimeChanges(currentSongMetadata.timeChanges);
     timeline.songLength = currentInstrumental.length;
     timeline.songPosition = 0;
-    timeline.setStepLengthMs(conductorInUse.stepLengthMs);
+    timeline.setConductor(conductorInUse);
   }
 
   /**
@@ -1940,9 +1997,9 @@ class CameraEditorState extends UIState implements ConsoleClass
     syncTogglePlaybackButton();
   }
 
-  function syncSnapShiftState():Void
+  function syncSnapAltState():Void
   {
-    timeline.toolbar.chkSnap.shiftActive = FlxG.keys.pressed.SHIFT && timeline.viewport.hitTest(Screen.instance.currentMouseX, Screen.instance.currentMouseY);
+    timeline.toolbar.chkSnap.shiftActive = FlxG.keys.pressed.ALT && timeline.viewport.hitTest(Screen.instance.currentMouseX, Screen.instance.currentMouseY);
   }
 
   function syncTogglePlaybackButton():Void
@@ -1986,7 +2043,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     }
     else
     {
-      replayCameraTimeline(position);
+      replayCameraTimeline(position, true);
     }
     timeline.songPosition = position;
   }
@@ -2008,33 +2065,37 @@ class CameraEditorState extends UIState implements ConsoleClass
     }
   }
 
-  public function replayCameraTimeline(position:Float):Void
+  public function replayCameraTimeline(position:Float, full:Bool = false):Void
   {
     if (cameraRect == null) return;
 
     if (currentSongChartData == null) return;
 
-    currentStage.onEventReset();
+    var incremental:Bool = !full && replayPosition >= 0 && position >= replayPosition;
+    var fromPosition:Float = replayPosition;
 
-    cameraRect.cancelAllTweens();
-    cameraRect.zoom = defaultStageZoom;
-    cameraRect.setFocusPoint(cameraRect.defaultPosition.x, cameraRect.defaultPosition.y, true);
+    if (!incremental)
+    {
+      currentStage.onEventReset();
 
-    cameraRect.hudCameraZoomIntensity = (Constants.DEFAULT_BOP_INTENSITY - 1.0) * 2.0;
-    cameraRect.cameraBopIntensity = Constants.DEFAULT_BOP_INTENSITY;
-    cameraRect.cameraZoomRate = Constants.DEFAULT_ZOOM_RATE;
+      cameraRect.cancelAllTweens();
+      cameraRect.zoom = defaultStageZoom;
+      cameraRect.setFocusPoint(cameraRect.defaultPosition.x, cameraRect.defaultPosition.y, true);
 
-    conductorInUse.update(0);
-    cameraRect.update(0);
+      cameraRect.hudCameraZoomIntensity = (Constants.DEFAULT_BOP_INTENSITY - 1.0) * 2.0;
+      cameraRect.cameraBopIntensity = Constants.DEFAULT_BOP_INTENSITY;
+      cameraRect.cameraZoomRate = Constants.DEFAULT_ZOOM_RATE;
 
-    previousNoteTime = 0;
+      conductorInUse.update(0);
+      cameraRect.update(0);
 
-    var bfLastPlayAnimationTime:Null<Float> = null;
-    var dadLastPlayAnimationTime:Null<Float> = null;
-    var bfLastPlayAnimationEvent:Null<SongEventData> = null;
-    var dadLastPlayAnimationEvent:Null<SongEventData> = null;
-    var bfPlayAnimationWindowEnd:Float = -1;
-    var dadPlayAnimationWindowEnd:Float = -1;
+      previousNoteTime = 0;
+
+      replayBfAnimTime = null;
+      replayDadAnimTime = null;
+      replayBfAnimWindowEnd = -1;
+      replayDadAnimWindowEnd = -1;
+    }
 
     if (songEvents != null && songEvents.length > 0)
     {
@@ -2042,7 +2103,10 @@ class CameraEditorState extends UIState implements ConsoleClass
       {
         if (eventData == null) return false;
 
-        return eventData.getActivationTime() <= position;
+        var activationTime:Float = eventData.getActivationTime();
+        if (incremental && activationTime <= fromPosition) return false;
+
+        return activationTime <= position;
       });
 
       replayEvents.sort(SortUtil.eventDataByActivationTime.bind(FlxSort.ASCENDING));
@@ -2062,31 +2126,7 @@ class CameraEditorState extends UIState implements ConsoleClass
             handleSetCameraBopEvent(eventData, false);
           case 'PlayAnimation':
             handlePlayAnimationEvent(eventData);
-
-            var targetName:Null<String> = eventData.getString('target');
-            if (targetName == null) targetName = 'boyfriend';
-
-            var eventBeatTime:Float = conductorInUse.getTimeInSteps(eventData.time) / Constants.STEPS_PER_BEAT;
-            var nextBeatIndex:Int = Math.floor(eventBeatTime) + 1;
-            var nextBeatTimeMs:Float = conductorInUse.getBeatTimeInMs(nextBeatIndex);
-            if (nextBeatTimeMs <= eventData.time)
-            {
-              nextBeatIndex += 1;
-              nextBeatTimeMs = conductorInUse.getBeatTimeInMs(nextBeatIndex);
-            }
-
-            switch (targetName)
-            {
-              case 'boyfriend' | 'bf' | 'player':
-                bfLastPlayAnimationTime = eventData.time;
-                bfLastPlayAnimationEvent = eventData;
-                bfPlayAnimationWindowEnd = nextBeatTimeMs;
-              case 'dad' | 'opponent':
-                dadLastPlayAnimationTime = eventData.time;
-                dadLastPlayAnimationEvent = eventData;
-                dadPlayAnimationWindowEnd = nextBeatTimeMs;
-              default:
-            }
+            trackPlayAnimationEvent(eventData);
           default:
             if (doSongEvents)
             {
@@ -2101,7 +2141,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       {
         cachedEventIndex = songEvents.indexOf(lastEvent) + 1;
       }
-      else
+      else if (!incremental)
       {
         cachedEventIndex = 0;
       }
@@ -2152,7 +2192,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
       if (latestDadNote != null)
       {
-        dadHasNoteAfterPlayAnimation = dadLastPlayAnimationTime == null || latestDadNote.time > dadLastPlayAnimationTime;
+        dadHasNoteAfterPlayAnimation = replayDadAnimTime == null || latestDadNote.time > replayDadAnimTime;
 
         if (dadHasNoteAfterPlayAnimation)
         {
@@ -2171,7 +2211,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
       if (latestBFNote != null)
       {
-        bfHasNoteAfterPlayAnimation = bfLastPlayAnimationTime == null || latestBFNote.time > bfLastPlayAnimationTime;
+        bfHasNoteAfterPlayAnimation = replayBfAnimTime == null || latestBFNote.time > replayBfAnimTime;
 
         if (bfHasNoteAfterPlayAnimation)
         {
@@ -2203,8 +2243,8 @@ class CameraEditorState extends UIState implements ConsoleClass
       }
     }
 
-    var dadInPlayAnimationWindow:Bool = dadLastPlayAnimationTime != null && position <= dadPlayAnimationWindowEnd && !dadHasNoteAfterPlayAnimation;
-    var bfInPlayAnimationWindow:Bool = bfLastPlayAnimationTime != null && position <= bfPlayAnimationWindowEnd && !bfHasNoteAfterPlayAnimation;
+    var dadInPlayAnimationWindow:Bool = replayDadAnimTime != null && position <= replayDadAnimWindowEnd && !dadHasNoteAfterPlayAnimation;
+    var bfInPlayAnimationWindow:Bool = replayBfAnimTime != null && position <= replayBfAnimWindowEnd && !bfHasNoteAfterPlayAnimation;
 
     if (!dadShouldKeepSinging && dad != null && !dadInPlayAnimationWindow)
     {
@@ -2227,6 +2267,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     previousTime = conductorInUse.songPosition;
     previousNoteTime = position;
+    replayPosition = position;
   }
 
   // ui function bindings
@@ -2248,11 +2289,11 @@ class CameraEditorState extends UIState implements ConsoleClass
   {
     try
     {
-      CameraEditorImportExportHandler.loadSongFromFNFCPath(this, chartPath);
+      this.loadSongFromFNFCPath(chartPath);
     }
     catch (e)
     {
-      CameraEditorNotificationHandler.error(this, 'Failure', 'Failed to load chart (${chartPath})');
+      this.error('Failure', 'Failed to load chart (${chartPath})');
     }
   }
 
@@ -2261,7 +2302,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   {
     if (currentWorkingFilePath != null)
     {
-      CameraEditorImportExportHandler.exportCurrentChartToFNFC(this, true, currentWorkingFilePath, function(path:String)
+      this.exportCurrentChartToFNFC(true, currentWorkingFilePath, function(path:String)
       {
         notifyChange('Chart Save', 'This chart has been saved to ${path}');
       }, function()
@@ -2278,7 +2319,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   @:bind(menubarItemSaveAs, MouseEvent.CLICK)
   function onMenubarSaveAs(_)
   {
-    CameraEditorImportExportHandler.exportCurrentChartToFNFC(this, false, null, function(path:String)
+    this.exportCurrentChartToFNFC(false, null, function(path:String)
     {
       notifyChange('Chart Save', 'This chart has been saved to ${path}');
       currentWorkingFilePath = path;
@@ -2291,7 +2332,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   @:bind(menubarItemExportChartAsFolder, MouseEvent.CLICK)
   function onMenubarExportChartAsFolder(_)
   {
-    CameraEditorImportExportHandler.exportCurrentChartToFolder(this, (path:String) ->
+    this.exportCurrentChartToFolder((path:String) ->
     {
       notifyChange('Exported Chart', 'Chart exported successfully to ${path}');
     }, () -> {
@@ -2339,19 +2380,19 @@ class CameraEditorState extends UIState implements ConsoleClass
   @:bind(menubarItemUndo, MouseEvent.CLICK)
   function onMenubarUndo(_)
   {
-    CameraEditorCommandHandler.undoLastCommand(this);
+    this.undoLastCommand();
   }
 
   @:bind(menubarItemRedo, MouseEvent.CLICK)
   function onMenubarRedo(_)
   {
-    CameraEditorCommandHandler.redoLastCommand(this);
+    this.redoLastCommand();
   }
 
   @:nullSafety(Off)
   function destroyHaxeUIComponents():Void
   {
-    CameraEditorNotificationHandler.clearNotifications(this);
+    this.clearNotifications();
   }
 
   /**
@@ -2455,28 +2496,26 @@ class CameraEditorState extends UIState implements ConsoleClass
       case [FlxKey.COMMA, false, false, false, _]:
         var eventData = new SongEventData(0, 'FocusCamera', 1);
 
-        var stepMs = timeline.viewport.stepLengthMs;
-        if (stepMs > 0) eventData.time = Math.fround(Conductor.instance.songPosition / stepMs) * stepMs;
+        eventData.time = timeline.snapMs(Conductor.instance.songPosition);
 
         var cmd = new AddEventCommand(eventData);
-        CameraEditorCommandHandler.performCommand(this, cmd);
+        this.performCommand(cmd);
         selectedSongEvent = eventData;
 
       case [FlxKey.PERIOD, false, false, false, _]:
         var eventData = new SongEventData(0, 'FocusCamera', 0);
 
-        var stepMs = timeline.viewport.stepLengthMs;
-        if (stepMs > 0) eventData.time = Math.fround(Conductor.instance.songPosition / stepMs) * stepMs;
+        eventData.time = timeline.snapMs(Conductor.instance.songPosition);
 
         var cmd = new AddEventCommand(eventData);
-        CameraEditorCommandHandler.performCommand(this, cmd);
+        this.performCommand(cmd);
         selectedSongEvent = eventData;
 
       // Edit menu
       case [FlxKey.Z, true, false, false, _]: // ctrl + z -> undo
-        CameraEditorCommandHandler.undoLastCommand(this);
-      case [FlxKey.Y, true, false, false, _]: // ctrl + y -> redo -- note: I sorta like the ctrl + shift + z method to redo...
-        CameraEditorCommandHandler.redoLastCommand(this);
+        this.undoLastCommand();
+      case [FlxKey.Y, true, false, false, _] | [FlxKey.Z, true, false, true, _]: // ctrl + y or ctrl + shift + z -> redo
+        this.redoLastCommand();
 
       case [FlxKey.A, true, false, false, _]: // ctrl + a -> select all timeline events
         selectedSongEvents = currentSongChartData.events.filter(e -> e.eventKind == 'FocusCamera'
@@ -2491,7 +2530,7 @@ class CameraEditorState extends UIState implements ConsoleClass
         hasClipboardEvent = true;
 
         var plural = selectedSongEvents.length != 1 ? 'events' : 'event';
-        CameraEditorNotificationHandler.success(this, 'Copy Successful', 'Copied ${selectedSongEvents.length} $plural to clipboard.');
+        this.success('Copy Successful', 'Copied ${selectedSongEvents.length} $plural to clipboard.');
       case [FlxKey.X, true, false, false, true]: // ctrl + x -> cut
         SongDataUtils.writeItemsToClipboard({
           notes: [],
@@ -2499,18 +2538,39 @@ class CameraEditorState extends UIState implements ConsoleClass
         });
         hasClipboardEvent = true;
         var removeCmds:Array<CameraEditorCommand> = [for (ev in selectedSongEvents) new RemoveEventCommand(ev)];
-        CameraEditorCommandHandler.performCommand(this, new CompoundCommand(removeCmds, 'Cut ${removeCmds.length} Events', []));
+        this.performCommand(new CompoundCommand(removeCmds, 'Cut ${removeCmds.length} Events', []));
       case [FlxKey.V, true, false, false, _] if (hasClipboardEvent): // ctrl + v -> paste at playhead
-        var pasteMs = Conductor.instance.songPosition;
-
-        if (pasteMs < 0) pasteMs = 0;
-        if (pasteMs > timeline.viewport.songLengthMs) pasteMs = timeline.viewport.songLengthMs;
-
-        CameraEditorCommandHandler.performCommand(this, new PasteEventsCommand(pasteMs));
+        this.performCommand(new PasteEventsCommand(pastePositionMs()));
+      case [FlxKey.D, true, false, false, true]: // ctrl + d -> duplicate selection at playhead
+        duplicateSelection();
 
       case [FlxKey.DELETE, _, _, _, true] | [FlxKey.BACKSPACE, _, _, _, true]: // delete/backspace (with a note selected) -> delete selected notes
         var removeCmds:Array<CameraEditorCommand> = [for (ev in selectedSongEvents) new RemoveEventCommand(ev)];
-        CameraEditorCommandHandler.performCommand(this, new CompoundCommand(removeCmds, 'Delete ${removeCmds.length} Events', []));
+        this.performCommand(new CompoundCommand(removeCmds, 'Delete ${removeCmds.length} Events', []));
+
+      // Timeline
+      case [FlxKey.LBRACKET, false, false, false, _]: // [ -> decrease grid size
+        timeline.stepSnap(-1);
+      case [FlxKey.RBRACKET, false, false, false, _]: // ] -> increase grid size
+        timeline.stepSnap(1);
+      case [FlxKey.LEFT, false, false, true, true]: // shift + arrow (with a selection) -> nudge a grid step or a layer
+        timeline.viewport.nudgeSelection(-1, 0);
+      case [FlxKey.RIGHT, false, false, true, true]:
+        timeline.viewport.nudgeSelection(1, 0);
+      case [FlxKey.UP, false, false, true, true]:
+        timeline.viewport.nudgeSelection(0, -1);
+      case [FlxKey.DOWN, false, false, true, true]:
+        timeline.viewport.nudgeSelection(0, 1);
+      case [FlxKey.LEFT, false, false, false, _]: // arrows -> step the song a beat, shift steps four
+        seekByBeats(-1);
+      case [FlxKey.RIGHT, false, false, false, _]:
+        seekByBeats(1);
+      case [FlxKey.LEFT, false, false, true, _]:
+        seekByBeats(-4);
+      case [FlxKey.RIGHT, false, false, true, _]:
+        seekByBeats(4);
+      case [FlxKey.ESCAPE, false, false, false, true]: // escape -> clear the selection
+        selectedSongEvents = [];
 
       // User Guide
       case [FlxKey.F1, false, false, false, _]: // F1 -> open user guide
@@ -2520,6 +2580,49 @@ class CameraEditorState extends UIState implements ConsoleClass
     }
 
     // @formatter:on
+  }
+
+  /**
+   * Moves the playhead by whole beats, kept inside the song.
+   */
+  function seekByBeats(beats:Float):Void
+  {
+    if (currentInstrumental == null) return;
+
+    var target:Float = conductorInUse.songPosition + beats * conductorInUse.beatLengthMs;
+    if (target < 0) target = 0;
+    if (target > currentInstrumental.length) target = currentInstrumental.length;
+
+    setTimePosition(target);
+  }
+
+  /**
+   * Where a paste lands: the playhead, on the grid, inside the song.
+   */
+  function pastePositionMs():Float
+  {
+    var pasteMs:Float = timeline.snapMs(Conductor.instance.songPosition);
+
+    if (pasteMs < 0) pasteMs = 0;
+    if (pasteMs > timeline.viewport.songLengthMs) pasteMs = timeline.viewport.songLengthMs;
+
+    return pasteMs;
+  }
+
+  /**
+   * Copies the selection and pastes it at the playhead in one go.
+   */
+  function duplicateSelection():Void
+  {
+    if (!hasSelection) return;
+
+    SongDataUtils.writeItemsToClipboard({
+      notes: [],
+      events: selectedSongEvents.copy()
+    });
+    hasClipboardEvent = true;
+
+    CameraEditorCommandHandler.performCommand(this, new PasteEventsCommand(pastePositionMs()));
   }
 
   @:bind(menubarItemPlayPause, MouseEvent.CLICK)
@@ -2533,6 +2636,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   {
     var playing:Bool = currentInstrumental != null && currentInstrumental.playing;
     togglePlayback(true);
+    invalidateCameraReplay();
     cachedEventIndex = 0;
     cachedNoteIndex = 0;
     previousNotes = [
@@ -2686,7 +2790,9 @@ class CameraEditorState extends UIState implements ConsoleClass
   @:bind(menubarItemUserGuide, MouseEvent.CLICK)
   function onUserGuide(_)
   {
-    var userGuideDialog = new UserGuideDialog();
+    if (userGuideDialog != null) return;
+
+    userGuideDialog = new UserGuideDialog();
     userGuideDialog.showDialog();
 
     userGuideDialog.onDialogClosed = (_) -> userGuideDialog = null;
@@ -2722,7 +2828,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     {
       if (currentWorkingFilePath != null)
       {
-        CameraEditorImportExportHandler.exportCurrentChartToFNFC(this, true, currentWorkingFilePath, function(path:String)
+        this.exportCurrentChartToFNFC(true, currentWorkingFilePath, function(path:String)
         {
           notifyChange('Chart Save', 'This chart has been saved to ${path}');
           tryMoveToChartEditor(true);
@@ -2734,7 +2840,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       }
       else
       {
-        CameraEditorImportExportHandler.exportCurrentChartToFNFC(this, false, null, function(path:String)
+        this.exportCurrentChartToFNFC(false, null, function(path:String)
         {
           notifyChange('Chart Save', 'This chart has been saved to ${path}');
           currentWorkingFilePath = path;

@@ -1,6 +1,6 @@
 package funkin.modding;
 
-import funkin.data.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterRegistry;
 import funkin.data.dialogue.ConversationRegistry;
 import funkin.data.dialogue.DialogueBoxRegistry;
 import funkin.data.dialogue.SpeakerRegistry;
@@ -74,6 +74,11 @@ class PolymodHandler
     #end;
 
   /**
+   * The path containing the currently enabled mods.
+   */
+  public static final ENABLED_MODS_PATH:String = '$MOD_FOLDER/enabled.txt';
+
+  /**
    * Populated with the directories of mods once they're successfully loaded.
    */
   public static var loadedModDirs:Array<String> = [];
@@ -117,7 +122,7 @@ class PolymodHandler
     createModRoot();
     #end
     trace('Initializing Polymod (using configured mods)...');
-    loadModsById(Save.instance.enabledModIds.value);
+    loadModsById(enabledModIds);
   }
 
   /**
@@ -358,15 +363,14 @@ class PolymodHandler
     Polymod.addImportAlias('funkin.data.dialogue.conversation.ConversationRegistry', funkin.data.dialogue.ConversationRegistry);
     Polymod.addImportAlias('funkin.data.dialogue.dialoguebox.DialogueBoxRegistry', funkin.data.dialogue.DialogueBoxRegistry);
     Polymod.addImportAlias('funkin.data.dialogue.speaker.SpeakerRegistry', funkin.data.dialogue.SpeakerRegistry);
-    Polymod.addImportAlias('funkin.play.character.CharacterDataParser', funkin.data.character.CharacterData.CharacterDataParser);
-    Polymod.addImportAlias('funkin.play.character.CharacterData.CharacterDataParser', funkin.data.character.CharacterData.CharacterDataParser);
+    Polymod.addImportAlias('funkin.play.character.CharacterDataParser', funkin.modding.compat.CharacterDataParser);
+    Polymod.addImportAlias('funkin.play.character.CharacterData.CharacterDataParser', funkin.data.character.CharacterData);
 
     Polymod.addImportAlias('funkin.modding.base.ScriptedFunkinSprite', funkin.graphics.FunkinSprite);
     Polymod.addImportAlias('funkin.modding.base.ScriptedMusicBeatState', funkin.ui.MusicBeatState);
     Polymod.addImportAlias('funkin.modding.base.ScriptedMusicBeatSubState', funkin.ui.MusicBeatSubState);
 
-    Polymod.addImportAlias('funkin.play.character.CharacterDataParser', funkin.data.character.CharacterData.CharacterDataParser);
-
+    // TODO: Does this work?
     Polymod.addImportAlias('funkin.graphics.adobeanimate.FlxAtlasSprite', funkin.graphics.FunkinSprite);
     Polymod.addImportAlias('funkin.modding.base.ScriptedFlxAtlasSprite', funkin.graphics.FunkinSprite);
 
@@ -378,6 +382,7 @@ class PolymodHandler
 
     // Sandboxing for compatibility.
     Polymod.addImportAlias('funkin.play.cutscene.VideoCutscene', funkin.modding.compat.VideoCutscene);
+    Polymod.addImportAlias('funkin.data.character.CharacterDataParser', funkin.modding.compat.CharacterDataParser);
     Polymod.addImportAlias('funkin.FunkinMemory', funkin.memory.FunkinMemory);
 
     // Backwards compatibility for many classes that were removed.
@@ -485,10 +490,6 @@ class PolymodHandler
     // Unserializer.DEFAULT_RESOLVER.resolveClass() can access blacklisted packages
     Polymod.blacklistImport('haxe.Unserializer');
 
-    // `lime.utils.AssetLibrary`
-    // If you create your own library using a manifest, AssetLibrary.__fromManifest() can access blacklisted packages apparently.
-    Polymod.blacklistImport('lime.utils.AssetLibrary');
-
     // Disable access to all Mobile Utils
     for (cls in ClassMacro.listClassesInPackage('funkin.mobile.util'))
     {
@@ -567,6 +568,10 @@ class PolymodHandler
     #if !html5 Polymod.blacklistInstanceFields(openfl.filesystem.FileStream, ['readObject']); #end
     Polymod.blacklistInstanceFields(openfl.net.Socket, ['readObject']);
     Polymod.blacklistInstanceFields(openfl.utils.ByteArray.ByteArrayData, ['readObject']);
+
+    // `openfl.filesystem.File`
+    // Can be used to delete files.
+    Polymod.blacklistImport('openfl.filesystem.File');
 
     // `funkin.api.*`
     // Contains functions which may allow for cheating and such.
@@ -782,12 +787,11 @@ class PolymodHandler
    */
   public static function enableMod(modId:String):Void
   {
-    var enabledModIds:Array<String> = Save.instance.enabledModIds.value;
+    var enabledModIds:Array<String> = PolymodHandler.enabledModIds;
     if (!enabledModIds.contains(modId))
     {
       enabledModIds.push(modId);
-      Save.instance.enabledModIds.value = enabledModIds;
-      Save.system.flush();
+      PolymodHandler.enabledModIds = enabledModIds;
     }
   }
 
@@ -797,19 +801,17 @@ class PolymodHandler
    */
   public static function disableMod(modId:String):Void
   {
-    var enabledModIds:Array<String> = Save.instance.enabledModIds.value;
+    var enabledModIds:Array<String> = PolymodHandler.enabledModIds;
     if (enabledModIds.contains(modId))
     {
       enabledModIds.remove(modId);
-      Save.instance.enabledModIds.value = enabledModIds;
-      Save.system.flush();
+      PolymodHandler.enabledModIds = enabledModIds;
     }
   }
 
   public static function disableAllMods():Void
   {
-    Save.instance.enabledModIds.value = [];
-    Save.system.flush();
+    PolymodHandler.enabledModIds = [];
   }
 
   /**
@@ -818,7 +820,7 @@ class PolymodHandler
    */
   public static function getEnabledMods():Array<ModMetadata>
   {
-    var enabledModIds:Array<String> = Save.instance.enabledModIds.value;
+    var enabledModIds:Array<String> = PolymodHandler.enabledModIds;
     var modMetadata:Array<ModMetadata> = getAllMods();
     var enabledMods:Array<ModMetadata> = modMetadata.filter((item) ->
     {
@@ -841,7 +843,7 @@ class PolymodHandler
   public static function getDisabledMods():Array<ModMetadata>
   {
     var modMetadata:Array<ModMetadata> = getAllMods();
-    var enabledModIds:Array<String> = Save.instance.enabledModIds.value;
+    var enabledModIds:Array<String> = PolymodHandler.enabledModIds;
     var disabledMods:Array<ModMetadata> = modMetadata.filter((item) ->
     {
       return !enabledModIds.contains(item.id);
@@ -864,7 +866,7 @@ class PolymodHandler
   public static function getDisabledModsIncludingIncompatible(force:Bool = false):Array<ModMetadata>
   {
     var modMetadata:Array<ModMetadata> = getAllModsIncludingIncompatible(force);
-    var enabledModIds:Array<String> = Save.instance.enabledModIds.value;
+    var enabledModIds:Array<String> = PolymodHandler.enabledModIds;
     var disabledMods:Array<ModMetadata> = modMetadata.filter((item) ->
     {
       return !enabledModIds.contains(item.id);
@@ -917,9 +919,39 @@ class PolymodHandler
     StickerRegistry.instance.loadEntries();
     FreeplayStyleRegistry.instance.loadEntries();
 
-    CharacterDataParser.loadCharacterCache(); // TODO: Migrate characters to BaseRegistry.
+    CharacterRegistry.instance.loadEntries();
     NoteKindManager.initialize();
     ModuleHandler.loadModuleCache();
     ModuleHandler.callOnCreate();
+  }
+
+  /**
+   * The mods currently enabled.
+   */
+  public static var enabledModIds(get, set):Array<String>;
+
+  static function get_enabledModIds():Array<String>
+  {
+    #if sys
+    if (!FileUtil.fileExists(ENABLED_MODS_PATH)) return [];
+
+    var content:String = FileUtil.readStringFromPath(ENABLED_MODS_PATH);
+    return content.trim().split('\n');
+    #else
+    return Save.instance.enabledModIds.value;
+    #end
+  }
+
+  static function set_enabledModIds(value:Array<String>):Array<String>
+  {
+    #if sys
+    var content:String = value.join('\n');
+    FileUtil.writeStringToPath(ENABLED_MODS_PATH, content, Force);
+    #else
+    Save.instance.enabledModIds.value = value;
+    Save.system.flush();
+    #end
+
+    return value;
   }
 }

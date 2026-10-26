@@ -45,7 +45,7 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
    */
   function updateCameraPreview():Void
   {
-    cameraEditorState.replayCameraTimeline(cameraEditorState.conductorInUse.songPosition);
+    cameraEditorState.replayCameraTimeline(cameraEditorState.conductorInUse.songPosition, true);
   }
 
   /**

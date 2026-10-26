@@ -2432,7 +2432,7 @@ class FreeplayState extends MusicBeatSubState
   {
     super.destroy();
     // remove and destroy freeplay camera
-    FlxG.cameras.remove(funnyCam);
+    if (FlxG.cameras.list.contains(funnyCam)) FlxG.cameras.remove(funnyCam);
     // Cancel all song preview timers just in case a preview loads after we exit.
     clearPreviews();
   }

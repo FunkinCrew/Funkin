@@ -1,29 +1,11 @@
 package funkin.ui.transition.preload.hotreload;
 
-import funkin.assets.FunkinAssetCache;
-import funkin.data.BaseRegistry.LoadEntriesResult;
-import funkin.data.character.CharacterData.CharacterDataParser;
-import funkin.data.dialogue.ConversationRegistry;
-import funkin.data.dialogue.DialogueBoxRegistry;
-import funkin.data.dialogue.SpeakerRegistry;
-import funkin.data.event.SongEventRegistry;
-import funkin.data.freeplay.album.AlbumRegistry;
-import funkin.data.freeplay.player.PlayerRegistry;
-import funkin.data.freeplay.style.FreeplayStyleRegistry;
-import funkin.data.notestyle.NoteStyleRegistry;
-import funkin.data.song.SongRegistry;
-import funkin.data.stage.StageRegistry;
-import funkin.data.stickers.StickerRegistry;
-import funkin.data.story.level.LevelRegistry;
-import funkin.graphics.FunkinSprite;
 import flixel.util.FlxDestroyUtil;
-import funkin.modding.module.ModuleHandler;
-import funkin.play.notes.notekind.NoteKindManager;
+import flixel.util.typeLimit.NextState;
+import funkin.assets.FunkinAssetCache;
+import funkin.graphics.FunkinSprite;
 import funkin.ui.title.TitleState;
 import funkin.util.tasks.TaskHandler;
-import flixel.util.typeLimit.NextState;
-import lime.app.Future;
-import polymod.Polymod;
 
 /**
  * State which reloads all the game's data and assets.
@@ -43,6 +25,12 @@ typedef HotReloadStateParams =
    * If `null`, `HotReloadState` will go to the Title instead unless explicitly specified in `onComplete`
    */
   var ?targetState:NextState;
+
+  /**
+   * If `true`, only purge and rebuild the asset cache. Mods, scripts and registries are NOT reloaded.
+   * For when those were already reloaded by `ModReloader` before getting here, like the mod menu does.
+   */
+  var ?purgeOnly:Bool;
 }
 
 @:nullSafety
@@ -53,6 +41,7 @@ class HotReloadState extends MusicBeatState
 
   var onComplete:Null<Void->Void> = null;
   var targetState:Null<NextState> = null;
+  var purgeOnly:Bool = false;
   // Status.
   var hasStartedLoading:Bool = false;
   var isComplete:Bool = false;
@@ -69,6 +58,7 @@ class HotReloadState extends MusicBeatState
     {
       this.onComplete = params?.onComplete ?? null;
       this.targetState = params?.targetState ?? null;
+      this.purgeOnly = params?.purgeOnly ?? false;
     }
     this.progressBar = new FunkinSprite(BAR_PAD, FlxG.height - BAR_HEIGHT - BAR_PAD);
     throbber = new FunkinSprite(0, 0);
@@ -224,41 +214,50 @@ class HotReloadState extends MusicBeatState
 
     rebuildSoundTray();
 
+    if (purgeOnly)
+    {
+      queueRebuildAssetLists();
+      return;
+    }
+
     // Start the next step.
     queueLoadEnabledMods();
   }
 
   /**
-   * Step 2. Forcibly clear the script and module cache so they can be reloaded once mods are loaded.
-   * Then, initialize mods.
+   * The only step after purging, if `purgeOnly` is set. Rebuilds the asset lists the purge may have cleared,
+   * since mods, scripts and registries were already reloaded.
    */
-  function queueLoadEnabledMods():Void
+  function queueRebuildAssetLists():Void
   {
-    beginStep('load enabled mods');
+    beginStep('rebuild asset lists');
 
     TaskHandler.performSimpleTask(() ->
     {
-      ModuleHandler.clearModuleCache();
-      Polymod.clearScripts();
-
-      funkin.modding.PolymodHandler.loadEnabledMods();
-
-      // This task needs to be done immediately after changing the modlist.
       FunkinAssetCache.instance.cacheAssetLists(true);
 
       return true;
-    }).onComplete((_) -> afterLoadEnabledMods()).onError((error) ->
+    }).onComplete((_) -> afterRebuildAssetLists()).onError((error) ->
       {
-        reportStepFailed('load enabled mods', error);
-        afterLoadEnabledMods();
+        reportStepFailed('rebuild asset lists', error);
+        afterRebuildAssetLists();
       });
   }
 
-  function afterLoadEnabledMods():Void
+  function afterRebuildAssetLists():Void
   {
-    updateProgress(2, 10);
+    updateProgress(10, 10);
 
-    queueLoadScripts();
+    isComplete = true;
+  }
+
+  /**
+   * Step 2. Reload the enabled mods, scripts and registries.
+   * We can just use the modreloader for this step
+   */
+  function queueLoadEnabledMods():Void
+  {
+    ModReloader.reload(updateProgress, () -> isComplete = true);
   }
 
   function rebuildSoundTray():Void
@@ -273,72 +272,6 @@ class HotReloadState extends MusicBeatState
     }
   }
 
-  /**
-   * Step 3. Asynchronously load scripts from base game and all enabled mods.
-   */
-  function queueLoadScripts():Void
-  {
-    beginStep('load scripts');
-
-    var scriptFuture = funkin.modding.PolymodHandler.loadScripts(true);
-
-    scriptFuture.onComplete((_result) -> afterLoadScripts()).onError((error) ->
-    {
-      reportStepFailed('load scripts', error);
-      afterLoadScripts();
-    });
-  }
-
-  function afterLoadScripts():Void
-  {
-    trace('Script loading complete');
-
-    updateProgress(3, 10);
-
-    // Load registry data asynchronously.
-    queueLoadRegistryData();
-  }
-
-  /**
-   * Step 4. Asynchronously load registry data from base game and all enabled mods.
-   */
-  function queueLoadRegistryData():Void
-  {
-    beginStep('load registry data');
-
-    var futures:Array<Future<LoadEntriesResult>> = [];
-
-    futures.push(SongRegistry.instance.loadEntriesAsync());
-    futures.push(LevelRegistry.instance.loadEntriesAsync());
-    futures.push(NoteStyleRegistry.instance.loadEntriesAsync());
-    futures.push(PlayerRegistry.instance.loadEntriesAsync());
-    futures.push(ConversationRegistry.instance.loadEntriesAsync());
-    futures.push(DialogueBoxRegistry.instance.loadEntriesAsync());
-    futures.push(SpeakerRegistry.instance.loadEntriesAsync());
-    futures.push(AlbumRegistry.instance.loadEntriesAsync());
-    futures.push(StageRegistry.instance.loadEntriesAsync());
-    futures.push(StickerRegistry.instance.loadEntriesAsync());
-    futures.push(FreeplayStyleRegistry.instance.loadEntriesAsync());
-    futures.push(SongEventRegistry.loadEventCacheAsync());
-    futures.push(NoteKindManager.loadNoteKindsAsync());
-    futures.push(CharacterDataParser.loadCharacterCacheAsync());
-    futures.push(ModuleHandler.loadModuleCacheAsync());
-
-    var registryFuture = lime.app.Promises.allSettled(futures);
-
-    registryFuture.onProgress((loaded:Int, total:Int) ->
-    {
-      trace('Registry loading completed: $loaded/$total');
-      updateProgress(loaded, total);
-    });
-
-    registryFuture.onComplete((_) -> afterLoadRegistryData()).onError((error) ->
-    {
-      reportStepFailed('load registry data', error);
-      afterLoadRegistryData();
-    });
-  }
-
   function beginStep(step:String):Void
   {
     trace('Queue task: $step...');
@@ -350,23 +283,6 @@ class HotReloadState extends MusicBeatState
 
     trace(message);
     FlxG.log.error(message);
-  }
-
-  function afterLoadRegistryData():Void
-  {
-    // Call create() on each module when the future is complte.
-    try
-    {
-      ModuleHandler.callOnCreate();
-    }
-    catch (error:Dynamic)
-    {
-      reportStepFailed('module create', error);
-    }
-
-    updateProgress(10, 10);
-
-    isComplete = true;
   }
 
   /**

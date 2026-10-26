@@ -45,7 +45,7 @@ class Album implements IRegistryEntry<AlbumData>
    */
   public function getAlbumArtAssetKey():String
   {
-    return _data?.albumArtAsset ?? 'ui/freeplay/albums/volume1"';
+    return funkin.assets.Paths.formatRelative(_data?.albumArtAsset ?? 'ui/freeplay/albums/volume1', 'ui/freeplay/albums', Constants.EXT_IMAGE);
   }
 
   /**
@@ -62,7 +62,7 @@ class Album implements IRegistryEntry<AlbumData>
    */
   public function getAlbumTitleAssetKey():String
   {
-    return _data?.albumTitleAsset ?? "ui/freeplay/albums/volume1-text";
+    return funkin.assets.Paths.formatRelative(_data?.albumTitleAsset ?? "ui/freeplay/albums/volume1-text", 'ui/freeplay/albums', Constants.EXT_IMAGE);
   }
 
   /**

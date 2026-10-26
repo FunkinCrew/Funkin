@@ -8,9 +8,8 @@ import flixel.tweens.FlxTween;
 import funkin.data.freeplay.player.PlayerData.PlayerCharSelectData;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.graphics.FunkinSprite;
-import funkin.graphics.shaders.VerticalCutShader;
+import funkin.graphics.shaders.VerticalFadeShader;
 import funkin.group.FunkinGroup;
-import funkin.input.Controls;
 import funkin.ui.charSelect.CharacterSelectState;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.util.FramesJSFLParser;
@@ -48,20 +47,8 @@ class IconGroup extends FunkinGroup<FunkinSprite>
 
   /**
    * The distance between icons for both axes.
-   * @default 100, 100
    */
   public var iconSpread:FlxPoint = FlxPoint.get(107, 105);
-
-  /**
-   * The controls for the Character Select screen.
-   */
-  var controls(get, never):Controls;
-
-  function get_controls():Controls
-  {
-    @:privateAccess
-    return CharacterSelectState.instance.controls;
-  }
 
   /**
    * An intro tween for the icons that plays when entering Character Select.
@@ -72,18 +59,6 @@ class IconGroup extends FunkinGroup<FunkinSprite>
    * An exit tween for the icons that plays when exiting Character Select.
    */
   var exitTween:Null<FlxTween> = null;
-
-  /**
-   * The shader to apply to the last 3 icons from the previous page.
-   * Only used for locks.
-   */
-  var topCutShader:VerticalCutShader = new VerticalCutShader(TOP);
-
-  /**
-   * The shader to apply to the first 3 icons from the next page.
-   * Only used for locks.
-   */
-  var bottomCutShader:VerticalCutShader = new VerticalCutShader(BOTTOM);
 
   #if FEATURE_TOUCH_CONTROLS
   /**
@@ -113,6 +88,9 @@ class IconGroup extends FunkinGroup<FunkinSprite>
     }
 
     this.scrollFactor.set();
+    this.clipRect = FlxRect.get(CharacterSelectState.CUTOUT_SIZE + 300, 90, 500, 430);
+
+    this.shader = new VerticalFadeShader(0.05, BOTH, 0.10);
   }
 
   /**
@@ -471,9 +449,6 @@ class IconGroup extends FunkinGroup<FunkinSprite>
       this.y = MathUtil.smoothLerpPrecision(this.y, (120 - currentPage * iconSpread.y * 3) - 120, elapsed, SLOT_LERP_VALUE);
     }
 
-    // The last 3 icons from the previous page are clipped from the top half
-    // The first 3 icons from the next page are clipped from the bottom half
-    // Any other icons not in the current page are hidden
     for (index => member in this.children)
     {
       var memberPage:Int = Math.floor(index / CharacterSelectState.SLOTS_PER_PAGE);
@@ -485,46 +460,6 @@ class IconGroup extends FunkinGroup<FunkinSprite>
 
       var targetAlpha:Float = (memberPage == currentPage) ? 1 : (shouldClip ? 0.5 : 0);
       member.alpha = targetAlpha;
-
-      if (isPixelIcon(member))
-      {
-        @:nullSafety(Off)
-        member.clipRect = null;
-      }
-      else
-      {
-        @:nullSafety(Off)
-        member.shader = null;
-      }
-
-      if (shouldClip)
-      {
-        // FIXME: clipRect is buggy on locks specifically when trying to clip out the bottom half
-        // A shader is used instead for now
-        // - Abnormal
-        if (isLast3)
-        {
-          if (isPixelIcon(member))
-          {
-            member.clipRect = FlxRect.get(0, member.frameHeight / 2, member.frameWidth, member.frameHeight);
-          }
-          else
-          {
-            member.shader = topCutShader;
-          }
-        }
-        else if (isNext3)
-        {
-          if (isPixelIcon(member))
-          {
-            member.clipRect = FlxRect.get(0, 0, member.frameWidth, member.frameHeight / 2);
-          }
-          else
-          {
-            member.shader = bottomCutShader;
-          }
-        }
-      }
     }
 
     previousPage = currentPage;

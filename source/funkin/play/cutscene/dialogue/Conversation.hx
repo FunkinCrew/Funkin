@@ -110,12 +110,16 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
     currentDialogueLine = 0;
     this.state = ConversationState.Start;
 
+    // Prevents incorrect speaker behavior.
+    showCurrentSpeaker();
+
     // Start the dialogue.
     startConversation();
   }
 
   function setupMusic():Void
   {
+    if (music != null) return;
     if (_data == null) return;
 
     if (_data.music == null || (_data.music.asset ?? '') == '') return;

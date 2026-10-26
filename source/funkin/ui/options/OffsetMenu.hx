@@ -19,7 +19,6 @@ import funkin.graphics.FunkinSprite;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.play.notes.notestyle.NoteStyle;
-import funkin.play.notes.NoteSplash;
 import funkin.ui.options.items.NumberPreferenceItem;
 import haxe.Int64;
 import flixel.FlxSprite;
@@ -44,6 +43,9 @@ typedef ArrowData =
 class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 {
   static final BPM:Int = 100;
+  static final CONDUCTOR_DRIFT_THRESHOLD:Float = 65;
+  static final DRUMS_RESYNC_THRESHOLD_MS:Float = 20;
+  static final MUSIC_EASE_RATIO:Float = 42;
 
   // Page<OptionsState.OptionsMenuPageName> stuff
   var offsetItem:NumberPreferenceItem;
@@ -85,6 +87,14 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
   function get_msPerBeat():Float
   {
     return 60000 / BPM;
+  }
+
+  var loopBeats(get, never):Int;
+
+  function get_loopBeats():Int
+  {
+    if (FlxG.sound.music == null || FlxG.sound.music.length <= 0) return 128;
+    return Math.round(FlxG.sound.music.length / msPerBeat);
   }
 
   /**
@@ -146,7 +156,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 
     for (arrow in arrows)
     {
-      var diff:Float = arrow.beat - beat;
+      var diff:Float = Math.abs(arrow.beat - beat);
       if (diff < closestDiff)
       {
         closestDiff = diff;
@@ -190,6 +200,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     testStrumline.x -= testStrumline.width / 2;
     testStrumline.scrollFactor.set(0, 0);
     add(testStrumline);
+    testStrumline.warmPools();
 
     testStrumline.cameras = [menuCamera];
 
@@ -261,6 +272,9 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       jumpInText.text = 'Tap to the beat!';
       #end
 
+      inputPressQueue = [];
+      inputReleaseQueue = [];
+
       jumpInText.y = 100;
 
       countText.text = 'Current Offset: 0ms';
@@ -276,6 +290,9 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       offsetLerp = 0;
       savedOffset = Preferences.globalOffset;
       Preferences.globalOffset = 0; // We save the offset and set it to 0 so the player can recalibrate.
+      localConductor.update(FlxG.sound.music.time, true);
+      _lastBeat = localConductor.currentBeatTime;
+      _lastTime = FlxG.sound.music.time;
       shouldOffset = 1;
       tempOffset = 0;
       appliedOffsetLerp = 0;
@@ -284,6 +301,8 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       receptor.angle = 0;
 
       _gotMad = false;
+
+      setupCalibrationInput();
     });
     createButtonItem('Test', function()
     {
@@ -293,6 +312,8 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       if (OptionsState.instance.optionsCodex.currentPage != this) return;
 
       shouldOffset = 1;
+      inputPressQueue = [];
+      inputReleaseQueue = [];
       testStrumline.clean();
       testStrumline.noteData = [];
       testStrumline.nextNoteIndex = 0;
@@ -348,6 +369,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
         testStrumline.x -= testStrumline.width / 2;
         testStrumline.scrollFactor.set(0, 0);
         add(testStrumline);
+        testStrumline.warmPools();
       }
       #end
       MenuTypedList.pauseInput = true;
@@ -372,9 +394,10 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
         jumpInText.y = FlxG.height - 425;
       }
       #end
+
+      PreciseInputManager.instance.onInputPressed.add(onKeyPress);
+      PreciseInputManager.instance.onInputReleased.add(onKeyRelease);
     });
-    PreciseInputManager.instance.onInputPressed.add(onKeyPress);
-    PreciseInputManager.instance.onInputReleased.add(onKeyRelease);
 
     backButton = new FunkinBackButton(FlxG.width - 230, FlxG.height - 200, FlxColor.WHITE, handleMobileExit);
     #if FEATURE_TOUCH_CONTROLS // We do this here because we want to animate the back button (on Mobile), but we don't want it on Desktop.
@@ -387,6 +410,8 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
      */
   function onKeyPress(event:PreciseInputEvent):Void
   {
+    if (calibrating) return;
+
     // Set the current position for further calculation.
     event.position = localConductor.songPosition;
 
@@ -399,6 +424,8 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
      */
   function onKeyRelease(event:PreciseInputEvent):Void
   {
+    if (calibrating) return;
+
     // Set the current position for further calculation.
     event.position = localConductor.songPosition;
 
@@ -410,6 +437,8 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 
   public function exitCalibration(cancel:Bool):Void
   {
+    removeCalibrationInput();
+
     backButton.enabled = false;
     shouldOffset = -1;
     #if FEATURE_TOUCH_CONTROLS
@@ -494,7 +523,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     if (differences.length % 4 == 0 && calibrating)
     {
       var avg:Float = getAverage();
-      tempOffset = Std.int(avg);
+      tempOffset = -Std.int(avg);
       _lastOffset = appliedOffsetLerp;
       _offsetLerpTime = 0;
       trace('New offset calculated: ' + tempOffset + 'ms');
@@ -504,41 +533,126 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
   var _lastBeat:Float = 0;
   var _lastTime:Float = 0;
 
+  /**
+     * Records one calibration tap at the given beat time.
+     * @param tapBeat The beat the tap landed on, already corrected for input latency.
+     * @return Whether calibration was reset or completed by this tap.
+     */
+  function registerCalibrationTap(tapBeat:Float):Bool
+  {
+    var arrow:ArrowData = getClosestArrowAtBeat(tapBeat);
+    var closestBeat:Float = Math.round(tapBeat);
+    var diff:Float = closestBeat - tapBeat;
+    var ms:Float = (diff * msPerBeat);
+
+    if (arrow != null) // eric sees this and goes "OMG NULL REF!!!!"
+    {
+      var timeDiff = (arrow.beat - tapBeat) * msPerBeat;
+
+      if (Math.abs(timeDiff + tempOffset) <= 80)
+      {
+        arrow.sprite.alpha = 0;
+        arrow.sprite.kill();
+        arrows.remove(arrow);
+      }
+    }
+
+    var consistency:Float = getConsistency();
+
+    if (consistency > 40 && differences.length > 8)
+    {
+      jumpInText.text = 'Try to be a little more consistent with your timing!';
+      differences = [];
+      tempOffset = 0;
+      appliedOffsetLerp = 0;
+      _gotMad = true;
+      return true;
+    }
+
+    addDifference(ms);
+
+    var actualMs = ms + tempOffset;
+
+    if (differences.length >= 30)
+    {
+      jumpInText.text = 'Calibration complete!';
+      tempOffset = -Std.int(getAverage());
+      Preferences.globalOffset = tempOffset;
+      exitCalibration(false);
+      return true;
+    }
+
+    if (!_gotMad)
+    {
+      if (Math.abs(actualMs) < 45) jumpInText.text = 'Great job';
+      else
+        jumpInText.text = 'Nice job';
+      if (differences.length < 8) jumpInText.text += ", keep going!";
+      else
+        jumpInText.text += "!";
+    }
+
+    jumpInText.text += '\n' + differences.length + '/30';
+
+    _gotMad = false;
+
+    scaleModifier = 0.75;
+    return false;
+  }
+
   override function update(elapsed:Float):Void
   {
     super.update(elapsed);
-    localConductor.update(localConductor.songPosition + elapsed * 1000, false);
+
+    if (FlxG.sound.music.playing)
+    {
+      var audioDiff:Float = Math.abs(FlxG.sound.music.time - (localConductor.songPosition - localConductor.combinedOffset));
+      if (audioDiff <= CONDUCTOR_DRIFT_THRESHOLD)
+      {
+        var easeRatio:Float = 1.0 - Math.exp(-MUSIC_EASE_RATIO * elapsed);
+        localConductor.update(FlxMath.lerp(localConductor.songPosition, FlxG.sound.music.time + localConductor.combinedOffset, easeRatio), false);
+      }
+      else
+      {
+        trace('Resyncing conductor: ' + audioDiff + 'ms difference');
+        localConductor.update(FlxG.sound.music.time, true);
+      }
+    }
+    else
+    {
+      localConductor.update(localConductor.songPosition + elapsed * 1000, false);
+    }
 
     var b:Float = localConductor.currentBeatTime;
 
     // Restart logic
-    if (FlxG.sound.music.time < _lastTime)
+    if (_lastTime - FlxG.sound.music.time > FlxG.sound.music.length / 2)
     {
-      localConductor.update(FlxG.sound.music.time, !calibrating);
+      localConductor.update(FlxG.sound.music.time, true);
       b = localConductor.currentBeatTime;
 
-      // Update arrows to be the correct distance away from the receptor.
-      var lastArrowBeat:Float = 0;
-      for (i in 0...arrows.length)
+      var loopBeatCount:Int = loopBeats;
+      var loopMs:Float = loopBeatCount * msPerBeat;
+      for (arrow in arrows)
       {
-        var arrow:ArrowData = arrows[i];
-        var beatDiff:Float = arrow.beat - _lastBeat;
-
-        arrow.beat = b + beatDiff;
-        lastArrowBeat = arrow.beat;
+        arrow.beat -= loopBeatCount;
       }
-      if (calibrating)
+      for (note in testStrumline.noteData)
       {
-        arrowBeat = lastArrowBeat;
+        if (note != null) note.time -= loopMs;
       }
-      else
-        arrowBeat = 4;
 
-      testStrumline.clean();
-      testStrumline.noteData = [];
-      testStrumline.nextNoteIndex = 0;
+      for (input in inputPressQueue)
+      {
+        if (input.position != null) input.position -= loopMs;
+      }
+      arrowBeat -= loopBeatCount;
+      OptionsState.instance.drumsBG.pause();
+      OptionsState.instance.drumsBG.time = FlxG.sound.music.time;
+      OptionsState.instance.drumsBG.resume();
       trace('Restarting conductor');
 
+      _lastBeat = b;
       _lastTime = FlxG.sound.music.time;
       return;
     }
@@ -546,22 +660,13 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     _lastBeat = b;
 
     // Resync logic
-    var diff:Float = Math.abs((FlxG.sound.music.time + localConductor.combinedOffset) - localConductor.songPosition);
     var diffBg:Float = Math.abs(FlxG.sound.music.time - OptionsState.instance.drumsBG.time);
-    if (FlxG.sound.music.playing)
+    if (FlxG.sound.music.playing && diffBg > DRUMS_RESYNC_THRESHOLD_MS)
     {
-      if (diff > 50 || diffBg > 50)
-      {
-        trace('Resyncing conductor: ' + (diff > diffBg ? diff : diffBg) + 'ms difference');
-
-        // If the difference is greater than 50ms, we resync the conductor.
-        localConductor.update(FlxG.sound.music.time, true);
-        OptionsState.instance.drumsBG.pause();
-        OptionsState.instance.drumsBG.time = FlxG.sound.music.time;
-        OptionsState.instance.drumsBG.resume();
-        b = localConductor.currentBeatTime;
-        _lastBeat = b;
-      }
+      trace('Resyncing drums: ' + diffBg + 'ms difference');
+      OptionsState.instance.drumsBG.pause();
+      OptionsState.instance.drumsBG.time = FlxG.sound.music.time;
+      OptionsState.instance.drumsBG.resume();
     }
 
     _lastTime = FlxG.sound.music.time;
@@ -593,11 +698,11 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
         var arrow:ArrowData = arrows[i];
 
         var ms:Float = arrow.beat * msPerBeat;
-        var offset:Float = GRhythmUtil.getNoteY(ms - appliedOffsetLerp, 2, false, localConductor);
+        var offset:Float = GRhythmUtil.getNoteY(ms + appliedOffsetLerp, 2, false, localConductor);
         arrow.sprite.y = receptor.y + offset - (arrow.sprite.height / 2);
         arrow.sprite.x = receptor.x - (arrow.sprite.width / 2);
 
-        if ((ms - appliedOffsetLerp) - localConductor.songPosition < -180)
+        if ((ms + appliedOffsetLerp) - localConductor.songPosition < -180)
         {
           arrow.sprite.alpha -= elapsed * 5;
         }
@@ -626,65 +731,28 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       }
 
       // Hit a note (calibration)
-      if (FlxG.keys.justPressed.ANY #if FEATURE_TOUCH_CONTROLS || TouchUtil.justPressed #end)
+      var tapBeats:Array<Float> = [];
+
+      #if FEATURE_TOUCH_CONTROLS
+      if (TouchUtil.justPressed)
       {
-        var arrow:ArrowData = getClosestArrowAtBeat(b);
+        tapBeats.push(b);
+      }
+      #else
+      while (inputPressQueue.length > 0)
+      {
+        var input:PreciseInputEvent = inputPressQueue.shift();
+        var inputLatencyNs:Int64 = PreciseInputManager.getCurrentTimestamp() - input.timestamp;
+        var inputLatencyMs:Float = inputLatencyNs.toFloat() / Constants.NS_PER_MS;
+        var hitPosition:Float = (input.position ?? localConductor.songPosition) - inputLatencyMs;
+        tapBeats.push(hitPosition / msPerBeat);
+      }
+      inputReleaseQueue = [];
+      #end
 
-        var closestBeat:Float = Math.round(b);
-        var diff:Float = closestBeat - b;
-        var ms:Float = (diff * msPerBeat);
-
-        if (arrow != null) // eric sees this and goes "OMG NULL REF!!!!"
-        {
-          var timeDiff = (arrow.beat - b) * msPerBeat;
-
-          if (Math.abs(timeDiff - tempOffset) <= 80)
-          {
-            arrow.sprite.alpha = 0;
-            arrow.sprite.kill();
-            arrows.remove(arrow);
-          }
-        }
-
-        var consistency:Float = getConsistency();
-
-        if (consistency > 40 && differences.length > 8)
-        {
-          jumpInText.text = 'Try to be a little more consistent with your timing!';
-          differences = [];
-          tempOffset = 0;
-          appliedOffsetLerp = 0;
-          _gotMad = true;
-          return;
-        }
-
-        addDifference(ms);
-
-        var actualMs = ms - tempOffset;
-
-        if (differences.length >= 30)
-        {
-          jumpInText.text = 'Calibration complete!';
-          Preferences.globalOffset = tempOffset;
-          exitCalibration(false);
-          return;
-        }
-
-        if (!_gotMad)
-        {
-          if (Math.abs(actualMs) < 45) jumpInText.text = 'Great job';
-          else
-            jumpInText.text = 'Nice job';
-          if (differences.length < 8) jumpInText.text += ", keep going!";
-          else
-            jumpInText.text += "!";
-        }
-
-        jumpInText.text += '\n' + differences.length + '/30';
-
-        _gotMad = false;
-
-        scaleModifier = 0.75;
+      for (tapBeat in tapBeats)
+      {
+        if (registerCalibrationTap(tapBeat)) return;
       }
     }
     // Testing logic
@@ -693,7 +761,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       // If we are not calibrating, we are just testing the strumline.
 
       processInputQueue();
-      while (b >= arrowBeat - 2 && b < 124)
+      while (b >= arrowBeat - 2)
       {
         // Create a new arrow at the next beat division.
         arrowBeat = arrowBeat + 1;
@@ -709,7 +777,6 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 
         _lastDirection = (_lastDirection + 1) % 4; // Cycle through directions 0-3
       }
-      if (b >= 124 && _lastDirection != 0) _lastDirection = 0; // reset direction on loop
     }
     // Remove arrows and what not for when we are exiting calibration/testing
     else
@@ -824,23 +891,42 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     });
   }
 
+  public function setupCalibrationInput():Void
+  {
+    FlxG.stage.window.onKeyDownPrecise.add(onCalibrationKeyPress);
+  }
+
+  public function removeCalibrationInput():Void
+  {
+    FlxG.stage.window.onKeyDownPrecise.remove(onCalibrationKeyPress);
+  }
+
+  public function onCalibrationKeyPress(keyCode, _, timestamp:Int64):Void
+  {
+    // Create a new precise input event to use.
+    var input:PreciseInputEvent = {
+      noteDirection: 1, // Doesn't matter.
+      timestamp: timestamp,
+      keyCode: keyCode,
+      position: localConductor?.songPosition ?? 0.0
+    }
+    inputPressQueue.push(input);
+  }
+
   function hitNote(note:NoteSprite, input:PreciseInputEvent):Void
   {
     var inputPosition:Float = input.position ?? 0.0;
     var inputLatencyNs:Int64 = PreciseInputManager.getCurrentTimestamp() - input.timestamp;
     var inputLatencyMs:Float = inputLatencyNs.toFloat() / Constants.NS_PER_MS;
 
-    var noteDiff:Int = Std.int(note.noteData.time - inputPosition - inputLatencyMs);
+    var noteDiff:Int = Std.int(note.noteData.time - inputPosition + inputLatencyMs);
     addDifference(noteDiff);
 
     if (noteDiff == 0)
     {
       // \n to signify a line break (because the original text has 3 lines)
       jumpInText.text = 'Perfect!\n';
-      var notesplash:NoteSplash = new NoteSplash(NoteStyleRegistry.instance.fetchEntry(Constants.DEFAULT_NOTE_STYLE));
-      notesplash.play(note.direction, 0);
-      notesplash.setPosition(note.x, note.y);
-      add(notesplash);
+      testStrumline.playNoteSplash(note.direction);
     }
     else
     {
@@ -950,6 +1036,10 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     MenuTypedList.pauseInput = false;
     destroying = true;
     exitCalibration(true);
+
+    PreciseInputManager.instance.onInputPressed.remove(onKeyPress);
+    PreciseInputManager.instance.onInputReleased.remove(onKeyRelease);
+
     super.destroy();
   }
 }

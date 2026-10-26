@@ -224,7 +224,7 @@ class ChartEditorDialogHandler
         try
         {
           state.loadSongFromFNFCPath(latestBackupPath);
-          dialog.hideDialog(DialogButton.CANCEL);
+          dialog.hideDialog(DialogButton.APPLY);
         }
         catch (e)
         {

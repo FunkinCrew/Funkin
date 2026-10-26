@@ -201,6 +201,9 @@ class CharacterSelectState extends MusicBeatSubState
 
     currentCharacterId = value;
 
+    var event:CharacterSelectScriptEvent = CharacterSelectScriptEvent.get(CHARACTER_SELECTED, value);
+    dispatchEvent(event);
+
     nametag.loadCharacter(value);
 
     characters.setCharacters(oldId, value);
@@ -320,6 +323,11 @@ class CharacterSelectState extends MusicBeatSubState
    */
   var wentBackToFreeplay:Bool = false;
 
+  /**
+   * Foreground speakers.
+   */
+  var speakers:FunkinSprite;
+
   public function new(?params:CharacterSelectStateParams)
   {
     super();
@@ -353,6 +361,8 @@ class CharacterSelectState extends MusicBeatSubState
 
     @:bypassAccessor
     currentSelection = DEFAULT_CURSOR_INDEX;
+
+    speakers = new FunkinSprite(CUTOUT_SIZE - 10, 0);
 
     instance = this;
   }
@@ -473,11 +483,10 @@ class CharacterSelectState extends MusicBeatSubState
     // Adding the character group here for layering.
     add(characters);
 
-    var speakers:FunkinSprite = new FunkinSprite(CUTOUT_SIZE - 10, 0).loadTextureAtlas('ui/character-select/interface/speakers', {
+    speakers.loadTextureAtlas('ui/character-select/interface/speakers', {
       applyStageMatrix: true
     });
-    speakers.anim.addBySymbol('wholeTimeline', speakers.getDefaultSymbol(), speakers.library.frameRate);
-    speakers.animation.play('wholeTimeline');
+    speakers.anim.addBySymbol('wholeTimeline', speakers.getDefaultSymbol(), speakers.library.frameRate, false);
     speakers.scrollFactor.set(1.8, 1.8);
     speakers.scale.set(1.05, 1.05);
     add(speakers);
@@ -733,6 +742,9 @@ class CharacterSelectState extends MusicBeatSubState
               @:bypassAccessor
               currentCharacterId = characterId;
 
+              var event:CharacterSelectScriptEvent = CharacterSelectScriptEvent.get(CHARACTER_SELECTED, characterId);
+              dispatchEvent(event);
+
               if (locksToUnlock.isEmpty())
               {
                 @:privateAccess
@@ -888,6 +900,13 @@ class CharacterSelectState extends MusicBeatSubState
       cameraFollowPoint.x += (((currentSelection % SLOTS_PER_PAGE) % SLOTS_PER_ROW) - 1) * 10;
       cameraFollowPoint.y += (Math.floor((currentSelection % SLOTS_PER_PAGE) / SLOTS_PER_ROW) - 1) * 10;
     }
+  }
+
+  override public function beatHit():Bool
+  {
+    speakers?.animation?.play('wholeTimeline');
+
+    return super.beatHit();
   }
 
   function selectCharacter():Void

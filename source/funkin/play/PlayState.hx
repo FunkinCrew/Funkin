@@ -21,7 +21,7 @@ import funkin.Highscore.Tallies;
 import funkin.api.newgrounds.Events;
 import funkin.audio.FunkinSound;
 import funkin.audio.VoicesGroup;
-import funkin.data.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterRegistry;
 import funkin.data.dialogue.ConversationRegistry;
 import funkin.data.event.SongEventRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
@@ -1597,34 +1597,34 @@ class PlayState extends MusicBeatSubState
           FlxG.sound.music.pause();
           musicPausedBySubState = true;
         }
+      }
 
-        // Pause any sounds that are playing and keep track of them.
-        // Vocals are also paused here but are not included as they are handled separately.
-        if (Std.isOfType(subState, PauseSubState))
+      // Pause any sounds that are playing and keep track of them.
+      // Vocals are also paused here but are not included as they are handled separately.
+      if (Std.isOfType(subState, PauseSubState))
+      {
+        FlxG.sound.list.forEachAlive(function(sound:FlxSound)
         {
-          FlxG.sound.list.forEachAlive(function(sound:FlxSound)
+          if (!sound.active || sound == FlxG.sound.music) return;
+          // In case it's a scheduled sound
+          if (Std.isOfType(sound, FunkinSound))
           {
-            if (!sound.active || sound == FlxG.sound.music) return;
-            // In case it's a scheduled sound
-            if (Std.isOfType(sound, FunkinSound))
-            {
-              var funkinSound:FunkinSound = cast sound;
-              if (funkinSound != null && !funkinSound.isPlaying) return;
-            }
-            if (!sound.playing && sound.time >= 0) return;
-            sound.pause();
-            soundsPausedBySubState.add(sound);
-          });
+            var funkinSound:FunkinSound = cast sound;
+            if (funkinSound != null && !funkinSound.isPlaying) return;
+          }
+          if (!sound.playing && sound.time >= 0) return;
+          sound.pause();
+          soundsPausedBySubState.add(sound);
+        });
 
-          vocals?.forEach(function(voice:FunkinSound)
-          {
-            soundsPausedBySubState.remove(voice);
-          });
-        }
-        else
+        vocals?.forEach(function(voice:FunkinSound)
         {
-          vocals?.pause();
-        }
+          soundsPausedBySubState.remove(voice);
+        });
+      }
+      else
+      {
+        vocals?.pause();
       }
 
       if (!vwooshTimer.finished) vwooshTimer.active = false;
@@ -1908,7 +1908,7 @@ class PlayState extends MusicBeatSubState
       var correctSync:Float = Math.min(FlxG.sound.music.length, Math.max(0, Conductor.instance.songPosition - Conductor.instance.combinedOffset));
       var playerVoicesError:Float = 0;
       var opponentVoicesError:Float = 0;
-      if (vocals != null && vocals.playing)
+      if (vocals != null && (vocals.playing || vocals.time < 0))
       {
         @:nullSafety(Off)
         @:privateAccess // todo: maybe make the groups public :thinking:
@@ -2157,7 +2157,7 @@ class PlayState extends MusicBeatSubState
     //
     // GIRLFRIEND
     //
-    var girlfriend:Null<BaseCharacter> = CharacterDataParser.fetchCharacter(currentCharacterData.girlfriend);
+    var girlfriend:Null<BaseCharacter> = CharacterRegistry.instance.fetchEntry(currentCharacterData.girlfriend);
 
     if (girlfriend != null)
     {
@@ -2175,7 +2175,7 @@ class PlayState extends MusicBeatSubState
     //
     // DAD
     //
-    var dad:Null<BaseCharacter> = CharacterDataParser.fetchCharacter(currentCharacterData.opponent);
+    var dad:Null<BaseCharacter> = CharacterRegistry.instance.fetchEntry(currentCharacterData.opponent);
 
     if (dad != null)
     {
@@ -2210,7 +2210,7 @@ class PlayState extends MusicBeatSubState
     //
     // BOYFRIEND
     //
-    var boyfriend:Null<BaseCharacter> = CharacterDataParser.fetchCharacter(currentCharacterData.player);
+    var boyfriend:Null<BaseCharacter> = CharacterRegistry.instance.fetchEntry(currentCharacterData.player);
 
     if (boyfriend != null)
     {
@@ -2703,8 +2703,6 @@ class PlayState extends MusicBeatSubState
       if (mayPauseGame) endSong(skipEndingTransition);
     };
 
-    FlxG.sound.music.pause();
-    FlxG.sound.music.time = startTimestamp;
     FlxG.sound.music.pitch = playbackRate;
 
     if (Preferences.subtitles)
@@ -2725,19 +2723,14 @@ class PlayState extends MusicBeatSubState
     {
       add(vocals);
 
-      vocals.time = startTimestamp - Conductor.instance.instrumentalOffset;
       vocals.pitch = playbackRate;
       vocals.playerVolume = playerVocalsVolume;
       vocals.opponentVolume = opponentVocalsVolume;
 
-      // trace('STARTING SONG AT:');
-      // trace('${FlxG.sound.music.time}');
-      // trace('${vocals.time}');
-
-      vocals.play();
+      vocals.play(true, startTimestamp);
     }
 
-    FlxG.sound.music.play();
+    FlxG.sound.music.play(true, startTimestamp);
 
     #if FEATURE_DISCORD_RPC
     // Updating Discord Rich Presence.
@@ -3210,6 +3203,10 @@ class PlayState extends MusicBeatSubState
       case 'shit':
         healthChange = Constants.HEALTH_SHIT_BONUS;
         isComboBreak = Constants.JUDGEMENT_SHIT_COMBO_BREAK;
+      default:
+        // We missed!
+        // Stop processing this hit immediately.
+        return;
     }
 
     // Send the note hit event.
@@ -3894,6 +3891,9 @@ class PlayState extends MusicBeatSubState
 
     FlxTween.globalManager.clear();
     FlxTimer.globalManager.clear();
+
+    PreciseInputManager.instance.onInputPressed.remove(onKeyPress);
+    PreciseInputManager.instance.onInputReleased.remove(onKeyRelease);
 
     // Remove reference to stage and remove sprites from it to save memory.
     if (currentStage != null)

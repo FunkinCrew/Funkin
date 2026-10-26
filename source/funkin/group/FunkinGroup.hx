@@ -1,16 +1,19 @@
 package funkin.group;
 
-import flixel.util.FlxColor;
+import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.math.FlxRect;
-import flixel.util.FlxSort;
-import funkin.util.SortUtil;
-import flixel.math.FlxPoint;
-import flixel.FlxCamera;
-import flixel.util.FlxDestroyUtil;
+import flixel.graphics.frames.FlxFrame;
 import flixel.group.IFlxGroupable;
+import flixel.math.FlxPoint;
+import flixel.math.FlxRect;
+import flixel.util.FlxColor;
+import flixel.util.FlxDestroyUtil;
+import flixel.util.FlxSort;
 import funkin.graphics.FunkinRenderTexture;
+import funkin.graphics.FunkinSprite;
+import funkin.util.SortUtil;
+import openfl.filters.BitmapFilter;
 
 /**
  * A FunkinGroup of FlxSprites.
@@ -20,6 +23,7 @@ typedef FunkinSpriteGroup = FunkinGroup<FlxSprite>;
 /**
  * FlxSpriteGroup but better. Kinda like if `FlxNestedSprite` and `FlxSpriteGroup` were merged.
  */
+@:access(funkin.graphics.FunkinSprite)
 class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
 {
   /**
@@ -49,11 +53,8 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
   public var size(get, never):Int;
 
   /**
-   * If enabled, the group will render as one texture instead of rendering multiple limbs.
-   * This is useful for stuff like changing alpha, and shaders that require the whole group.
-   * Only enable this if your group either:
-   * - Changes alpha to something other than 1.0
-   * - Has a shader or blend mode
+   * If enabled, the group will render as one texture.
+   * This is useful for stuff like changing alpha, and shaders that require a flat texture.
    */
   public var useRenderTexture(default, set):Bool = false;
 
@@ -66,26 +67,27 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
 
   var _renderTexture:Null<FunkinRenderTexture> = null;
   var _renderTextureRect:FlxRect = FlxRect.get();
+  var _renderTextureClipRect:FlxRect = FlxRect.get();
 
   /**
-   * Screen-space clip rect inherited from a parent FunkinGroup, if any.
-   * Combined with this group's own (screen-space) `clipRect` to form the
-   * effective region applied to children. `null` = nothing inherited.
+   * An array of bitmap filters to apply to this group.
    */
-  var _inheritedClipRect:Null<FlxRect> = null;
+  public var filters(default, set):Null<Array<BitmapFilter>> = null;
 
-  /** Reusable scratch rect for the combined effective clip. */
-  var _effectiveClipRect:Null<FlxRect> = null;
-
-  var _childOwnClips:Map<FlxSprite, FlxRect> = new Map();
-
-  /** Register a sprite's own (local) clip that should survive the group's clipping. */
-  public function setChildClipRect(child:FlxSprite, ?localClip:FlxRect):Void
+  function set_filters(value:Null<Array<BitmapFilter>>):Null<Array<BitmapFilter>>
   {
-    if (localClip == null) _childOwnClips.remove(child);
-    else
-      _childOwnClips.set(child, localClip);
+    if (value == filters) return value;
+
+    useRenderTexture = (value != null && value.length > 0);
+
+    return filters = value;
   }
+
+  /**
+   * Small FunkinSprite we leech off of to move around Haxe's type-checking.
+   * Used for filters!
+   */
+  var filterBridge:FunkinSprite;
 
   function get_size():Int
   {
@@ -102,100 +104,6 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
   function get_length():Int
   {
     return size;
-  }
-
-  /**
-   * The combined screen-space clip for this group.
-  **/
-  function getEffectiveClipRect():Null<FlxRect>
-  {
-    if (clipRect == null && _inheritedClipRect == null) return null;
-
-    if (_effectiveClipRect == null) _effectiveClipRect = FlxRect.get();
-
-    if (clipRect == null) return _effectiveClipRect.copyFrom(_inheritedClipRect);
-    if (_inheritedClipRect == null) return _effectiveClipRect.copyFrom(clipRect);
-
-    return clipRect.intersection(_inheritedClipRect, _effectiveClipRect);
-  }
-
-  /**
-   * Pushes this group's screen-space clip down to its children.
-  **/
-  public function updateClipRects():Void
-  {
-    var screenClip:Null<FlxRect> = getEffectiveClipRect();
-    var cam:FlxCamera = getDefaultCamera();
-
-    for (child in children)
-    {
-      if (child == null || !child.exists) continue;
-
-      if (Std.isOfType(child, FunkinGroup))
-      {
-        var childGroup:FunkinGroup<Dynamic> = cast child;
-
-        if (screenClip == null)
-        {
-          childGroup._inheritedClipRect = FlxDestroyUtil.put(childGroup._inheritedClipRect);
-        }
-        else
-        {
-          if (childGroup._inheritedClipRect == null) childGroup._inheritedClipRect = FlxRect.get();
-          childGroup._inheritedClipRect.copyFrom(screenClip);
-        }
-      }
-      else
-      {
-        var own:FlxRect = _childOwnClips.get(child);
-
-        if (screenClip == null)
-        {
-          if (own != null) child.clipRect = child.clipRect != null ? child.clipRect.copyFrom(own) : FlxRect.get().copyFrom(own);
-          else if (child.clipRect != null) child.clipRect = FlxDestroyUtil.put(child.clipRect);
-        }
-        else
-        {
-          var dest:FlxRect = child.clipRect != null ? child.clipRect : FlxRect.get();
-          screenToLocalClipRect(child, screenClip, dest, cam);
-          if (own != null) dest = own.intersection(dest, dest);
-          child.clipRect = dest;
-        }
-      }
-    }
-  }
-
-  /**
-   * Projects a screen-space rect into a child sprite's local graphic-pixel space.
-  **/
-  function screenToLocalClipRect(child:FlxSprite, screenClip:FlxRect, result:FlxRect, ?camera:FlxCamera):FlxRect
-  {
-    var minX:Float = Math.POSITIVE_INFINITY;
-    var minY:Float = Math.POSITIVE_INFINITY;
-    var maxX:Float = Math.NEGATIVE_INFINITY;
-    var maxY:Float = Math.NEGATIVE_INFINITY;
-
-    var screenCorner:FlxPoint = FlxPoint.get();
-    var localCorner:FlxPoint = FlxPoint.get();
-
-    for (i in 0...4)
-    {
-      var sx:Float = (i == 1 || i == 2) ? screenClip.right : screenClip.left;
-      var sy:Float = (i >= 2) ? screenClip.bottom : screenClip.top;
-
-      screenCorner.set(sx, sy);
-      child.transformScreenToPixels(screenCorner, camera, localCorner);
-
-      if (localCorner.x < minX) minX = localCorner.x;
-      if (localCorner.y < minY) minY = localCorner.y;
-      if (localCorner.x > maxX) maxX = localCorner.x;
-      if (localCorner.y > maxY) maxY = localCorner.y;
-    }
-
-    screenCorner.put();
-    localCorner.put();
-
-    return result.set(minX, minY, maxX - minX, maxY - minY);
   }
 
   /**
@@ -322,6 +230,13 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
     return maxBottom - minTop;
   }
 
+  override function set_clipRect(rect:FlxRect):FlxRect
+  {
+    useRenderTexture = (rect != null);
+
+    return super.set_clipRect(rect);
+  }
+
   /**
    * Sets this FunkinGroup's `origin` to the center of its complete graphic.
    *
@@ -368,6 +283,8 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
 
     if (preciseScale != null) this.preciseScale = preciseScale;
     if (preciseAngle != null) this.preciseAngle = preciseAngle;
+
+    filterBridge = new FunkinSprite().makeSolidColor(1, 1, 0x00000000);
   }
 
   /**
@@ -429,8 +346,6 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
         child.scrollFactor.set(child.scrollFactor.x * this.scrollFactor.x, child.scrollFactor.y * this.scrollFactor.y);
       }
     }
-
-    updateClipRects();
   }
 
   /**
@@ -561,8 +476,8 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
 
     _renderTexture = FlxDestroyUtil.destroy(_renderTexture);
     _renderTextureRect = FlxDestroyUtil.put(_renderTextureRect);
-    _inheritedClipRect = FlxDestroyUtil.put(_inheritedClipRect);
-    _effectiveClipRect = FlxDestroyUtil.put(_effectiveClipRect);
+    _renderTextureClipRect = FlxDestroyUtil.put(_renderTextureClipRect);
+    filterBridge.destroy();
 
     super.destroy();
   }
@@ -617,55 +532,96 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
   {
     if (!updateRenderTextureSize()) return false;
 
-    _renderTexture.init(Std.int(_renderTextureRect.width), Std.int(_renderTextureRect.height));
+    var left:Float = x + _renderTextureRect.x;
+    var top:Float = y + _renderTextureRect.y;
 
-    final left:Float = x + _renderTextureRect.x;
-    final top:Float = y + _renderTextureRect.y;
-
-    // Apply rect offset
-    for (child in children)
+    if (clipRect != null)
     {
-      if (child == null) continue;
+      _renderTextureClipRect.set(clipRect.x - left, clipRect.y - top, clipRect.width, clipRect.height);
 
-      child.x -= left;
-      child.y -= top;
+      left += _renderTextureClipRect.x;
+      top += _renderTextureClipRect.y;
+
+      _renderTexture.init(Std.int(_renderTextureClipRect.width), Std.int(_renderTextureClipRect.height));
+    }
+    else
+    {
+      _renderTexture.init(Std.int(_renderTextureRect.width), Std.int(_renderTextureRect.height));
+    }
+
+    if (this.filters != null && this.filters.length > 0)
+    {
+      if (this.filters != filterBridge.filters)
+      {
+        filterBridge.filters = this.filters;
+      }
     }
 
     _renderTexture.drawToCamera((textureCamera, _) ->
     {
-      for (child in children)
-      {
-        if (child == null || !child.exists || !child.visible) continue;
-
-        final cacheCameras = child.cameras;
-        child.cameras = [textureCamera];
-        child.draw();
-        child.cameras = cacheCameras;
-      }
+      drawToRenderTexture(textureCamera, left, top);
     });
-
     _renderTexture.render();
 
-    // Restore original pos
-    for (child in children)
-    {
-      if (child == null) continue;
-
-      child.x += left;
-      child.y += top;
-    }
+    filterBridge.filterRenderer.applyFilters(_renderTexture.graphic.bitmap);
 
     for (camera in cameras)
     {
       if (!camera.visible || !camera.exists) continue;
 
-      _matrix.identity();
-      _matrix.translate(left - camera.scroll.x * scrollFactor.x, top - camera.scroll.y * scrollFactor.y);
+      var frame:FlxFrame = _renderTexture.graphic.imageFrame.frame;
+      var drawLeft:Float = left + frame.frame.x;
+      var drawTop:Float = top + frame.frame.y;
 
-      camera.drawPixels(_renderTexture.graphic.imageFrame.frame, null, _matrix, colorTransform, blend, antialiasing, shader, blendTarget);
+      _matrix.identity();
+      _matrix.translate(drawLeft - camera.scroll.x * scrollFactor.x, drawTop - camera.scroll.y * scrollFactor.y);
+
+      if (filterBridge.filtered)
+      {
+        var filteredFrame:Null<FlxFrame> = filterBridge.filterRenderer.graphic?.imageFrame.frame;
+        if (filteredFrame != null)
+        {
+          camera.drawPixels(filteredFrame, null, _matrix, colorTransform, blend, antialiasing, shader, blendTarget);
+        }
+        else
+        {
+          camera.drawPixels(frame, null, _matrix, colorTransform, blend, antialiasing, shader, blendTarget);
+        }
+      }
+      else
+      {
+        camera.drawPixels(frame, null, _matrix, colorTransform, blend, antialiasing, shader, blendTarget);
+      }
     }
 
     return true;
+  }
+
+  function drawToRenderTexture(textureCamera:FlxCamera, offsetX:Float, offsetY:Float):Void
+  {
+    for (child in children)
+    {
+      if (child == null || !child.exists || !child.visible) continue;
+
+      var cacheCameras:Array<FlxCamera> = child.cameras;
+      child.cameras = [textureCamera];
+
+      if (Std.isOfType(child, FunkinGroup))
+      {
+        var childGroup:FunkinGroup<Dynamic> = cast child;
+        childGroup.drawToRenderTexture(textureCamera, offsetX, offsetY);
+      }
+      else
+      {
+        child.x -= offsetX;
+        child.y -= offsetY;
+        child.draw();
+        child.x += offsetX;
+        child.y += offsetY;
+      }
+
+      child.cameras = cacheCameras;
+    }
   }
 
   function updateRenderTextureSize():Bool
@@ -680,10 +636,24 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
     {
       if (child == null || !child.exists || !child.visible) continue;
 
-      final left:Float = child.x - x;
-      final top:Float = child.y - y;
-      final right:Float = left + child.frameWidth * Math.abs(child.scale.x);
-      final bottom:Float = top + child.frameHeight * Math.abs(child.scale.y);
+      var left:Float = child.x - x;
+      var top:Float = child.y - y;
+      var right:Float;
+      var bottom:Float;
+
+      if (Std.isOfType(child, FunkinGroup))
+      {
+        var childGroup:FunkinGroup<Dynamic> = cast child;
+        right = left + childGroup.width;
+        bottom = top + childGroup.height;
+      }
+      else
+      {
+        left += child.origin.x * (1 - child.scale.x) - child.offset.x;
+        top += child.origin.y * (1 - child.scale.y) - child.offset.y;
+        right = left + child.frameWidth * Math.abs(child.scale.x);
+        bottom = top + child.frameHeight * Math.abs(child.scale.y);
+      }
 
       if (left < minLeft) minLeft = left;
       if (top < minTop) minTop = top;
@@ -698,15 +668,15 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
     if (minLeft < _renderTextureRect.x) _renderTextureRect.x = minLeft;
     if (minTop < _renderTextureRect.y) _renderTextureRect.y = minTop;
 
-    final width:Float = Math.ceil(maxRight - _renderTextureRect.x);
-    final height:Float = Math.ceil(maxBottom - _renderTextureRect.y);
+    var width:Float = Math.ceil(maxRight - _renderTextureRect.x);
+    var height:Float = Math.ceil(maxBottom - _renderTextureRect.y);
 
     if (width > _renderTextureRect.width) _renderTextureRect.width = width;
     if (height > _renderTextureRect.height) _renderTextureRect.height = height;
 
     if (_renderTextureRect.width <= 0 || _renderTextureRect.height <= 0) return false;
 
-    if (_renderTexture == null) _renderTexture = new FunkinRenderTexture(Std.int(_renderTextureRect.width), Std.int(_renderTextureRect.height));
+    if (_renderTexture == null) _renderTexture = new FunkinRenderTexture(Std.int(_renderTextureRect.width), Std.int(_renderTextureRect.height), this);
 
     return true;
   }
