@@ -440,7 +440,7 @@
       "comment": "Specifies a specific naming format for enum member fields.",
       "props": {
         "format": "^[a-zA-Z][_a-zA-Z0-9]*$",
-        "tokens": ["PUBLIC", "ENUM"]
+        "tokens": ["ENUM"]
       },
       "type": "MemberName"
     },
