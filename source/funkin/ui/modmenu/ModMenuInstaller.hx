@@ -228,7 +228,8 @@ class ModMenuInstaller
   #if (sys || (js && html5))
   static function isArchiveModExtension(fileName:String):Bool
   {
-    var extension:String = Path.extension(fileName);
+    if (fileName == null) return false;
+    final extension:String = Path.extension(fileName);
     final normalizedExtension = extension.toLowerCase();
     final archiveExtensions = PolymodConfig.archiveModExt ?? ['.zip'];
 

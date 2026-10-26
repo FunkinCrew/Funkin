@@ -297,11 +297,17 @@ class ModMenuItem extends FunkinSpriteGroup
         modIcon.loadGraphic(openfl.display.BitmapData.fromBytes(mod.icon, true));
         onIconLoaded();
         #else
+        modIcon.makeGraphic(1, 1, FlxColor.TRANSPARENT);
         openfl.display.BitmapData.loadFromBytes(mod.icon).onComplete((bitmap) ->
         {
-          modIcon.loadGraphic(bitmap);
+          if (bitmap != null) modIcon.loadGraphic(bitmap);
           onIconLoaded();
-        });
+        }).onError((error) ->
+          {
+            trace('Failed to load icon for mod ${mod.id}: $error');
+            modIcon.loadGraphic(Paths.image('ui/mods/fallback-icon'));
+            onIconLoaded();
+          });
         #end
       }
     }
