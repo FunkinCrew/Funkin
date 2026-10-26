@@ -253,6 +253,8 @@ class ChartEditorAudioHandler
     waveformSprite.time = 0;
     waveformSprite.duration = Conductor.instance.getStepTimeInMs(16) * 0.001;
     waveformSprite.iconId = charType;
+    waveformSprite.reversed = state.isViewDownscroll;
+    waveformSprite.y = state.transformChartY(ChartEditorState.GRID_INITIAL_Y_POS, waveformSprite.height);
     return waveformSprite;
   }
 
