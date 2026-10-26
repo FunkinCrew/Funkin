@@ -487,11 +487,13 @@ class ModMenuInstaller
 
     popup.showProgress(mod.name, '${credit}\nDownloading...', 0);
 
-    ModInstaller.download(mod, function(ratio:Float):Void
+    ModInstaller.download(mod, function(bytesLoaded:Int, bytesTotal:Int):Void
     {
       if (installCancelled) return;
 
-      popup.showProgress(mod.name, '${credit}\nDownloading... ${Math.round(ratio * 100)}%', ratio);
+      final ratio:Float = bytesLoaded / bytesTotal;
+
+      popup.showProgress(mod.name, '${credit}\nDownloading... ${Math.round(ratio * 100)}%\n${formatFilesize(bytesLoaded + 1)} out of ${formatFilesize(bytesTotal)}', ratio);
     }, function(archivePath:String):Void
     {
       if (installCancelled) return;
