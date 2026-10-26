@@ -24,7 +24,7 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
   /**
    * The measure ticks underneath the numbers.
    */
-  var measureTicksSprite:FlxTiledSprite = new FlxTiledSprite(ChartEditorState.GRID_SIZE, ChartEditorState.GRID_SIZE * 16);
+  var measureTicksSprite:FlxTiledSprite = new ChartEditorGridSprite(ChartEditorState.GRID_SIZE, ChartEditorState.GRID_SIZE * 16);
 
   /**
    * The numbers that display the current measure number.
@@ -75,6 +75,14 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
   public function setHeight(height:Float):Void
   {
     measureTicksSprite.height = height;
+  }
+
+  public function updateScrollPosition(originY:Float):Void
+  {
+    this.y = originY;
+    measureTicksSprite.y = chartEditorState.transformChartY(originY, measureTicksSprite.height);
+    measureTicksSprite.flipY = chartEditorState.isViewDownscroll;
+    if (chartEditorState.isViewDownscroll) updateMeasureNumbers(true);
   }
 
   public function updateTheme():Void
@@ -220,7 +228,7 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
         // Measures are base ZERO gah!
         final OFFSET = 2;
         measureNumber.text = '${targetMeasure + 1}';
-        measureNumber.y = relativeMeasureTimeInPixels + OFFSET;
+        measureNumber.y = chartEditorState.transformChartY(relativeMeasureTimeInPixels + OFFSET, measureNumber.height);
         measureNumber.x = this.x;
       }
 
@@ -229,7 +237,8 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
         // Reuse an existing divider. If we need a new divider, create one with makeMeasureDivider().
         final REVIVE:Bool = true;
         var measureDivider = measureDividers.recycle(makeMeasureDivider, false, REVIVE);
-        measureDivider.y = relativeMeasureTimeInPixels - (ChartEditorThemeHandler.MEASURE_TICKS_MEASURE_WIDTH / 2);
+        measureDivider.y = chartEditorState.transformChartY(relativeMeasureTimeInPixels - (ChartEditorThemeHandler.MEASURE_TICKS_MEASURE_WIDTH / 2),
+          measureDivider.height);
         measureDivider.x = this.x + (measureTicksSprite.width);
       }
     }
