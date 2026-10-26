@@ -20,7 +20,6 @@ Code Quality is handled by the `vshaxe.haxe-checkstyle` extension, which include
   - Re-configure `NestedControlFlow`
   - Re-configure `NestedIfDepth`
   - Figure out something for `Trace`
-  - Fix bug and enable `DocCommentStyle`
 
 ## .json
 Formatting is handled by the `esbenp.prettier-vscode` extension, which includes Prettier.
