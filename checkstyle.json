@@ -238,6 +238,11 @@
       "type": "FieldDocComment"
     },
     {
+      "comment": "If enabled, warns if the case of the module name does not match the filename.",
+      "props": { "severity": "INFO" },
+      "type": "FileNameCase"
+    },
+    {
       "comment": "If enabled, warns if files exceed a certain number of lines.",
       "props": { "max": 1000, "ignoreEmptyLines": true, "severity": "IGNORE" },
       "type": "FileLength"
@@ -868,6 +873,11 @@
       "comment": "If enabled, complains when a local variable is unused.",
       "props": { "severity": "WARNING" },
       "type": "UnusedLocalVar"
+    },
+    {
+      "comment": "If enabled, complains when initializing instance variables at the class level.",
+      "props": { "severity": "IGNORE" },
+      "type": "VariableInitialisation"
     },
     {
       "comment": "If enabled, requires type hints for certain variables.",
