@@ -119,7 +119,7 @@
       "comment": "Specifies a specific naming format for static final identifiers.",
       "props": {
         "ignoreExtern": true,
-        "format": "^[A-Z]([_A-Z0-9]+)*$",
+        "format": "^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$",
         "tokens": ["INLINE", "NOTINLINE", "FINAL"],
         "severity": "INFO"
       },
