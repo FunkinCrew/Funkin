@@ -140,7 +140,7 @@ class BaseFreeplayDJ extends FunkinSprite implements IFreeplayScriptedClass
       return;
     }
 
-    currentState = Confirm;
+    (currentState == IdleEasterEgg || currentState == Cartoon) ? trace("Continue DJ Animation") : currentState = Confirm;
   }
 
   public function toCharSelect():Void
