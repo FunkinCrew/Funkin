@@ -820,7 +820,7 @@
       "comment": "Specifies a specific naming format for abstract types.",
       "props": {
         "ignoreExtern": true,
-        "format": "^[A-Z]+[a-zA-Z0-9]*$",
+        "format": "^[A-Z][a-zA-Z0-9]*(_[a-zA-Z0-9]+)*$",
         "tokens": ["ABSTRACT"],
         "severity": "WARNING"
       },
@@ -831,7 +831,7 @@
       "comment": "Specifies a specific naming format for class types.",
       "props": {
         "ignoreExtern": true,
-        "format": "^[A-Z]+[a-zA-Z0-9]*$",
+        "format": "^[A-Z][a-zA-Z0-9]*(_[a-zA-Z0-9]+)*$",
         "tokens": ["CLASS"],
         "severity": "WARNING"
       },
@@ -842,7 +842,7 @@
       "comment": "Specifies a specific naming format for enum types.",
       "props": {
         "ignoreExtern": true,
-        "format": "^[A-Z]+[a-zA-Z0-9]*$",
+        "format": "^[A-Z][a-zA-Z0-9]*(_[a-zA-Z0-9]+)*$",
         "tokens": ["ENUM"],
         "severity": "WARNING"
       },
@@ -853,7 +853,7 @@
       "comment": "Specifies a specific naming format for interface types.",
       "props": {
         "ignoreExtern": true,
-        "format": "^[A-Z]+[a-zA-Z0-9]*$",
+        "format": "^[A-Z][a-zA-Z0-9]*(_[a-zA-Z0-9]+)*$",
         "tokens": ["INTERFACE"],
         "severity": "WARNING"
       },
@@ -864,7 +864,7 @@
       "comment": "Specifies a specific naming format for typedefs.",
       "props": {
         "ignoreExtern": true,
-        "format": "^[A-Z]+[a-zA-Z0-9]*$",
+        "format": "^[A-Z][a-zA-Z0-9]*(_[a-zA-Z0-9]+)*$",
         "tokens": ["TYPEDEF"],
         "severity": "WARNING"
       },
@@ -912,7 +912,7 @@
       "props": {
         "tokens": [",", ";"],
         "allowTrailingComma": false,
-        "severity": "INFO"
+        "severity": "IGNORE"
       },
       "type": "WhitespaceAfter"
     },
