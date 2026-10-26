@@ -11,6 +11,8 @@ import funkin.util.assets.FlxAnimationUtil;
 import json2object.JsonParser;
 import polymod.Polymod;
 import polymod.PolymodAssets;
+import funkin.assets.Assets;
+import funkin.assets.Paths;
 
 using StringTools;
 
@@ -456,7 +458,7 @@ class ModMenuCharacter extends FunkinSprite
 
   function hasModdedAssets(modId:String):Bool
   {
-    var assetPath:String = Paths.json('ui/mods/characters/$currentCharacterId/Animation');
+    var assetPath:String = Paths.json('ui/mods/characters/$currentCharacterId/Animation').toString();
     return PolymodAssets.existsInMod(assetPath, modId);
   }
 
@@ -524,31 +526,53 @@ class ModMenuCharacter extends FunkinSprite
     var modId:String = currentModId;
     if (modId == 'basegame') modId = '';
 
-    var assetPath:String = Paths.json('ui/mods/characters/$currentCharacterId');
-    var modExists:Bool = PolymodAssets.existsInMod(assetPath, modId);
+    var assetPath = Paths.json('ui/mods/characters/$currentCharacterId');
+    var modExists:Bool = PolymodAssets.existsInMod(assetPath.toString(), modId);
     var tryBase:Bool = !modExists;
 
-    if ((tryBase && !Assets.exists(assetPath)) || (!tryBase && !modExists))
+    if ((tryBase && !assetPath.exists()) || (!tryBase && !modExists))
     {
       trace(' MOD MENU '.bold().bg_orange() + ' No character data found for $currentCharacterId in mod $modId! (asset path: $assetPath)');
       return;
     }
 
-    var jsonString:String = '';
+    var jsonString:Null<String> = null;
     if (tryBase)
     {
+      #if html5
+      // Polymod can't read a file straight off the disk here. The asset query should have loaded it already,
+      // but if it didn't , asking for it anyways throws instead of returning nothing.
+      var assetExistOnLime = lime.utils.Assets.isLocal(assetPath.toString(), lime.utils.AssetType.TEXT);
+      var assetExistOnFunkinCache = Assets.isAssetCached(assetPath);
+      if (!(assetExistOnLime || assetExistOnFunkinCache))
+      {
+        trace(
+          ' MOD MENU '.bold().bg_orange() + ' Character data for $currentCharacterId is not preloaded, using the defaults for now. (asset path: $assetPath)'
+        );
+        return;
+      }
+      jsonString = assetExistOnLime ? lime.utils.Assets.getText(assetPath.toString()) : Assets.getText(assetPath);
+      #else
       @:privateAccess
-      jsonString = Polymod.assetLibrary.getTextDirectly(assetPath, '');
+      jsonString = Polymod.assetLibrary.getTextDirectly(assetPath.toString(), '');
+      #end
     }
     else
     {
-      jsonString = PolymodAssets.getTextFromMod(assetPath, modId);
+      jsonString = PolymodAssets.getTextFromMod(assetPath.toString(), modId);
+    }
+
+    // Nothing was loade for this path, which the parser can't handle. Carry on with the defaults.
+    if (jsonString == null || jsonString == '')
+    {
+      trace(' MOD MENU '.bold().bg_orange() + ' Character data for $currentCharacterId was empty or not loaded! (asset path: $assetPath)');
+      return;
     }
 
     var parser:JsonParser<ModMenuCharacterData> = new JsonParser<ModMenuCharacterData>({
       ignoreUnknownVariables: false
     });
-    parser.fromJson(jsonString, assetPath);
+    parser.fromJson(jsonString, assetPath.toString());
 
     if (parser.errors.length > 0)
     {

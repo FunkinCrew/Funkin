@@ -218,6 +218,9 @@ class ModMenuState extends MusicBeatState
         results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/characters/empty-chair').json());
         results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/characters/pinhead').json());
 
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/foreground-wires-bottom').json());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/foreground-wires-top').json());
+
         results.appendUnique(funkin.assets.Assets.listInPath('ui/mods/characters', JSON));
 
       case IMAGE:
@@ -241,6 +244,9 @@ class ModMenuState extends MusicBeatState
         results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/characters/gf').image());
         results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/characters/empty-chair').image());
         results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/characters/pinhead').image());
+
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/foreground-wires-bottom').image());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/foreground-wires-top').image());
 
       case XML:
         results.appendUnique([
