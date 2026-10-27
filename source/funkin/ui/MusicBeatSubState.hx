@@ -386,7 +386,6 @@ class MusicBeatSubState extends FlxTransitionableSubState implements IEventHandl
       return;
     }
 
-    FunkinSound.stopAllAudio();
     onComplete();
     event.finish();
   }

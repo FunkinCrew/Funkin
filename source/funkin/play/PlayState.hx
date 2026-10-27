@@ -3750,7 +3750,14 @@ class PlayState extends MusicBeatSubState
    */
   public function endSong(rightGoddamnNow:Bool = false):Void
   {
-    if (FlxG.sound.music != null) FlxG.sound.music.volume = 0;
+    trace('PlayState: Ending song...');
+
+    if (FlxG.sound.music != null)
+    {
+      @:nullSafety(Off)
+      FlxG.sound.music.onComplete = null;
+      FlxG.sound.music.volume = 0;
+    }
     if (vocals != null) vocals.volume = 0;
     mayPauseGame = false;
     isSongEnd = true;

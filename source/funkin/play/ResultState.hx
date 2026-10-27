@@ -684,15 +684,17 @@ class ResultState extends MusicBeatSubState
       {
         if (!isChartingMode)
         {
-          FunkinSound.playMusic(musicPath.audio().toFlxSoundAsset(), {
-            startingVolume: 1.0,
-            overrideExisting: true,
-            restartTrack: true
+          FunkinSound.playMusicTrack(musicPath, {
+            volume: 1.0,
+            forceRestart: true
           });
         }
         else
         {
-          resultsMusic = FunkinSound.load(musicPath.audio().toFlxSoundAsset(), 1.0, true, false, true);
+          resultsMusic = FunkinSound.loadSound(musicPath.audio(), {
+            looped: true,
+            autoPlay: true
+          });
         }
       }
     });

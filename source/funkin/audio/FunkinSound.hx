@@ -1,12 +1,10 @@
 package funkin.audio;
 
-import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.sound.FlxSound;
 import flixel.system.FlxAssets.FlxSoundAsset;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxSignal.FlxTypedSignal;
-import funkin.assets.Paths.AssetPath;
-import funkin.assets.Paths.MusicAssetPathBuilder;
+import funkin.Paths.PathsFunction;
 import funkin.assets.Paths;
 import funkin.audio.waveform.WaveformData;
 import funkin.audio.waveform.WaveformDataParser;
@@ -14,17 +12,14 @@ import funkin.data.song.SongData.SongMusicData;
 import funkin.data.song.SongRegistry;
 import funkin.util.tools.ICloneable;
 import funkin.util.flixel.sound.FlxPartialSound;
-import funkin.Paths.PathsFunction;
 import lime.app.Future;
 import lime.app.Promise;
 import openfl.media.Sound;
-import openfl.media.SoundMixer;
 
 /**
  * A FlxSound, extended to add new functionality.
  *
- * - Easy functions for immediate playback and recycling.
- * - Recycled after they are destroyed, improving memory usage over time.
+ * - Easy functions for immediate playback.
  * - A priority system, to ensure sounds flagged as `important` are guaranteed to play.
  * - Delayed playback via negative song position.
  */
@@ -55,12 +50,6 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     }
     return _onVolumeChanged;
   }
-
-  /**
-   * Using `FunkinSound.load` will recycle a dead sound from here if possible.
-   * This is especially helpful when lots of small sound effects are played in succession.
-   */
-  static var pool(default, null):FlxTypedGroup<FunkinSound> = new FlxTypedGroup<FunkinSound>();
 
   /**
    * All audio currently in the process of loading with `loadPartialSound()`.
@@ -111,6 +100,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   public function clone():FunkinSound
   {
     var sound:FunkinSound = new FunkinSound();
+    FlxG.sound.list.add(sound);
 
     // Clone the sound by creating one with the same data buffer.
     // Reusing the `Sound` object directly causes issues with playback.
@@ -166,7 +156,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 
     if (suppressOneShots && (params?.autoPlay ?? false) && !looped) return null;
 
-    var sound:FunkinSound = FunkinSound.recycle();
+    var sound:FunkinSound = new FunkinSound();
 
     // Load the sound.
     // Sets `exists = true` as a side effect.
@@ -228,7 +218,8 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     else
     {
       // Backwards compatibility for `FunkinSound.load(openfl.media.Sound)`
-      var sound:FunkinSound = FunkinSound.recycle();
+      var sound:FunkinSound = new FunkinSound();
+      FlxG.sound.list.add(sound);
       sound.loadEmbedded(embeddedSound, looped, autoDestroy, onComplete);
 
       return sound;
@@ -303,14 +294,6 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
       }
     }
 
-    // Stop the current music track if it's already playing.
-    if (FlxG.sound.music != null)
-    {
-      if (FlxG.sound.music.fadeTween != null) FlxG.sound.music.fadeTween.cancel();
-      FlxG.sound.music.stop();
-      FlxG.sound.music.kill();
-    }
-
     if (mapTimeChanges)
     {
       // TODO: This should probably utilize `musicAssetPath.metadata()`...
@@ -353,11 +336,6 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     if (music != null)
     {
       setMusic(music);
-
-      if (FlxG.sound.music != null)
-      {
-        if (params != null && params.onLoad != null) params.onLoad();
-      }
 
       return true;
     }
@@ -439,7 +417,8 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     partialSoundRequest.future.onComplete((partialSound:Sound) ->
     {
       // Once the partial sound is loaded, create a FunkinSound that contains its sound data.
-      var sound:FunkinSound = FunkinSound.recycle();
+      var sound:FunkinSound = new FunkinSound();
+      FlxG.sound.list.add(sound);
 
       // Load the sound.
       // Sets `exists = true` as a side effect.
@@ -460,6 +439,8 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 
       // Call onLoad() because the sound loaded.
       if (params != null && params.onLoad != null && sound._sound != null) params.onLoad();
+
+      result.complete(sound);
     });
 
     partialSoundRequest.future.onError((error:Dynamic) ->
@@ -496,14 +477,6 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
         // Stop here if we would restart a matching music track.
         if (existingSound.label == pathToUse) return Future.withValue(false);
       }
-    }
-
-    // Stop the current music track if it's already playing.
-    if (FlxG.sound.music != null)
-    {
-      if (FlxG.sound.music.fadeTween != null) FlxG.sound.music.fadeTween.cancel();
-      FlxG.sound.music.stop();
-      FlxG.sound.music.kill();
     }
 
     if (mapTimeChanges)
@@ -574,100 +547,22 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    * Replaces the Flixel current music object with the given `FunkinSound` object.
    *
    * @param newMusic The new music to be assigned as the current music.
+   * @param autoDestroyOldMusic Whether to destroy the old music as we exit.
    */
-  public static function setMusic(newMusic:FunkinSound):Void
+  public static function setMusic(newMusic:FunkinSound, autoDestroyOldMusic:Bool = true):Void
   {
+    // Stop the current music track if it's already playing.
+    if (autoDestroyOldMusic && FlxG.sound.music != null && FlxG.sound.music != newMusic)
+    {
+      FlxG.sound.music.destroy();
+      @:nullSafety(Off)
+      FlxG.sound.music = null;
+    }
+
     FlxG.sound.music = newMusic;
 
     // Prevent repeat update() and onFocus() calls.
     FlxG.sound.list.remove(FlxG.sound.music);
-  }
-
-  /**
-   * Stop all sounds in the pool and allow them to be recycled.
-   *
-   * @param musicToo Whether to stop the current FlxG.sound.music too.
-   * @param persistToo Whether to stop audio with `sound.persist == true`.
-   */
-  public static function loadPartial(path:String,
-    start:Float = 0,
-    end:Float = 1,
-    volume:Float = 1.0,
-    looped:Bool = false,
-    autoDestroy:Bool = false,
-    autoPlay:Bool = true,
-    ?onComplete:Void->Void,
-    ?onLoad:Void->Void):Promise<Null<FunkinSound>>
-  {
-    var promise:lime.app.Promise<Null<FunkinSound>> = new lime.app.Promise<Null<FunkinSound>>();
-
-    // split the path and get only after first :
-    // we are bypassing the openfl/lime asset library fuss on web only
-    #if web
-    var partialPath:String = Paths.stripLibrary(path);
-    #else
-    var partialPath:String = path;
-    #end
-
-    function startPartialLoad(?preloadedBytes:haxe.io.Bytes):Void
-    {
-      var soundRequest = preloadedBytes != null ? FlxPartialSound.partialLoadFromBytes(
-        partialPath,
-        preloadedBytes,
-        start,
-        end
-      ) : FlxPartialSound.partialLoadFromFile(partialPath, start, end);
-
-      if (soundRequest == null)
-      {
-        promise.complete(null);
-        return;
-      }
-
-      promise.future.onError(function(e)
-      {
-        soundRequest.error('Sound loading was errored or cancelled');
-      });
-
-      soundRequest.future.onComplete(function(partialSound)
-      {
-        var snd:Null<FunkinSound> = FunkinSound.load(partialSound, volume, looped, autoDestroy, autoPlay, false, onComplete, onLoad);
-        if (snd != null) snd._label = path;
-        promise.complete(snd);
-      });
-    }
-
-    #if web
-    var parsedPath:haxe.io.Path = new haxe.io.Path(partialPath);
-    var extension:String = parsedPath.ext ?? '';
-    var fileWithoutExtension:String = partialPath;
-
-    if (extension.length > 0)
-    {
-      fileWithoutExtension = partialPath.substr(0, partialPath.length - extension.length - 1);
-    }
-
-    var assetLibrary:String = Paths.getLibrary(path);
-    var assetPath:funkin.assets.Paths.AssetPath = funkin.assets.Paths.file(fileWithoutExtension, extension, false, assetLibrary);
-
-    funkin.assets.Assets.cacheBytes(assetPath).onComplete(function(_)
-    {
-      var bytes:Null<openfl.utils.ByteArray> = funkin.assets.FunkinAssetCache.instance.getBytes(assetPath.toString());
-      if (bytes == null)
-      {
-        promise.complete(null);
-        return;
-      }
-      startPartialLoad(cast bytes);
-    }).onError(function(_)
-    {
-        promise.complete(null);
-    });
-    #else
-    startPartialLoad();
-    #end
-
-    return promise;
   }
 
   /**
@@ -680,25 +575,6 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
       @:nullSafety(Off)
       partialQueue.pop().error('Cancel loading partial sound');
     }
-  }
-
-  /**
-   * Reuse an existing FunkinSound object from the pool, or create a new one if none are available.
-   *
-   * @return The recycled/new `FunkinSound` object.
-   */
-  static function recycle():FunkinSound
-  {
-    return pool.recycle(() ->
-    {
-      // Construct a new sound
-      var sound:FunkinSound = new FunkinSound();
-
-      pool.add(sound);
-      FlxG.sound.list.add(sound);
-
-      return sound;
-    });
   }
 
   function set_muted(value:Bool):Bool
