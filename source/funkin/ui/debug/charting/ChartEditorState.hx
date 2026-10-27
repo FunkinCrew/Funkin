@@ -88,6 +88,7 @@ import funkin.ui.debug.charting.commands.SetItemSelectionCommand;
 import funkin.ui.debug.charting.commands.SwitchDifficultyCommand;
 import funkin.ui.debug.charting.components.ChartEditorCommentPinSprite;
 import funkin.ui.debug.charting.components.ChartEditorEventSprite;
+import funkin.ui.debug.charting.components.ChartEditorGridSprite;
 import funkin.ui.debug.charting.components.ChartEditorHoldNoteSprite;
 import funkin.ui.debug.charting.components.ChartEditorMeasureTicks;
 import funkin.ui.debug.charting.components.ChartEditorNotePreview;
@@ -406,40 +407,52 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     this.scrollPositionInPixels = value;
 
+    refreshScrollDisplay(diff);
+    return this.scrollPositionInPixels;
+  }
+
+  function refreshScrollDisplay(diff:Float = 0):Void
+  {
+    final originY:Float = GRID_INITIAL_Y_POS - scrollPositionInPixels;
+
     // Move the grid sprite to the correct position.
     if (gridTiledSprite != null && measureTicks != null)
     {
-      if (isViewDownscroll)
-      {
-        gridTiledSprite.y = -scrollPositionInPixels + (GRID_INITIAL_Y_POS);
-      }
-      else
-      {
-        gridTiledSprite.y = -scrollPositionInPixels + (GRID_INITIAL_Y_POS);
+      gridTiledSprite.flipY = isViewDownscroll;
+      gridTiledSprite.y = transformChartY(originY, gridTiledSprite.height);
 
-        // Handle waveform scrolling, making sure it only renders the relevant portion.
-        for (member in audioWaveforms.members)
-        {
-          member.time = scrollPositionInMs / Constants.MS_PER_SEC;
-          member.duration = (Conductor.instance.stepLengthMs * 16) / Constants.MS_PER_SEC;
-        }
+      for (member in audioWaveforms.members)
+      {
+        member.time = scrollPositionInMs / Constants.MS_PER_SEC;
+        member.duration = (Conductor.instance.stepLengthMs * 16) / Constants.MS_PER_SEC;
+        member.reversed = isViewDownscroll;
+        member.y = transformChartY(GRID_INITIAL_Y_POS, member.height);
       }
     }
 
-    // Move the rendered notes to the correct position.
-    renderedNotes.setPosition(gridTiledSprite?.x ?? 0.0, gridTiledSprite?.y ?? 0.0);
-    renderedHoldNotes.setPosition(gridTiledSprite?.x ?? 0.0, gridTiledSprite?.y ?? 0.0);
-    renderedEvents.setPosition(gridTiledSprite?.x ?? 0.0, gridTiledSprite?.y ?? 0.0);
-    renderedSelectionSquares.setPosition(gridTiledSprite?.x ?? 0.0, gridTiledSprite?.y ?? 0.0);
+    // Keep group origins in chart coordinates. Individual sprites mirror their bounds.
+    renderedNotes.setPosition(gridTiledSprite?.x ?? 0.0, originY);
+    renderedHoldNotes.setPosition(gridTiledSprite?.x ?? 0.0, originY);
+    renderedEvents.setPosition(gridTiledSprite?.x ?? 0.0, originY);
+    renderedSelectionSquares.setPosition(gridTiledSprite?.x ?? 0.0, originY);
+
+    // Moving a sprite group applies the upscroll displacement to its children.
+    if (isViewDownscroll && diff != 0)
+    {
+      for (member in renderedNotes.members) if (member != null) member.y += diff * 2;
+      for (member in renderedHoldNotes.members) if (member != null) member.y += diff * 2;
+      for (member in renderedEvents.members) if (member != null) member.y += diff * 2;
+      for (member in renderedSelectionSquares.members) if (member != null) member.y += diff * 2;
+    }
+
     // Offset the selection box start position, if we are dragging.
-    if (selectionBoxStartPos != null) selectionBoxStartPos.y -= diff;
+    if (selectionBoxStartPos != null) selectionBoxStartPos.y += isViewDownscroll ? diff : -diff;
 
     // Update the note preview.
     setNotePreviewViewportBounds(calculateNotePreviewViewportBounds());
     refreshNotePreviewPlayheadPosition();
 
     if (measureTicks != null) handleMeasureTickPosition();
-    return this.scrollPositionInPixels;
   }
 
   /**
@@ -495,7 +508,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     this.playheadPositionInPixels = value;
 
     // Move the playhead sprite to the correct position.
-    gridPlayhead.y = this.playheadPositionInPixels + GRID_INITIAL_Y_POS;
+    gridPlayhead.y = transformChartY(this.playheadPositionInPixels + GRID_INITIAL_Y_POS, PLAYHEAD_HEIGHT);
 
     updatePlayheadGhostHoldNotes();
     refreshNotePreviewPlayheadPosition();
@@ -681,11 +694,33 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     notePreviewDirty = true;
     commentDisplayDirty = true;
     notePreviewViewportBoundsDirty = true;
-    this.scrollPositionInPixels = this.scrollPositionInPixels;
+    refreshScrollDisplay();
+    this.playheadPositionInPixels = this.playheadPositionInPixels;
+    if (notePreview != null) notePreview.flipY = value;
+    if (gridGhostNote != null) gridGhostNote.updateNotePosition(renderedNotes);
+    if (gridGhostHoldNote != null) gridGhostHoldNote.updateHoldNotePosition(renderedHoldNotes);
+    if (gridGhostEvent != null) gridGhostEvent.updateEventPosition(renderedEvents);
+    if (measureTicks != null) measureTicks.updateTheme();
+    waveformsDirty = true;
     // Characters have probably changed too.
     healthIconsDirty = true;
 
     return isViewDownscroll;
+  }
+
+  /**
+   * Mirror an object's bounds within the visible chart, leaving its graphic upright.
+   * With a height of zero this also converts screen points back to upscroll coordinates.
+   */
+  public function transformChartY(upscrollY:Float, objectHeight:Float):Float
+  {
+    if (!isViewDownscroll) return upscrollY;
+    return GRID_INITIAL_Y_POS + FlxG.height - PLAYBAR_HEIGHT - upscrollY - objectHeight;
+  }
+
+  function getChartPositionAtScreenY(screenY:Float):Float
+  {
+    return transformChartY(screenY, 0) - GRID_INITIAL_Y_POS + scrollPositionInPixels;
   }
 
   /**
@@ -3012,7 +3047,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     if (gridBitmap == null) throw 'ERROR: Tried to build grid, but gridBitmap is null! Check ChartEditorThemeHandler.updateTheme().';
 
-    gridTiledSprite = new FlxTiledSprite(gridBitmap, gridBitmap.width, 1000, false, true);
+    gridTiledSprite = new ChartEditorGridSprite(gridBitmap, gridBitmap.width, 1000, false, true);
     gridTiledSprite.x = GRID_X_POS; // Center the grid.
     gridTiledSprite.y = GRID_INITIAL_Y_POS; // Push down to account for the menu bar.
     add(gridTiledSprite);
@@ -3107,6 +3142,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     notePreview = new ChartEditorNotePreview(notePreviewHeight);
     notePreview.x = NOTE_PREVIEW_X_POS;
     notePreview.y = NOTE_PREVIEW_Y_POS;
+    notePreview.flipY = isViewDownscroll;
     add(notePreview);
 
     if (notePreviewViewport == null) throw 'ERROR: Tried to build note preview, but notePreviewViewport is null! Check ChartEditorThemeHandler.updateTheme().';
@@ -3192,7 +3228,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       bounds.height = MIN_HEIGHT;
     }
 
-    // trace('Note preview viewport bounds: ' + bounds.toString());
+    if (isViewDownscroll) bounds.y = notePreview.y * 2 + notePreview.height - bounds.y - bounds.height;
 
     return bounds;
   }
@@ -3225,7 +3261,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     if (notePreviewPlayhead == null) return;
 
-    notePreviewPlayhead.y = notePreview.y + (notePreview.height * ((scrollPositionInPixels + playheadPositionInPixels) / songLengthInPixels));
+    var playheadOffset:Float = notePreview.height * ((scrollPositionInPixels + playheadPositionInPixels) / songLengthInPixels);
+    notePreviewPlayhead.y = isViewDownscroll ? notePreview.y + notePreview.height - playheadOffset - notePreviewPlayhead.height : notePreview.y
+      + playheadOffset;
   }
 
   /**
@@ -3705,7 +3743,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     menubarItemUserGuide.onClick = _ -> this.openUserGuideDialog();
 
-    menubarItemDownscroll.onClick = event -> isViewDownscroll = event.value;
+    menubarItemDownscroll.onChange = event -> isViewDownscroll = event.value;
+    menubarItemDownscroll.disabled = false;
     menubarItemDownscroll.selected = isViewDownscroll;
 
     menubarItemViewIndicators.onClick = event -> showNoteKindIndicators = menubarItemViewIndicators.selected;
@@ -4368,13 +4407,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       noteDisplayDirty = false;
 
-      // Update for whether downscroll is enabled.
-      renderedNotes.flipX = (isViewDownscroll);
-
       // Calculate the top and bottom of the view area.
       var viewAreaTopPixels:Float = MENU_BAR_HEIGHT;
       var visibleGridHeightPixels:Float = FlxG.height - MENU_BAR_HEIGHT - PLAYBAR_HEIGHT; // The area underneath the menu bar and playbar is not visible.
       var viewAreaBottomPixels:Float = viewAreaTopPixels + visibleGridHeightPixels;
+      // Visibility tests for chart data use the unmirrored group origins.
+      var chartViewAreaTopPixels:Float = isViewDownscroll ? transformChartY(viewAreaBottomPixels, 0) : viewAreaTopPixels;
+      var chartViewAreaBottomPixels:Float = isViewDownscroll ? transformChartY(viewAreaTopPixels, 0) : viewAreaBottomPixels;
 
       // Remove notes that are no longer visible and list the ones that are.
       var displayedNoteData:Array<SongNoteData> = [];
@@ -4490,12 +4529,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           continue;
         }
 
-        if (!ChartEditorNoteSprite.wouldNoteBeVisible(
-          viewAreaBottomPixels,
-          viewAreaTopPixels,
-          noteData,
-          renderedNotes
-        )) continue; // Else, this note is visible and we need to render it!
+        if (!ChartEditorNoteSprite.wouldNoteBeVisible(chartViewAreaBottomPixels, chartViewAreaTopPixels, noteData,
+          renderedNotes)) continue; // Else, this note is visible and we need to render it!
 
         // Get a note sprite from the pool.
         // If we can reuse a deleted note, do so.
@@ -4546,7 +4581,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         // Remember if we are already displaying this event.
         if (displayedEventData.indexOf(eventData) != -1) continue;
 
-        if (!ChartEditorEventSprite.wouldEventBeVisible(viewAreaBottomPixels, viewAreaTopPixels, eventData, renderedNotes)) continue;
+        if (!ChartEditorEventSprite.wouldEventBeVisible(chartViewAreaBottomPixels, chartViewAreaTopPixels, eventData, renderedNotes)) continue;
 
         // Else, this event is visible and we need to render it!
 
@@ -4570,9 +4605,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         eventSprite.overlappingEventDatas = currentSongChartEventData.filter((e) -> return e != eventData && Math.abs(e.time - eventData.time) < 1.0);
 
         // Setting event data resets position relative to the grid so we fix that.
-        eventSprite.x += renderedEvents.x;
-        eventSprite.y += renderedEvents.y;
-        eventSprite.updateTooltipPosition();
+        eventSprite.updateEventPosition(renderedEvents);
       }
 
       // Add hold notes that have been made visible (but not their parents)
@@ -4588,7 +4621,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         if (displayedHoldNoteData.indexOf(noteData) != -1) continue;
 
         // Is the hold note offscreen?
-        if (!ChartEditorHoldNoteSprite.wouldHoldNoteBeVisible(viewAreaBottomPixels, viewAreaTopPixels, noteData, renderedHoldNotes)) continue;
+        if (!ChartEditorHoldNoteSprite.wouldHoldNoteBeVisible(chartViewAreaBottomPixels, chartViewAreaTopPixels, noteData, renderedHoldNotes)) continue;
 
         // Hold note should be rendered.
         var holdNoteFactory = function()
@@ -4726,6 +4759,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           selectionSquare.color = FlxColor.WHITE;
 
           var stepLength = noteSprite.noteData.getStepLength();
+          if (isViewDownscroll) selectionSquare.y -= stepLength * GRID_SIZE;
           selectionSquare.height = (stepLength <= 0) ? GRID_SIZE : ((stepLength + 1) * GRID_SIZE);
         }
         else if (doesNoteStack(noteSprite.noteData, currentOverlappingNotes))
@@ -4828,8 +4862,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
       var playheadPosMs:Float = scrollPositionInMs + playheadPositionInMs;
 
-      var startPos:Float = Conductor.instance.getStepTimeInMs(scrollPositionInSteps - (GRID_TOP_PAD + commentPanels[0].height) / GRID_SIZE);
-      var endPos:Float = Conductor.instance.getStepTimeInMs(scrollPositionInSteps + (FlxG.height - PLAYBAR_HEIGHT - GRID_INITIAL_Y_POS) / GRID_SIZE);
+      var viewStart:Float = isViewDownscroll ? FlxG.height - PLAYBAR_HEIGHT : MENU_BAR_HEIGHT;
+      var viewEnd:Float = isViewDownscroll ? MENU_BAR_HEIGHT : FlxG.height - PLAYBAR_HEIGHT;
+      var startPos:Float = Conductor.instance.getStepTimeInMs((getChartPositionAtScreenY(viewStart) - commentPanels[0].height) / GRID_SIZE);
+      var endPos:Float = Conductor.instance.getStepTimeInMs(getChartPositionAtScreenY(viewEnd) / GRID_SIZE);
 
       var nearbyCommentData:Array<CommentData> = currentSongChartCommentData.filter((comment) ->
       {
@@ -5016,6 +5052,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       playheadAmount = GRID_SIZE * noteSnapRatio;
       shouldPause = true;
       shouldSnap = true;
+    }
+
+    if (isViewDownscroll)
+    {
+      scrollAmount = -scrollAmount;
+      playheadAmount = -playheadAmount;
     }
 
     var funcJumpUp = (playheadOnly:Bool) ->
@@ -5358,7 +5400,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     // Cursor position relative to the grid.
     var cursorX:Float = FlxG.mouse.viewX - gridTiledSprite.x;
-    var cursorY:Float = FlxG.mouse.viewY - gridTiledSprite.y;
+    var cursorY:Float = getChartPositionAtScreenY(FlxG.mouse.viewY);
 
     var overlapsSelection:Bool = false;
 
@@ -5407,7 +5449,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
 
     // An odd way to fix this since measureTicks contains more than just the gray sidebar now.
-    var gridPlayheadScrollArea:FlxRect = FlxRect.weak(measureTicks?.x ?? -100, MENU_BAR_HEIGHT + GRID_TOP_PAD, GRID_SIZE, 597);
+    var gridPlayheadScrollArea:FlxRect = FlxRect.weak(measureTicks?.x ?? -100, transformChartY(MENU_BAR_HEIGHT + GRID_TOP_PAD, 597), GRID_SIZE, 597);
 
     if (FlxG.mouse.justPressed)
     {
@@ -5475,7 +5517,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       // Clicked on the playhead scroll area.
       // Move the playhead to the cursor position.
-      this.playheadPositionInPixels = FlxG.mouse.viewY - (GRID_INITIAL_Y_POS);
+      this.playheadPositionInPixels = getChartPositionAtScreenY(FlxG.mouse.viewY) - scrollPositionInPixels;
       moveSongToScrollPosition();
 
       // Cursor should be a grabby hand.
@@ -5496,7 +5538,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (selectionBoxStartPos != null)
     {
       var cursorXStart:Float = selectionBoxStartPos.x - gridTiledSprite.x;
-      var cursorYStart:Float = selectionBoxStartPos.y - gridTiledSprite.y;
+      var cursorYStart:Float = getChartPositionAtScreenY(selectionBoxStartPos.y);
 
       var hasDraggedMouse:Bool = Math.abs(cursorX - cursorXStart) > DRAG_THRESHOLD || Math.abs(cursorY - cursorYStart) > DRAG_THRESHOLD;
 
@@ -5607,13 +5649,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           {
             // Scroll up.
             var diff:Float = MENU_BAR_HEIGHT - FlxG.mouse.viewY;
-            currentScrollEase -= diff * 0.5; // Too fast!
+            currentScrollEase -= diff * 0.5 * (isViewDownscroll ? -1 : 1); // Too fast!
           }
           else if (FlxG.mouse.viewY > (playbarHeadLayout?.y ?? 0.0))
           {
             // Scroll down.
             var diff:Float = FlxG.mouse.viewY - (playbarHeadLayout?.y ?? 0.0);
-            currentScrollEase += (diff * 0.5); // Too fast!
+            currentScrollEase += diff * 0.5 * (isViewDownscroll ? -1 : 1); // Too fast!
           }
 
           // Render the selection box, and keep the rendered graphic clamped to the size of the screen
@@ -5738,13 +5780,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       // Player is clicking and holding on note preview to scrub around.
       targetCursorMode = Grabbing;
 
-      var clickedPosInPixels:Float = FlxMath.remapToRange(
-        FlxG.mouse.viewY,
-        (notePreview?.y ?? 0.0),
-        (notePreview?.y ?? 0.0) + (notePreview?.height ?? 0.0),
-        0,
-        songLengthInPixels
-      );
+      var previewTop:Float = notePreview?.y ?? 0.0;
+      var previewBottom:Float = previewTop + (notePreview?.height ?? 0.0);
+      var clickedPosInPixels:Float = FlxMath.remapToRange(FlxG.mouse.viewY, isViewDownscroll ? previewBottom : previewTop,
+        isViewDownscroll ? previewTop : previewBottom, 0, songLengthInPixels);
 
       currentScrollEase = clickedPosInPixels;
       easeSongToScrollPosition(currentScrollEase);
@@ -6716,6 +6755,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         default:
           waveform.x = 0;
       }
+      waveform.y = transformChartY(GRID_INITIAL_Y_POS, waveform.height);
+      waveform.reversed = isViewDownscroll;
     }
 
     waveformsDirty = false;
@@ -7606,6 +7647,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
 
     scrollPositionInPixels = 0;
+    refreshScrollDisplay();
     playheadPositionInPixels = 0;
     notePreviewDirty = true;
     notePreviewViewportBoundsDirty = true;
@@ -7983,7 +8025,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     // var currentMeasureTime = Conductor.instance.getMeasureTimeInMs(Math.floor(Conductor.instance.getTimeInMeasures(scrollPositionInMs)));
     // var currentMeasurePos = currentMeasureTime < 0 ? 0 : Conductor.instance.getTimeInSteps(currentMeasureTime) * GRID_SIZE;
-    measureTicks.y = gridTiledSprite?.y;
+    measureTicks.updateScrollPosition(GRID_INITIAL_Y_POS - scrollPositionInPixels);
   }
 
   /**
@@ -8246,13 +8288,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       // Scroll up.
       var diff:Float = MENU_BAR_HEIGHT - FlxG.mouse.viewY;
-      currentScrollEase -= diff * speed; // Too fast!
+      currentScrollEase -= diff * speed * (isViewDownscroll ? -1 : 1); // Too fast!
     }
     else if (FlxG.mouse.viewY > (playbarHeadLayout?.y ?? 0.0))
     {
       // Scroll down.
       var diff:Float = FlxG.mouse.viewY - (playbarHeadLayout?.y ?? 0.0);
-      currentScrollEase += (diff * speed); // Too fast!
+      currentScrollEase += diff * speed * (isViewDownscroll ? -1 : 1); // Too fast!
     }
   }
 
