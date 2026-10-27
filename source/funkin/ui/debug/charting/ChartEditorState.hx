@@ -715,7 +715,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   public function transformChartY(upscrollY:Float, objectHeight:Float):Float
   {
     if (!isViewDownscroll) return upscrollY;
-    return GRID_INITIAL_Y_POS + FlxG.height - PLAYBAR_HEIGHT - upscrollY - objectHeight;
+
+    // Mirror the header and chart above the timeline slider.
+    final chartBottom:Float = FlxG.height - PLAYBAR_HEIGHT - 8;
+    return MENU_BAR_HEIGHT + chartBottom - upscrollY - objectHeight;
   }
 
   function getChartPositionAtScreenY(screenY:Float):Float
@@ -3395,7 +3398,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     buttonSelectOpponent.allowFocus = false;
     buttonSelectOpponent.text = 'Opponent'; // Default text.
     buttonSelectOpponent.x = GRID_X_POS;
-    buttonSelectOpponent.y = GRID_INITIAL_Y_POS - NOTE_SELECT_BUTTON_HEIGHT;
+    buttonSelectOpponent.y = transformChartY(GRID_INITIAL_Y_POS - NOTE_SELECT_BUTTON_HEIGHT, NOTE_SELECT_BUTTON_HEIGHT);
     buttonSelectOpponent.width = GRID_SIZE * 4;
     buttonSelectOpponent.height = NOTE_SELECT_BUTTON_HEIGHT;
     buttonSelectOpponent.tooltip = 'Click to set selection to all notes on this side.\nShift-click to add all notes on this side to selection.';
@@ -4213,6 +4216,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     handleToolboxes();
     handlePlaybar();
     handleNotePreview();
+    handleSelectionButtons();
     handleHealthIcons();
     handleWaveforms();
 
@@ -5052,12 +5056,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       playheadAmount = GRID_SIZE * noteSnapRatio;
       shouldPause = true;
       shouldSnap = true;
-    }
-
-    if (isViewDownscroll)
-    {
-      scrollAmount = -scrollAmount;
-      playheadAmount = -playheadAmount;
     }
 
     var funcJumpUp = (playheadOnly:Bool) ->
@@ -6392,9 +6390,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     // Make sure buttons are never nudged out of the correct spot.
     // TODO: Why do these even move in the first place? The camera never moves, LOL.
-    buttonSelectOpponent.y = GRID_INITIAL_Y_POS - NOTE_SELECT_BUTTON_HEIGHT - 2;
-    buttonSelectPlayer.y = GRID_INITIAL_Y_POS - NOTE_SELECT_BUTTON_HEIGHT - 2;
-    buttonSelectEvent.y = GRID_INITIAL_Y_POS - NOTE_SELECT_BUTTON_HEIGHT - 2;
+    buttonSelectOpponent.y = transformChartY(GRID_INITIAL_Y_POS - NOTE_SELECT_BUTTON_HEIGHT, buttonSelectOpponent.height);
+    buttonSelectPlayer.y = transformChartY(GRID_INITIAL_Y_POS - NOTE_SELECT_BUTTON_HEIGHT, buttonSelectPlayer.height);
+    buttonSelectEvent.y = transformChartY(GRID_INITIAL_Y_POS - NOTE_SELECT_BUTTON_HEIGHT, buttonSelectEvent.height);
+    buttonSelectDummy.y = buttonSelectEvent.y;
   }
 
   /**
@@ -6691,7 +6690,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       // Base X position to the right of the grid.
       healthIconBF.x = (gridTiledSprite == null) ? (0) : (gridTiledSprite.x + gridTiledSprite.width);
       var yOffset = 30 - (healthIconBF.height / 2);
-      healthIconBF.y = (gridTiledSprite == null) ? (0) : (GRID_INITIAL_Y_POS - NOTE_SELECT_BUTTON_HEIGHT + 8) + yOffset;
+      healthIconBF.y = (gridTiledSprite == null) ? (0) : transformChartY((GRID_INITIAL_Y_POS - NOTE_SELECT_BUTTON_HEIGHT + 8) + yOffset, healthIconBF.height);
     }
 
     // Visibly center the Dad health icon.
@@ -6699,7 +6698,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       healthIconDad.x = (gridTiledSprite == null) ? (0) : (measureTicks.x - healthIconDad.width);
       var yOffset = 30 - (healthIconDad.height / 2);
-      healthIconDad.y = (gridTiledSprite == null) ? (0) : (GRID_INITIAL_Y_POS - NOTE_SELECT_BUTTON_HEIGHT + 8) + yOffset;
+      healthIconDad.y = (gridTiledSprite == null) ? (0) : transformChartY((GRID_INITIAL_Y_POS - NOTE_SELECT_BUTTON_HEIGHT + 8) + yOffset, healthIconDad.height);
     }
   }
 
