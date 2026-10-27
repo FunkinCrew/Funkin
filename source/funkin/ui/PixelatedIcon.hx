@@ -69,15 +69,7 @@ class PixelatedIcon extends FunkinSprite
     this.scale.x = this.scale.y = 2;
 
     // TODO: Move this to JSON later!! (This code pisses me off) - Abnormal
-    switch (char)
-    {
-      case 'parents-christmas':
-        this.origin.x = 140;
-      case 'sserafim-kazuha':
-        this.origin.x = 195;
-      default:
-        this.origin.x = 100;
-    }
+    this.origin.x = 100;
 
     if (isAnimated)
     {
