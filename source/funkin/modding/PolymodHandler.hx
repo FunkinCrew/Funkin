@@ -573,22 +573,18 @@ class PolymodHandler
 
     // `haxe.ui`    
     // `UIRTTITools.resolveEventClass` allows you to be able to resolve clases from fallback, `bindEvent` uses this.
-    Polymod.blacklistImport("haxe.ui.backend.fixel.UIRTTITools");
-    Polymod.blacklistStaticFields(haxe.ui.backend.fixel.UIRTTITools, ['bindEvent', 'resolveEventClass']);
-
-    // `SettingsManager` can be used to access the serializer & unseralizer, both of which are blacklisted.
-    Polymod.blacklistImport("haxe.ui.core.SettingsManager");
-    Polymod.blacklistInstanceFields(haxe.ui.core.SettingsManager, ['set', 'get']);
+    Polymod.blacklistImport("haxe.ui.backend.flixel.UIRTTITools");
 
     // `FileSettingsPersister` can be used to load JSON files from outside of the game.
     Polymod.blacklistImport("haxe.ui.core.FileSettingsPersister");
-    Polymod.blacklistInstanceFields(haxe.ui.core.FileSettingsPersister, ['set', 'get', 'load', 'save']);
+
+    // `SettingsManager` can be used to access the serializer & unseralizer, both of which are blacklisted.
+    Polymod.blacklistImport("haxe.ui.core.SettingsManager");
 
     // `LayoutFactory` can resolve blacklisted classes through fallback.
     Polymod.blacklistImport("haxe.ui.layouts.LayoutFactory");
-    Polymod.blacklistStaticFields(haxe.ui.layouts.LayoutFactory, ['createFromName', 'register', 'lookupClass']);
     
-    // FileResourceResolver allows you to access the content of outside game files.
+    // `FileResourceResolver` allows you to access the content of outside game files.
     Polymod.blacklistImport("haxe.ui.parsers.ui.resolvers.FileResourceResolver");
 
 
