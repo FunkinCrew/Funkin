@@ -59,6 +59,12 @@ class SustainTrail extends funkin.graphics.FunkinSprite
   public var scoreable:Bool = true;
 
   /**
+   * Used by PlayState to track how much display score the held note has given.
+   * Does not influence the actual score; only the score shown while holding the note.
+   */
+  public var appliedScore:Float = 0;
+
+  /**
    * The Y Offset of the note.
    */
   public var yOffset:Float = 0.0;
@@ -68,6 +74,11 @@ class SustainTrail extends funkin.graphics.FunkinSprite
    * Should display associated effects.
    */
   public var hitNote:Bool = false;
+
+  /**
+   * Set to `true` when the user successfully exhausts the sustain.
+   */
+  public var finishedNote:Bool = false;
 
   /**
    * Set to `true` if the user missed the note or released the sustain.
@@ -571,10 +582,12 @@ class SustainTrail extends funkin.graphics.FunkinSprite
     noteDirection = 0;
     sustainLength = 0;
     fullSustainLength = 0;
+    appliedScore = 0;
     noteData = null;
 
     hitNote = false;
     missedNote = false;
+    finishedNote = false;
   }
 
   override public function revive():Void
@@ -586,11 +599,13 @@ class SustainTrail extends funkin.graphics.FunkinSprite
     noteDirection = 0;
     sustainLength = 0;
     fullSustainLength = 0;
+    appliedScore = 0;
     noteData = null;
 
     hitNote = false;
     missedNote = false;
     handledMiss = false;
+    finishedNote = false;
   }
 
   override public function destroy():Void
