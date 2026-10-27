@@ -46,10 +46,10 @@ class MultiSparrowCharacter extends BaseCharacter
   {
     // trace('ASSETS: Querying assets for MultiSparrow character "${charId}"')
     // Specific implementations handle figuring out which assets to load.
-    var result:Array<AssetPath> = BaseCharacter.queryAssets(type, charId);
+    var results:Array<AssetPath> = BaseCharacter.queryBaseAssets(type, entryId, params);
 
-    var _data:Null<CharacterData> = CharacterRegistry.instance.fetchCharacterData(charId);
-    if (_data == null) return result; // No assets if data couldn't be parsed.
+    var _data:Null<CharacterData> = CharacterRegistry.instance.fetchCharacterData(entryId);
+    if (_data == null) return results;
 
     switch (type)
     {

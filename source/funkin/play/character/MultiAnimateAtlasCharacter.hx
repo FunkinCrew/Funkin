@@ -35,14 +35,15 @@ class MultiAnimateAtlasCharacter extends BaseCharacter
    * @return An array of asset paths, or empty if no assets of that type are required.
    */
   public static function queryAssets(type:funkin.assets.Assets.AssetType,
-    charId:String):Array<funkin.assets.Paths.AssetPath>
+    entryId:String,
+    ?params:CharacterEntryParams):Array<funkin.assets.Paths.AssetPath>
   {
     trace('ASSETS: Querying assets for Multi-Animate Atlas character "$charId"');
     // Specific implementations handle figuring out which assets to load.
-    var results:Array<funkin.assets.Paths.AssetPath> = BaseCharacter.queryAssets(type, charId);
+    var results:Array<AssetPath> = BaseCharacter.queryBaseAssets(type, entryId, params);
 
-    var _data:Null<CharacterData> = CharacterRegistry.instance.fetchCharacterData(charId);
-    if (_data == null) return results; // No assets if data couldn't be parsed.
+    var _data:Null<CharacterData> = CharacterRegistry.instance.fetchCharacterData(entryId);
+    if (_data == null) return results;
 
     switch (type)
     {
