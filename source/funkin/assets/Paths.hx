@@ -690,6 +690,9 @@ class AnimateAtlasAssetPathBuilder
    */
   public function image():Array<AssetPath>
   {
+    // Never let an invalid atlas path turn into a query for every asset under assets/.
+    if (!canListAtlasAssets()) return [];
+
     var assetPaths:Array<AssetPath> = Assets.listInPath('${id}/', AssetType.IMAGE, true);
 
     return assetPaths;
@@ -701,8 +704,26 @@ class AnimateAtlasAssetPathBuilder
    */
   public function json():Array<AssetPath>
   {
+    // Match image(): a root/empty atlas path must not enumerate all JSON assets.
+    if (!canListAtlasAssets()) return [];
+
     var assetPaths:Array<AssetPath> = Assets.listInPath('${id}/', AssetType.JSON, true);
     return assetPaths;
+  }
+
+  /**
+   * Whether this builder points to a specific atlas directory.
+   * An ID of "assets" makes listInPath("assets/") match the entire asset tree.
+   */
+  function canListAtlasAssets():Bool
+  {
+    var normalizedId:String = StringTools.replace(id, "\\", "/");
+    while (normalizedId.endsWith("/") && normalizedId.length > 0)
+    {
+      normalizedId = normalizedId.substr(0, normalizedId.length - 1);
+    }
+
+    return normalizedId != "" && normalizedId != "." && normalizedId != "assets";
   }
 
   /**
