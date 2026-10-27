@@ -5,6 +5,9 @@ import flixel.sound.FlxSound;
 import flixel.system.FlxAssets.FlxSoundAsset;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxSignal.FlxTypedSignal;
+import funkin.assets.Paths.AssetPath;
+import funkin.assets.Paths.MusicAssetPathBuilder;
+import funkin.assets.Paths;
 import funkin.audio.waveform.WaveformData;
 import funkin.audio.waveform.WaveformDataParser;
 import funkin.data.song.SongData.SongMusicData;
@@ -12,22 +15,29 @@ import funkin.data.song.SongRegistry;
 import funkin.util.tools.ICloneable;
 import funkin.util.flixel.sound.FlxPartialSound;
 import funkin.Paths.PathsFunction;
+import lime.app.Future;
 import lime.app.Promise;
-import lime.media.AudioSource;
-import openfl.events.Event;
-import openfl.media.SoundChannel;
+import openfl.media.Sound;
 import openfl.media.SoundMixer;
 
 /**
- * A FlxSound which adds additional functionality:
- * - Delayed playback via negative song position.
+ * A FlxSound, extended to add new functionality.
+ *
  * - Easy functions for immediate playback and recycling.
+ * - Recycled after they are destroyed, improving memory usage over time.
+ * - A priority system, to ensure sounds flagged as `important` are guaranteed to play.
+ * - Delayed playback via negative song position.
  */
 @:nullSafety
 class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 {
   /**
-   * An FlxSignal which is dispatched when the volume changes.
+   * The maximum possible volume for a sound.
+   */
+  static final MAX_VOLUME:Float = 1.0;
+
+  /**
+   * Dispatched when the volume changes.
    */
   public static var onVolumeChanged(get, never):FlxTypedSignal<Float->Void>;
 
@@ -38,7 +48,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     if (_onVolumeChanged == null)
     {
       _onVolumeChanged = new FlxTypedSignal<Float->Void>();
-      FlxG.sound.onVolumeChange.add(function(volume:Float)
+      FlxG.sound.onVolumeChange.add((volume:Float) ->
       {
         _onVolumeChanged.dispatch(volume);
       });
@@ -47,7 +57,8 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   }
 
   /**
-   * Using `FunkinSound.load` will override a dead instance from here rather than creating a new one, if possible!
+   * Using `FunkinSound.load` will recycle a dead sound from here if possible.
+   * This is especially helpful when lots of small sound effects are played in succession.
    */
   static var pool(default, null):FlxTypedGroup<FunkinSound> = new FlxTypedGroup<FunkinSound>();
 
@@ -55,19 +66,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    * All audio currently in the process of loading with `loadPartialSound()`.
    * Use `emptyPartialQueue()` to cancel currently loading partial sounds.
    */
-  static var partialQueue:Array<Promise<Null<FunkinSound>>> = [];
-
-  /**
-   * Set this to `true` to mute this sound,
-   * making it inaudible without overriding the sound's volume.
-   */
-  public var muted(default, set):Bool = false;
-
-  /**
-   * Set this to `true` to mute this sound,
-   * making it inaudible without overriding the sound's volume.
-   */
-  public var paused(get, never):Bool;
+  static var partialQueue:Array<Promise<Null<Sound>>> = [];
 
   /**
    * Whether this sound is currently playing.
@@ -76,14 +75,39 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   public var isPlaying(get, never):Bool;
 
   /**
+   * Whether this sound is paused.
+   */
+  public var paused(get, never):Bool;
+
+  /**
+   * Set this to `true` to mute this sound,
+   * making it inaudible without overriding the sound's volume.
+   */
+  public var muted(default, set):Bool = false;
+
+  /**
    * Waveform data for this sound.
    * This is lazily loaded, so it will be built the first time it is accessed.
    */
   public var waveformData(get, never):WaveformData;
 
   var _waveformData:Null<WaveformData> = null;
-  var _label:String = 'unknown';
 
+  /**
+   * Identifies this audio for the purposes of debugging.
+   */
+  var label:String = 'unknown';
+
+  public function new()
+  {
+    super();
+  }
+
+  /**
+   * Creates a new `FunkinSound` object containing the same audio data as this one.
+   *
+   * @return The new `FunkinSound` object.
+   */
   public function clone():FunkinSound
   {
     var sound:FunkinSound = new FunkinSound();
@@ -113,7 +137,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     funkin.assets.FunkinAssetCache.FunkinAssetCache.instance.releaseSoundIfUnused(sound);
 
     FlxTween.cancelTweensOf(this);
-    this._label = 'unknown';
+    this.label = 'unknown';
     this._waveformData = null;
   }
 
@@ -122,160 +146,63 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    */
   override public function toString():String
   {
-    return 'FunkinSound(${this._label})';
+    return 'FunkinSound(${this.label})';
   }
 
   /**
-   * Creates a new `FunkinSound` object and loads it as the current music track.
+   * Construct a `FunkinSound` and ready it for playback.
+   * NOTE: Loads the sound synchronously if it isn't cached.
    *
-   * @param key The key of the music you want to play. Music should be at `music/<key>/<key>.ogg`.
-   * @param params A set of additional optional parameters.
-   *   Data should be at `music/<key>/<key>-metadata.json`.
-   * @return Whether the music was started. `false` if music was already playing or could not be started
+   * @param assetPath The asset path to the audio to play.
+   * @param params (optional) Additional options for loading the sound.
+   * @return The constructed `FunkinSound` object, or `null` if the sound failed to be loaded.
    */
-  public static function playMusic(key:String,
-    params:FunkinSoundPlayMusicParams):Bool
+  public static function loadSound(assetPath:AssetPath, ?params:FunkinSoundParams):Null<FunkinSound>
   {
-    if (!(params.overrideExisting ?? false) && (FlxG.sound.music?.exists ?? false) && FlxG.sound.music.playing) return false;
+    var volume:Float = params?.volume ?? MAX_VOLUME;
+    var persist:Bool = params?.persist ?? false;
+    var looped:Bool = params?.looped ?? false;
+    var autoDestroy:Bool = params?.autoDestroy ?? true;
 
-    var pathsFunction = params.pathsFunction ?? MUSIC;
-    var suffix = params.suffix ?? '';
-    var cleanKey:String = haxe.io.Path.withoutExtension(key);
+    if (suppressOneShots && (params?.autoPlay ?? false) && !looped) return null;
 
-    var pathToUse = switch (pathsFunction)
-    {
-      case MUSIC:
-        Paths.music('$cleanKey');
-      case INST:
-        Paths.inst('$cleanKey', suffix);
-      default:
-        Paths.music('$cleanKey');
-    };
-    if (!(params.restartTrack ?? false) && FlxG.sound.music?.playing)
-    {
-      if (FlxG.sound.music != null && Std.isOfType(FlxG.sound.music, FunkinSound))
-      {
-        var existingSound:FunkinSound = cast FlxG.sound.music;
-        // Stop here if we would play a matching music track.
-        if (existingSound._label == pathToUse)
-        {
-          return false;
-        }
-      }
-    }
+    var sound:FunkinSound = FunkinSound.recycle();
 
-    if (FlxG.sound.music != null)
-    {
-      FlxG.sound.music.fadeTween?.cancel();
-      FlxG.sound.music.stop();
-      FlxG.sound.music.kill();
-    }
+    // Load the sound.
+    // Sets `exists = true` as a side effect.
+    sound.loadEmbedded(funkin.assets.Assets.getSound(assetPath), looped, autoDestroy, params?.onComplete);
 
-    if (params?.mapTimeChanges ?? true)
-    {
-      var songMusicData:Null<SongMusicData> = SongRegistry.instance.parseMusicData(key);
-      // Will fall back and return null if the metadata doesn't exist or can't be parsed.
-      if (songMusicData != null)
-      {
-        Conductor.instance.mapTimeChanges(songMusicData.timeChanges);
+    sound.label = '${assetPath.toString()}';
 
-        if (songMusicData.looped != null && params.loop == null) params.loop = songMusicData.looped;
-      }
-      else
-      {
-        FlxG.log.warn('Tried and failed to find music metadata for $key');
-      }
-    }
+    if (params?.autoPlay ?? false) sound.play();
+    sound.volume = volume;
+    sound.persist = persist;
 
-    var shouldLoadPartial = params.partialParams?.loadPartial ?? false;
+    // Make sure to add the sound to the list.
+    // If it's already in, it won't get re-added.
+    // If it's not in the list (it gets removed by FunkinSound.playMusic()),
+    // it will get re-added (then if this was called by playMusic(), removed again)
+    FlxG.sound.list.add(sound);
+    FlxG.sound.defaultSoundGroup.add(sound);
 
-    // even if we arent' trying to partial load a song, we want to error out any songs in progress,
-    // so we don't get overlapping music if someone were to load a new song while a partial one is loading!
+    // Call onLoad() because the sound loaded.
+    if (params != null && params.onLoad != null && sound._sound != null) params.onLoad();
 
-    emptyPartialQueue();
-
-    if (shouldLoadPartial)
-    {
-      var music = FunkinSound.loadPartial(
-        pathToUse,
-        params.partialParams?.start ?? 0.0,
-        params.partialParams?.end ?? 1.0,
-        params?.startingVolume ?? 1.0,
-        params.loop ?? true,
-        false,
-        false,
-        params.onComplete
-      );
-
-      if (music != null)
-      {
-        partialQueue.push(music);
-
-        @:nullSafety(Off)
-        music.future.onComplete(function(partialMusic:Null<FunkinSound>)
-        {
-          FlxG.sound.music = partialMusic;
-          FlxG.sound.list.remove(FlxG.sound.music);
-
-          if (FlxG.sound.music != null && params.onLoad != null) params.onLoad();
-        });
-
-        return true;
-      }
-      else
-      {
-        return false;
-      }
-    }
-    else
-    {
-      var music = FunkinSound.load(pathToUse, params?.startingVolume ?? 1.0, params.loop ?? true, false, true, params.persist ?? false, params.onComplete);
-      if (music != null)
-      {
-        setMusic(music);
-
-        if (FlxG.sound.music != null && params.onLoad != null) params.onLoad();
-
-        return true;
-      }
-      else
-      {
-        return false;
-      }
-    }
+    return sound;
   }
 
   /**
-   * Replaces the Flixel current music object with the given `FunkinSound` object.
-   * @param newMusic The new music to be set as the current music.
-   */
-  public static function setMusic(newMusic:FunkinSound):Void
-  {
-    FlxG.sound.music = newMusic;
-
-    // Prevent repeat update() and onFocus() calls.
-    FlxG.sound.list.remove(FlxG.sound.music);
-  }
-
-  /**
-   * When set, one shot sounds started through `load` and `playOnce` are skipped.
+   * When set, one shot sounds (auto-played and not looped) started through `loadSound` are skipped.
+   * This includes sounds started through `load`, `playOnce`, and `playSoundOnce`.
    */
   public static var suppressOneShots:Bool = false;
 
   /**
-   * Creates a new `FunkinSound` object synchronously.
+   * Play a sound once, destroying it when it's finished.
+   * DEPRECATED: Use `loadSound(AssetPath)`
    *
-   * @param embeddedSound   The embedded sound resource you want to play.  To stream, use the optional URL parameter instead.
-   * @param volume          How loud to play it (0 to 1).
-   * @param looped          Whether to loop this sound.
-   * @param group           The group to add this sound to.
-   * @param autoDestroy     Whether to destroy this sound when it finishes playing.
-   *                          Leave this value set to `false` if you want to re-use this `FunkinSound` instance.
-   * @param autoPlay        Whether to play the sound immediately or wait for a `play()` call.
-   * @param persist         Whether to keep this `FunkinSound` between states, or destroy it.
-   * @param onComplete      Called when the sound finished playing.
-   * @param onLoad          Called when the sound finished loading.  Called immediately for successfully loaded embedded sounds.
-   * @return A `FunkinSound` object, or `null` if the sound could not be loaded.
+   * @param assetKey The asset path to the audio to play.
+   * @return The constructed `FunkinSound` object, or `null` if the sound failed to be loaded.
    */
   public static function load(embeddedSound:FlxSoundAsset,
     volume:Float = 1.0,
@@ -286,67 +213,381 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     ?onComplete:Void->Void,
     ?onLoad:Void->Void):Null<FunkinSound>
   {
-    if (suppressOneShots && autoPlay && !looped) return null;
-
-    var sound:FunkinSound = FunkinSound.recycle();
-
     if (Std.isOfType(embeddedSound, String))
     {
-      embeddedSound = funkin.modding.compat.Sound.cleanupSoundPath(embeddedSound);
-
-      var assetPath:funkin.assets.Paths.AssetPath = funkin.assets.Paths.sound(embeddedSound);
-      var soundAsset:openfl.media.Sound = funkin.assets.Assets.getSound(assetPath);
-
-      // Load the sound.
-      // Sets `exists = true` as a side effect.
-      sound.loadEmbedded(soundAsset, looped, autoDestroy, onComplete);
+      return FunkinSound.loadSound(Paths.raw(embeddedSound), {
+        volume: volume,
+        looped: looped,
+        autoDestroy: autoDestroy,
+        autoPlay: autoPlay,
+        persist: persist,
+        onComplete: onComplete,
+        onLoad: onLoad,
+      });
     }
     else
     {
-      // If the embeddedSound is a sound, load it directly.
-      // TODO: This should probably be a separate function.
+      // Backwards compatibility for `FunkinSound.load(openfl.media.Sound)`
+      var sound:FunkinSound = FunkinSound.recycle();
       sound.loadEmbedded(embeddedSound, looped, autoDestroy, onComplete);
+
+      return sound;
     }
-
-    sound._label = (embeddedSound is String) ? Paths.stripLibrary(embeddedSound) : 'unknown';
-
-    // Call onLoad() because the sound already loaded
-    if (onLoad != null && sound._sound != null)
-    {
-      onLoad();
-    }
-
-    FlxG.sound.defaultSoundGroup.add(sound);
-
-    // Make sure to add the sound to the list.
-    // If it's already in, it won't get re-added.
-    // If it's not in the list (it gets removed by FunkinSound.playMusic()),
-    // it will get re-added (then if this was called by playMusic(), removed again)
-    FlxG.sound.list.add(sound);
-
-    sound.volume = volume;
-    sound.persist = persist;
-
-    if (autoPlay)
-    {
-      sound.play();
-    }
-
-    return sound;
   }
 
   /**
-   * Will load a section of a sound file, useful for Freeplay where we don't want to load all the bytes of a song
-   * @param path The path to the sound file
-   * @param start The start time of the sound file
-   * @param end The end time of the sound file
-   * @param volume Volume to start at
-   * @param looped Whether the sound file should loop
-   * @param autoDestroy Whether the sound file should be destroyed after it finishes playing
-   * @param autoPlay Whether the sound file should play immediately
-   * @param onComplete Callback when the sound finishes playing
-   * @param onLoad Callback when the sound finishes loading
-   * @return A FunkinSound object
+   * Play a sound once, destroying it when it's finished.
+   * NOTE: Loads the sound synchronously if it isn't cached.
+   *
+   * @param assetPath The asset path to the audio to play.
+   * @param params (optional) Additional options for loading the sound.
+   * @return The constructed `FunkinSound` object, or `null` if the sound failed to be loaded.
+   */
+  public static inline function playSoundOnce(assetPath:AssetPath, ?params:FunkinSoundParams):Null<FunkinSound>
+  {
+    // We're basically just calling loadSound() with different default parameters.
+    return loadSound(assetPath, {
+      // Default to playing once then destroying when we're done.
+      autoDestroy: params?.autoDestroy ?? true,
+      autoPlay: params?.autoPlay ?? true,
+      looped: params?.looped ?? false,
+      persist: params?.persist ?? false,
+      important: params?.important ?? false,
+
+      volume: params?.volume ?? MAX_VOLUME,
+      onComplete: params?.onComplete,
+      onLoad: params?.onLoad,
+    });
+  }
+
+  /**
+   * Play a sound once, destroying it when it's finished.
+   * DEPRECATED: Use `playSoundOnce(AssetPath)`
+   *
+   * @param assetKey The asset path to the audio to play.
+   * @return The constructed `FunkinSound` object, or `null` if the sound failed to be loaded.
+   */
+  public static inline function playOnce(assetKey:String, volume:Float = 1.0, ?onComplete:Void->Void, ?onLoad:Void->Void):Null<FunkinSound>
+  {
+    return FunkinSound.playSoundOnce(Paths.raw(assetKey), {
+      volume: volume,
+      onComplete: onComplete,
+      onLoad: onLoad
+    });
+  }
+
+  /**
+   * Play a music track.
+   *
+   * @param musicAssetPath A music asset path. Use `Paths.music()` to construct one.
+   * @param params (optional) Additional options for loading the sound.
+   * @return `true` if the music track was loaded and started playing, `false` otherwise.
+   */
+  public static function playMusicTrack(musicAssetPath:MusicAssetPathBuilder,
+    ?params:FunkinMusicParams):Bool
+  {
+    var forceRestart:Bool = params?.forceRestart ?? false;
+    var mapTimeChanges:Bool = params?.mapTimeChanges ?? true;
+
+    var isMusicTrackPlaying:Bool = FlxG.sound.music?.playing ?? false;
+
+    if (isMusicTrackPlaying && !forceRestart)
+    {
+      if (FlxG.sound.music != null && Std.isOfType(FlxG.sound.music, FunkinSound))
+      {
+        var existingSound:FunkinSound = cast FlxG.sound.music;
+        var pathToUse:String = '${musicAssetPath.audio().toString()}';
+
+        // Stop here if we would restart a matching music track.
+        if (existingSound.label == pathToUse) return false;
+      }
+    }
+
+    // Stop the current music track if it's already playing.
+    if (FlxG.sound.music != null)
+    {
+      if (FlxG.sound.music.fadeTween != null) FlxG.sound.music.fadeTween.cancel();
+      FlxG.sound.music.stop();
+      FlxG.sound.music.kill();
+    }
+
+    if (mapTimeChanges)
+    {
+      // TODO: This should probably utilize `musicAssetPath.metadata()`...
+
+      var songMusicData:Null<SongMusicData> = SongRegistry.instance.parseMusicMetadata(musicAssetPath);
+
+      // Will fall back and return null if the metadata doesn't exist or can't be parsed.
+      if (songMusicData != null)
+      {
+        Conductor.instance.mapTimeChanges(songMusicData.timeChanges);
+
+        if (params != null && params.looped == null)
+        {
+          if (songMusicData.looped != null) params.looped = songMusicData.looped;
+        }
+      }
+      else
+      {
+        FlxG.log.warn(
+          'Failed to find music metadata for "${musicAssetPath.toString()}". Set `mapTimeChanges: false` to ignore music metadata and play music without BPM syncing.'
+        );
+      }
+    }
+
+    // Play the new music.
+    emptyPartialQueue();
+    var music:Null<FunkinSound> = loadSound(musicAssetPath.audio(), {
+      // Default to looping the audio and persisting between states.
+      looped: params?.looped ?? false,
+      persist: params?.persist ?? true,
+      important: params?.important ?? true,
+
+      autoDestroy: params?.autoDestroy ?? false,
+      autoPlay: params?.autoPlay ?? false,
+      volume: params?.volume ?? MAX_VOLUME,
+      onComplete: params?.onComplete,
+      onLoad: params?.onLoad,
+    });
+
+    if (music != null)
+    {
+      setMusic(music);
+
+      if (FlxG.sound.music != null)
+      {
+        if (params != null && params.onLoad != null) params.onLoad();
+      }
+
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
+
+  /**
+   * Play a sound once, destroying it when it's finished.
+   * DEPRECATED: Use `playMusicTrack(MusicAssetPathBuilder)`
+   *
+   * @param assetKey The asset path to the audio to play.
+   * @return The constructed `FunkinSound` object, or `null` if the sound failed to be loaded.
+   */
+  public static inline function playMusic(assetKey:String, ?params:FunkinMusicCompatParams):Bool
+  {
+    var usePartial:Bool = params?.partialParams?.loadPartial ?? false;
+
+    if (usePartial)
+    {
+      FunkinSound.playPartialMusicTrack(Paths.music(assetKey), {
+        forceRestart: params?.restartTrack,
+        looped: params?.loop,
+        mapTimeChanges: params?.mapTimeChanges,
+        onComplete: params?.onComplete,
+        onLoad: params?.onLoad,
+        persist: params?.persist,
+        volume: params?.startingVolume,
+
+        // Leave overrideExisting always true
+
+        start: params?.partialParams?.start,
+        end: params?.partialParams?.end
+      });
+
+      return true;
+    }
+    else
+    {
+      return FunkinSound.playMusicTrack(Paths.music(assetKey), {
+        forceRestart: params?.restartTrack,
+        looped: params?.loop,
+        mapTimeChanges: params?.mapTimeChanges,
+        onComplete: params?.onComplete,
+        onLoad: params?.onLoad,
+        persist: params?.persist,
+        volume: params?.startingVolume,
+
+        // Leave overrideExisting always true
+      });
+    }
+  }
+
+  /**
+   * Construct a `FunkinSound` that contains only part of a sound.
+   * Useful for optimizing memory when you only want to play a small portion of a large audio file.
+   *
+   * @param assetPath The asset path of the audio to play.
+   * @param params (optional) Additional options for loading the sound.
+   * @return A future, which provides the `FunkinSound` once completed, or an error if loading fails.
+   */
+  public static function loadPartialSound(assetPath:AssetPath,
+    ?params:FunkinPartialSoundParams):Future<FunkinSound>
+  {
+    var volume:Float = params?.volume ?? MAX_VOLUME;
+    var persist:Bool = params?.persist ?? false;
+    var looped:Bool = params?.looped ?? false;
+    var autoDestroy:Bool = params?.autoDestroy ?? true;
+    var autoPlay:Bool = params?.autoPlay ?? false;
+
+    var result:Promise<FunkinSound> = new Promise<FunkinSound>();
+
+    var partialSoundRequest:Promise<Sound> = FlxPartialSound.partialLoadFromFile(assetPath.toString(), params?.start, params?.end);
+
+    partialQueue.push(partialSoundRequest);
+
+    partialSoundRequest.future.onComplete((partialSound:Sound) ->
+    {
+      // Once the partial sound is loaded, create a FunkinSound that contains its sound data.
+      var sound:FunkinSound = FunkinSound.recycle();
+
+      // Load the sound.
+      // Sets `exists = true` as a side effect.
+      sound.loadEmbedded(partialSound, looped, autoDestroy, params?.onComplete);
+
+      sound.label = '${assetPath.toString()}';
+
+      if (autoPlay) sound.play();
+      sound.volume = volume;
+      sound.persist = persist;
+
+      // Make sure to add the sound to the list.
+      // If it's already in, it won't get re-added.
+      // If it's not in the list (it gets removed by FunkinSound.playMusic()),
+      // it will get re-added (then if this was called by playMusic(), removed again)
+      FlxG.sound.list.add(sound);
+      FlxG.sound.defaultSoundGroup.add(sound);
+
+      // Call onLoad() because the sound loaded.
+      if (params != null && params.onLoad != null && sound._sound != null) params.onLoad();
+    });
+
+    partialSoundRequest.future.onError((error:Dynamic) ->
+    {
+      result.error(error);
+    });
+
+    return result.future;
+  }
+
+  /**
+   * Play only part of a music track.
+   * Useful for optimizing memory when you only want to play a small portion of a large music track.
+   *
+   * @param musicAssetPath A music asset path. Use `Paths.music()` to construct one.
+   * @param params (optional) Additional options for loading the sound.
+   * @return A future that resolves to `true` if the music was successfully loaded, or an error if it failed.
+   */
+  public static function playPartialMusicTrack(musicAssetPath:MusicAssetPathBuilder,
+    ?params:FunkinPartialMusicParams):Future<Bool>
+  {
+    var forceRestart:Bool = params?.forceRestart ?? false;
+    var mapTimeChanges:Bool = params?.mapTimeChanges ?? true;
+
+    var isMusicTrackPlaying:Bool = FlxG.sound.music?.playing ?? false;
+
+    if (isMusicTrackPlaying && !forceRestart)
+    {
+      if (FlxG.sound.music != null && Std.isOfType(FlxG.sound.music, FunkinSound))
+      {
+        var existingSound:FunkinSound = cast FlxG.sound.music;
+        var pathToUse:String = '${musicAssetPath.audio().toString()}';
+
+        // Stop here if we would restart a matching music track.
+        if (existingSound.label == pathToUse) return Future.withValue(false);
+      }
+    }
+
+    // Stop the current music track if it's already playing.
+    if (FlxG.sound.music != null)
+    {
+      if (FlxG.sound.music.fadeTween != null) FlxG.sound.music.fadeTween.cancel();
+      FlxG.sound.music.stop();
+      FlxG.sound.music.kill();
+    }
+
+    if (mapTimeChanges)
+    {
+      var songMusicData:Null<SongMusicData> = SongRegistry.instance.parseMusicMetadata(musicAssetPath);
+
+      // Will fall back and return null if the metadata doesn't exist or can't be parsed.
+      if (songMusicData != null)
+      {
+        Conductor.instance.mapTimeChanges(songMusicData.timeChanges);
+
+        if (params != null && params.looped == null)
+        {
+          if (songMusicData.looped != null) params.looped = songMusicData.looped;
+        }
+      }
+      else
+      {
+        FlxG.log.warn(
+          'Failed to find music metadata for "${musicAssetPath.toString()}". Set `mapTimeChanges: false` to ignore music metadata and play music without BPM syncing.'
+        );
+      }
+    }
+
+    // Play the new music.
+    emptyPartialQueue();
+
+    var promise:Promise<Bool> = new Promise<Bool>();
+
+    var music:Future<FunkinSound> = loadPartialSound(musicAssetPath.audio(), {
+      start: params?.start,
+      end: params?.end,
+
+      // Default to looping the audio and persisting between states.
+      looped: params?.looped ?? false,
+      persist: params?.persist ?? true,
+      important: params?.important ?? true,
+
+      autoDestroy: params?.autoDestroy ?? false,
+      autoPlay: params?.autoPlay ?? false,
+      volume: params?.volume ?? MAX_VOLUME,
+      onComplete: params?.onComplete,
+      onLoad: params?.onLoad,
+    });
+
+    music.onComplete((music:FunkinSound) ->
+    {
+      // Called when the music finishes loading.
+      setMusic(music);
+      if (FlxG.sound.music != null)
+      {
+        if (params != null && params.onLoad != null) params.onLoad();
+      }
+
+      promise.complete(true);
+    });
+
+    music.onError((err:Dynamic) ->
+    {
+      // Called when the music fails to load.
+      promise.error(err);
+    });
+
+    return promise.future;
+  }
+
+  /**
+   * Replaces the Flixel current music object with the given `FunkinSound` object.
+   *
+   * @param newMusic The new music to be assigned as the current music.
+   */
+  public static function setMusic(newMusic:FunkinSound):Void
+  {
+    FlxG.sound.music = newMusic;
+
+    // Prevent repeat update() and onFocus() calls.
+    FlxG.sound.list.remove(FlxG.sound.music);
+  }
+
+  /**
+   * Stop all sounds in the pool and allow them to be recycled.
+   *
+   * @param musicToo Whether to stop the current FlxG.sound.music too.
+   * @param persistToo Whether to stop audio with `sound.persist == true`.
    */
   public static function loadPartial(path:String,
     start:Float = 0,
@@ -442,32 +683,6 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   }
 
   /**
-   * Play a sound effect once, then destroy it.
-   * @param key
-   * @param volume
-   * @return A `FunkinSound` object, or `null` if the sound could not be loaded.
-   */
-  public static function playOnce(key:String, volume:Float = 1.0, ?onComplete:Void->Void, ?onLoad:Void->Void):Null<FunkinSound>
-  {
-    var result:Null<FunkinSound> = FunkinSound.load(key, volume, false, true, true, false, onComplete, onLoad);
-    return result;
-  }
-
-  /**
-   * Stop all sounds in the pool and allow them to be recycled.
-   */
-  public static function stopAllAudio(musicToo:Bool = false, persistToo:Bool = false):Void
-  {
-    for (sound in pool)
-    {
-      if (sound == null) continue;
-      if (!persistToo && sound.persist) continue;
-      if (!musicToo && sound == FlxG.sound.music) continue;
-      sound.destroy();
-    }
-  }
-
-  /**
    * Reuse an existing FunkinSound object from the pool, or create a new one if none are available.
    *
    * @return The recycled/new `FunkinSound` object.
@@ -478,8 +693,10 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     {
       // Construct a new sound
       var sound:FunkinSound = new FunkinSound();
+
       pool.add(sound);
       FlxG.sound.list.add(sound);
+
       return sound;
     });
   }
@@ -523,66 +740,168 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 }
 
 /**
- * Additional parameters for `FunkinSound.playMusic()`
+ * Parameters for building a FunkinSound.
  */
-typedef FunkinSoundPlayMusicParams =
+typedef FunkinSoundParams =
 {
   /**
-   * The volume you want the music to start at.
+   * The starting volume for the sound.
    * @default `1.0`
    */
-  var ?startingVolume:Float;
+  @:optional
+  var volume:Float;
 
   /**
-   * The suffix of the music file to play. Usually for "-erect" tracks when loading an INST file
-   * @default ``
-   */
-  var ?suffix:String;
-
-  /**
-   * Whether to override music if a different track is already playing.
+   * Whether this sound should be looped, restarting it when it ends.
+   * NOTE: Called `looped` not `loop` for consistency with Flixel. Get it right!
+   *
    * @default `false`
    */
-  var ?overrideExisting:Bool;
+  @:optional
+  var looped:Bool;
 
   /**
-   * Whether to override music if the same track is already playing.
+   * Whether to automatically destroy the sound when it finishes playing,
+   * preventing that instance from being replayed, but saving memory.
+   *
    * @default `false`
    */
-  var ?restartTrack:Bool;
+  @:optional
+  var autoDestroy:Bool;
 
   /**
-   * Whether the music should loop or play once.
+   * Whether to automatically start playing the sound immediately.
+   * If `false`, you have to call `play()` later to start it.
+   *
+   * @default `false`
+   */
+  @:optional
+  var autoPlay:Bool;
+
+  /**
+   * Whether to keep this sound playing between states.
+   * If `false`, the sound will be stopped and destroyed when switching states.
+   *
+   * @default `false`
+   */
+  @:optional
+  var persist:Bool;
+
+  /**
+   * Whether this audio is important.
+   * If `true`, the game will force it to play, which may require cancelling another sound
+   * if too many sounds are playing at once.
+   *
+   * @default `false`
+   */
+  @:optional
+  var important:Bool;
+
+  /**
+   * An optional callback to run when the sound finishes playing.
+   */
+  @:optional
+  var onComplete:Void->Void;
+
+  /**
+   * An optional callback to run when the sound finishes loading.
+   */
+  @:optional
+  var onLoad:Void->Void;
+};
+
+/**
+ * Parameters for building a FunkinSound, for playing music.
+ */
+typedef FunkinMusicParams =
+{
+  // Include all the parameters from FunkinSound.
+  > FunkinSoundParams,
+
+  /**
+   * If `true`, force the music to restart even if the same track is already playing.
+   * If `false`, the music will not restart if the same track is already playing.
+   *
+   * @default `false`
+   */
+  @:optional
+  var forceRestart:Bool;
+
+  /**
+   * If `true`, load this music's metadata and load it into the Conductor.
+   * Used for tracking BPM changes and syncing `onBeatHit` functions.
+   *
    * @default `true`
    */
-  var ?loop:Bool;
+  @:optional
+  var mapTimeChanges:Bool;
+};
+
+/**
+ * Parameters for building a FunkinSound, that loads only a portion of the sound data.
+ */
+typedef FunkinPartialSoundParams =
+{
+  // Include all the parameters from FunkinSound.
+  > FunkinSoundParams,
 
   /**
-   * Whether to check for `SongMusicData` to update the Conductor with.
-   * @default `true`
+   * The start time of the audio, in seconds.
+   * @default The start of the audio file.
    */
-  var ?mapTimeChanges:Bool;
+  @:optional
+  var start:Float;
 
   /**
-   * Which Paths function to use to load a song
-   * @default `MUSIC`
+   * The end time of the audio, in seconds.
+   * @default The end of the audio file.
    */
-  var ?pathsFunction:PathsFunction;
-
-  var ?partialParams:PartialSoundParams;
-
-  /**
-   * Whether the sound should be destroyed on state switches
-   */
-  var ?persist:Bool;
-
-  var ?onComplete:Void->Void;
-  var ?onLoad:Void->Void;
+  @:optional
+  var end:Float;
 }
 
-typedef PartialSoundParams =
+/**
+ * Parameters for building a FunkinSound, for playing music that loads only a portion of the sound data.
+ */
+typedef FunkinPartialMusicParams =
 {
-  var loadPartial:Bool;
-  var start:Float;
-  var end:Float;
+  // Include all the parameters from FunkinSound.
+  > FunkinPartialSoundParams,
+
+  /**
+   * If `true`, force the music to restart even if the same track is already playing.
+   * If `false`, the music will not restart if the same track is already playing.
+   *
+   * @default `false`
+   */
+  @:optional
+  var forceRestart:Bool;
+
+  /**
+   * If `true`, load this music's metadata and load it into the Conductor.
+   * Used for tracking BPM changes and syncing `onBeatHit` functions.
+   *
+   * @default `true`
+   */
+  @:optional
+  var mapTimeChanges:Bool;
+};
+
+/**
+ * Additional parameters for `FunkinSound.playMusic()`
+ */
+typedef FunkinMusicCompatParams =
+{
+  var ?suffix:String;
+  var ?pathsFunction:PathsFunction;
+  var ?overrideExisting:Bool;
+  var ?startingVolume:Float;
+  var ?restartTrack:Bool;
+  var ?loop:Bool;
+  var ?mapTimeChanges:Bool;
+  var ?partialParams:
+    {loadPartial:Bool, start:Float, end:Float};
+  var ?persist:Bool;
+  var ?onComplete:Void->Void;
+  var ?onLoad:Void->Void;
 }

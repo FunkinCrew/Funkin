@@ -660,7 +660,7 @@ class GameOverSubState extends MusicBeatSubState
     else
     {
       @:privateAccess
-      trace('Music already playing! ${gameOverMusic?._label}');
+      trace('Music already playing! ${gameOverMusic?.label}');
     }
   }
 
