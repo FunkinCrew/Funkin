@@ -59,7 +59,7 @@ class Lock extends FunkinSprite
     loadTextureAtlas('ui/character-select/interface/lock', {
       swfMode: true,
       useRenderTexture: true,
-      cacheKey: 'char-select-lock-${tint.toHexString()}',
+      uniqueInCache: true,
       onSymbolCreate: (symbol) ->
       {
         if (symbol.timeline.getLayer('color') != null)
