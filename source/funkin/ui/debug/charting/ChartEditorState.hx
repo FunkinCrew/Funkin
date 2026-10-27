@@ -25,7 +25,6 @@ import flixel.util.FlxStringUtil;
 import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
 import funkin.audio.VoicesGroup;
-import funkin.audio.visualize.PolygonSpectogram;
 import funkin.audio.waveform.WaveformSprite;
 import funkin.data.character.CharacterRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
