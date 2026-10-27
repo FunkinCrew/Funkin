@@ -1194,10 +1194,10 @@ class Assets implements ConsoleClass
         ]);
 
       case SHADER:
-        /*results.appendUnique([Paths.frag('ui/shaders/custom-blend'), // Powers custom blend modes on FunkinCamera
-          ]); */
-        // Add ALL shaders into query list for now. TODO: Remove when backwards compatibility is fixed or removed.
-        results.appendUnique(Assets.list(SHADER));
+        results.appendUnique([Paths.frag('ui/shaders/custom-blend'), // Powers custom blend modes on FunkinCamera
+        ]);
+      // Add ALL shaders into query list for now. TODO: Remove when backwards compatibility is fixed or removed.
+      // results.appendUnique(Assets.list(SHADER));
 
       case FONT:
         // Permenent precache ALL fonts.
