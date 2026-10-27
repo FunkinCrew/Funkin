@@ -7,6 +7,8 @@ import flixel.util.FlxColor;
 import flixel.math.FlxMath;
 import flixel.group.FlxSpriteGroup;
 import flixel.util.FlxColor;
+import funkin.assets.Paths;
+import funkin.assets.Assets;
 
 enum DotType
 {
@@ -45,13 +47,37 @@ class DifficultyDot extends FlxSpriteGroup
 
   // var newColors:Array<FlxColor> = [0xFFE86D09, 0xFFE54400, 0xFFE83509, 0xFFF3D48A, 0xFFFAF269, 0xFFF9F0C2];
 
+  /**
+   * Get the list of assets that are required to display the difficulty dot.
+   *
+   * @param type The type of asset to query for.
+   * @return A list of asset paths.
+   */
+  public static function queryAssets(type:AssetType):Array<funkin.assets.Paths.AssetPath>
+  {
+    var results:Array<funkin.assets.Paths.AssetPath> = [];
+
+    switch (type)
+    {
+      case IMAGE:
+        results.appendUnique([Paths.image('ui/freeplay/interface/dot-pulse')]);
+      case XML:
+        results.appendUnique([Paths.xml('ui/freeplay/interface/dot-pulse')]);
+
+      default:
+        // Nothing
+    }
+
+    return results;
+  }
+
   public function new(id:String, num:Int)
   {
     super(0, 0);
 
     difficultyId = id;
 
-    dot = new FlxSprite().loadGraphic(Paths.image('ui/freeplay/interface/separator'));
+    dot = new FlxSprite().loadGraphic(Paths.image('ui/freeplay/interface/separator').toFlxGraphicAsset());
     add(dot);
 
     dot.alpha = 0;

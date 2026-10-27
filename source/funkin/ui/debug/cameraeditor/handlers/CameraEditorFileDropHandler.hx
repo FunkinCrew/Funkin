@@ -31,7 +31,7 @@ class CameraEditorFileDropHandler
    */
   public static function addDropHandler(dropTarget:DialogDropTarget):Void
   {
-    #if desktop
+    #if (desktop || (js && html5))
     if (!FlxG.stage.window.onDropFile.has(onDropFile)) FlxG.stage.window.onDropFile.add(onDropFile);
 
     dropHandlers.push(dropTarget);
@@ -46,7 +46,7 @@ class CameraEditorFileDropHandler
    */
   public static function removeDropHandler(dropTarget:DialogDropTarget):Void
   {
-    #if desktop
+    #if (desktop || (js && html5))
     dropHandlers.remove(dropTarget);
     #end
   }
@@ -62,7 +62,7 @@ class CameraEditorFileDropHandler
       {
         if (handler.component.hitTest(FlxG.mouse.viewX, FlxG.mouse.viewY))
         {
-          handler.handler(file.path);
+          handler.handler(file);
           return;
         }
       }

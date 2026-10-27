@@ -7,7 +7,6 @@ import funkin.modding.events.ScriptEventDispatcher;
 import funkin.modding.module.Module;
 import funkin.util.SortUtil;
 import funkin.util.tasks.TaskHandler;
-import hx.concurrent.collection.SynchronizedArray;
 import lime.app.Future;
 import lime.app.Promise;
 #if FEATURE_MULTITHREADING
@@ -60,13 +59,20 @@ class ModuleHandler
     trace('[MODULEHANDLER] Module cache loaded.');
   }
 
-  #if FEATURE_MULTITHREADING
   public static function loadModuleCacheAsync():lime.app.Future<LoadEntriesResult>
   {
     // Clear module cache first.
     clearModuleCache();
 
+    #if FEATURE_MULTITHREADING
     var scriptedModuleClassNames:SynchronizedArray<String> = new SynchronizedArray(Module.listScriptClasses());
+    var entryErrors:SynchronizedArray<
+      {moduleId:String, error:Any, ?moduleCls:String}> = new SynchronizedArray();
+    #else
+    var scriptedModuleClassNames:Array<String> = Module.listScriptClasses();
+    var entryErrors:Array<
+      {moduleId:String, error:Any, ?moduleCls:String}> = [];
+    #end
     var promise:lime.app.Promise<LoadEntriesResult> = new lime.app.Promise<LoadEntriesResult>();
 
     // We don't have any modules to load so we can just immediately complete the promise.
@@ -79,8 +85,6 @@ class ModuleHandler
       return promise.future;
     }
 
-    var entryErrors:SynchronizedArray<
-      {moduleId:String, error:Any, ?moduleCls:String}> = new SynchronizedArray();
     var moduleCount:Int = scriptedModuleClassNames.length;
     var perf:funkin.util.logging.Perf = new funkin.util.logging.Perf('loadModuleCacheAsync()');
 
@@ -171,7 +175,6 @@ class ModuleHandler
 
     return promise.future;
   }
-  #end
 
   public static function buildModuleCallbacks():Void
   {

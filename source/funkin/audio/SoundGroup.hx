@@ -112,15 +112,23 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
   /**
    * Play all the sounds in the group.
    */
-  public function play(forceRestart:Bool = false, startTime:Float = 0.0, ?endTime:Float)
+  public function play(forceRestart:Bool = false, startTime:Float = 0.0)
   {
     forEachAlive(function(sound:FunkinSound)
     {
+      // On HTML5/WebAudio, length can be 0 until the underlying AudioBuffer has finished decoding.
+      #if web
+      if (sound.length > 0 && sound.length < startTime)
+      {
+        return;
+      }
+      #else
       if (sound.length < startTime)
       {
         return;
       }
-      sound.play(forceRestart, startTime, endTime);
+      #end
+      sound.play(forceRestart, startTime);
     });
   }
 
@@ -267,21 +275,17 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
 
   function get_pitch():Float
   {
-    #if FLX_PITCH
     if (getFirstAlive() != null) return getFirstAlive().pitch;
     else
-    #end
-    return 1;
+      return 1;
   }
 
   function set_pitch(val:Float):Float
   {
-    #if FLX_PITCH
     forEachAlive(function(snd:FunkinSound)
     {
       snd.pitch = val;
     });
-    #end
     return val;
   }
 }

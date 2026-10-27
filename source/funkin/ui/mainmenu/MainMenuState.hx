@@ -1,42 +1,42 @@
 package funkin.ui.mainmenu;
 
-import funkin.assets.FunkinAssetCache;
+import flixel.FlxObject;
+import flixel.FlxSprite;
+import flixel.FlxSubState;
 import flixel.addons.transition.FlxTransitionableState;
+import flixel.effects.FlxFlicker;
+import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
+import flixel.math.FlxPoint;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
+import flixel.util.typeLimit.NextState;
+import funkin.api.newgrounds.Referral;
+import funkin.assets.FunkinAssetCache;
+import funkin.audio.FunkinSound;
+import funkin.graphics.FunkinCamera;
+import funkin.mobile.ui.FunkinButton;
+import funkin.ui.AtlasMenuList.AtlasMenuItem;
+import funkin.ui.MenuList.MenuListItem;
+import funkin.ui.MenuList.MenuTypedList;
+import funkin.ui.MusicBeatState;
+import funkin.ui.Prompt;
+import funkin.ui.UIStateMachine.UIState;
+import funkin.ui.UIStateMachine;
+import funkin.ui.freeplay.FreeplayState;
+import funkin.ui.mainmenu.UpgradeSparkle;
+import funkin.ui.quickpanel.QuickPanelState;
+import funkin.ui.story.StoryMenuState;
+import funkin.ui.title.TitleState;
+import funkin.util.InputUtil;
+import funkin.util.MathUtil;
+import funkin.util.SwipeUtil;
+import funkin.util.TouchUtil;
+import funkin.util.WindowUtil;
 #if FEATURE_DEBUG_MENU
 import funkin.ui.debug.DebugMenuSubState;
 #end
-import flixel.FlxObject;
-import flixel.FlxSubState;
-import flixel.FlxSprite;
-import flixel.effects.FlxFlicker;
-import flixel.math.FlxPoint;
-import flixel.util.typeLimit.NextState;
-import flixel.util.FlxColor;
-import flixel.tweens.FlxEase;
-import funkin.graphics.FunkinCamera;
-import funkin.audio.FunkinSound;
-import funkin.util.SwipeUtil;
-import funkin.util.InputUtil;
-import flixel.tweens.FlxTween;
-import funkin.ui.MusicBeatState;
-import funkin.ui.UIStateMachine;
-import funkin.ui.UIStateMachine.UIState;
-import flixel.util.FlxTimer;
-import funkin.ui.AtlasMenuList.AtlasMenuItem;
-import funkin.ui.freeplay.FreeplayState;
-import funkin.ui.MenuList.MenuTypedList;
-import funkin.ui.MenuList.MenuListItem;
-import funkin.ui.title.TitleState;
-import funkin.ui.story.StoryMenuState;
-import funkin.ui.Prompt;
-import funkin.util.WindowUtil;
-import funkin.mobile.ui.FunkinButton;
-import funkin.util.MathUtil;
-import funkin.util.TouchUtil;
-import funkin.api.newgrounds.Referral;
-import funkin.ui.mainmenu.UpgradeSparkle;
-import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
-import funkin.ui.quickpanel.QuickPanelState;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
 #end
@@ -47,15 +47,23 @@ import funkin.api.newgrounds.NewgroundsClient;
 import funkin.mobile.input.ControlsHandler;
 import funkin.mobile.util.InAppPurchasesUtil;
 #end
-import funkin.assets.Paths as Paths;
+//
+// ~PATHS~
+//
 import funkin.assets.Assets as Assets;
+import funkin.assets.Assets.AssetType;
+import funkin.assets.Paths.AssetPath;
+import funkin.assets.Paths.AnimateAtlasAssetPathBuilder;
+import funkin.assets.Paths.MusicAssetPathBuilder;
+import funkin.assets.ValidatedPaths as Paths;
+import funkin.assets.Paths as NewPaths;
 
 @:nullSafety
 class MainMenuState extends MusicBeatState
 {
   var menuItems:Null<MenuTypedList<AtlasMenuItem>>;
   var bg:Null<FlxSprite>;
-  var magenta:FlxSprite;
+  var magenta:Null<FlxSprite>;
   var camFollow:FlxObject;
   #if mobile
   var gyroPan:Null<FlxPoint>;
@@ -84,7 +92,6 @@ class MainMenuState extends MusicBeatState
     uiStateMachine.transition(EnteringMainMenu);
 
     upgradeSparkles = new FlxTypedSpriteGroup<UpgradeSparkle>();
-    magenta = new FlxSprite(Paths.image('ui/main-menu/menu-bg-magenta').toFlxGraphicAsset());
     camFollow = new FlxObject(0, 0, 1, 1);
 
     // TODO: enabling and disabling keys is a lil quirky,
@@ -132,12 +139,13 @@ class MainMenuState extends MusicBeatState
 
     add(camFollow);
 
+    magenta = new FlxSprite(Paths.image('ui/main-menu/menu-bg-magenta').toFlxGraphicAsset());
     magenta.scrollFactor.copyFrom(bg.scrollFactor);
     magenta.setGraphicSize(Std.int(bg.width));
     magenta.updateHitbox();
     magenta.x = bg.x;
     magenta.y = bg.y;
-    magenta.visible = false;
+    if (magenta != null) magenta.visible = false;
 
     if (Preferences.flashingLights) add(magenta);
 
@@ -147,7 +155,7 @@ class MainMenuState extends MusicBeatState
     menuItems.onChange.add(onMenuItemChange);
     menuItems.onAcceptPress.add(_ ->
     {
-      FlxFlicker.flicker(magenta, 1.1, 0.15, false, true);
+      if (magenta != null) FlxFlicker.flicker(magenta, 1.1, 0.15, false, true);
       uiStateMachine.transition(Interacting);
     });
 
@@ -165,7 +173,7 @@ class MainMenuState extends MusicBeatState
         // TODO: In loading screens, you should be caching BETWEEN these.
         FunkinAssetCache.instance.purgeCache(true);
       });
-      startExitState(() -> new StoryMenuState());
+      startExitState(() -> new StoryMenuState(), StoryMenuState.queryAssets);
     });
     createMenuItem('freeplay', 'ui/main-menu/items/freeplay', () ->
     {
@@ -194,9 +202,15 @@ class MainMenuState extends MusicBeatState
         }
       }
 
-      openSubState(new FreeplayState({
+      var params = {
         character: targetCharacter
-      }));
+      };
+
+      funkin.ui.transition.Transition.openSubState(() -> new FreeplayState(params), {
+        assetQuery: FreeplayState.queryAssets.bind(_, params, targetCharacter),
+        transition: Throbber,
+        shouldPurgeCache: false
+      });
     });
 
     if (hasUpgraded)
@@ -224,15 +238,12 @@ class MainMenuState extends MusicBeatState
 
     if (#if mobile ControlsHandler.usingExternalInputDevice #else true #end)
     {
-      createMenuItem('options', 'ui/main-menu/items/options', function()
-      {
-        startExitState(() -> new funkin.ui.options.OptionsState());
-      });
+      createMenuItem('options', 'ui/main-menu/items/options', goOptions);
     }
 
     createMenuItem('credits', 'ui/main-menu/items/credits', function()
     {
-      startExitState(() -> new funkin.ui.credits.CreditsState());
+      startExitState(() -> new funkin.ui.credits.CreditsState(), funkin.ui.credits.CreditsState.queryAssets);
     });
 
     // Reset position of menu items.
@@ -291,7 +302,7 @@ class MainMenuState extends MusicBeatState
       {
         FlxTimer.wait(0.5, () ->
         {
-          magenta.visible = false;
+          if (magenta != null) magenta.visible = false;
         });
       }
     });
@@ -392,7 +403,7 @@ class MainMenuState extends MusicBeatState
 
   override function closeSubState():Void
   {
-    magenta.visible = false;
+    if (magenta != null) magenta.visible = false;
 
     // when we are in Transition (fade in on new FlxState) we don't really care about substate closing
     // this fixes issue when Entering w/ fade -> interacting -> fade ends, so it transitions to Idle on our substate end here
@@ -450,7 +461,8 @@ class MainMenuState extends MusicBeatState
     openSubState(prompt);
   }
 
-  function startExitState(state:NextState):Void
+  function startExitState(state:NextState,
+    ?queryAssetsFunc:(funkin.assets.Assets.AssetType) -> Array<funkin.assets.Paths.AssetPath>):Void
   {
     if (menuItems == null) return;
 
@@ -486,7 +498,11 @@ class MainMenuState extends MusicBeatState
     FlxTimer.wait(fadeOutDuration, () ->
     {
       trace('Exiting MainMenuState...');
-      FlxG.switchState(state);
+      funkin.ui.transition.Transition.switchState(state, {
+        transition: BlackScreen(Fade(North), Fade(South)),
+        assetQuery: queryAssetsFunc,
+        shouldPurgeCache: false
+      });
     });
   }
 
@@ -563,7 +579,11 @@ class MainMenuState extends MusicBeatState
 
     if (InputUtil.allPressedWithDebounce([CONTROL, ALT, SHIFT, P]))
     {
-      FlxG.switchState(() -> new funkin.ui.charSelect.CharacterUnlockState('pico'));
+      var charID = 'pico';
+      funkin.ui.transition.Transition.switchState(() -> new funkin.ui.charSelect.CharacterUnlockState(charID), {
+        assetQuery: funkin.ui.charSelect.CharacterUnlockState.queryAssets.bind(_, charID),
+        transition: BlackScreen(Fade(North), None),
+      });
     }
 
     if (InputUtil.allPressedWithDebounce([CONTROL, ALT, SHIFT, W]))
@@ -652,7 +672,7 @@ class MainMenuState extends MusicBeatState
   function goOptions():Void
   {
     trace("OPTIONS: Interact complete.");
-    startExitState(() -> new funkin.ui.options.OptionsState());
+    startExitState(() -> new funkin.ui.options.OptionsState(), funkin.ui.options.OptionsState.queryAssets);
   }
 
   function goBack():Void
@@ -661,6 +681,61 @@ class MainMenuState extends MusicBeatState
     rememberedSelectedIndex = menuItems?.selectedIndex ?? 0;
     FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu').toString());
 
-    FlxG.switchState(() -> new TitleState());
+    funkin.ui.transition.Transition.switchState(() -> new TitleState(), {
+      assetQuery: TitleState.queryAssets,
+      transition: BlackScreen(Fade(North), Fade(South)),
+    });
+  }
+
+  /**
+   * Return a list of all AssetPaths that this state depends on to load.
+   * @param type The type of AssetPath to return a list of paths for.
+   * @return The list of asset paths of that type.
+   */
+  public static function queryAssets(type:funkin.assets.Assets.AssetType):Array<funkin.assets.Paths.AssetPath>
+  {
+    var results:Array<funkin.assets.Paths.AssetPath> = [];
+
+    var menuItems:Array<String> = [
+      'story-mode',
+      'freeplay',
+      #if FEATURE_OPEN_URL 'merch', #end
+      #if FEATURE_MOBILE_IAP 'upgrade', #end
+      'options',
+      'credits'
+    ];
+
+    switch (type)
+    {
+      case JSON:
+        results.appendUnique([Paths.music('ui/main-menu/freaky-menu').metadata()]);
+
+      case IMAGE:
+        results.appendUnique([
+          Paths.image('ui/main-menu/menu-bg'),
+          Paths.image('ui/main-menu/menu-bg-magenta'),
+          Paths.image('ui/main-menu/menu-desat'),
+          #if FEATURE_MOBILE_IAP
+          Paths.image('ui/main-menu/items/upgrade-shine-big'), Paths.image('ui/main-menu/items/upgrade-shine-small'),
+          #end
+        ]);
+
+        for (item in menuItems)
+        {
+          results.appendUnique([Paths.image('ui/main-menu/items/$item')]);
+        }
+
+      case XML:
+        for (item in menuItems)
+        {
+          results.appendUnique([Paths.xml('ui/main-menu/items/$item')]);
+        }
+
+      case SOUND:
+        results.appendUnique([Paths.music('ui/main-menu/freaky-menu').audio()]);
+
+      default:
+    }
+    return results;
   }
 }

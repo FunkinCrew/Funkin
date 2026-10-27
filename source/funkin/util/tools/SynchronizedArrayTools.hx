@@ -17,5 +17,18 @@ class SynchronizedArrayTools
   {
     array.add(value);
   }
+
+  /**
+   * Append each element of the second array to the first array.
+   * Modifies the array in place, unlike `Array.concat` which creates a copy.
+   *
+   * @param array The array to append to.
+   * @param elements The elements to append.
+   * @return The array with the elements appended.
+   */
+  public static function append<T>(array:SynchronizedArray<T>, elements:Array<T>):Void
+  {
+    array.addAll(elements);
+  }
 }
 #end

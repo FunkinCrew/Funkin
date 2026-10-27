@@ -19,6 +19,7 @@ class FNFLoaderProvider
     #if ios
     FlxG.stage.window.onDropFile.add(function(file:lime.utils.DroppedFile, state:String, x:Float, y:Float):Void
     {
+      var path = file.path;
       final fileURL:Null<String> = lime.system.System.getHint('IOS_UIApplicationLaunchOptionsURLKey');
 
       if (fileURL != null && fileURL.length > 0)

@@ -16,7 +16,19 @@ import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
 import funkin.modding.events.ScriptEvent;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.data.freeplay.player.PlayerRegistry;
+import funkin.data.notestyle.NoteStyleRegistry;
+import funkin.data.event.SongEventRegistry;
 import funkin.util.SortUtil;
+import funkin.assets.Paths.AssetPath;
+//
+// ~PATHS~
+//
+import funkin.assets.Assets;
+import funkin.assets.Assets.AssetType;
+import funkin.assets.Paths.AnimateAtlasAssetPathBuilder;
+import funkin.assets.Paths.AssetPath;
+import funkin.assets.Paths.MusicAssetPathBuilder;
+import funkin.assets.ValidatedPaths as Paths;
 import funkin.assets.Paths.AssetPath;
 
 /**
@@ -134,6 +146,37 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
   }
 
   public var variation:Null<String> = null;
+
+  /**
+   * Retrieve a list of all the asset paths required to load the song.
+   *
+   * If you have a scripted class which initializes sprites, or plays sounds or something,
+   * make sure you add them here so they get cached in the loading screen.
+   *
+   * @param type The type of asset to query
+   * @param entryId The song ID, used to look up the specific assets.
+   * @param params The entry parameters, if any.
+   * @return An array of asset paths, or empty if no assets of that type are required.
+   */
+  public static function queryAssets(type:funkin.assets.Assets.AssetType,
+    entryId:String,
+    ?params:SongEntryParams):Array<funkin.assets.Paths.AssetPath>
+  {
+    switch (type)
+    {
+      case JSON:
+        final ASSET_BLACKLIST:Array<String> = ['Animation', 'spritemap1'];
+        final BASE_PATH:String = 'gameplay/songs/$entryId';
+        // Just return every -metadata.json and -chart.json file in the directory.
+        // Parsing which ones are actually used/unused is too much work!
+        var dataFiles:Array<funkin.assets.Paths.AssetPath> = funkin.assets.Assets
+          .listDataFilesInPath('$BASE_PATH/', ASSET_BLACKLIST, false)
+          .map((assetId) -> funkin.assets.Paths.json('$BASE_PATH/$assetId'));
+        return [dataFiles].flatten();
+      default:
+        return [];
+    }
+  }
 
   /**
    * @param id The ID of the song to load.
@@ -828,6 +871,60 @@ class SongDifficulty
   public var stickerPack:Null<String> = null;
   public var discordRPCImage:Null<String> = null;
 
+  /**
+   * Return a list of all AssetPaths that this song depends on to load.
+   * @param type The type of AssetPath to return a list of paths for.
+   * @return The list of asset paths.
+   */
+  public function queryAssets(type:AssetType, instId:String = ''):Array<AssetPath>
+  {
+    trace('[LOADING] Fetching assets for ${song.id} (${difficulty}-${variation})...');
+
+    var results:Array<AssetPath> = SongRegistry.instance.queryAssets(type, song.id, {
+      variation: this.variation
+    });
+
+    // Add assets for this variation's note style.
+    results.append(NoteStyleRegistry.instance.queryAssets(type, this.noteStyle));
+
+    // Add assets for this variation's events.
+    // Only available once the chart has been cached.
+    if ((events?.length ?? 0) > 0)
+    {
+      for (eventData in events)
+      {
+        results.append(SongEventRegistry.queryAssets(type, eventData));
+      }
+    }
+    else
+    {
+      trace('[LOADING] WARNING: Song events not cached while query assets for ${song.id} ${difficulty}-${variation}');
+    }
+
+    switch (type)
+    {
+      case SOUND:
+        results.push(getInstPath(instId));
+        trace('[LOADING] Getting voice list...');
+        results.append(buildVoiceList());
+      case TEXT:
+        // Add the subtitles file, if it exists.
+        // We load it regardless if the subtitles are turned off, because the user might turn them back on.
+        var subtitlesFile:String = 'gameplay/songs/${song.id}/subtitles/song-lyrics';
+        if (this.variation != Constants.DEFAULT_VARIATION)
+        {
+          subtitlesFile += '-${this.variation}';
+        }
+        var assetPath:AssetPath = funkin.assets.Paths.srt(subtitlesFile, false);
+        if (assetPath.exists()) results.push(assetPath);
+
+      default:
+        // Nothing
+    }
+
+    return results;
+  }
+
   public function new(song:Song, diffId:String, variation:String)
   {
     this.song = song;
@@ -889,8 +986,7 @@ class SongDifficulty
 
   public function playInst(volume:Float = 1.0, instId:String = '', looped:Bool = false):Void
   {
-    var suffix:String = (instId != '') ? '-$instId' : '';
-    var path:String = Paths.inst(this.song.id, suffix);
+    var path:String = getInstPath(instId).toString();
     trace(' SONG '.bold().bg_note_down() + ' Playing instrumental track "$path" for song "${song.id}"');
 
     FlxG.sound.music = FunkinSound.load(path, volume, looped, false, true, false, null, null);

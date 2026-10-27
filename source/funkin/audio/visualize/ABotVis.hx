@@ -1,10 +1,10 @@
 package funkin.audio.visualize;
 
-import funkin.graphics.FunkinSprite;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.sound.FlxSound;
+import funkin.graphics.FunkinSprite;
 import funkin.vis.dsp.SpectralAnalyzer;
 
 using Lambda;
@@ -12,7 +12,6 @@ using Lambda;
 @:nullSafety
 class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
 {
-  // public var vis:VisShit;
   var analyzer:Null<SpectralAnalyzer> = null;
   var analyzerLevelsCache:Array<Bar> = new Array<Bar>();
   var volumes:Array<Float> = [];
@@ -99,7 +98,7 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
     if (snd == null) return;
 
     @:privateAccess
-    analyzer = new SpectralAnalyzer(snd._channel.__audioSource, BAR_COUNT, 0.1, 40);
+    analyzer = new SpectralAnalyzer(snd._source, BAR_COUNT, 0.1, 40);
     // A-Bot tuning...
     analyzer.minDb = -65;
     analyzer.maxDb = -25;

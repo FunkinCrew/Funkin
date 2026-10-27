@@ -17,12 +17,15 @@ import funkin.modding.IScriptedClass.IFreeplayScriptedClass;
 import funkin.modding.events.ScriptEvent;
 import funkin.ui.FullScreenScaleMode;
 import funkin.util.BitmapUtil;
+import funkin.assets.Paths;
+import funkin.assets.Assets;
 
 /**
  * A class for the backing cards so they dont have to be part of freeplayState......
  */
 class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass implements IStateChangingScriptedClass implements IFreeplayScriptedClass
 {
+  static var resolvedScriptedClasses:Map<String, Null<String>> = [];
   public var backingTextYeah:FunkinSprite;
   public var orangeBackShit:FunkinSprite;
   public var alsoOrangeLOL:FunkinSprite;
@@ -38,37 +41,136 @@ class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass impl
   public var instance:FreeplayState;
   public var currentCharacter:String;
 
+  /**
+   * Get the list of assets that are required to display the default backing card.
+   *
+   * @param type The type of asset to query for.
+   * @return A list of asset paths.
+   */
+  public static function queryAssets(type:funkin.assets.Assets.AssetType):Array<funkin.assets.Paths.AssetPath>
+  {
+    var results:Array<funkin.assets.Paths.AssetPath> = [];
+
+    switch (type)
+    {
+      case IMAGE:
+        results.appendUnique([
+          Paths.image('ui/freeplay/interface/card-glow'),
+          Paths.image('ui/freeplay/interface/confirm-glow-1'),
+          Paths.image('ui/freeplay/interface/glowing-text'),
+          Paths.image('ui/freeplay/interface/confirm-glow-2'),
+          Paths.image('ui/freeplay/interface/beat-glow'),
+
+          // Since
+          Paths.image('ui/freeplay/interface/back').withPixelData(),
+        ]);
+
+        results.appendUnique(Paths.animateAtlas('ui/freeplay/styles/bf/backing-card').image());
+      case JSON:
+        results.appendUnique(Paths.animateAtlas('ui/freeplay/styles/bf/backing-card').json());
+      default:
+        // Nothing
+    }
+
+    return results;
+  }
+
+  /**
+   * Get the list of assets that are required to display a scripted backing card.
+   * Checks the scripted backing card class for a static `queryAssets()` function to call.
+   *
+   * @param type The type of asset to query for.
+   * @param characterId The playable character ID to get the assets for.
+   * @return A list of asset paths.
+   */
+  public static function queryAssetsScripted(type:AssetType, characterId:String):Array<AssetPath>
+  {
+    var results:Array<AssetPath> = queryAssets(type);
+
+    var clsName:Null<String> = getBackingCardScriptedClass(characterId);
+    if (clsName == null) return results;
+
+    if (!BackingCard.scriptStaticHas(clsName, 'queryAssets'))
+    {
+      return results;
+    }
+
+    var scriptedResults:Array<AssetPath> = BackingCard.scriptStaticCall(clsName, 'queryAssets', [type]);
+    if (scriptedResults != null) results.appendUnique(scriptedResults);
+
+    return results;
+  }
+
+  /**
+   * Get the script class used to display a given character's backing card.
+   *
+   * @param characterId The playable character ID to get the script class for.
+   * @return The corresponding backing card class, or `null` if there is none.
+   */
+  public static function getBackingCardScriptedClass(characterId:String):Null<String>
+  {
+    if (characterId == null || characterId == '') return null;
+
+    if (resolvedScriptedClasses.exists(characterId))
+    {
+      return resolvedScriptedClasses.get(characterId);
+    }
+
+    var resultClass:Null<String> = null;
+    try
+    {
+      var allScriptedCards:Array<String> = BackingCard.listScriptClasses();
+      for (cardClass in allScriptedCards)
+      {
+        if (!BackingCard.scriptStaticHas(cardClass, 'getCharacterId')) continue;
+
+        var result:Dynamic = BackingCard.scriptStaticCall(cardClass, 'getCharacterId', []);
+        if (result == characterId)
+        {
+          resultClass = cardClass;
+          break;
+        }
+      }
+    }
+    catch (e:Dynamic)
+    {
+      trace('[BackingCard] Failed to resolve scripted card for "$characterId": $e');
+    }
+
+    // Cache even null results so the same character cannot repeatedly trigger
+    // script construction during a single transition/create cycle.
+    resolvedScriptedClasses.set(characterId, resultClass);
+    return resultClass;
+  }
+
+  /*public static function getCharacterId():String
+    {
+    return 'bf';
+  }*/
   public function new(currentCharacter:String)
   {
     super();
 
     this.currentCharacter = currentCharacter;
-
-    var bitmap = BitmapUtil.scalePartByWidth(
-      funkin.assets.Assets.getBitmapData(funkin.assets.Paths.image('ui/freeplay/interface/card-glow').withPixelData()),
-      FreeplayState.CUTOUT_WIDTH
-    );
+    var bitmap = BitmapUtil.scalePartByWidth(Assets.getBitmapData(Paths.image('ui/freeplay/interface/card-glow').withPixelData()), FreeplayState.CUTOUT_WIDTH);
     cardGlow = new FlxSprite(-30, -30).loadGraphic(bitmap);
 
     confirmGlow = new FlxSprite(
       (FreeplayState.CUTOUT_WIDTH * FreeplayState.DJ_POS_MULTI) + -30,
       240
-    ).loadGraphic(Paths.image('ui/freeplay/interface/confirm-glow-1'));
+    ).loadGraphic(Paths.image('ui/freeplay/interface/confirm-glow-1').toFlxGraphicAsset());
     confirmTextGlow = new FlxSprite(
       (FreeplayState.CUTOUT_WIDTH * FreeplayState.DJ_POS_MULTI) + -8,
       115
-    ).loadGraphic(Paths.image('ui/freeplay/interface/glowing-text'));
+    ).loadGraphic(Paths.image('ui/freeplay/interface/glowing-text').toFlxGraphicAsset());
 
-    var bitmap = BitmapUtil.scalePartByWidth(
-      funkin.assets.Assets.getBitmapData(funkin.assets.Paths.image('ui/freeplay/interface/back').withPixelData()),
-      FreeplayState.CUTOUT_WIDTH
-    );
+    var bitmap = BitmapUtil.scalePartByWidth(Assets.getBitmapData(Paths.image('ui/freeplay/interface/back').withPixelData()), FreeplayState.CUTOUT_WIDTH);
     pinkBack = new FunkinSprite();
     pinkBack.loadGraphic(bitmap);
 
     orangeBackShit = new FunkinSprite(84, 440).makeSolidColor(Std.int(pinkBack.width), 75, 0xFFFEDA00);
     alsoOrangeLOL = new FunkinSprite(0, orangeBackShit.y).makeSolidColor(100, Std.int(orangeBackShit.height), 0xFFFFD400);
-    confirmGlow2 = new FlxSprite(confirmGlow.x, confirmGlow.y).loadGraphic(Paths.image('ui/freeplay/interface/confirm-glow-2'));
+    confirmGlow2 = new FlxSprite(confirmGlow.x, confirmGlow.y).loadGraphic(Paths.image('ui/freeplay/interface/confirm-glow-2').toFlxGraphicAsset());
 
     backingTextYeah = new FunkinSprite(
       (FreeplayState.CUTOUT_WIDTH * FreeplayState.DJ_POS_MULTI) + -320,

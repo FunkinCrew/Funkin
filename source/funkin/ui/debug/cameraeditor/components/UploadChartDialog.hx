@@ -126,18 +126,29 @@ class UploadChartDialog extends Dialog
   /**
    * Called when a file is selected by dropping a file onto the Upload Chart box.
    */
-  function onDropFileChartBox(path:String):Void
+  function onDropFileChartBox(file:lime.utils.DroppedFile):Void
   {
-    try
+    file.readFile().onComplete(function(bytes:haxe.io.Bytes)
     {
-      CameraEditorImportExportHandler.loadSongFromFNFCPath(cameraEditorState, path);
-    }
-    catch (e)
+      if (bytes == null)
+      {
+        CameraEditorNotificationHandler.failure(this.cameraEditorState, 'Failed to Load Chart', 'Could not read dropped chart (${file.path})');
+        return;
+      }
+
+      try
+      {
+        CameraEditorImportExportHandler.loadSongFromFNFCBytes(cameraEditorState, bytes, file.path);
+        this.hideDialog(DialogButton.APPLY);
+      }
+      catch (e)
+      {
+        CameraEditorNotificationHandler.failure(this.cameraEditorState, 'Failed to Load Chart', 'Failed to load chart (${file.path})');
+      }
+    }).onError(function(error:Dynamic)
     {
-      CameraEditorNotificationHandler.failure(this.cameraEditorState, 'Failed to Load Chart', 'Failed to load chart (${path})');
-      this.hideDialog(DialogButton.APPLY);
-      return;
-    }
+        CameraEditorNotificationHandler.failure(this.cameraEditorState, 'Failed to Load Chart', 'Failed to read chart (${file.path}):\n$error');
+    });
   }
 
   function onCancelBrowse():Void

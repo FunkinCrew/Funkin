@@ -1,10 +1,21 @@
 package funkin.play.character;
 
-import funkin.graphics.FunkinSprite;
-import funkin.util.assets.FlxAnimationUtil;
-import funkin.modding.events.ScriptEvent;
 import funkin.data.animation.AnimationData;
 import funkin.data.character.CharacterData.CharacterRenderType;
+import funkin.data.character.CharacterData;
+import funkin.graphics.FunkinSprite;
+import funkin.modding.events.ScriptEvent;
+import funkin.util.assets.FlxAnimationUtil;
+import funkin.data.character.CharacterRegistry;
+//
+// ~PATHS~
+//
+import funkin.assets.Assets;
+import funkin.assets.Assets.AssetType;
+import funkin.assets.Paths.AnimateAtlasAssetPathBuilder;
+import funkin.assets.Paths.AssetPath;
+import funkin.assets.Paths.MusicAssetPathBuilder;
+import funkin.assets.ValidatedPaths as Paths;
 
 /**
  * An AnimateAtlasCharacter is a Character which is rendered by
@@ -15,9 +26,45 @@ import funkin.data.character.CharacterData.CharacterRenderType;
  */
 class AnimateAtlasCharacter extends BaseCharacter
 {
+  /**
+   * Retrieve a list of all the asset paths required to load the character.
+   *
+   * If you have a scripted class which initializes sprites, or plays sounds or something,
+   * make sure you add them here so they get cached in the loading screen.
+   *
+   * @param type The type of asset to query
+   * @param charId The character ID, used to look up the specific assets.
+   * @return An array of asset paths, or empty if no assets of that type are required.
+   */
+  public static function queryAssets(type:AssetType, charId:String):Array<AssetPath>
+  {
+    // trace('ASSETS: Querying assets for Animate Atlas character "${charId}"')
+    // Specific implementations handle figuring out which assets to load.
+    var result:Array<AssetPath> = BaseCharacter.queryAssets(type, charId);
+
+    var _data:Null<CharacterData> = CharacterRegistry.instance.fetchCharacterData(charId);
+    if (_data == null) return result; // No assets if data couldn't be parsed.
+
+    var assetPath = Paths.animateAtlas(_data.assetPath);
+
+    switch (type)
+    {
+      case IMAGE:
+        result = result.concat(assetPath.image());
+      case JSON:
+        result = result.concat(assetPath.json());
+      default:
+        // Nothing
+    }
+
+    return result;
+  }
+
   public function new(id:String)
   {
-    super(id, CharacterRenderType.AnimateAtlas);
+    super(id, {
+      renderType: CharacterRenderType.AnimateAtlas
+    });
   }
 
   override function onCreate(event:ScriptEvent):Void

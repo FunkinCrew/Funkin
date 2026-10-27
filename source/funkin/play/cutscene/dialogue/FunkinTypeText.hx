@@ -16,7 +16,11 @@ class FunkinTypeText extends FlxTypeText
   {
     super(X, Y, Width, "", Size, EmbeddedFont);
     _finalText = Text;
+    #if html5
+    preWrapping = false;
+    #else
     preWrapping = CheckWrapping;
+    #end
   }
 
   override public function start(?Delay:Float, ForceRestart:Bool = false, AutoErase:Bool = false, ?SkipKeys:Array<FlxKey>, ?Callback:Void->Void):Void
@@ -70,15 +74,23 @@ class FunkinTypeText extends FlxTypeText
   override function insertBreakLines()
   {
     var saveText = text;
+    var originalFinalText = _finalText;
 
     // See what it looks like when it's finished typing.
     text = prefix + _finalText;
+
+    var lineCount:Int = textField.numLines;
+    if (lineCount <= 0)
+    {
+      text = saveText;
+      return;
+    }
+
     var prefixLength:Null<Int> = prefix.length;
     var split:String = '';
 
     // trace('Breaking apart text lines...');
-
-    for (i in 0...textField.numLines)
+    for (i in 0...lineCount)
     {
       var curLine = textField.getLineText(i);
       // trace('now at line $i, curLine: $curLine');
@@ -95,10 +107,9 @@ class FunkinTypeText extends FlxTypeText
       {
         split += '\n' + curLine;
       }
-      // trace('now at line $i, split: $split');
     }
 
-    _finalText = split;
+    _finalText = (split.length > 0 || originalFinalText.length == 0) ? split : originalFinalText;
     text = saveText;
   }
 }

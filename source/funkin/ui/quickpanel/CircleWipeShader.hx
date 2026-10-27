@@ -10,7 +10,7 @@ class CircleWipeShader extends FlxShader
 {
   public var boilAmount(default, set):Float = 0.2;
 
-  static var DEFAULT_BOIL_TEXTURE:String = "assets/ui/boil_texture.png";
+  static var DEFAULT_BOIL_TEXTURE:String = 'assets/ui/boil_texture.png';
 
   function set_boilAmount(val:Float):Float
   {

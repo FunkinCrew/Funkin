@@ -117,13 +117,9 @@ class SustainTrail extends funkin.graphics.FunkinSprite
   public var customVertexData:Bool = false;
 
   public var meshMinX:Float = 0;
-
   public var meshMinY:Float = 0;
-
   public var meshMaxX:Float = 0;
-
   public var meshMaxY:Float = 0;
-
   public var trailSegments:Int = 0;
 
   /**
@@ -315,7 +311,7 @@ class SustainTrail extends funkin.graphics.FunkinSprite
     {
       builtHoldNoteStyleId = noteStyle.id;
 
-      loadGraphic(noteStyle.getHoldNoteAssetPath());
+      loadGraphic(noteStyle.getHoldNoteAssetPath().toFlxGraphicAsset());
 
       antialiasing = true;
 

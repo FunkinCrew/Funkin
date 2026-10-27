@@ -44,9 +44,6 @@ class HaxeUISubState extends MusicBeatSubState
   {
     super.update(elapsed);
 
-    // Force quit.
-    if (FlxG.keys.justPressed.F4) FlxG.switchState(() -> new MainMenuState());
-
     // Refresh the component.
     if (FlxG.keys.justPressed.F5)
     {

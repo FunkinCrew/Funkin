@@ -236,13 +236,22 @@ class ModMenuItem extends FunkinSpriteGroup
   {
     modIcon = new FunkinSprite(0, 0);
 
+    var onIconLoaded = () ->
+    {
+      modIcon.setGraphicSize(ICON_HEIGHT, ICON_HEIGHT);
+      modIcon.localScale.x = modIcon.scale.x;
+      modIcon.localScale.y = modIcon.scale.y;
+      modIcon.updateHitbox();
+    };
+
     if (iconAssetPath != null)
     {
       modIcon.loadGraphic(Paths.image(iconAssetPath));
+      onIconLoaded();
     }
     else if (mod != null)
     {
-      loadModIcon(mod);
+      loadModIcon(mod, onIconLoaded);
     }
     else
     {
@@ -251,10 +260,6 @@ class ModMenuItem extends FunkinSpriteGroup
 
     modIcon.scrollFactor.set();
     modIcon.antialiasing = true;
-    modIcon.setGraphicSize(ICON_HEIGHT, ICON_HEIGHT);
-    modIcon.localScale.x = modIcon.scale.x;
-    modIcon.localScale.y = modIcon.scale.y;
-    modIcon.updateHitbox();
     add(modIcon);
   }
 
@@ -263,11 +268,12 @@ class ModMenuItem extends FunkinSpriteGroup
    * @param mod The mod's meta data.
    */
   @:privateAccess
-  function loadModIcon(mod:ModMetadata):Void
+  function loadModIcon(mod:ModMetadata, onIconLoaded:Void->Void):Void
   {
     if (mod.id != null && funkin.assets.FunkinBitmapFrontend.instance.exists(mod.id))
     {
       modIcon.loadGraphic(funkin.assets.FunkinBitmapFrontend.instance.get(mod.id));
+      onIconLoaded();
     }
     else if (mod.icon != null)
     {
@@ -276,16 +282,33 @@ class ModMenuItem extends FunkinSpriteGroup
         modIconDecoder = new FunkinAnimationDecoder(mod.icon, GIF);
 
         modIcon.loadGraphic(modIconDecoder.bitmapData);
+        onIconLoaded();
       }
       else if (lime.graphics.Image.__isWebP(mod.icon))
       {
         modIconDecoder = new FunkinAnimationDecoder(mod.icon, WEBP);
 
         modIcon.loadGraphic(modIconDecoder.bitmapData);
+        onIconLoaded();
       }
       else
       {
+        #if sys
         modIcon.loadGraphic(openfl.display.BitmapData.fromBytes(mod.icon, true));
+        onIconLoaded();
+        #else
+        modIcon.makeGraphic(1, 1, FlxColor.TRANSPARENT);
+        openfl.display.BitmapData.loadFromBytes(mod.icon).onComplete((bitmap) ->
+        {
+          if (bitmap != null) modIcon.loadGraphic(bitmap);
+          onIconLoaded();
+        }).onError((error) ->
+          {
+            trace('Failed to load icon for mod ${mod.id}: $error');
+            modIcon.loadGraphic(Paths.image('ui/mods/fallback-icon'));
+            onIconLoaded();
+          });
+        #end
       }
     }
     else
@@ -293,6 +316,7 @@ class ModMenuItem extends FunkinSpriteGroup
       trace(' MOD MENU '.bold().bg_orange() + ' No icon found for mod ${mod.id}, using fallback');
 
       modIcon.loadGraphic(Paths.image('ui/mods/fallback-icon'));
+      onIconLoaded();
     }
   }
 

@@ -1,6 +1,8 @@
 package funkin.ui.transition.preload.hotreload;
 
+import funkin.assets.Assets;
 import funkin.assets.FunkinAssetCache;
+import funkin.assets.Paths.AssetPath;
 import funkin.data.BaseRegistry.LoadEntriesResult;
 import funkin.data.character.CharacterRegistry;
 import funkin.data.dialogue.ConversationRegistry;
@@ -36,6 +38,21 @@ class ModReloader
    * Whether a reload is currently running.
    */
   public static var isReloading(default, null):Bool = false;
+
+  public static function cachePersistentAssets(?onProgress:Int->Int->Void, ?onComplete:Void->Void):Void
+  {
+    var progress = (loaded:Int, total:Int) ->
+    {
+      if (onProgress != null) onProgress(loaded, total);
+    };
+
+    var finish = () ->
+    {
+      if (onComplete != null) onComplete();
+    };
+
+    queueCachePersistentGraphics(progress, finish);
+  }
 
   /**
    * Reloads the enabled mods, then the scripts, then the registry data, then calls `create()` on every module.
@@ -162,7 +179,7 @@ class ModReloader
     registryFuture.onProgress((loaded:Int, total:Int) ->
     {
       trace('Registry loading completed: $loaded/$total');
-      progress(loaded, total);
+      progress(3 + Std.int(5 * loaded / total), 10);
     });
 
     registryFuture.onComplete((_) -> afterLoadRegistryData(progress, finish)).onError((error) ->
@@ -184,8 +201,78 @@ class ModReloader
       reportStepFailed('module create', error);
     }
 
-    progress(10, 10);
+    cachePersistentAssets(progress, finish);
+  }
 
+  /**
+   * Step 4. Restore the same persistent asset groups that the game preloads at startup.
+   * Keep the groups sequential to avoid loading every image, sound, and data file at once.
+   */
+  static function queueCachePersistentGraphics(progress:Int->Int->Void, finish:Void->Void):Void
+  {
+    beginStep('cache persistent graphics');
+    progress(8, 10);
+
+    Assets.cacheAllFlxGraphics(Assets.queryPersistentAssets(IMAGE), true)
+      .onComplete((_) -> queueCachePersistentFonts(progress, finish))
+      .onError((error) ->
+      {
+        reportStepFailed('cache persistent graphics', error);
+        queueCachePersistentFonts(progress, finish);
+      });
+  }
+
+  static function queueCachePersistentFonts(progress:Int->Int->Void, finish:Void->Void):Void
+  {
+    beginStep('cache persistent fonts');
+
+    Assets.cacheAllFonts(Assets.queryPersistentAssets(FONT))
+      .onComplete((_) -> queueCachePersistentSounds(progress, finish))
+      .onError((error) ->
+      {
+        reportStepFailed('cache persistent fonts', error);
+        queueCachePersistentSounds(progress, finish);
+      });
+  }
+
+  static function queueCachePersistentSounds(progress:Int->Int->Void, finish:Void->Void):Void
+  {
+    beginStep('cache persistent sounds');
+
+    Assets.cacheAllSounds(Assets.queryPersistentAssets(SOUND), true)
+      .onComplete((_) -> queueCachePersistentData(progress, finish))
+      .onError((error) ->
+      {
+        reportStepFailed('cache persistent sounds', error);
+        queueCachePersistentData(progress, finish);
+      });
+  }
+
+  static function queueCachePersistentData(progress:Int->Int->Void, finish:Void->Void):Void
+  {
+    beginStep('cache persistent data');
+
+    var assetsToCache:Array<AssetPath> = [];
+    assetsToCache.append(Assets.queryPersistentAssets(TEXT));
+    assetsToCache.append(Assets.queryPersistentAssets(JSON));
+    assetsToCache.append(Assets.queryPersistentAssets(SHADER));
+    assetsToCache.append(Assets.queryPersistentAssets(SCRIPTED_CLASS));
+    assetsToCache.append(Assets.queryPersistentAssets(SCRIPT));
+    assetsToCache.append(Assets.queryPersistentAssets(XML));
+    assetsToCache.append(Assets.queryPersistentAssets(UNKNOWN));
+
+    Assets.cacheAll(assetsToCache, true)
+      .onComplete((_) -> afterCachePersistentAssets(progress, finish))
+      .onError((error) ->
+      {
+        reportStepFailed('cache persistent data', error);
+        afterCachePersistentAssets(progress, finish);
+      });
+  }
+
+  static function afterCachePersistentAssets(progress:Int->Int->Void, finish:Void->Void):Void
+  {
+    progress(10, 10);
     finish();
   }
 

@@ -1,12 +1,16 @@
 package funkin.play.character;
 
-import funkin.graphics.FunkinSprite;
-import funkin.util.assets.FlxAnimationUtil;
 import animate.FlxAnimateFrames;
 import flixel.graphics.frames.FlxAtlasFrames;
-import funkin.modding.events.ScriptEvent;
+import funkin.assets.Assets.AssetType;
+import funkin.assets.Paths.AssetPath;
 import funkin.data.animation.AnimationData;
 import funkin.data.character.CharacterData.CharacterRenderType;
+import funkin.data.character.CharacterData;
+import funkin.data.character.CharacterRegistry;
+import funkin.graphics.FunkinSprite;
+import funkin.modding.events.ScriptEvent;
+import funkin.util.assets.FlxAnimationUtil;
 
 /**
  * This render type is the most complex, and is used by characters which use
@@ -20,9 +24,88 @@ class MultiAnimateAtlasCharacter extends BaseCharacter
 {
   var _usedAtlases:Array<FlxAtlasFrames> = [];
 
+  /**
+   * Retrieve a list of all the asset paths required to load the character.
+   *
+   * If you have a scripted class which initializes sprites, or plays sounds or something,
+   * make sure you add them here so they get cached in the loading screen.
+   *
+   * @param type The type of asset to query
+   * @param charId The character ID, used to look up the specific assets.
+   * @return An array of asset paths, or empty if no assets of that type are required.
+   */
+  public static function queryAssets(type:funkin.assets.Assets.AssetType,
+    charId:String):Array<funkin.assets.Paths.AssetPath>
+  {
+    trace('ASSETS: Querying assets for Multi-Animate Atlas character "$charId"');
+    // Specific implementations handle figuring out which assets to load.
+    var results:Array<funkin.assets.Paths.AssetPath> = BaseCharacter.queryAssets(type, charId);
+
+    var _data:Null<CharacterData> = CharacterRegistry.instance.fetchCharacterData(charId);
+    if (_data == null) return results; // No assets if data couldn't be parsed.
+
+    switch (type)
+    {
+      case IMAGE:
+        var assetPath = funkin.assets.Paths.animateAtlas(_data.assetPath);
+        results.append(assetPath.image());
+
+        for (animation in _data.animations)
+        {
+          if (animation.assetPath == null) continue;
+
+          switch (animation.renderType)
+          {
+            case 'sparrow':
+              results.push(funkin.assets.Paths.image(animation.assetPath));
+            default:
+              var assetPath = funkin.assets.Paths.animateAtlas(animation.assetPath);
+              results.append(assetPath.image());
+          }
+        }
+
+      case XML:
+        for (animation in _data.animations)
+        {
+          if (animation.assetPath == null) continue;
+
+          switch (animation.renderType)
+          {
+            case 'sparrow':
+              results.push(funkin.assets.Paths.xml(animation.assetPath));
+            default:
+              // Nothing
+          }
+        }
+
+      case JSON:
+        var assetPath = funkin.assets.Paths.animateAtlas(_data.assetPath);
+        results.appendUnique(assetPath.json());
+
+        for (animation in _data.animations)
+        {
+          if (animation.assetPath == null) continue;
+
+          switch (animation.renderType)
+          {
+            default:
+              var assetPath = funkin.assets.Paths.animateAtlas(animation.assetPath);
+              results.appendUnique(assetPath.json());
+          }
+        }
+
+      default:
+        // Nothing
+    }
+
+    return results;
+  }
+
   public function new(id:String)
   {
-    super(id, CharacterRenderType.MultiAnimateAtlas);
+    super(id, {
+      renderType: CharacterRenderType.MultiAnimateAtlas
+    });
   }
 
   override function onCreate(event:ScriptEvent):Void

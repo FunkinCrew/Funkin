@@ -7,6 +7,15 @@ import funkin.graphics.FunkinSprite;
 import funkin.modding.events.ScriptEvent;
 import funkin.util.assets.FlxAnimationUtil;
 import funkin.data.character.CharacterData.CharacterRenderType;
+import funkin.data.character.CharacterData;
+import funkin.data.character.CharacterRegistry;
+//
+// ~PATHS~
+//
+import funkin.assets.Assets;
+import funkin.assets.ValidatedPaths as Paths;
+import funkin.assets.Paths.AssetPath;
+import funkin.assets.Assets.AssetType;
 
 /**
  * For some characters which use Sparrow atlases, the spritesheets need to be split
@@ -23,9 +32,57 @@ class MultiSparrowCharacter extends BaseCharacter
 {
   var _usedAtlases:Array<FlxAtlasFrames> = [];
 
+  /**
+   * Retrieve a list of all the asset paths required to load the character.
+   *
+   * If you have a scripted class which initializes sprites, or plays sounds or something,
+   * make sure you add them here so they get cached in the loading screen.
+   *
+   * @param type The type of asset to query
+   * @param charId The character ID, used to look up the specific assets.
+   * @return An array of asset paths, or empty if no assets of that type are required.
+   */
+  public static function queryAssets(type:AssetType, charId:String):Array<AssetPath>
+  {
+    // trace('ASSETS: Querying assets for MultiSparrow character "${charId}"')
+    // Specific implementations handle figuring out which assets to load.
+    var result:Array<AssetPath> = BaseCharacter.queryAssets(type, charId);
+
+    var _data:Null<CharacterData> = CharacterRegistry.instance.fetchCharacterData(charId);
+    if (_data == null) return result; // No assets if data couldn't be parsed.
+
+    switch (type)
+    {
+      case IMAGE:
+        result.pushUnique(Paths.image(_data.assetPath));
+
+        for (animation in _data.animations)
+        {
+          if (animation.assetPath == null) continue;
+          result.pushUnique(Paths.image(animation.assetPath));
+        }
+
+      case XML:
+        result.pushUnique(Paths.xml(_data.assetPath));
+
+        for (animation in _data.animations)
+        {
+          if (animation.assetPath == null) continue;
+          result.pushUnique(Paths.xml(animation.assetPath));
+        }
+
+      default:
+        // Nothing
+    }
+
+    return result;
+  }
+
   public function new(id:String)
   {
-    super(id, CharacterRenderType.MultiSparrow);
+    super(id, {
+      renderType: CharacterRenderType.MultiSparrow
+    });
   }
 
   override function onCreate(event:ScriptEvent):Void

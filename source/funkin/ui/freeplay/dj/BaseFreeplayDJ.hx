@@ -7,6 +7,9 @@ import funkin.data.freeplay.player.PlayerData.PlayerFreeplayDJData;
 import funkin.modding.IScriptedClass.IFreeplayScriptedClass;
 import funkin.modding.events.ScriptEvent;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
+import funkin.assets.Assets;
+import funkin.assets.Paths;
+import funkin.data.character.CharacterData.CharacterRenderType;
 
 enum FreeplayDJState
 {
@@ -140,6 +143,86 @@ class BaseFreeplayDJ extends FunkinSprite implements IFreeplayScriptedClass
   final playableCharData:Null<PlayerFreeplayDJData>;
   var seenIdleEasterEgg:Bool = false;
   var timeIdling:Float = 0;
+
+  public static function queryAssets(type:funkin.assets.Assets.AssetType,
+    characterId:String):Array<funkin.assets.Paths.AssetPath>
+  {
+    trace('~~BaseFreeplayDJ: ${characterId}:${type}~~');
+
+    var playableChar = PlayerRegistry.instance.fetchEntry(characterId);
+    if (playableChar == null)
+    {
+      trace('ERROR:Could not get playable character.');
+      return [];
+    }
+
+    var freeplayDJData:Null<PlayerFreeplayDJData> = playableChar.getFreeplayDJData();
+
+    if (freeplayDJData == null)
+    {
+      trace('ERROR:Could not get freeplay DJ data from character.');
+      return [];
+    }
+
+    var renderType:CharacterRenderType = freeplayDJData?.renderType ?? 'animateatlas';
+    var scriptClass:String = (freeplayDJData?.scriptClass ?? '').trim();
+
+    trace('  ~~${renderType}:${scriptClass}~~');
+
+    if (scriptClass != '')
+    {
+      switch (renderType)
+      {
+        case CharacterRenderType.AnimateAtlas:
+          if (AnimateAtlasFreeplayDJ.scriptStaticHas(scriptClass, 'queryAssets'))
+          {
+            trace('~~AnimateAtlasFreeplayDJ: ${characterId}:${type}~~');
+            return AnimateAtlasFreeplayDJ.scriptStaticCall(scriptClass, 'queryAssets', [type, characterId]);
+          }
+        case CharacterRenderType.MultiSparrow:
+          if (MultiSparrowFreeplayDJ.scriptStaticHas(scriptClass, 'queryAssets'))
+          {
+            return MultiSparrowFreeplayDJ.scriptStaticCall(scriptClass, 'queryAssets', [type, characterId]);
+          }
+        case CharacterRenderType.Sparrow:
+          if (SparrowFreeplayDJ.scriptStaticHas(scriptClass, 'queryAssets'))
+          {
+            return SparrowFreeplayDJ.scriptStaticCall(scriptClass, 'queryAssets', [type, characterId]);
+          }
+        case CharacterRenderType.Packer:
+          if (PackerFreeplayDJ.scriptStaticHas(scriptClass, 'queryAssets'))
+          {
+            return PackerFreeplayDJ.scriptStaticCall(scriptClass, 'queryAssets', [type, characterId]);
+          }
+        default:
+          if (BaseFreeplayDJ.scriptStaticHas(scriptClass, 'queryAssets'))
+          {
+            return BaseFreeplayDJ.scriptStaticCall(scriptClass, 'queryAssets', [type, characterId]);
+          }
+      }
+    }
+
+    // Fallback.
+    switch (renderType)
+    {
+      case CharacterRenderType.AnimateAtlas:
+        return AnimateAtlasFreeplayDJ.queryAssets(type, characterId);
+
+      case CharacterRenderType.MultiSparrow:
+        return MultiSparrowFreeplayDJ.queryAssets(type, characterId);
+
+      case CharacterRenderType.Sparrow:
+        return SparrowFreeplayDJ.queryAssets(type, characterId);
+
+      case CharacterRenderType.Packer:
+        return PackerFreeplayDJ.queryAssets(type, characterId);
+
+      default:
+        // But that's where we are now!
+        // Do nothing.
+    }
+    return [];
+  }
 
   public function new(x:Float, y:Float, characterId:String)
   {

@@ -9,6 +9,8 @@ import flixel.group.FlxSpriteGroup;
 import funkin.util.TouchUtil;
 import funkin.ui.credits.CreditsData.CreditsDataRole;
 import funkin.ui.credits.CreditsData.CreditsDataMember;
+import funkin.assets.Paths;
+import funkin.assets.Assets;
 
 /**
  * The state used to display the credits scroll.
@@ -102,19 +104,6 @@ class CreditsState extends MusicBeatState
         hasBuiltBackers: (!entry.appendBackers || backersToBuild.length == 0)
       });
     }
-
-    // Background
-    var bg = new FlxSprite(Paths.image('ui/main-menu/menu-desat'));
-    bg.scrollFactor.x = 0;
-    bg.scrollFactor.y = 0;
-    bg.setGraphicSize(Std.int(FlxG.width));
-    bg.updateHitbox();
-    bg.x = 0;
-    bg.y = 0;
-    bg.alpha = 0.1;
-    bg.visible = true;
-    bg.color = 0xFFB57EDC; // Lavender
-    // add(bg);
 
     // TODO: Once we need to display Kickstarter backers,
     // make this use a recycled pool so we don't kill performance.
@@ -292,12 +281,35 @@ class CreditsState extends MusicBeatState
   function exit():Void
   {
     FlxG.keys.enabled = false;
-    FlxG.switchState(() -> new MainMenuState());
+    funkin.ui.transition.Transition.switchState(() -> new MainMenuState(), {
+      assetQuery: MainMenuState.queryAssets,
+      transition: BlackScreen(None, None)
+    });
+    FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu').toFlxSoundAsset());
   }
 
   override public function destroy():Void
   {
     super.destroy();
+  }
+
+  public static function queryAssets(type:AssetType):Array<AssetPath>
+  {
+    var results:Array<AssetPath> = [];
+
+    switch (type)
+    {
+      case SOUND:
+        results.pushUnique(Paths.music('ui/freeplay/freeplay-random').audio());
+
+      case JSON:
+        results.pushUnique(Paths.music('ui/freeplay/freeplay-random').metadata());
+
+      default:
+        // Nothing
+    }
+
+    return results;
   }
 }
 

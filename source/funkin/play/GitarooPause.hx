@@ -6,6 +6,9 @@ import funkin.play.PlayState.PlayStateParams;
 import funkin.graphics.FunkinSprite;
 import funkin.ui.MusicBeatState;
 import funkin.ui.mainmenu.MainMenuState;
+import funkin.assets.Assets.AssetType;
+import funkin.assets.Paths.AssetPath;
+import funkin.assets.ValidatedPaths as Paths;
 #if FEATURE_TOUCH_CONTROLS
 import funkin.util.TouchUtil;
 #end
@@ -17,6 +20,29 @@ class GitarooPause extends MusicBeatState
   var replaySelect(default, set):Bool = false;
   var previousParams:Null<PlayStateParams>;
   var lock:Bool = false;
+
+  public static function queryAssets(type:AssetType):Array<AssetPath>
+  {
+    var results:Array<AssetPath> = [];
+
+    switch (type)
+    {
+      case IMAGE:
+        results.appendUnique([
+          Paths.image('ui/pause/alternate/pause-bg'),
+          Paths.image('ui/pause/alternate/bf-lol'),
+          Paths.image('ui/pause/alternate/pause-ui')
+        ]);
+      case XML:
+        results.appendUnique([
+          Paths.xml('ui/pause/alternate/bf-lol'),
+          Paths.xml('ui/pause/alternate/pause-ui')
+        ]);
+      default:
+    }
+
+    return results;
+  }
 
   public function new(?previousParams:PlayStateParams):Void
   {
@@ -116,14 +142,17 @@ class GitarooPause extends MusicBeatState
 
     if (replaySelect)
     {
-      FlxTransitionableState.skipNextTransIn = false;
-      FlxTransitionableState.skipNextTransOut = false;
       if (funkin.ui.FullScreenScaleMode.instance != null) funkin.ui.FullScreenScaleMode.instance.onMeasurePostAwait();
-      FlxG.switchState(() -> new PlayState(previousParams));
+      funkin.ui.transition.Transition.openPlayState(previousParams, {
+        transition: BlackScreen(Fade(North), Fade(South)),
+      }, false);
     }
     else
     {
-      FlxG.switchState(() -> new MainMenuState());
+      funkin.ui.transition.Transition.switchState(() -> new MainMenuState(), {
+        assetQuery: MainMenuState.queryAssets,
+        transition: BlackScreen(None, None)
+      });
     }
   }
 

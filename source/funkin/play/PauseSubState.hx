@@ -1,5 +1,6 @@
 package funkin.play;
 
+import flixel.util.typeLimit.NextState;
 import flixel.FlxState;
 import funkin.ui.story.StoryMenuState;
 import funkin.data.freeplay.player.PlayerRegistry;
@@ -13,6 +14,7 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import funkin.audio.FunkinSound;
 import funkin.data.song.SongRegistry;
+import flixel.util.typeLimit.NextState;
 import funkin.ui.freeplay.FreeplayState;
 import funkin.graphics.FunkinSprite;
 import funkin.play.cutscene.VideoCutscene;
@@ -21,7 +23,6 @@ import flixel.util.FlxTimer;
 import funkin.ui.MusicBeatSubState;
 import funkin.util.HapticUtil;
 import funkin.ui.FullScreenScaleMode;
-import funkin.ui.transition.stickers.StickerSubState;
 import funkin.util.SwipeUtil;
 import funkin.util.TouchUtil;
 #if FEATURE_MOBILE_ADVERTISEMENTS
@@ -288,6 +289,11 @@ class PauseSubState extends MusicBeatSubState
   public function new(?params:PauseSubStateParams, ?onPause:Void->Void)
   {
     super();
+
+    // remove possible transitions, prolly should do ts for every playstate substate
+    transIn = null;
+    transOut = null;
+
     this.currentMode = params?.mode ?? Standard;
     this.lostFocus = params?.lostFocus ?? false;
     this.onPause = onPause;
@@ -323,7 +329,7 @@ class PauseSubState extends MusicBeatSubState
 
     regenerateMenu();
 
-    transitionIn();
+    transitionBgIn();
 
     startCharterTimer();
   }
@@ -667,7 +673,7 @@ class PauseSubState extends MusicBeatSubState
   /**
    * Perform additional animations to transition the pause menu in when it is first displayed.
    */
-  function transitionIn():Void
+  function transitionBgIn():Void
   {
     FlxTween.tween(background, {
       alpha: 0.6
@@ -1301,41 +1307,33 @@ class PauseSubState extends MusicBeatSubState
     state.allowInput = false;
 
     PlayState.instance.deathCounter = 0;
+    var wasStoryMode:Bool = PlayStatePlaylist.isStoryMode;
 
-    FlxTransitionableState.skipNextTransIn = true;
-    FlxTransitionableState.skipNextTransOut = true;
-
-    var targetState:funkin.ui.transition.stickers.StickerSubState->FlxState = (PlayStatePlaylist.isStoryMode) ? (sticker) -> new StoryMenuState(
-      sticker
-    ) : (sticker) -> FreeplayState.build(sticker);
+    var targetState:NextState = (wasStoryMode) ? () -> new StoryMenuState() : () -> FreeplayState.build({
+      forceSkipIntro: true
+    });
+    var assetQuery = (wasStoryMode) ? StoryMenuState.queryAssets : FreeplayState.queryAssets.bind(_, {
+      forceSkipIntro: true
+    }, FreeplayState.rememberedCharacterId);
 
     // Do this AFTER because this resets the value of isStoryMode!
-    if (PlayStatePlaylist.isStoryMode)
+    if (wasStoryMode)
     {
       PlayStatePlaylist.reset();
     }
 
-    var stickerPackId:Null<String> = PlayState.instance.currentChart.stickerPack;
-
-    if (stickerPackId == null)
-    {
-      var playerCharacterId = PlayerRegistry.instance.getCharacterOwnerId(PlayState.instance.currentChart.characters.player);
-      var playerCharacter = PlayerRegistry.instance.fetchEntry(playerCharacterId ?? Constants.DEFAULT_CHARACTER);
-
-      if (playerCharacter != null)
-      {
-        stickerPackId = playerCharacter.getStickerPackID();
-      }
-    }
+    var stickerPackId:String = PlayState.instance?.resolveStickerPackId() ?? Constants.DEFAULT_STICKER_PACK;
 
     #if FEATURE_MOBILE_ADVERTISEMENTS
     AdMobUtil.removeBanner();
     #end
 
-    state.openSubState(new funkin.ui.transition.stickers.StickerSubState({
-      targetState: targetState,
-      stickerPack: stickerPackId
-    }));
+    funkin.ui.transition.Transition.switchState(targetState, {
+      assetQuery: assetQuery,
+      transition: Sticker(stickerPackId),
+      shouldStopMusic: true,
+      shouldPurgeCache: wasStoryMode
+    });
   }
 
   /**

@@ -23,7 +23,7 @@ class AssetsUtil
     'fnfs' => FunkinAssetType.STAGE, // Friday Night Funkin chart
     'fnfmod' => FunkinAssetType.MOD, // Friday Night Funkin chart
     'fnt' => FunkinAssetType.TEXT, // Bitmap Font data file
-    'frag' => FunkinAssetType.TEXT, // GLSL fragment shader
+    'frag' => FunkinAssetType.SHADER, // GLSL fragment shader
     'gif' => FunkinAssetType.IMAGE, // Graphics Interchange Format image
     'hscript' => FunkinAssetType.SCRIPT, // Haxe script
     'hx' => FunkinAssetType.SCRIPT, // Haxe script
@@ -34,7 +34,7 @@ class AssetsUtil
     'jpg' => FunkinAssetType.IMAGE, // JPG texture image
     'json' => FunkinAssetType.JSON, // JavaScript Object Notation data
     'md' => FunkinAssetType.TEXT, // Markdown text file
-    'mkv' => FunkinAssetType.VIDEO, // WebM video
+    'mkv' => FunkinAssetType.VIDEO, // MKV video
     'mp3' => FunkinAssetType.SOUND, // MPEG-1 Audio Layer 3 audio
     'mp4' => FunkinAssetType.VIDEO, // MPEG-4 video
     'ogg' => FunkinAssetType.SOUND, // Ogg Vorbis audio
@@ -44,9 +44,10 @@ class AssetsUtil
     'tsv' => FunkinAssetType.TEXT, // Tab-separated values file
     'ttf' => FunkinAssetType.FONT, // TrueType font
     'txt' => FunkinAssetType.TEXT, // Text file
-    'vert' => FunkinAssetType.TEXT, // GLSL vertex shader
+    'vert' => FunkinAssetType.SHADER, // GLSL vertex shader
     'wav' => FunkinAssetType.SOUND, // Waveform audio
     'webm' => FunkinAssetType.VIDEO, // WebM video
+    'webp' => FunkinAssetType.IMAGE, // WebP video
     'xml' => FunkinAssetType.XML, // Extensible Markup Language data
   ];
 
@@ -57,8 +58,10 @@ class AssetsUtil
    */
   public static function guessTypeByExtension(path:String):FunkinAssetType
   {
+    if (path == null || path == '') return FunkinAssetType.UNKNOWN;
     var ext:String = Path.extension(path).toLowerCase();
 
+    if (ext == '' && !path.contains('/') && !path.contains('\\')) ext = path.toLowerCase();
     if (EXTENSIONS.exists(ext)) return EXTENSIONS.get(ext);
 
     trace('Unknown extension for file: $path ($ext)');

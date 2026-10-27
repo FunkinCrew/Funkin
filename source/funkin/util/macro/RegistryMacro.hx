@@ -170,6 +170,10 @@ class RegistryMacro
     var paramsTypeClassName:String = '${paramsType.module}.${paramsType.name}';
     var paramsComplexType:ComplexType = Context.toComplexType(Context.getType(paramsTypeClassName));
 
+    // Doing this here rather than inline lets us set the macro position  to `entryType.pos`,
+    // meaning the entry class gets the error message rather than this macro!
+    var queryAssetsExpr:Expr = Context.parse('${entryClsName}.queryAssets(type, entryId, params)', entryType.pos);
+
     var dataPath:String = DATA_FILE_BASE_PATH;
     #if ios
     if (!sys.FileSystem.exists(dataPath)) dataPath = '../../../../../' + dataPath;
@@ -242,6 +246,53 @@ class RegistryMacro
           return parser.value;
         }
       }).fields;
+
+    // I had to do this one separate because of the dynamic params argument type.
+    // If you can find a better way please use it.
+    result.push({
+      name: 'queryAssets',
+      doc: 'Retrieves the value of a local variable of a scripted class.',
+      access: [APublic],
+      meta: null,
+      pos: cls.pos,
+      kind: FFun({
+        args: [
+          {
+            name: 'type',
+            type: macro :funkin.assets.Assets.AssetType,
+          },
+          {
+            name: 'entryId',
+            type: macro :String
+          },
+          {
+            name: 'params',
+            type: macro :$paramsComplexType,
+            opt: true
+          },
+        ],
+        params: null,
+        ret: macro :Array<funkin.assets.Paths.AssetPath>,
+        expr: macro
+        {
+          if (entryId == null || entryId == '') return [];
+
+          // Determine if the entry is scripted.
+          var scriptCls:Null<String> = getScriptedEntryClassName(entryId, params);
+
+          if (scriptCls != null)
+          {
+            if (${entryTypeExpr}.scriptStaticHas(scriptCls, 'queryAssets'))
+            {
+              return ${entryTypeExpr}.scriptStaticCall(scriptCls, 'queryAssets', [type, entryId, params]);
+            }
+          }
+
+          // Fallthrough.
+          return ${queryAssetsExpr};
+        },
+      }),
+    });
 
     result = result.filter(function(field:Field):Bool
     {

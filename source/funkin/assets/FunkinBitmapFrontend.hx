@@ -178,10 +178,15 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
   {
     if (graphic != null)
     {
+      final isPermanent:Bool = stagedFlxGraphic.existsPermanent(graphic.key);
+
       removeKey(graphic.key);
+
+      if (isPermanent) return;
+
       // Sometimes with raw-cached assets the graphic's key is different from the asset key, so we need to remove both. To be safe
       // TODO: Maybe we should just override add and check through the map or something to make sure but nothing gets double cached as an assetkey..? -Moon
-      graphic.destroy();
+      if (!graphic.isDestroyed) graphic.destroy();
     }
   }
 
@@ -223,12 +228,17 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
     if (graphic == null) return false; // graphic is null
     if (graphic.isDestroyed) return false; // graphic is destroyed
     if (graphic.bitmap == null) return false; // graphic's bitmap is null
+
+    #if cpp
+    // This can only run on native targets as html5 doesn't have gpu caching or image upload
     @:privateAccess
     if (graphic.bitmap.image == null && graphic.bitmap.__texture == null)
     {
       // The bitmap has neither an image (yet to be uploaded) nor a __texture (already uploaded to GPU)
       return false;
     }
+    #end
+
     if (graphic.bitmap.width == 0 || graphic.bitmap.height == 0)
     {
       // The bitmap has no width or height, which means the bitmap is valid but empty, which is definitely wrong.

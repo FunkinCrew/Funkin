@@ -196,6 +196,80 @@ class ModMenuState extends MusicBeatState
   var lastSelectDir:Null<FlxDirection> = null;
   var menuBG:FunkinSprite;
 
+  public static function queryAssets(type:funkin.assets.Assets.AssetType):Array<funkin.assets.Paths.AssetPath>
+  {
+    var results:Array<funkin.assets.Paths.AssetPath> = [];
+
+    results.appendUnique(ModMenuButton.queryAssets(type, 'done'));
+    results.appendUnique(ModMenuButton.queryAssets(type, 'open-folder'));
+    results.appendUnique(ModMenuButton.queryAssets(type, 'import-folder'));
+
+    switch (type)
+    {
+      case JSON:
+        results.appendUnique([funkin.assets.Paths.music('ui/mods/mod-menu-ambience').metadata()]);
+
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/smoke-cloud').json());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/back-arrow').json());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/foreground-wires').json());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/sparks').json());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/characters/bf').json());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/characters/gf').json());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/characters/empty-chair').json());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/characters/pinhead').json());
+
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/foreground-wires-bottom').json());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/foreground-wires-top').json());
+
+        results.appendUnique(funkin.assets.Assets.listInPath('ui/mods/characters', JSON));
+
+      case IMAGE:
+        results.appendUnique([
+          funkin.assets.Paths.image('ui/mods/smoke'),
+          funkin.assets.Paths.image('ui/mods/bg'),
+          funkin.assets.Paths.image('ui/mods/top-text'),
+          funkin.assets.Paths.image('ui/mods/carbattery'),
+          funkin.assets.Paths.image('ui/mods/gfwire'),
+          funkin.assets.Paths.image('ui/mods/box'),
+          funkin.assets.Paths.image('ui/mods/base-icon'),
+          funkin.assets.Paths.image('ui/mods/fallback-icon'),
+          funkin.assets.Paths.image('ui/mods/bgwires'),
+          funkin.assets.Paths.image('ui/mods/drop-hover')
+        ]);
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/smoke-cloud').image());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/back-arrow').image());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/foreground-wires').image());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/sparks').image());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/characters/bf').image());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/characters/gf').image());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/characters/empty-chair').image());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/characters/pinhead').image());
+
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/foreground-wires-bottom').image());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/foreground-wires-top').image());
+
+      case XML:
+        results.appendUnique([
+          funkin.assets.Paths.xml('ui/mods/smoke'),
+          funkin.assets.Paths.xml('ui/mods/carbattery'),
+          funkin.assets.Paths.xml('ui/mods/gfwire')
+        ]);
+
+      case SOUND:
+        results.appendUnique([funkin.assets.Paths.music('ui/mods/mod-menu-ambience').audio()]);
+        results.appendUnique(funkin.assets.Assets.listInPath('ui/mods/sounds', SOUND));
+
+      case FONT:
+        results.appendUnique([funkin.assets.Paths.file('ui/fonts/FunkinLingLong', 'otf')]);
+
+      case SHADER:
+        results.appendUnique([funkin.assets.Paths.frag('ui/shaders/replace-color')]);
+
+      default:
+    }
+    return results;
+  }
+
   public function new()
   {
     super();
@@ -367,14 +441,15 @@ class ModMenuState extends MusicBeatState
     buttonDone.graphicName = 'done';
     add(buttonDone);
 
+    var openFolderGraphic = #if sys 'open-folder' #else 'import-folder' #end;
     buttonOpenFolder.x = leftRectangle.x + 180;
     buttonOpenFolder.y = FlxG.height * 0.89;
     buttonOpenFolder.scale.set(0.65, 0.65);
-    buttonOpenFolder.loadTexture('ui/mods/open-folder');
+    buttonOpenFolder.loadTexture('ui/mods/$openFolderGraphic');
     buttonOpenFolder.updateHitbox();
     buttonOpenFolder.zIndex = 1000;
     buttonOpenFolder.camera = camHUD;
-    buttonOpenFolder.graphicName = 'open-folder';
+    buttonOpenFolder.graphicName = openFolderGraphic;
     add(buttonOpenFolder);
 
     hitboxOpenFolder = new FunkinSprite(
@@ -1043,40 +1118,68 @@ class ModMenuState extends MusicBeatState
   var touchReordering:Bool = false;
   var touchReorderSlot:Int = -1;
 
-  function checkItemGrab(itemList:ModMenuItemList,
-    targetSelection:ModMenuSelection):Void
+  function handleTouchReorder():Void
   {
-    if (grabbedItem == null)
+    final itemCount:Int = enabledModItems.modItems.length;
+    final touchPos = TouchUtil.touch.getWorldPosition(rightRectangle.cameras[0]);
+    final localY:Float = touchPos.y - enabledModItems.y - enabledModItems.scrollOffset - ModMenuItemList.ITEM_Y_OFFSET + 8;
+    touchPos.put();
+
+    var slot:Int = itemCount - 1 - Math.floor(localY / 112);
+    if (slot < 0) slot = 0;
+    if (slot > itemCount - 1) slot = itemCount - 1;
+
+    if (slot == touchReorderSlot) return;
+
+    final index:Int = enabledModItems.modItems.indexOf(touchItem);
+
+    if (slot == index)
     {
-      itemList.deselect();
+      touchReorderSlot = slot;
+      return;
     }
 
-    for (item in itemList.modItems)
+    lists.reorder(touchItem, slot > index);
+
+    if (enabledModItems.modItems.indexOf(touchItem) == index) touchReorderSlot = slot;
+    else
     {
-      if (!item.locked && TouchUtil.overlapsComplex(item) && TouchUtil.pressed && Math.abs(TouchUtil.touch?.deltaViewX) >= touchDeltaXThreshold)
-      {
-        FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
-
-        itemList.selectModItem(item, false);
-
-        grabbedItem = item;
-        originalItemList = itemList;
-
-        lists.completeTransition(lists.findTransition(grabbedItem));
-
-        lists.putItemInTransitionLayer(item, grabbedItem.x, grabbedItem.y);
-
-        selection = targetSelection;
-      }
+      FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
     }
   }
 
-  var touchScrolling:Bool = false;
+  function getTouchedItem(itemList:ModMenuItemList, box:FunkinSprite):Null<ModMenuItem>
+  {
+    // Items scrolled outside of the box are clipped, so they can't be tapped.
+    final touchPos = TouchUtil.touch.getWorldPosition(box.cameras[0]);
+    final inView:Bool = touchPos.y >= box.y + 60 && touchPos.y <= box.y + box.height - 15;
+    touchPos.put();
+
+    if (!inView) return null;
+
+    for (item in itemList.modItems)
+    {
+      if (TouchUtil.overlapsComplex(item)) return item;
+    }
+
+    return null;
+  }
+
+  function resetTouch():Void
+  {
+    if (touchReordering) enabledModItems.deselect();
+
+    touchReordering = false;
+    touchReorderSlot = -1;
+    touchHoldTimer = 0;
+    touchList = null;
+    touchItem = null;
+    touchScrolling = false;
+  }
 
   function handleTouch(elapsed:Float):Void
   {
-    if (lists.hasTransitions || uiState.is(Exiting) || backPressStage > 0) return;
-    if (touchScrolling)
+    if (lists.hasTransitions || uiState.is(Exiting) || backPressStage > 0 || TouchUtil.touch == null)
     {
       resetTouch();
       return;
@@ -1093,82 +1196,66 @@ class ModMenuState extends MusicBeatState
       }
       else if (TouchUtil.overlapsComplex(rightRectangle))
       {
-        checkItemGrab(enabledModItems, EnabledModList);
-        checkItemGrab(disabledModItems, DisabledModList);
-
-        if (TouchUtil.pressed && Math.abs(TouchUtil.touch?.deltaViewY) >= touchDeltaYThreshold)
-        {
-          touchScrolling = true;
-        }
+        touchList = enabledModItems;
+        touchItem = getTouchedItem(enabledModItems, rightRectangle);
       }
-      else
+
+      touchStartY = TouchUtil.touch.viewY;
+      touchLastY = touchStartY;
+    }
+    else if (touchReordering && TouchUtil.pressed)
+    {
+      handleTouchReorder();
+    }
+    else if (touchList != null && TouchUtil.pressed)
+    {
+      final touchY:Float = TouchUtil.touch.viewY;
+
+      if (!touchScrolling && touchList == enabledModItems && touchItem != null && !touchItem.locked && !enabledModItems.isPinnedItem(touchItem))
       {
-        final targetX:Float = TouchUtil.touch?.x - grabbedItem.width / 2;
-        final targetY:Float = TouchUtil.touch?.y - grabbedItem.height / 2;
+        touchHoldTimer += elapsed;
 
-        grabbedItem.localX = MathUtil.smoothLerpPrecision(grabbedItem.localX, targetX, elapsed, 0.5);
-        grabbedItem.localY = MathUtil.smoothLerpPrecision(grabbedItem.localY, targetY, elapsed, 0.5);
-
-        if (!TouchUtil.pressed)
+        if (touchHoldTimer >= touchReorderHoldTime)
         {
-          var targetList:ModMenuItemList = null;
+          FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
 
-          var listChanged:Bool = false;
+          touchReordering = true;
+          touchReorderSlot = enabledModItems.modItems.indexOf(touchItem);
+          enabledModItems.selectModItem(touchItem, false);
 
-          switch (selection)
-          {
-            case EnabledModList:
-              targetList = enabledModItems;
-
-              if (TouchUtil.overlapsComplex(leftRectangle))
-              {
-                targetList = disabledModItems;
-
-                selection = DisabledModList;
-
-                lists.disable(grabbedItem, true);
-
-                listChanged = true;
-              }
-
-            case DisabledModList:
-              targetList = disabledModItems;
-
-              if (TouchUtil.overlapsComplex(rightRectangle))
-              {
-                targetList = enabledModItems;
-
-                selection = EnabledModList;
-
-                final result:Bool = lists.enable(grabbedItem, true);
-
-                listChanged = result;
-              }
-
-            default:
-              // Isnt supposed to happen.
-          }
-
-          if (!listChanged)
-          {
-            targetList = originalItemList;
-
-            var finalIndex:Int = targetList.modItems.indexOf(grabbedItem);
-
-            var batchFutureCount:Int = targetList.modItems.length;
-
-            var targetTransitionX:Float = targetList.x + ModMenuItemList.ITEM_X_OFFSET;
-            var targetTransitionY:Float = targetList.y + targetList.getModItemYPosForCount(finalIndex, batchFutureCount) + targetList.scrollOffset;
-
-            lists.startItemTransition(grabbedItem, targetTransitionX, targetTransitionY, targetList, finalIndex);
-          }
-
-          targetList.deselect();
-
-          grabbedItem = null;
-          originalItemList = null;
+          return;
         }
       }
+
+      if (!touchScrolling && Math.abs(touchY - touchStartY) >= touchScrollThreshold)
+      {
+        touchScrolling = true;
+        touchLastY = touchY;
+      }
+
+      if (touchScrolling) touchList.scrollBy(touchY - touchLastY);
+
+      touchLastY = touchY;
+    }
+    else if (touchList != null)
+    {
+      if (!touchScrolling && !touchReordering && touchItem != null && !touchItem.locked && TouchUtil.justReleased && TouchUtil.overlapsComplex(touchItem))
+      {
+        FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
+
+        if (touchList == disabledModItems)
+        {
+          lists.enable(touchItem, false);
+        }
+        else
+        {
+          lists.disable(touchItem, false);
+        }
+
+        selection = (touchList == disabledModItems) ? DisabledModList : EnabledModList;
+      }
+
+      resetTouch();
     }
 
     if (TouchUtil.overlapsComplex(hitboxOpenFolder) && selection != OpenModsFolder)
@@ -1213,6 +1300,7 @@ class ModMenuState extends MusicBeatState
       if (TouchUtil.justReleased && TouchUtil.overlapsComplex(buttonBackToMenu))
       {
         uiState.transition(Exiting);
+
         backPressStage = 2;
 
         playBackButtonAnimation('confirm', true);
@@ -1474,12 +1562,12 @@ class ModMenuState extends MusicBeatState
     DataFolderUtil.openDataFolder();
     #elseif ios
     System.openURL('shareddocuments://');
-    #else
-    #if sys
+    #elseif js
+    PolymodHandler.loadModFromFileDialog(() -> highlightNewMod());
+    #elseif sys
     FileUtil.openFolder(Path.join([FileUtil.gameDirectory, PolymodHandler.MOD_FOLDER]));
     #else
     FileUtil.openFolder(PolymodHandler.MOD_FOLDER);
-    #end
     #end
     openFolderAnimator.playAnimation('select');
   }

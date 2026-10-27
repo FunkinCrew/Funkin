@@ -6,7 +6,7 @@ import funkin.util.MathUtil;
 //
 // ~PATHS~
 //
-import funkin.assets.Assets as Assets;
+import funkin.assets.Assets;
 import funkin.assets.ValidatedPaths as Paths;
 
 /**

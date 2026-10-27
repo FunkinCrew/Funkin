@@ -225,6 +225,26 @@ class ModMenuInstaller
     animDone = false;
   }
 
+  #if (sys || (js && html5))
+  static function isArchiveModExtension(fileName:String):Bool
+  {
+    if (fileName == null) return false;
+    final extension:String = Path.extension(fileName);
+    final normalizedExtension = extension.toLowerCase();
+    final archiveExtensions = PolymodConfig.archiveModExt ?? ['.zip'];
+
+    for (archiveExtension in archiveExtensions)
+    {
+      final normalizedArchiveExtension = archiveExtension.toLowerCase();
+      final withoutDot = normalizedArchiveExtension.startsWith('.') ? normalizedArchiveExtension.substr(1) : normalizedArchiveExtension;
+
+      if (withoutDot == normalizedExtension) return true;
+    }
+
+    return false;
+  }
+  #end
+
   // DROPPED FILES //
 
   /**
@@ -233,7 +253,8 @@ class ModMenuInstaller
    */
   public function installDropped(file:lime.utils.DroppedFile):Void
   {
-    if (StringTools.endsWith(file.path, '.zip'))
+    #if sys
+    if (isArchiveModExtension(file.path))
     {
       installZip(file.path);
     }
@@ -245,6 +266,25 @@ class ModMenuInstaller
     {
       showInvalidPrompt();
     }
+    #elseif (js && html5)
+    if (isArchiveModExtension(file.path))
+    {
+      file.readFile().onComplete(function(bytes:haxe.io.Bytes)
+      {
+        if (bytes == null)
+        {
+          WindowUtil.showError('Failed to load mod', 'Could not read the dropped archive file.');
+          return;
+        }
+
+        PolymodHandler.addModByBytes(file.path, bytes);
+      }).onError(function(error:Dynamic)
+      {
+          trace('Failed to read dropped archive: $error');
+          WindowUtil.showError('Failed to load mod', 'Could not read the dropped archive file. Check logs for details.');
+      });
+    }
+    #end
   }
 
   /**
@@ -253,9 +293,10 @@ class ModMenuInstaller
    */
   function installZip(path:String):Void
   {
+    var ext = Path.extension(path);
     var fileClean = StringTools.replace(path, '\\', '/');
-    var fileName = StringTools.replace(path.substring(fileClean.lastIndexOf('/') + 1), '.zip', '');
-    var destPath = PolymodHandler.MOD_FOLDER + '/' + fileName + '.zip';
+    var fileName = StringTools.replace(path.substring(fileClean.lastIndexOf('/') + 1), '.$ext', '');
+    var destPath = PolymodHandler.MOD_FOLDER + '/' + fileName + '.$ext';
 
     try
     {
@@ -304,7 +345,10 @@ class ModMenuInstaller
   {
     setInputEnabled(false);
 
-    WindowUtil.showError('Failed to install mod', 'Only .zip files and mod folders are supported for mod installation.');
+    WindowUtil.showError(
+      'Failed to install mod',
+      'Only ${(PolymodConfig.archiveModExt ?? ['.zip']).join(", ")} files and mod folders are supported for mod installation.'
+    );
   }
 
   /**

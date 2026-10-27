@@ -8,7 +8,7 @@ class BoilShader extends FlxGraphicsShader
 {
   public var amount(default, set):Float;
 
-  static var DEFAULT_BOIL_TEXTURE:String = "assets/ui/boil_texture.png";
+  static var DEFAULT_BOIL_TEXTURE:String = 'assets/ui/boil_texture.png';
 
   function set_amount(val:Float):Float
   {

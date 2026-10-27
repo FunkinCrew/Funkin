@@ -4,6 +4,15 @@ import funkin.data.IRegistryEntry;
 import funkin.data.freeplay.player.PlayerData;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.play.scoring.Scoring.ScoringRank;
+//
+// ~PATHS~
+//
+import funkin.assets.Assets;
+import funkin.assets.Assets.AssetType;
+import funkin.assets.Paths.AssetPath;
+import funkin.assets.Paths.AnimateAtlasAssetPathBuilder;
+import funkin.assets.Paths.MusicAssetPathBuilder;
+import funkin.assets.ValidatedPaths as Paths;
 
 /**
  * An object used to retrieve data about a playable character (also known as "weeks").
@@ -12,6 +21,32 @@ import funkin.play.scoring.Scoring.ScoringRank;
 @:nullSafety
 class PlayableCharacter implements IRegistryEntry<PlayerData>
 {
+  /**
+   * Retrieve a list of all the asset paths required to load the speaker.
+   *
+   * If you have a scripted class which initializes sprites, or plays sounds or something,
+   * make sure you add them here so they get cached in the loading screen.
+   *
+   * @param type The type of asset to query
+   * @param entryId The speaker ID, used to look up the specific assets.
+   * @param params The entry parameters, if any.
+   * @return An array of asset paths, or empty if no assets of that type are required.
+   */
+  public static function queryAssets(type:AssetType, entryId:String, ?params:PlayerEntryParams):Array<AssetPath>
+  {
+    switch (type)
+    {
+      case IMAGE:
+        return [];
+
+      case XML:
+        return [];
+
+      default:
+        return [];
+    }
+  }
+
   /**
    * @param id The ID of the JSON file to parse.
    */
@@ -53,6 +88,12 @@ class PlayableCharacter implements IRegistryEntry<PlayerData>
     return _data?.showUnownedChars ?? false;
   }
 
+  /**
+   * Whether songs featuring the given character should show in the Freeplay menu.
+   *
+   * @param id The Character ID for the song to display.
+   * @return Whether the given song should display.
+   */
   public function shouldShowCharacter(id:String):Bool
   {
     if (getOwnedCharacterIds().contains(id))
@@ -123,25 +164,34 @@ class PlayableCharacter implements IRegistryEntry<PlayerData>
     }
   }
 
-  public function getResultsMusicPath(rank:ScoringRank):String
+  /**
+   * Get the Results screen music asset path, based on the rank received.
+   *
+   * @param rank The rank received for the song.
+   * @return The music asset path.
+   */
+  public function getResultsMusicPath(rank:ScoringRank):MusicAssetPathBuilder
   {
-    switch (rank)
+    var basePath:Null<String> = switch (rank)
     {
       case PERFECT_GOLD:
-        return _data?.results?.music?.PERFECT_GOLD ?? "results-perfect";
+        _data?.results?.music?.PERFECT_GOLD;
       case PERFECT:
-        return _data?.results?.music?.PERFECT ?? "results-perfect";
+        _data?.results?.music?.PERFECT;
       case EXCELLENT:
-        return _data?.results?.music?.EXCELLENT ?? "results-excellent";
+        _data?.results?.music?.EXCELLENT;
       case GREAT:
-        return _data?.results?.music?.GREAT ?? "results-normal";
+        _data?.results?.music?.GREAT;
       case GOOD:
-        return _data?.results?.music?.GOOD ?? "results-normal";
+        _data?.results?.music?.GOOD;
       case SHIT:
-        return _data?.results?.music?.SHIT ?? "results-shit";
+        _data?.results?.music?.SHIT;
       default:
-        return _data?.results?.music?.GOOD ?? "results-normal";
+        _data?.results?.music?.GOOD;
     }
+
+    // Fallback to the default music.
+    return Paths.music(basePath ?? 'gameplay/playable-characters/bf/results/music/results-normal');
   }
 
   /**

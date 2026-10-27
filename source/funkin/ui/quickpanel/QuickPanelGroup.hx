@@ -22,6 +22,11 @@ import funkin.input.Controls;
 import funkin.ui.quickpanel.QuickPanelState;
 import funkin.ui.quickpanel.QuickPanelPullTab;
 import flixel.FlxSubState;
+//
+// ~PATHS~
+//
+import funkin.assets.Assets;
+import funkin.assets.ValidatedPaths as Paths;
 
 class PanelBlockerSubState extends FlxSubState
 {
@@ -167,16 +172,19 @@ class QuickPanelGroup extends FunkinSpriteGroup
   }
 
   // maybe this could not be hardcoded one day? but it also lowkey doesnt matter at all
-  var defaultButtonData:Array<QuickPanelButtonData> = [
+  public static final defaultButtonData:Array<QuickPanelButtonData> = [
     {
       text: 'Exit Mod',
       callback: () ->
       {
         stopMusic();
-        FlxG.switchState(() -> new funkin.ui.title.TitleState());
+        funkin.ui.transition.Transition.switchState(() -> new funkin.ui.title.TitleState(), {
+          assetQuery: funkin.ui.title.TitleState.queryAssets,
+          transition: BlackScreen(Fade(North), Fade(South))
+        });
       },
       icon: 'back',
-      description: "Return to the base game's title screen.",
+      description: 'Return to the base game\'s title screen.',
       disabled: false
     },
     {
@@ -184,21 +192,29 @@ class QuickPanelGroup extends FunkinSpriteGroup
       callback: () ->
       {
         stopMusic();
-        FlxG.switchState(() -> new funkin.ui.modmenu.ModMenuState());
+        funkin.ui.transition.Transition.switchState(() -> new funkin.ui.modmenu.ModMenuState(), {
+          assetQuery: funkin.ui.modmenu.ModMenuState.queryAssets,
+          transition: BlackScreen(Fade(North), Fade(South))
+        });
       },
       icon: 'mods',
-      description: "Add, remove or install custom content for the game.",
+      description: 'Add, remove or install custom content for the game.',
       disabled: false
     },
     {
       text: 'Freeplay',
       callback: () ->
       {
-        flixel.addons.transition.FlxTransitionableState.skipNextTransIn = true;
-        FlxG.switchState(() -> funkin.ui.freeplay.FreeplayState.build({fromCharSelect: true}));
+        var freeplayParams = {
+          fromCharSelect: true
+        };
+        funkin.ui.transition.Transition.switchState(() -> funkin.ui.freeplay.FreeplayState.build(freeplayParams), {
+          assetQuery: funkin.ui.freeplay.FreeplayState.queryAssets.bind(_, freeplayParams),
+          transition: BlackScreen(None, Fade(South))
+        });
       },
       icon: 'freeplay',
-      description: "Choose and play any song you've previously unlocked.",
+      description: 'Choose and play any song you\'ve previously unlocked.',
       disabled: false
     },
     {
@@ -207,7 +223,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
         // imagine this takes us to the online mode.... that would be cool, right? yeah, i think so :-)
       },
       icon: 'online',
-      description: "Play against friends, or with people around the world.",
+      description: 'Play against friends, or with people around the world.',
       disabled: true
     },
     {
@@ -220,10 +236,13 @@ class QuickPanelGroup extends FunkinSpriteGroup
         @:privateAccess
         var path:String = s._asc?.fullyQualifiedName ?? Type.getClassName(Type.getClass(FlxG.state));
         funkin.ui.options.OptionsState.backState = path;
-        FlxG.switchState(() -> new funkin.ui.options.OptionsState());
+        funkin.ui.transition.Transition.switchState(() -> new funkin.ui.options.OptionsState(), {
+          assetQuery: funkin.ui.options.OptionsState.queryAssets,
+          transition: BlackScreen(Fade(North), Fade(South))
+        });
       },
       icon: 'options',
-      description: "Configure various gameplay and visual settings.",
+      description: 'Configure various gameplay and visual settings.',
       disabled: false
     }
   ];
@@ -337,7 +356,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
     add(pullExtra);
 
     panel = new FlxSprite();
-    panel.frames = Paths.getSparrowAtlas('ui/quick-panel/panel-bg');
+    panel.frames = Assets.getSparrowAtlas(Paths.image('ui/quick-panel/panel-bg'));
     panel.animation.addByIndices('idle', 'thingidle instance 10', [
       0,
       1,
@@ -399,7 +418,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
 
     grpButtons.zIndex = 12;
 
-    tickSound.loadEmbedded(Paths.sound('ui/quick-panel/sounds/tab-pull'));
+    tickSound.loadEmbedded(Paths.sound('ui/quick-panel/sounds/tab-pull').toFlxSoundAsset());
     tickSound.volume = 1;
 
     FlxG.sound.defaultSoundGroup.add(tickSound);
@@ -1040,7 +1059,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
         {
           resetTabFade();
           openPanel();
-          FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/open-tab-click'));
+          FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/open-tab-click').toFlxSoundAsset());
           return;
         }
 
@@ -1055,13 +1074,13 @@ class QuickPanelGroup extends FunkinSpriteGroup
           setTabOrder(false);
           pullTabVisual.press(curState);
 
-          FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/tab-press'));
+          FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/tab-press').toFlxSoundAsset());
         }
 
         if (trackDist && touchDist > GRAB_THRESHOLD && canPull)
         {
           grabPanel();
-          FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/tab-release-pull'));
+          FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/tab-release-pull').toFlxSoundAsset());
           return;
         }
 
@@ -1075,7 +1094,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
         if (TouchUtil.justReleased && TouchUtil.overlaps(pullTabHitbox))
         {
           openPanel();
-          FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/open-tab-click'));
+          FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/open-tab-click').toFlxSoundAsset());
         }
         #end
 
@@ -1122,12 +1141,12 @@ class QuickPanelGroup extends FunkinSpriteGroup
           if (pullAmt < dist * 0.55)
           {
             openPanel();
-            FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/open-tab-soft'));
+            FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/open-tab-soft').toFlxSoundAsset());
           }
           else
           {
             closePanel();
-            FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/close-tab-soft'));
+            FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/close-tab-soft').toFlxSoundAsset());
           }
         }
       case OPEN:
@@ -1135,7 +1154,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
         {
           resetTabFade();
           closePanel();
-          FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/close-tab-click'));
+          FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/close-tab-click').toFlxSoundAsset());
           return;
         }
 
@@ -1150,13 +1169,13 @@ class QuickPanelGroup extends FunkinSpriteGroup
           setTabOrder(false);
           pullTabVisual.press(curState);
 
-          FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/tab-press'));
+          FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/tab-press').toFlxSoundAsset());
         }
 
         if (trackDist && touchDist > GRAB_THRESHOLD && canPull)
         {
           grabPanel();
-          FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/tab-release-pull'));
+          FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/tab-release-pull').toFlxSoundAsset());
           return;
         }
 
@@ -1170,14 +1189,14 @@ class QuickPanelGroup extends FunkinSpriteGroup
         if (TouchUtil.justReleased && TouchUtil.overlaps(pullTabHitbox))
         {
           closePanel();
-          FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/close-tab-click'));
+          FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/close-tab-click').toFlxSoundAsset());
           return;
         }
 
         if (TouchUtil.justPressed && !(TouchUtil.overlaps(pullTabHitbox) || TouchUtil.overlaps(panel)))
         {
           closePanel();
-          FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/close-tab-click'));
+          FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/close-tab-click').toFlxSoundAsset());
           return;
         }
         #end
@@ -1271,11 +1290,11 @@ class QuickPanelGroup extends FunkinSpriteGroup
     if (overrideSelection)
     {
       curSelected = change;
-      FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/menu-scroll'));
+      FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/menu-scroll').toFlxSoundAsset());
     }
     else
     {
-      if (change != 0) FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/menu-scroll'));
+      if (change != 0) FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/menu-scroll').toFlxSoundAsset());
 
       curSelected = FlxMath.wrap(curSelected + change, 0, amount - 1);
     }
@@ -1344,7 +1363,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
     {
       panelShader.doLerp = false;
       paScroll.playAnimation('deny', true);
-      FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/menu-deny'));
+      FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/menu-deny').toFlxSoundAsset());
 
       paScroll.onFinish = function()
       {
@@ -1356,7 +1375,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
     }
 
     paScroll.playAnimation('accept', true);
-    FunkinSound.playOnce(Paths.sound('ui/main-menu/confirm-menu'));
+    FunkinSound.playOnce(Paths.sound('ui/main-menu/confirm-menu').toFlxSoundAsset());
 
     panelShader.doLerp = false;
 

@@ -48,4 +48,21 @@ class CheckboxPreferenceItem extends FlxSprite
 
     return currentValue = value;
   }
+
+  public static function queryAssets(type:funkin.assets.Assets.AssetType):Array<funkin.assets.Paths.AssetPath>
+  {
+    var results:Array<funkin.assets.Paths.AssetPath> = [];
+
+    switch (type)
+    {
+      case IMAGE:
+        results.appendUnique([funkin.assets.Paths.image('ui/options/checkbox')]);
+
+      case XML:
+        results.appendUnique([funkin.assets.Paths.xml('ui/options/checkbox')]);
+
+      default:
+    }
+    return results;
+  }
 }

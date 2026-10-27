@@ -66,7 +66,7 @@
     {
       "comment": "Specifies a specific naming format for the parameter of a catch block.",
       "props": {
-        "format": "^(e|t|ex|[a-z][a-z][a-zA-Z]+)$",
+        "format": "^(_|e|t|ex|[a-z][a-z][a-zA-Z]+)$",
         "severity": "INFO"
       },
       "type": "CatchParameterName"
@@ -99,8 +99,18 @@
       "comment": "Specifies a specific naming format for static var identifiers.",
       "props": {
         "ignoreExtern": true,
-        "format": "^?:_[a-zA-Z0-9]+(?:_[a-zA-Z0-9]+)*$",
-        "tokens": ["INLINE", "NOTINLINE", "NOTFINAL"],
+        "format": "^_?[a-z][a-zA-Z0-9]*$",
+        "tokens": ["NOTINLINE", "NOTFINAL"],
+        "severity": "INFO"
+      },
+      "type": "ConstantName"
+    },
+    {
+      "comment": "Specifies a specific naming format for static var identifiers with an inline initializer.",
+      "props": {
+        "ignoreExtern": true,
+        "format": "^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$",
+        "tokens": ["INLINE", "NOTFINAL"],
         "severity": "INFO"
       },
       "type": "ConstantName"
@@ -109,7 +119,7 @@
       "comment": "Specifies a specific naming format for static final identifiers.",
       "props": {
         "ignoreExtern": true,
-        "format": "^[A-Z]([_A-Z0-9]+)*$",
+        "format": "^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$",
         "tokens": ["INLINE", "NOTINLINE", "FINAL"],
         "severity": "INFO"
       },
@@ -238,6 +248,11 @@
       "type": "FieldDocComment"
     },
     {
+      "comment": "If enabled, warns if the case of the module name does not match the filename.",
+      "props": { "severity": "INFO" },
+      "type": "FileNameCase"
+    },
+    {
       "comment": "If enabled, warns if files exceed a certain number of lines.",
       "props": { "max": 1000, "ignoreEmptyLines": true, "severity": "IGNORE" },
       "type": "FileLength"
@@ -268,7 +283,7 @@
     },
     {
       "comment": "If enabled, mandates indentation.",
-      "props": { "character": " ", "severity": "IGNORE" },
+      "props": { "character": "  ", "severity": "IGNORE" },
       "type": "Indentation"
     },
     {
@@ -363,7 +378,7 @@
       "comment": "Specifies a specific naming format for local final variables.",
       "props": {
         "ignoreExtern": true,
-        "format": "^[A-Z][_A-Z0-9]*$",
+        "format": "^[a-z][a-zA-Z0-9]*$",
         "tokens": ["FINAL"],
         "severity": "INFO"
       },
@@ -399,7 +414,7 @@
     {
       "comment": "Specifies a specific naming format for private abstract member fields.",
       "props": {
-        "format": "^[_a-zA-Z][a-z][a-zA-Z0-9]*$",
+        "format": "^_?[a-z][a-zA-Z0-9]*$",
         "tokens": ["PRIVATE", "ABSTRACT"]
       },
       "type": "MemberName"
@@ -408,7 +423,7 @@
     {
       "comment": "Specifies a specific naming format for public class member fields.",
       "props": {
-        "format": "^[a-zA-Z][a-z][a-zA-Z0-9]*$",
+        "format": "^_?[a-z][a-zA-Z0-9]*$",
         "tokens": ["PUBLIC", "CLASS"]
       },
       "type": "MemberName"
@@ -416,7 +431,7 @@
     {
       "comment": "Specifies a specific naming format for private class member fields.",
       "props": {
-        "format": "^[_a-zA-Z][_a-zA-Z0-9]*$",
+        "format": "^_?[a-z][a-zA-Z0-9]*$",
         "tokens": ["PRIVATE", "CLASS"]
       },
       "type": "MemberName"
@@ -425,14 +440,14 @@
       "comment": "Specifies a specific naming format for enum member fields.",
       "props": {
         "format": "^[a-zA-Z][_a-zA-Z0-9]*$",
-        "tokens": ["PUBLIC", "ENUM"]
+        "tokens": ["ENUM"]
       },
       "type": "MemberName"
     },
     {
       "comment": "Specifies a specific naming format for typedef member fields.",
       "props": {
-        "format": "^[_a-zA-Z][a-z][a-zA-Z0-9]*$",
+        "format": "^_?[a-z][a-zA-Z0-9]*$",
         "tokens": ["TYPEDEF"]
       },
       "type": "MemberName"
@@ -503,7 +518,7 @@
       "comment": "If enabled, mandates the use of braces on specific block types, unless they fit on a single line.",
       "props": {
         "allowSingleLineStatement": true,
-        "tokens": ["FUNCTION", "FOR", "IF", "IF_WITH_ELSE", "ELSE"],
+        "tokens": ["FUNCTION", "FOR", "IF", "ELSE"],
         "severity": "INFO"
       },
       "type": "NeedBraces"
@@ -612,7 +627,7 @@
       "comment": "Specifies a specific naming format for method parameter names.",
       "props": {
         "ignoreExtern": true,
-        "format": "^(_|[a-z][a-zA-Z0-9]*$)",
+        "format": "^(_|_?[a-z][a-zA-Z0-9]*)$",
         "tokens": [],
         "severity": "INFO"
       },
@@ -721,7 +736,7 @@
       "comment": "If enabled, enforce spacing in and around conditional statements and certain operators.",
       "props": {
         "spaceIfCondition": "should",
-        "spaceAroundBinop": true,
+        "spaceAroundBinop": false,
         "spaceForLoop": "should",
         "ignoreRangeOperator": true,
         "spaceWhileLoop": "should",
@@ -767,9 +782,10 @@
       "type": "Trace"
     },
     {
-      "comment": "If enabled, complains about trailing commas at the end of array and object literals.",
+      "comment": "If enabled, require trailing commas at the end of array and object literals.",
       "props": {
-        "severity": "INFO",
+        "severity": "IGNORE",
+
         "enforceArrayComprehension": false,
         "enforceArrayLiterals": false,
         "enforceObjectLiterals": false
@@ -804,7 +820,7 @@
       "comment": "Specifies a specific naming format for abstract types.",
       "props": {
         "ignoreExtern": true,
-        "format": "^[A-Z]+[a-zA-Z0-9]*$",
+        "format": "^[A-Z][a-zA-Z0-9]*(_[a-zA-Z0-9]+)*$",
         "tokens": ["ABSTRACT"],
         "severity": "WARNING"
       },
@@ -815,7 +831,7 @@
       "comment": "Specifies a specific naming format for class types.",
       "props": {
         "ignoreExtern": true,
-        "format": "^[A-Z]+[a-zA-Z0-9]*$",
+        "format": "^[A-Z][a-zA-Z0-9]*(_[a-zA-Z0-9]+)*$",
         "tokens": ["CLASS"],
         "severity": "WARNING"
       },
@@ -826,7 +842,7 @@
       "comment": "Specifies a specific naming format for enum types.",
       "props": {
         "ignoreExtern": true,
-        "format": "^[A-Z]+[a-zA-Z0-9]*$",
+        "format": "^[A-Z][a-zA-Z0-9]*(_[a-zA-Z0-9]+)*$",
         "tokens": ["ENUM"],
         "severity": "WARNING"
       },
@@ -837,7 +853,7 @@
       "comment": "Specifies a specific naming format for interface types.",
       "props": {
         "ignoreExtern": true,
-        "format": "^[A-Z]+[a-zA-Z0-9]*$",
+        "format": "^[A-Z][a-zA-Z0-9]*(_[a-zA-Z0-9]+)*$",
         "tokens": ["INTERFACE"],
         "severity": "WARNING"
       },
@@ -848,7 +864,7 @@
       "comment": "Specifies a specific naming format for typedefs.",
       "props": {
         "ignoreExtern": true,
-        "format": "^[A-Z]+[a-zA-Z0-9]*$",
+        "format": "^[A-Z][a-zA-Z0-9]*(_[a-zA-Z0-9]+)*$",
         "tokens": ["TYPEDEF"],
         "severity": "WARNING"
       },
@@ -868,6 +884,11 @@
       "comment": "If enabled, complains when a local variable is unused.",
       "props": { "severity": "WARNING" },
       "type": "UnusedLocalVar"
+    },
+    {
+      "comment": "If enabled, complains when initializing instance variables at the class level.",
+      "props": { "severity": "IGNORE" },
+      "type": "VariableInitialisation"
     },
     {
       "comment": "If enabled, requires type hints for certain variables.",
@@ -891,7 +912,7 @@
       "props": {
         "tokens": [",", ";"],
         "allowTrailingComma": false,
-        "severity": "INFO"
+        "severity": "IGNORE"
       },
       "type": "WhitespaceAfter"
     },

@@ -6,6 +6,7 @@ import haxe.macro.Context;
 import haxe.macro.Expr;
 #end
 
+#if !macro
 import openfl.display.Application;
 import openfl.display.DisplayObjectContainer;
 import openfl.display.MovieClip;
@@ -14,6 +15,7 @@ import openfl.display.Stage;
 import openfl.display.Window;
 import openfl.events.Event;
 import openfl.events.FullScreenEvent;
+#end
 
 @:dox(hide)
 @:access(openfl.display.Stage)
@@ -145,7 +147,6 @@ class OpenFLBootstrap
 
     app.preloader.load();
   }
-  #end
 
   public static function start(stage:Stage):Void
   {
@@ -181,6 +182,7 @@ class OpenFLBootstrap
       }
     }
   }
+  #end
 
   macro public static function getEntryPoint()
   {

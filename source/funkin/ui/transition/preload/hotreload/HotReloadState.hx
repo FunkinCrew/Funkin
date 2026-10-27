@@ -68,6 +68,8 @@ class HotReloadState extends MusicBeatState
   {
     super.create();
 
+    FlxG.keys.enabled = false;
+
     FlxG.plugins.get(funkin.util.plugins.EvacuateDebugPlugin).active = false;
     FlxG.plugins.get(funkin.util.plugins.ReloadAssetsDebugPlugin).active = false;
 
@@ -102,9 +104,7 @@ class HotReloadState extends MusicBeatState
 
     if (isComplete)
     {
-      #if FEATURE_MULTITHREADING
       funkin.modding.PolymodErrorHandler.printQueuedErrors();
-      #end
 
       moveToTitleState();
     }
@@ -189,6 +189,7 @@ class HotReloadState extends MusicBeatState
 
     TaskHandler.performSimpleTask(() ->
     {
+      // Clears PERMANENT assets, you should know.
       FunkinAssetCache.instance.forceClearCache();
 
       return true;
@@ -246,9 +247,11 @@ class HotReloadState extends MusicBeatState
 
   function afterRebuildAssetLists():Void
   {
-    updateProgress(10, 10);
-
-    isComplete = true;
+    ModReloader.cachePersistentAssets(updateProgress, () ->
+    {
+      updateProgress(10, 10);
+      isComplete = true;
+    });
   }
 
   /**
@@ -281,7 +284,6 @@ class HotReloadState extends MusicBeatState
   {
     var message:String = 'Hot reload step "$step" failed: $error';
 
-    trace(message);
     FlxG.log.error(message);
   }
 
@@ -297,6 +299,7 @@ class HotReloadState extends MusicBeatState
 
     FlxG.plugins.get(funkin.util.plugins.EvacuateDebugPlugin).active = true;
     FlxG.plugins.get(funkin.util.plugins.ReloadAssetsDebugPlugin).active = true;
+    FlxG.keys.enabled = true;
     funkin.util.plugins.ReloadAssetsDebugPlugin.hotReloadInProgress = false;
     var postHotReloadCallback = () ->
     {
@@ -314,7 +317,9 @@ class HotReloadState extends MusicBeatState
     {
       if (onComplete != null) onComplete();
 
-      FlxG.switchState(targetState);
+      funkin.ui.transition.Transition.switchState(targetState, {
+        transition: LoadingScreen(Fade(North), Fade(South)),
+      });
     }
     else
     {
@@ -326,14 +331,19 @@ class HotReloadState extends MusicBeatState
       }
 
       // Fallback to TitleState.
-      if (InitState.customTitleState == null)
+      if (InitState.customTitleState != null)
       {
-        FlxG.switchState(() -> new TitleState());
+        funkin.ui.transition.Transition.switchState(InitState.customTitleState, {
+          assetQuery: InitState.customTitleStateAssetsQuery,
+          transition: LoadingScreen(Fade(North), Fade(South)),
+        });
+        return;
       }
-      else
-      {
-        FlxG.switchState(() -> InitState.customTitleState);
-      }
+
+      funkin.ui.transition.Transition.switchState(() -> new TitleState(), {
+        assetQuery: TitleState.queryAssets,
+        transition: LoadingScreen(Fade(North), Fade(South)),
+      });
     }
   }
 }

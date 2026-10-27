@@ -7,6 +7,9 @@ import funkin.play.song.Song;
 import funkin.data.IRegistryEntry;
 import funkin.data.song.SongRegistry;
 import funkin.data.story.level.LevelData;
+import funkin.assets.Paths;
+import funkin.assets.Assets;
+import funkin.data.story.level.LevelRegistry;
 
 /**
  * An object used to retrieve data about a story mode level (also known as "weeks").
@@ -15,6 +18,78 @@ import funkin.data.story.level.LevelData;
 @:nullSafety
 class Level implements IRegistryEntry<LevelData>
 {
+  /**
+   * Retrieve a list of all the asset paths required to load the level in the Story Mode menu.
+   *
+   * If you have a scripted class which initializes sprites, or plays sounds or something,
+   * make sure you add them here so they get cached in the loading screen.
+   *
+   * @param type The type of asset to query
+   * @param entryId The level ID, used to look up the specific assets.
+   * @param params The entry parameters, if any.
+   * @return An array of asset paths, or empty if no assets of that type are required.
+   */
+  public static function queryAssets(type:AssetType, entryId:String, ?params:LevelEntryParams):Array<AssetPath>
+  {
+    var results:Array<Null<AssetPath>> = [];
+
+    var entry:Null<Level> = LevelRegistry.instance.fetchEntry(entryId);
+    if (entry == null) return [];
+
+    var _data:Null<LevelData> = Level._fetchData(entryId);
+    if (_data == null) return [];
+
+    switch (type)
+    {
+      case IMAGE:
+        // Title assets are legacy, don't cache on the new story menu.
+        results.push(Paths.image(_data.titleAsset));
+
+        results.push(Paths.image('ui/story-mode/levels/$entryId'));
+
+        results.append(entry.getDifficulties().map((diff) ->
+        {
+          return Paths.image('ui/story-mode/difficulties/$diff');
+        }));
+
+        if (_data != null)
+        {
+          results.append(_data.props.map((prop) ->
+          {
+            return Paths.image(prop.assetPath);
+          }));
+
+          if (_data.background != null && !entry.isBackgroundSimple())
+          {
+            results.push(Paths.image(_data.background));
+          }
+        }
+
+      case XML:
+        results.append(entry.getDifficulties().map((diff) ->
+        {
+          return Paths.xml('ui/story-mode/difficulties/$diff', false).orNull();
+        }));
+
+        if (_data != null)
+        {
+          results.append(_data.props.map((prop) ->
+          {
+            return Paths.xml(prop.assetPath).orNull();
+          }));
+
+          if (_data.background != null && !entry.isBackgroundSimple())
+          {
+            results.push(Paths.xml(_data.background).orNull());
+          }
+        }
+      default:
+        // Nothing
+    }
+
+    return results.filterNull();
+  }
+
   /**
    * @param id The ID of the JSON file to parse.
    */

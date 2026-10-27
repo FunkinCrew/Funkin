@@ -203,7 +203,10 @@ class FunkinHint extends FunkinButton
       final hintWidth:Float = columnWidth > 0 ? Math.min(baseWidth, columnWidth * 1.18) : baseWidth;
 
       if (followTargetSize) setSize(hintWidth, baseHeight);
-      setPosition((followTarget.x - (followTarget.width * ((widthMultiplier - 1) / 2))) - xOffset - ((hintWidth - baseWidth) / 2), (followTarget.y - 220) - yOffset);
+      setPosition(
+        (followTarget.x - (followTarget.width * ((widthMultiplier - 1) / 2))) - xOffset - ((hintWidth - baseWidth) / 2),
+        (followTarget.y - 220) - yOffset
+      );
     }
   }
 
@@ -582,7 +585,7 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
     @:privateAccess
     @:nullSafety(Off)
     {
-      hint.frames = Paths.getSparrowAtlas(noteStyle.getStrumlineAssetPath() ?? '', noteStyle.getAssetLibrary(noteStyle.getStrumlineAssetPath(true)));
+      hint.frames = funkin.assets.Assets.getSparrowAtlas(noteStyle.getStrumlineAssetPath());
       FlxAnimationUtil.addAtlasAnimations(hint, noteStyle.getStrumlineAnimationData(noteDirection));
     }
 

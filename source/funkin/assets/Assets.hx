@@ -267,18 +267,18 @@ class Assets implements ConsoleClass
     if (!assetPath.isAssetType(IMAGE)) throw 'Input is not a valid AssetPath, did you call Paths.image()?';
 
     #if FEATURE_STRICT_ASSET_CACHING
-    if (isFlxGraphicCached(assetPath.image()))
+    if (isFlxGraphicCached(assetPath))
     {
       var xmlAssetPath = assetPath.withAssetType(XML);
 
-      var graphic:FlxGraphic = getFlxGraphic(assetPath.toString());
+      var graphic:FlxGraphic = getFlxGraphic(assetPath);
       // We don't really mind reading the text synchronously I guess.
-      var data:String = getText(xmlAssetPath.toString());
+      var data:String = getText(xmlAssetPath);
       return FlxAtlasFrames.fromSparrow(graphic, data);
     }
     else
     {
-      throw 'Asset not cached, cannot load synchronously: ${assetPath.image()}';
+      throw 'Asset not cached, cannot load synchronously: ${assetPath.toString()}';
     }
     #else
     var xmlAssetPath = assetPath.withAssetType(XML);
@@ -304,21 +304,24 @@ class Assets implements ConsoleClass
     #if FEATURE_DEBUG_TRACY
     cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.getPackerAtlas(${assetPath.toString()})');
     #end
-    if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.image()?';
+    if (assetPath == null)
+    {
+      throw 'Input is not a valid AssetPath, did you call Paths.image()?';
+    }
 
     #if FEATURE_STRICT_ASSET_CACHING
-    if (isFlxGraphicCached(assetPath.image()))
+    if (isFlxGraphicCached(assetPath))
     {
       var txtAssetPath = assetPath.withAssetType(TEXT);
 
-      var graphic:FlxGraphic = getFlxGraphic(assetPath.toString());
+      var graphic:FlxGraphic = getFlxGraphic(assetPath);
       // We don't really mind reading the text synchronously I guess.
-      var data:String = getText(txtAssetPath.toString());
+      var data:String = getText(txtAssetPath);
       return FlxAtlasFrames.fromSpriteSheetPacker(graphic, data);
     }
     else
     {
-      throw 'Asset not cached, cannot load synchronously: ${assetPath.image()}';
+      throw 'Asset not cached, cannot load synchronously: ${assetPath.toString()}';
     }
     #else
     var txtAssetPath = assetPath.withAssetType(TEXT);
@@ -561,7 +564,17 @@ class Assets implements ConsoleClass
     #end
 
     var font = FunkinAssetCache.instance.getFont(id);
-    if (font != null) return font;
+    if (font != null)
+    {
+      try
+      {
+        openfl.text.Font.registerFont(font);
+      }
+      catch (e:Dynamic)
+      {
+      }
+      return font;
+    }
 
     #if FEATURE_STRICT_ASSET_CACHING
     throw 'Font not cached, cannot load synchronously: $id';
@@ -579,6 +592,16 @@ class Assets implements ConsoleClass
     // Fetch the asset synchronously.
     // NOTE: This may cause stutters.
     var font:openfl.text.Font = OpenFLAssets.getFont(id);
+    if (font == null) throw 'Font file could not be decoded: $id';
+
+    try
+    {
+      openfl.text.Font.registerFont(font);
+    }
+    catch (e:Dynamic)
+    {
+    }
+
     FunkinAssetCache.instance.setFont(id, font);
     return font;
     #end
@@ -970,7 +993,7 @@ class Assets implements ConsoleClass
 
     for (assetPath in assetPaths)
     {
-      futures.push(cacheAsset(assetPath));
+      futures.push(cacheAsset(assetPath, permanent));
     }
 
     return Promises.allSettled(futures);
@@ -1062,7 +1085,10 @@ class Assets implements ConsoleClass
       case TEXT | JSON | SHADER | SCRIPT | SCRIPTED_CLASS | XML:
         return isTextCached(assetPath);
 
-      case VIDEO | CHART | STAGE | FONT | UNKNOWN:
+      case FONT:
+        return FunkinAssetCache.instance.hasFont(assetPath.toString());
+
+      case VIDEO | CHART | STAGE | UNKNOWN:
         return isBytesCached(assetPath);
 
       default:
@@ -1083,22 +1109,29 @@ class Assets implements ConsoleClass
     var results:Array<AssetPath> = [];
 
     // Keep the cursor assets cached persistently, since they could be used at any time.
-    results = results.concat(funkin.input.Cursor.queryAssets(type));
+    results.appendUnique(funkin.input.Cursor.queryAssets(type));
 
     #if FEATURE_NEWGROUNDS
     // Keep the medal popup assets cached persistently, since it could show up at any time.
-    results = results.concat(funkin.api.newgrounds.Medals.queryAssets(type));
+    results.appendUnique(funkin.api.newgrounds.Medals.queryAssets(type));
     #end
 
     // Keep transition assets cached persistently, since we don't want to require a loading screen FOR a loading screen.
-    // results = results.concat(funkin.ui.transition.Transition.queryAssets(type));
+    results.appendUnique(funkin.ui.transition.Transition.queryAssets(type));
+
+    // Keep Quick panel assets loaded as it can be used at any moment
+    results.appendUnique(funkin.ui.quickpanel.QuickPanelState.queryAssets(type));
+
+    // On HTML5, older mods won't have queryAssets() configured properly, so we must precache all assets.
+    // This is inefficient but it's the only way to support older mods without crashing.
+    results.appendUnique(funkin.modding.PolymodHandler.queryPersistentAssets(type));
 
     switch (type)
     {
       case IMAGE:
         results.appendUnique([
           // Built-in
-          Paths.file('images/logo/default', 'png', true, 'flixel'),
+          Paths.image('flixel/images/logo/default', false),
 
           // Fonts
           Paths.image('ui/fonts/default'),
@@ -1126,23 +1159,30 @@ class Assets implements ConsoleClass
         ]);
 
       case SOUND:
+        results.appendUnique(funkin.ui.transition.StickerTransition.queryAssets(SOUND));
+
         results.appendUnique([
           // Built-in
-          Paths.file('sounds/beep', 'ogg', 'flixel'), // Menus
+          Paths.sound('flixel/sounds/beep', false),
 
+          // Menus
+          Paths.music('ui/main-menu/freaky-menu').audio(),
           Paths.sound('ui/main-menu/scroll-menu'),
           Paths.sound('ui/main-menu/confirm-menu'),
-          Paths.sound('ui/main-menu/cancel-menu'), // Soundtray
+          Paths.sound('ui/main-menu/cancel-menu'),
 
+          // Soundtray
           Paths.sound('ui/soundtray/volume-up'),
           Paths.sound('ui/soundtray/volume-down'),
-          Paths.sound('ui/soundtray/volume-max'), // Screenshots
+          Paths.sound('ui/soundtray/volume-max'),
 
+          // Screenshots
           Paths.sound('ui/main-menu/screenshot'),
         ]);
 
       case JSON:
         // Medal popup
+        results.pushUnique(Paths.music('ui/main-menu/freaky-menu').metadata());
         results.appendUnique(Paths.animateAtlas('ui/medals/medal-popup').json());
 
       case XML:
@@ -1150,11 +1190,14 @@ class Assets implements ConsoleClass
           // Fonts
           Paths.xml('ui/fonts/default'),
           Paths.xml('ui/fonts/bold'),
+          Paths.xml('ui/fonts/freeplay-clear'),
         ]);
 
       case SHADER:
-        results.appendUnique([Paths.frag('ui/shaders/custom-blend'), // Powers custom blend modes on FunkinCamera
-        ]);
+        /*results.appendUnique([Paths.frag('ui/shaders/custom-blend'), // Powers custom blend modes on FunkinCamera
+          ]); */
+        // Add ALL shaders into query list for now. TODO: Remove when backwards compatibility is fixed or removed.
+        results.appendUnique(Assets.list(SHADER));
 
       case FONT:
         // Permenent precache ALL fonts.
@@ -1167,46 +1210,6 @@ class Assets implements ConsoleClass
         // Nothing
         // results.appendUnique([]);
     }
-    return results;
-  }
-
-  /**
-   * Returns a list of all the asset paths which should be cached before starting the game.
-   *
-   * @param type The type of asset to list.
-   * @return The list of asset paths which are needed by the preloader.
-   */
-  public static function queryPreloadAssets(type:AssetType):Array<AssetPath>
-  {
-    if (type == null) throw 'Input is not a valid AssetType';
-
-    var results:Array<AssetPath> = [];
-
-    // Start with the assets we use in every state.
-    results.appendUnique(queryPersistentAssets(type));
-
-    // Registry JSON data doesn't need to be included here.
-    // This is because the registry entries are loaded asynchronously,
-    // and there's no stutter from loading the JSON data in those threads.
-
-    // We need the assets used to render the first state.
-    // results.appendUnique(funkin.ui.title.TitleState.queryAssets(type));
-
-    switch (type)
-    {
-      case SCRIPTED_CLASS:
-        // Cache all scripted class files
-        results.appendUnique(Assets.list(SCRIPTED_CLASS));
-      case SCRIPT:
-        // Cache all script files
-        results.appendUnique(Assets.list(SCRIPT));
-      case FONT:
-        // Cache all font files
-        results.appendUnique(Assets.list(FONT));
-      default:
-        // Nothing
-    }
-
     return results;
   }
 

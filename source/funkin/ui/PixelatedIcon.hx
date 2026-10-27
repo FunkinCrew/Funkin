@@ -1,6 +1,8 @@
 package funkin.ui;
 
 import funkin.graphics.FunkinSprite;
+import funkin.assets.Paths;
+import funkin.assets.Assets;
 
 /**
  * The icon that gets used for Freeplay capsules and char select
@@ -10,6 +12,23 @@ import funkin.graphics.FunkinSprite;
 class PixelatedIcon extends FunkinSprite
 {
   public var char:String;
+
+  public static function queryAssets(type:funkin.assets.Assets.AssetType):Array<funkin.assets.Paths.AssetPath>
+  {
+    var results:Array<funkin.assets.Paths.AssetPath> = [];
+
+    switch (type)
+    {
+      case IMAGE:
+        results.append(Assets.listInPath('ui/freeplay/characters/', IMAGE));
+      case XML:
+        results.append(Assets.listInPath('ui/freeplay/characters/', XML));
+      default:
+        // Nothing
+    }
+
+    return results;
+  }
 
   public function new(x:Float, y:Float)
   {
@@ -35,7 +54,7 @@ class PixelatedIcon extends FunkinSprite
     {
       iconName += charIDParts[i];
 
-      if (funkin.assets.Paths.image(charPath + '${iconName}', false).exists())
+      if (Paths.image(charPath + '${iconName}', false).exists())
       {
         lastValidIconName = iconName;
       }
@@ -45,7 +64,7 @@ class PixelatedIcon extends FunkinSprite
 
     charPath += '${lastValidIconName}';
 
-    if (lastValidIconName == '' || !Assets.exists(Paths.image(charPath)))
+    if (lastValidIconName == '' || !Assets.exists(Paths.image(charPath).toString()))
     {
       trace(' WARNING '.warning() + ' Character ${char} has no freeplay icon.');
       this.visible = false;
@@ -55,7 +74,7 @@ class PixelatedIcon extends FunkinSprite
     this.visible = true;
     this.char = char; // if we went past this its safe to assume the icon exists so we can assign it
 
-    var isAnimated = Assets.exists(Paths.xml(charPath));
+    var isAnimated = Assets.exists(Paths.xml(charPath).toString());
 
     if (isAnimated)
     {
@@ -63,7 +82,7 @@ class PixelatedIcon extends FunkinSprite
     }
     else
     {
-      this.loadGraphic(Paths.image(charPath));
+      this.loadGraphic(Paths.image(charPath).toFlxGraphicAsset());
     }
 
     this.scale.x = this.scale.y = 2;
