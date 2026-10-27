@@ -157,6 +157,8 @@ class ResultState extends MusicBeatSubState
         var rankImageHor:AssetPath = Paths.raw(rank.getHorTextAsset());
         for (animData in playerAnimationDatas)
         {
+          if (animData?.assetPath == null) continue;
+
           switch (animData.renderType)
           {
             case 'animateatlas':
@@ -189,6 +191,8 @@ class ResultState extends MusicBeatSubState
       case XML:
         for (animData in playerAnimationDatas)
         {
+          if (animData?.assetPath == null) continue;
+
           switch (animData.renderType)
           {
             case 'sparrow':
@@ -219,6 +223,8 @@ class ResultState extends MusicBeatSubState
         if (musicPath.metadataExists()) results.push(musicPath.metadata());
         for (animData in playerAnimationDatas)
         {
+          if (animData?.assetPath == null) continue;
+
           switch (animData.renderType)
           {
             case 'animateatlas':
