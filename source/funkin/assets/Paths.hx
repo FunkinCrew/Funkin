@@ -130,6 +130,20 @@ class Paths implements ConsoleClass
       return file;
     }
 
+    // Also check for backwards compatibility.
+    var fileLibrary:String = Paths.getLibrary(file);
+    var fileStripped:String = Paths.stripLibrary(file);
+
+    if (ext == null && animateAtlas(funkin.Paths.animateAtlas(fileStripped, fileLibrary), false).exists())
+    {
+      return file;
+    }
+
+    if (ext != null && Paths.file(funkin.modding.compat.Paths.getPath(fileStripped, fileLibrary), ext, false).exists())
+    {
+      return file;
+    }
+
     // Trim the ending of `start` for every `../` of the file.
     while (file.startsWith('../'))
     {
