@@ -8459,6 +8459,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     super.destroy();
 
     performCleanup();
+    resetWindowTitle();
 
     cleanupAutoSave();
 
@@ -8537,7 +8538,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function resetWindowTitle():Void
   {
-    WindowUtil.setWindowTitle(' Friday Night Funkin\'');
+    WindowUtil.setWindowTitle('Friday Night Funkin\'');
   }
 
   /**
