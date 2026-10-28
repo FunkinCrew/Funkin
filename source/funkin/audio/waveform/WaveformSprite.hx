@@ -1,6 +1,7 @@
 package funkin.audio.waveform;
 
 import funkin.graphics.rendering.MeshRender;
+import flixel.math.FlxRect;
 import flixel.util.FlxColor;
 import funkin.play.character.BaseCharacter.CharacterType;
 
@@ -197,8 +198,31 @@ class WaveformSprite extends MeshRender
     makeGraphic(1, 1, this.waveformColor);
   }
 
+  override function set_clipRect(value:FlxRect):FlxRect
+  {
+    var prevClipRect:Null<FlxRect> = clipRect;
+    super.set_clipRect(value);
+
+    if (prevClipRect == null || clipRect == null)
+    {
+      if (prevClipRect != clipRect) isWaveformDirty = true;
+    }
+    else if (prevClipRect == clipRect || !prevClipRect.equals(clipRect))
+    {
+      isWaveformDirty = true;
+    }
+
+    return value;
+  }
+
   override public function draw():Void
   {
+    if (isWaveformDirty)
+    {
+      drawWaveform();
+      isWaveformDirty = false;
+    }
+
     super.draw();
   }
 
