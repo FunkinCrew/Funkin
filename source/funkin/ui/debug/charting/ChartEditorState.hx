@@ -122,6 +122,7 @@ import haxe.ui.components.Button;
 import haxe.ui.components.DropDown;
 import haxe.ui.components.Label;
 import haxe.ui.components.NumberStepper;
+import haxe.ui.components.Range;
 import haxe.ui.components.Slider;
 import haxe.ui.components.TextArea;
 import haxe.ui.components.VerticalScroll;
@@ -3341,15 +3342,16 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     playbarHeadLayout = new ChartEditorPlaybarHead();
 
     playbarHeadLayout.zIndex = 110;
-    playbarHeadLayout.width = FlxG.width - 8;
+    playbarHeadLayout.width = FlxG.width;
     playbarHeadLayout.height = 10;
-    playbarHeadLayout.x = 4;
+    playbarHeadLayout.x = 0;
     playbarHeadLayout.y = FlxG.height - 48 - 8;
 
     playbarHeadLayout.playbarHead.allowFocus = false;
     playbarHeadLayout.playbarHead.width = FlxG.width;
     playbarHeadLayout.playbarHead.height = 10;
     playbarHeadLayout.playbarHead.styleString = 'padding-left: 0px; padding-right: 0px; border-left: 0px; border-right: 0px;';
+    playbarHeadLayout.playbarHead.findComponent('range').styleString = 'padding-left: 4px; padding-right: 0px;';
     playbarHeadLayout.playbarHead.min = 0;
 
     playbarHeadLayout.playbarHead.onDragStart = function(_:DragEvent)
@@ -6443,10 +6445,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // Move the playhead to match the song position, if we aren't dragging it.
     playbarHeadLayout.playbarHead.pos = currentScrollEase;
 
-    playbarHeadLayout.playbarHead.max = songLengthInPixels;
+    playbarHeadLayout.playbarHead.max = songLengthInPixels * (FlxG.width - 4) / (FlxG.width - 8);
+    @:privateAccess playbarHeadLayout.playbarHead.findComponent('range', Range).virtualStart = -4 * songLengthInPixels / (FlxG.width - 8);
 
     // Make sure the playbar is never nudged out of the correct spot.
-    playbarHeadLayout.x = 4;
+    playbarHeadLayout.x = 0;
     playbarHeadLayout.y = FlxG.height - 48 - 8;
 
     var songPos:Float = Conductor.instance.songPosition + Conductor.instance.instrumentalOffset;
