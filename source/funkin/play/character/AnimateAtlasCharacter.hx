@@ -42,7 +42,7 @@ class AnimateAtlasCharacter extends BaseCharacter
     // Specific implementations handle figuring out which assets to load.
     var results:Array<AssetPath> = BaseCharacter.queryBaseAssets(type, entryId, params);
 
-    var _data:Null<CharacterData> = CharacterRegistry.instance.fetchCharacterData(charId);
+    var _data:Null<CharacterData> = CharacterRegistry.instance.fetchCharacterData(entryId);
     if (_data == null) return results; // No assets if data couldn't be parsed.
 
     var assetPath = Paths.animateAtlas(_data.assetPath);
@@ -50,7 +50,7 @@ class AnimateAtlasCharacter extends BaseCharacter
     switch (type)
     {
       case IMAGE:
-        result = result.concat(assetPath.image());
+        results.append(assetPath.image());
       case JSON:
         results.append(assetPath.json());
 
@@ -63,7 +63,7 @@ class AnimateAtlasCharacter extends BaseCharacter
         // Nothing
     }
 
-    return result;
+    return results;
   }
 
   public function new(id:String)

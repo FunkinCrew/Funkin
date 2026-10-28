@@ -35,7 +35,7 @@ class SparrowCharacter extends BaseCharacter
    */
   public static function queryAssets(type:AssetType, entryId:String, ?params:CharacterEntryParams):Array<AssetPath>
   {
-    trace('ASSETS: Querying assets for Sparrow character "${charId}"');
+    trace('ASSETS: Querying assets for Sparrow character "${entryId}"');
     // Specific implementations handle figuring out which assets to load.
     var results:Array<AssetPath> = BaseCharacter.queryBaseAssets(type, entryId, params);
 
@@ -45,14 +45,14 @@ class SparrowCharacter extends BaseCharacter
     switch (type)
     {
       case IMAGE:
-        result.push(Paths.image(_data.assetPath));
+        results.push(Paths.image(_data.assetPath));
       case XML:
-        result.push(Paths.xml(_data.assetPath));
+        results.push(Paths.xml(_data.assetPath));
       default:
         // Nothing
     }
 
-    return result;
+    return results;
   }
 
   public function new(id:String)

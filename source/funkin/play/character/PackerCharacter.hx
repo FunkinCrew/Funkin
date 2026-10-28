@@ -30,26 +30,26 @@ class PackerCharacter extends BaseCharacter
    * @param charId The character ID, used to look up the specific assets.
    * @return An array of asset paths, or empty if no assets of that type are required.
    */
-  public static function queryAssets(type:AssetType, charId:String):Array<AssetPath>
+  public static function queryAssets(type:AssetType, entryId:String, ?params:CharacterEntryParams):Array<AssetPath>
   {
-    trace('ASSETS: Querying assets for Packer character "$charId"');
+    trace('ASSETS: Querying assets for Packer character "$entryId"');
     // Specific implementations handle figuring out which assets to load.
     var results:Array<AssetPath> = BaseCharacter.queryBaseAssets(type, entryId, params);
 
-    var _data:Null<CharacterData> = CharacterRegistry.instance.fetchCharacterData(charId);
+    var _data:Null<CharacterData> = CharacterRegistry.instance.fetchCharacterData(entryId);
     if (_data == null) return results;
 
     switch (type)
     {
       case IMAGE:
-        result.push(Paths.image(_data.assetPath));
+        results.push(Paths.image(_data.assetPath));
       case TEXT:
-        result.push(Paths.txt(_data.assetPath));
+        results.push(Paths.txt(_data.assetPath));
       default:
         // Nothing
     }
 
-    return result;
+    return results;
   }
 
   public function new(id:String)

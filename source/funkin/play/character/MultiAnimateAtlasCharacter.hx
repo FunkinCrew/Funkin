@@ -38,7 +38,7 @@ class MultiAnimateAtlasCharacter extends BaseCharacter
     entryId:String,
     ?params:CharacterEntryParams):Array<funkin.assets.Paths.AssetPath>
   {
-    trace('ASSETS: Querying assets for Multi-Animate Atlas character "$charId"');
+    trace('ASSETS: Querying assets for Multi-Animate Atlas character "$entryId"');
     // Specific implementations handle figuring out which assets to load.
     var results:Array<AssetPath> = BaseCharacter.queryBaseAssets(type, entryId, params);
 

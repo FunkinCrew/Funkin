@@ -61,7 +61,7 @@
     {
       "name": "flixel",
       "type": "git",
-      "ref": "5129a6b7f27e11bb2b2c5c78bc510d95d5fa2142",
+      "ref": "9784919e02435f2bc4790d615e4c211652975f29",
       "url": "https://github.com/FunkinCrew/flixel"
     },
     {
@@ -73,7 +73,7 @@
     {
       "name": "flixel-animate",
       "type": "git",
-      "ref": "e26354ddbbeefacf6d4c38c52e74b699340cf7f6",
+      "ref": "a6debe67d1db49e5807ef04574e3384c2b6e41aa",
       "url": "https://github.com/FunkinCrew/flixel-animate"
     },
     {

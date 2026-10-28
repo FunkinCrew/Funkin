@@ -105,6 +105,11 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public var enabled(get, set):Bool;
 
+  /**
+   * Will be true if we prepare to purge, until we either finish purging or if the cycle gets "cancelled", i.e while a state transition.
+   */
+  public var isPurgeCycleActive(default, null):Bool = false;
+
   static function get_instance():FunkinAssetCache
   {
     if (FunkinAssetCache._instance == null) _instance = new FunkinAssetCache();
@@ -268,8 +273,19 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function preparePurgeCache():Void
   {
+    isPurgeCycleActive = true;
+
     for (cache in stagedCaches) cache.preparePurgeCache();
     FunkinBitmapFrontend.instance.stagedFlxGraphic.preparePurgeCache();
+  }
+
+  /**
+   * End a purge cycle without purging, e.g. because the transition was cancelled and the old state stays alive.
+   * Anything the old state still uses is picked up by the next purge, which keeps whatever a live object holds.
+   */
+  public function cancelPurgeCycle():Void
+  {
+    isPurgeCycleActive = false;
   }
 
   /**
@@ -280,6 +296,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
   {
     // IMPORTANT: purgeCache() must only be called after the outgoing state has been destroyed. LoadingState defers this until postStateSwitch so that
     // FlxSprite/FlxFrame/animation objects from the old state cannot reference disposed FlxGraphics or BitmapData.
+
+    isPurgeCycleActive = false;
+
     for (cache in stagedCaches) cache.purgeCache();
 
     #if FEATURE_HAXEUI

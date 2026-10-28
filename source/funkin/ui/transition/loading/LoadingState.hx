@@ -117,6 +117,8 @@ class LoadingState extends MusicBeatSubState
       pendingPostStatePurge = null;
     }
 
+    FunkinAssetCache.instance.cancelPurgeCycle();
+
     FlxG.state.persistentUpdate = previousPersistentUpdate;
     FlxG.state.persistentDraw = previousPersistentDraw;
 
