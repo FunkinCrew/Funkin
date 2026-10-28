@@ -147,11 +147,6 @@ class InitState extends FlxState
       funkin.external.android.CallbackUtil.init();
       #end
 
-      #if ios
-      // Setup Audio session
-      funkin.external.apple.AudioSession.initialize();
-      #end
-
       #if mobile
       // Setup Mobile FNF Loader Provider.
       funkin.mobile.util.FNFLoaderProvider.init();

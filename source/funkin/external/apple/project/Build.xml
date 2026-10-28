@@ -9,7 +9,6 @@
 	</files>
 	<files id="external-apple">
 		<compilerflag value="-I${this_dir}/include" />
-		<file name="${this_dir}/src/AudioSession.mm" />
 		<file name="${this_dir}/src/FNFCExtern.mm" />
 		<file name="${this_dir}/src/KeyboardUtil.mm" />
 		<file name="${this_dir}/src/MemoryUtil.mm" />
@@ -21,7 +20,6 @@
 		<section unless="static_link">
 			<vflag name="-framework" value="UIKit" unless="macos" />
 			<vflag name="-framework" value="Foundation" />
-			<vflag name="-framework" value="AVFAudio" />
 			<vflag name="-framework" value="GameController" />
 			<vflag name="-framework" value="ApplicationServices" if="macos" />
 		</section>
