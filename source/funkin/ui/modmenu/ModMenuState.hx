@@ -19,6 +19,7 @@ import funkin.ui.FullScreenScaleMode;
 import funkin.ui.MusicBeatState;
 import funkin.ui.UIStateMachine;
 import funkin.ui.mainmenu.MainMenuState;
+import funkin.ui.transition.Transition;
 import funkin.ui.transition.preload.hotreload.HotReloadState;
 import funkin.util.FileUtil;
 import funkin.util.PropertyAnimator;

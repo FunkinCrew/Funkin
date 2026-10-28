@@ -206,9 +206,9 @@ class MainMenuState extends MusicBeatState
         character: targetCharacter
       };
 
-      funkin.ui.transition.Transition.openSubState(() -> new FreeplayState(params), {
-        assetQuery: FreeplayState.queryAssets.bind(_, params, targetCharacter),
-        transition: Throbber,
+      Transition.openSubState(() -> new FreeplayState(freeplayParams), {
+        assetQuery: FreeplayState.queryAssets.bind(_, freeplayParams),
+        transition: TransitionType.BlackScreen(FadeType.Fade(FadeDirection.North), FadeType.Fade(FadeDirection.South)),
         shouldPurgeCache: false
       });
     });

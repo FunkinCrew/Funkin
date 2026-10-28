@@ -21,6 +21,7 @@ import funkin.play.character.BaseCharacter;
 import funkin.ui.freeplay.FreeplayState;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.story.StoryMenuState;
+import funkin.ui.transition.Transition;
 import funkin.util.MathUtil;
 import flixel.util.typeLimit.NextState;
 import funkin.effects.RetroCameraFade;
@@ -711,7 +712,7 @@ class GameOverSubState extends MusicBeatSubState
 
       var stickerPackId:String = parentPlayState?.resolveStickerPackId() ?? Constants.DEFAULT_STICKER_PACK;
 
-      funkin.ui.transition.Transition.switchState(targetState, {
+      Transition.switchState(targetState, {
         assetQuery: assetQuery,
         transition: Sticker(stickerPackId),
         shouldStopMusic: true,

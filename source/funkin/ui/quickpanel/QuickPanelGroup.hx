@@ -179,7 +179,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
       callback: () ->
       {
         stopMusic();
-        funkin.ui.transition.Transition.switchState(() -> new funkin.ui.title.TitleState(), {
+        Transition.switchState(() -> new funkin.ui.title.TitleState(), {
           assetQuery: funkin.ui.title.TitleState.queryAssets,
           transition: BlackScreen(Fade(North), Fade(South))
         });
@@ -193,7 +193,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
       callback: () ->
       {
         stopMusic();
-        funkin.ui.transition.Transition.switchState(() -> new funkin.ui.modmenu.ModMenuState(), {
+        Transition.switchState(() -> new funkin.ui.modmenu.ModMenuState(), {
           assetQuery: funkin.ui.modmenu.ModMenuState.queryAssets,
           transition: BlackScreen(Fade(North), Fade(South))
         });
@@ -209,7 +209,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
         var freeplayParams = {
           fromCharSelect: true
         };
-        funkin.ui.transition.Transition.switchState(() -> funkin.ui.freeplay.FreeplayState.build(freeplayParams), {
+        Transition.switchState(() -> funkin.ui.freeplay.FreeplayState.build(freeplayParams), {
           assetQuery: funkin.ui.freeplay.FreeplayState.queryAssets.bind(_, freeplayParams),
           transition: BlackScreen(None, Fade(South))
         });

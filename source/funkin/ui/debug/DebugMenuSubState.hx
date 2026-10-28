@@ -12,6 +12,7 @@ import funkin.ui.debug.charting.ChartEditorState;
 import funkin.util.logging.CrashHandler;
 import flixel.addons.transition.FlxTransitionableState;
 import funkin.util.FileUtil;
+import funkin.ui.transition.Transition;
 
 class DebugMenuSubState extends MusicBeatSubState
 {
@@ -119,24 +120,29 @@ class DebugMenuSubState extends MusicBeatSubState
   #if FEATURE_CHART_EDITOR
   function openChartEditor():Void
   {
-    funkin.ui.transition.Transition.switchState(() -> new ChartEditorState(), {
-      transition: Throbber
+    var chartEditorParams = {};
+
+    Transition.switchState(() -> new ChartEditorState(chartEditorParams), {
+      transition: Throbber,
+      assetQuery: ChartEditorState.queryAssets.bind(_, chartEditorParams)
     });
   }
   #end
 
   function openCharSelect():Void
   {
-    funkin.ui.transition.Transition.switchState(() -> new funkin.ui.charSelect.CharacterSelectState(), {
-      transition: Throbber
+    Transition.switchState(() -> new funkin.ui.charSelect.CharacterSelectState(), {
+      transition: Throbber,
+      assetQuery: funkin.ui.transition.Transition.NO_ASSETS
     });
   }
 
   #if FEATURE_ANIMATION_EDITOR
   function openAnimationEditor():Void
   {
-    funkin.ui.transition.Transition.switchState(() -> new funkin.ui.debug.anim.DebugBoundingState(), {
-      transition: Throbber
+    Transition.switchState(() -> new funkin.ui.debug.anim.DebugBoundingState(), {
+      transition: Throbber,
+      assetQuery: funkin.ui.transition.Transition.NO_ASSETS
     });
   }
   #end
@@ -144,8 +150,9 @@ class DebugMenuSubState extends MusicBeatSubState
   #if FEATURE_STAGE_EDITOR
   function openStageEditor():Void
   {
-    funkin.ui.transition.Transition.switchState(() -> new funkin.ui.debug.stageeditor.StageEditorState(), {
-      transition: Throbber
+    Transition.switchState(() -> new funkin.ui.debug.stageeditor.StageEditorState(), {
+      transition: Throbber,
+      assetQuery: funkin.ui.transition.Transition.NO_ASSETS
     });
   }
   #end
@@ -153,7 +160,7 @@ class DebugMenuSubState extends MusicBeatSubState
   #if FEATURE_POLYMOD_MODS
   function openModMenu():Void
   {
-    funkin.ui.transition.Transition.switchState(() -> new funkin.ui.modmenu.ModMenuState(), {
+    Transition.switchState(() -> new funkin.ui.modmenu.ModMenuState(), {
       assetQuery: funkin.ui.modmenu.ModMenuState.queryAssets,
       transition: Throbber
     });
@@ -163,8 +170,9 @@ class DebugMenuSubState extends MusicBeatSubState
   #if FEATURE_CAMERA_EDITOR
   function openCameraEditor():Void
   {
-    funkin.ui.transition.Transition.switchState(() -> new funkin.ui.debug.cameraeditor.CameraEditorState(), {
-      transition: None
+    Transition.switchState(() -> new funkin.ui.debug.cameraeditor.CameraEditorState(), {
+      transition: None,
+      assetQuery: funkin.ui.transition.Transition.NO_ASSETS
     });
   }
   #end
@@ -172,8 +180,9 @@ class DebugMenuSubState extends MusicBeatSubState
   #if FEATURE_RESULTS_DEBUG
   function openTestResultsScreen():Void
   {
-    funkin.ui.transition.Transition.switchState(() -> new funkin.ui.debug.results.ResultsDebugSubState(), {
-      transition: None
+    Transition.switchState(() -> new funkin.ui.debug.results.ResultsDebugSubState(), {
+      transition: None,
+      assetQuery: funkin.ui.transition.Transition.NO_ASSETS
     });
   }
   #end

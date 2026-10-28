@@ -447,7 +447,7 @@ class InitState extends FlxState
 
     if (funkin.modding.install.OneClickInstallHandler.stashLaunchLink(params.oneClickUrl) || funkin.modding.install.OneClickInstallHandler.hasPendingLink())
     {
-      funkin.ui.transition.Transition.switchState(() -> new funkin.ui.modmenu.ModMenuState(), {
+      Transition.switchState(() -> new funkin.ui.modmenu.ModMenuState(), {
         assetQuery: funkin.ui.modmenu.ModMenuState.queryAssets,
         transition: BlackScreen(None, Fade(South))
       });
@@ -466,7 +466,7 @@ class InitState extends FlxState
         transition: BlackScreen(None, Fade(South))
       });
       #else
-      funkin.ui.transition.Transition.switchState(() -> new TitleState(), {
+      Transition.switchState(() -> new TitleState(), {
         assetQuery: TitleState.queryAssets,
         transition: None
       });
@@ -483,7 +483,7 @@ class InitState extends FlxState
         transition: BlackScreen(None, Fade(South))
       });
       #else
-      funkin.ui.transition.Transition.switchState(() -> new TitleState(), {
+      Transition.switchState(() -> new TitleState(), {
         assetQuery: TitleState.queryAssets,
         transition: None
       });
@@ -501,7 +501,7 @@ class InitState extends FlxState
         transition: BlackScreen(None, Fade(South))
       });
       #else
-      funkin.ui.transition.Transition.switchState(() -> new TitleState(), {
+      Transition.switchState(() -> new TitleState(), {
         assetQuery: TitleState.queryAssets,
         transition: None
       });
@@ -515,7 +515,7 @@ class InitState extends FlxState
         transition: BlackScreen(None, Fade(South))
       });
       #else
-      funkin.ui.transition.Transition.switchState(() -> new TitleState(), {
+      Transition.switchState(() -> new TitleState(), {
         assetQuery: TitleState.queryAssets,
         transition: None
       });
@@ -557,14 +557,14 @@ class InitState extends FlxState
       #end
       if (customTitleState != null)
       {
-        funkin.ui.transition.Transition.switchState(customTitleState, {
+        Transition.switchState(customTitleState, {
           assetQuery: customTitleStateAssetsQuery,
           transition: BlackScreen(Fade(North), Fade(South))
         });
         return;
       }
 
-      funkin.ui.transition.Transition.switchState(() -> new TitleState(), {
+      Transition.switchState(() -> new TitleState(), {
         assetQuery: TitleState.queryAssets,
         transition: BlackScreen(Fade(North), Fade(South))
       });

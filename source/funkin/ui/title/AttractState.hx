@@ -6,6 +6,7 @@ import flixel.FlxG;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;
 import flixel.addons.display.FlxRadialGauge;
+import funkin.ui.transition.Transition;
 #if html5
 import funkin.graphics.video.FlxVideo;
 #end
@@ -232,7 +233,7 @@ class AttractState extends MusicBeatState
     vid = null;
     #end
 
-    funkin.ui.transition.Transition.switchState(() -> new TitleState(), {
+    Transition.switchState(() -> new TitleState(), {
       assetQuery: TitleState.queryAssets,
       transition: BlackScreen(Fade(North), Fade(South))
     });

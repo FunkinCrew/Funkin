@@ -22,6 +22,7 @@ import funkin.save.Save;
 import funkin.save.Save.SaveScoreData;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.MusicBeatState;
+import funkin.ui.transition.Transition;
 import funkin.util.MathUtil;
 import funkin.util.SwipeUtil;
 import funkin.util.TouchUtil;
@@ -811,7 +812,7 @@ class StoryMenuState extends MusicBeatState
 
     exitingMenu = true;
     FlxG.keys.enabled = false;
-    funkin.ui.transition.Transition.switchState(() -> new MainMenuState(), {
+    Transition.switchState(() -> new MainMenuState(), {
       assetQuery: MainMenuState.queryAssets,
       transition: BlackScreen(Fade(North), Fade(South)),
     });

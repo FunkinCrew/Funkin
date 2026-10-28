@@ -1169,7 +1169,7 @@ class PlayState extends MusicBeatSubState
       else
       {
         if (currentStage != null) this.remove(currentStage);
-        funkin.ui.transition.Transition.switchState(() -> new MainMenuState(), {
+        Transition.switchState(() -> new MainMenuState(), {
           assetQuery: MainMenuState.queryAssets,
           transition: Sticker(Constants.DEFAULT_STICKER_PACK),
           shouldStopMusic: true
@@ -4198,7 +4198,7 @@ class PlayState extends MusicBeatSubState
       isBotPlayMode: isBotPlayMode,
     };
     this.persistentDraw = false;
-    funkin.ui.transition.Transition.openSubState(() -> new ResultState(params), {
+    Transition.openSubState(() -> new ResultState(params), {
       transition: BlackScreen(None, None),
       assetQuery: ResultState.queryAssets.bind(_, params)
     });

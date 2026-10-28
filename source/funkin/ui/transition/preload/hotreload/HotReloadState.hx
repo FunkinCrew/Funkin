@@ -317,7 +317,7 @@ class HotReloadState extends MusicBeatState
     {
       if (onComplete != null) onComplete();
 
-      funkin.ui.transition.Transition.switchState(targetState, {
+      Transition.switchState(targetState, {
         transition: LoadingScreen(Fade(North), Fade(South)),
       });
     }
@@ -333,14 +333,14 @@ class HotReloadState extends MusicBeatState
       // Fallback to TitleState.
       if (InitState.customTitleState != null)
       {
-        funkin.ui.transition.Transition.switchState(InitState.customTitleState, {
+        Transition.switchState(InitState.customTitleState, {
           assetQuery: InitState.customTitleStateAssetsQuery,
           transition: LoadingScreen(Fade(North), Fade(South)),
         });
         return;
       }
 
-      funkin.ui.transition.Transition.switchState(() -> new TitleState(), {
+      Transition.switchState(() -> new TitleState(), {
         assetQuery: TitleState.queryAssets,
         transition: LoadingScreen(Fade(North), Fade(South)),
       });

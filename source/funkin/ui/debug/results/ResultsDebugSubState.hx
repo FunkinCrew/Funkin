@@ -10,7 +10,7 @@ import funkin.ui.options.items.CheckboxPreferenceItem;
 import flixel.util.FlxTimer;
 import flixel.tweens.FlxTween;
 import funkin.ui.mainmenu.MainMenuState;
-import funkin.play.ResultState;
+import funkin.ui.transition.Transition;
 
 /**
  * Debug substate to configure the results screen for testing purposes,
@@ -41,7 +41,7 @@ class ResultsDebugSubState extends MusicBeatSubState
 
     if (controls.BACK)
     {
-      funkin.ui.transition.Transition.switchState(() -> new MainMenuState(), {
+      Transition.switchState(() -> new MainMenuState(), {
         assetQuery: MainMenuState.queryAssets,
         transition: None,
       });
@@ -61,7 +61,7 @@ class ResultsDebugSubState extends MusicBeatSubState
         // until after all queried assets have been loaded. This prevents assets being
         // requested before they are cached.
 
-        funkin.ui.transition.Transition.openSubState(() -> new ResultState(resultsParams), {
+        Transition.openSubState(() -> new ResultState(resultsParams), {
           transition: BlackScreen(None, None),
           assetQuery: ResultState.queryAssets.bind(_, resultsParams),
           shouldStopMusic: true,

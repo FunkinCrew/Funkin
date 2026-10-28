@@ -2350,7 +2350,7 @@ class CameraEditorState extends UIState implements ConsoleClass
               // Write a backup, and remember we have one for next time.
               saveBackup();
 
-              funkin.ui.transition.Transition.switchState(() -> new MainMenuState(), {
+              Transition.switchState(() -> new MainMenuState(), {
                 assetQuery: MainMenuState.queryAssets,
                 transition: BlackScreen(None, None)
               });
@@ -2364,7 +2364,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     else
     {
       // No need to show confirmation, just exit immediately.
-      funkin.ui.transition.Transition.switchState(() -> new MainMenuState(), {
+      Transition.switchState(() -> new MainMenuState(), {
         assetQuery: MainMenuState.queryAssets,
         transition: BlackScreen(None, None)
       });
