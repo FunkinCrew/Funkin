@@ -82,9 +82,7 @@ class AdMobUtil
    * Ad unit ID for displaying rewarded ads.
    */
   #if NO_TESTING_ADS
-  @:envField({
-    mandatoryIfDefined: "FEATURE_MOBILE_ADVERTISEMENTS"
-  })
+  @:envField
   static final ADMOB_REWARDED_AD_UNIT_ID:Null<String>;
   #else
   static final ADMOB_REWARDED_AD_UNIT_ID:Null<String> = #if android "5224354917" #elseif ios "6978759866" #else null #end;
