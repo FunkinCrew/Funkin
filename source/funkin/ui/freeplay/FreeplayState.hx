@@ -1959,8 +1959,12 @@ class FreeplayState extends MusicBeatSubState
     #if FEATURE_DEBUG_FUNCTIONS
     if (FlxG.keys.justPressed.P)
     {
+      var params:FreeplayStateParams = {
+        character: currentCharacterId == 'pico' ? Constants.DEFAULT_CHARACTER : 'pico'
+      };
+
       funkin.ui.transition.Transition.openSubState(() -> new FreeplayState(params), {
-        assetQuery: FreeplayState.queryAssets.bind(_, params, pico),
+        assetQuery: FreeplayState.queryAssets.bind(_, params, params.character),
         transition: Throbber,
         shouldPurgeCache: false
       });
