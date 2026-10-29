@@ -140,6 +140,15 @@ class Transition
     results.append(FunkayLoadingState.queryAssets(type));
     results.append(ThrobberLoadingState.queryAssets(type));
 
+    // Scripted loading screens must keep their assets cached before a transition starts.
+    for (scriptedClass in LoadingState.listScriptClasses())
+    {
+      if (!LoadingState.scriptStaticHas(scriptedClass, 'queryAssets')) continue;
+
+      var scriptedAssets:Array<AssetPath> = LoadingState.scriptStaticCall(scriptedClass, 'queryAssets', [type]);
+      if (scriptedAssets != null) results.appendUnique(scriptedAssets);
+    }
+
     switch (type)
     {
       default:
@@ -261,6 +270,16 @@ class Transition
 
         prepareStickerOut(stickerLoadingState);
         prepareStickerIn(stickerLoadingState);
+
+      case TransitionType.Custom(name, fadeIn, fadeOut):
+        var onTransOutDone:Void->Void = () ->
+        {
+          var loadingState:LoadingState = createCustomLoadingState(name, State(builder), params);
+          FlxStateUtil.openSubStateAtTop(loadingState);
+        };
+
+        prepareFadeOut(fadeOut);
+        prepareFadeIn(fadeIn, onTransOutDone);
     }
   }
 
@@ -365,6 +384,16 @@ class Transition
         });
         prepareStickerOut(stickerLoadingState);
         prepareStickerIn(stickerLoadingState);
+
+      case TransitionType.Custom(name, fadeIn, fadeOut):
+        var onTransOutDone:Void->Void = () ->
+        {
+          var loadingState:LoadingState = createCustomLoadingState(name, SubState(builder), params);
+          FlxStateUtil.openSubStateAtTop(loadingState);
+        };
+
+        prepareFadeOut(fadeOut);
+        prepareFadeIn(fadeIn, onTransOutDone);
     }
   }
 
@@ -454,6 +483,15 @@ class Transition
       };
       Transition.switchState(targetState, buildTransitionParams(assetQuery, priorityAssetQuery, transitionParams));
     }
+  }
+
+  static function createCustomLoadingState(className:String, target:TransitionTarget, params:TransitionParams):LoadingState
+  {
+    var loadingState:Null<LoadingState> = LoadingState.scriptInit(className, target, params);
+    if (loadingState != null) return loadingState;
+
+    trace('[TRANSITION] Failed to create scripted loading state "${className}". Falling back to the default loading screen.');
+    return new LoadingState(FlxColor.BLACK, target, params);
   }
 
   static function prepareFadeIn(fadeType:FadeType, onTransOutDone:() -> Void):Void
@@ -758,6 +796,16 @@ enum TransitionType
    * fadeIn and fadeOut are both custom here.
    */
   Sticker(stickerPack:String);
+
+  /**
+   * Use a scripted LoadingState class to display the loading screen.
+   * The class must extend LoadingState and provide a constructor accepting
+   * (target:TransitionTarget, params:TransitionParams).
+   * @param name The fully-qualified name of the scripted LoadingState class.
+   * @param fadeIn Define how to transition to the loading screen.
+   * @param fadeOut Define how to transition from the loading screen.
+   */
+  Custom(name:String, fadeIn:FadeType, fadeOut:FadeType);
 }
 
 /**
