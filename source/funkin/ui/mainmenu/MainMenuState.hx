@@ -209,7 +209,7 @@ class MainMenuState extends MusicBeatState
 
       Transition.openSubState(() -> new FreeplayState(params), {
         assetQuery: FreeplayState.queryAssets.bind(_, params),
-        transition: TransitionType.BlackScreen(FadeType.Fade(FadeDirection.North), FadeType.Fade(FadeDirection.South)),
+        transition: Throbber,
         shouldPurgeCache: false
       });
     });
