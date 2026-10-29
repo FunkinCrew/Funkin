@@ -11,6 +11,8 @@ import funkin.mobile.ui.options.objects.HitboxShowcase;
 import funkin.mobile.ui.FunkinHitbox;
 import funkin.util.TouchUtil;
 import funkin.util.MathUtil;
+import funkin.ui.options.OptionsState;
+import funkin.ui.transition.Transition;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.AtlasText;
 import funkin.ui.FullScreenScaleMode;
@@ -18,7 +20,6 @@ import funkin.graphics.shaders.HSVShader;
 import funkin.graphics.FunkinSprite;
 import funkin.graphics.FunkinCamera;
 import funkin.audio.FunkinSound;
-import funkin.Preferences;
 
 /**
  * Represents the controls scheme menu.
@@ -141,7 +142,7 @@ class ControlsSchemeMenu extends MusicBeatSubState
 
     for (i in 0...availableSchemes.length)
     {
-      if (availableSchemes[i] == Preferences.controlsScheme)
+      if (availableSchemes[i] == funkin.Preferences.controlsScheme)
       {
         currentIndex = i;
         break;
@@ -238,7 +239,7 @@ class ControlsSchemeMenu extends MusicBeatSubState
   {
     currentButton.busy = true;
 
-    Preferences.controlsScheme = availableSchemes[currentIndex];
+    funkin.Preferences.controlsScheme = availableSchemes[currentIndex];
 
     FlxTransitionableState.skipNextTransIn = true;
     FlxTransitionableState.skipNextTransOut = true;
