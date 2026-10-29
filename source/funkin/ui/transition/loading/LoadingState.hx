@@ -38,7 +38,7 @@ class LoadingState extends MusicBeatSubState
   var target:TransitionTarget;
   var params:TransitionParams;
   var loadingStagesDone:Int = 0;
-  var currentProgress:Float = 0.0; // [0.0, 1.0]
+  public var currentProgress(default, null):Float = 0.0; // [0.0, 1.0]
   var completionStarted:Bool = false;
   var transitionCancelled:Bool = false;
   var previousPersistentUpdate:Bool = true;
@@ -55,7 +55,7 @@ class LoadingState extends MusicBeatSubState
     }
   }
 
-  function new(?color:FlxColor, target:TransitionTarget, params:TransitionParams)
+  public function new(?color:FlxColor, target:TransitionTarget, params:TransitionParams)
   {
     // #if FEATURE_DEBUG_FUNCTIONS
     // super(color ?? LIME);
