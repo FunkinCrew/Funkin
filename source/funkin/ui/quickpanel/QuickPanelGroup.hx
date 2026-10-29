@@ -237,8 +237,8 @@ class QuickPanelGroup extends FunkinSpriteGroup
         @:privateAccess
         var path:String = s._asc?.fullyQualifiedName ?? Type.getClassName(Type.getClass(FlxG.state));
         funkin.ui.options.OptionsState.backState = path;
-        Transition.switchState(() -> new OptionsSubState(), {
-          assetQuery: OptionsSubState.queryAssets,
+        Transition.switchState(() -> new OptionsState(), {
+          assetQuery: OptionsState.queryAssets,
           transition: None,
           shouldPurgeCache: false
         });

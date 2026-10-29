@@ -118,7 +118,10 @@ class SaveDataMenu extends Page<OptionsState.OptionsMenuPageName>
       // Clear the save data.
       Save.clearData();
 
-      FlxG.switchState(() -> new funkin.InitState());
+      Transition.switchState(() -> InitState(), {
+        assetQuery: InitState.queryAssets,
+        transition: None
+      });
     });
   }
 

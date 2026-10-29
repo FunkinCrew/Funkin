@@ -450,7 +450,10 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     {
       // Clear the save data.
       funkin.save.Save.clearData();
-      FlxG.switchState(() -> new funkin.InitState());
+      Transition.switchState(() -> InitState(), {
+        assetQuery: InitState.queryAssets,
+        transition: None
+      });
     };
     prompt.onNo = function()
     {

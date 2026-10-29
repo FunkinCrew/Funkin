@@ -243,7 +243,11 @@ class ControlsSchemeMenu extends MusicBeatSubState
     FlxTransitionableState.skipNextTransIn = true;
     FlxTransitionableState.skipNextTransOut = true;
 
-    FlxG.switchState(() -> new funkin.ui.options.OptionsState());
+    Transition.switchState(() -> new OptionsState(), {
+      assetQuery: OptionsState.queryAssets,
+      transition: None,
+      shouldPurgeCache: false
+    });
   }
 
   /**

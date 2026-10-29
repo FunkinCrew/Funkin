@@ -1470,7 +1470,11 @@ class ModMenuState extends MusicBeatState
     FlxTransitionableState.skipNextTransIn = true;
 
     // Directly switch to HotReloadState; we don't need Transition since HotReloadState handles asset loading.
-    FlxG.switchState(() -> new HotReloadState());
+    Transition.switchState(() -> new HotReloadState(), {
+      assetQuery: HotReloadState.queryAssets,
+      transition: None,
+      shouldPurgeCache: false
+    });
   }
 
   // HELPERS //
@@ -1582,7 +1586,10 @@ class ModMenuState extends MusicBeatState
     uiState.transition(Exiting);
     FlxG.keys.enabled = false;
     Cursor.hide();
-    FlxG.switchState(() -> new MainMenuState());
+    Transition.switchState(() -> new MainMenuState(), {
+      assetQuery: MainMenuState.queryAssets,
+      transition: None
+    });
     FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu').toString());
   }
 }
