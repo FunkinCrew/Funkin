@@ -1467,6 +1467,8 @@ class ModMenuState extends MusicBeatState
     refresh();
 
     FlxTransitionableState.skipNextTransIn = true;
+
+    // Directly switch to HotReloadState; we don't need Transition since HotReloadState handles asset loading.
     FlxG.switchState(() -> new HotReloadState());
   }
 

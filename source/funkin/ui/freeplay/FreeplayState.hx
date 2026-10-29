@@ -2215,11 +2215,15 @@ class FreeplayState extends MusicBeatSubState
       dj?.onConfirm();
       new FlxTimer().start(styleData?.getStartDelay(), function(tmr:FlxTimer)
       {
-        FlxG.switchState(() -> new ChartEditorState({
+        var chartEditorParams = {
           loadFromTemplate: targetSongID,
           targetSongDifficulty: currentDifficulty,
           targetSongVariation: currentVariation,
-        }));
+        };
+        Transition.switchState(() -> new ChartEditorState(chartEditorParams), {
+          assetQuery: ChartEditorState.queryAssets.bind(_, chartEditorParams),
+          transition: BlackScreen(None, Fade(South))
+        });
       });
       return;
     }
@@ -2264,11 +2268,15 @@ class FreeplayState extends MusicBeatSubState
       dj?.onConfirm();
       new FlxTimer().start(styleData?.getStartDelay(), function(tmr:FlxTimer)
       {
-        FlxG.switchState(() -> new CameraEditorState({
+        var cameraEditorParams = {
           loadFromTemplate: targetSongID,
           targetSongDifficulty: currentDifficulty,
           targetSongVariation: currentVariation,
-        }));
+        };
+        Transition.switchState(() -> new CameraEditorState(cameraEditorParams), {
+          assetQuery: Transition.NO_ASSETS, // CameraEditorState.queryAssets.bind(_, cameraEditorParams),
+          transition: BlackScreen(None, Fade(South))
+        });
       });
       return;
     }
@@ -2326,12 +2334,17 @@ class FreeplayState extends MusicBeatSubState
         return;
       }
 
-      FlxG.switchState(() -> new StageEditorState({
+      var stageEditorParams = {
         targetStageId: targetDifficulty.stage,
         targetBfChar: targetDifficulty.characters.player,
         targetGfChar: targetDifficulty.characters.girlfriend,
         targetDadChar: targetDifficulty.characters.opponent
-      }));
+      };
+
+      Transition.switchState(() -> new StageEditorState(stageEditorParams), {
+        assetQuery: Transition.NO_ASSETS, // StageEditorState.queryAssets.bind(_, stageEditorParams),
+        transition: BlackScreen(None, Fade(South))
+      });
       return;
     }
     #end

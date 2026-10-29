@@ -17,6 +17,7 @@ import funkin.audio.FunkinSound;
 import funkin.ui.AtlasText;
 // import openfl.Assets;
 import funkin.ui.mainmenu.MainMenuState;
+import funkin.ui.transition.Transition;
 #if FEATURE_NEWGROUNDS
 import funkin.api.newgrounds.Medals;
 #end
@@ -275,7 +276,10 @@ class TitleState extends MusicBeatState
     FlxG.sound.music.fadeOut(2.0, 0);
     FlxG.camera.fade(FlxColor.BLACK, 2.0, false, function()
     {
-      FlxG.switchState(() -> new AttractState());
+      Transition.switchState(() -> new AttractState(params), {
+      assetQuery: AttractState.queryAssets,
+      transition: TransitionType.BlackScreen(FadeType.Fade(FadeDirection.North), FadeType.Fade(FadeDirection.South)),
+      shouldPurgeCache: false
     });
   }
 

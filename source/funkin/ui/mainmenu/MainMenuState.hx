@@ -580,9 +580,9 @@ class MainMenuState extends MusicBeatState
     if (InputUtil.allPressedWithDebounce([CONTROL, ALT, SHIFT, P]))
     {
       var charID = 'pico';
-      funkin.ui.transition.Transition.switchState(() -> new funkin.ui.charSelect.CharacterUnlockState(charID), {
+      Transition.switchState(() -> new funkin.ui.charSelect.CharacterUnlockState(charID), {
         assetQuery: funkin.ui.charSelect.CharacterUnlockState.queryAssets.bind(_, charID),
-        transition: BlackScreen(Fade(North), None),
+        transition: None,
       });
     }
 

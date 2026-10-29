@@ -58,6 +58,7 @@ import funkin.save.Save;
 import funkin.ui.FullScreenScaleMode;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.mainmenu.MainMenuState;
+import funkin.ui.transition.Transition;
 import funkin.ui.transition.preload.hotreload.HotReloadState.HotReloadStateParams;
 import funkin.util.GRhythmUtil;
 import funkin.util.HapticUtil;
@@ -1569,7 +1570,11 @@ class PlayState extends MusicBeatSubState
           if (!isSubState && event.gitaroo)
           {
             if (currentStage != null) this.remove(currentStage);
-            FlxG.switchState(() -> new GitarooPause(lastParams));
+            Transition.switchState(() -> new GitarooPause(lastParams), {
+              assetQuery: GitarooPause.queryAssets,
+              transition: None,
+              shouldPurgeCache: false,
+            });
           }
           else
           {
@@ -3484,12 +3489,17 @@ class PlayState extends MusicBeatSubState
       var bf:String = currentStage?.getBoyfriend()?.characterId ?? '';
       var gf:String = currentStage?.getGirlfriend()?.characterId ?? '';
       var dad:String = currentStage?.getDad()?.characterId ?? '';
-      FlxG.switchState(() -> new StageEditorState({
+
+      var stageEditorParams = {
         targetStageId: currentStageId,
         targetBfChar: bf,
         targetGfChar: gf,
         targetDadChar: dad
-      }));
+      };
+      Transition.switchState(() -> new StageEditorState(stageEditorParams), {
+        assetQuery: Transition.NO_ASSETS, // StageEditorState.queryAssets.bind(_, stageEditorParams),
+        transition: BlackScreen(None, Fade(South))
+      });
     }
     #end
 
@@ -3508,12 +3518,17 @@ class PlayState extends MusicBeatSubState
       else
       {
         if (currentStage != null) this.remove(currentStage);
-        FlxG.switchState(() -> new ChartEditorState({
+        var chartEditorParams = {
           loadFromTemplate: currentSong.id,
           targetSongDifficulty: currentDifficulty,
           targetSongVariation: currentVariation,
           targetSongPosition: Conductor.instance.songPosition
-        }));
+        };
+
+        Transition.switchState(() -> new ChartEditorState(chartEditorParams), {
+          assetQuery: ChartEditorState.queryAssets.bind(_, chartEditorParams),
+          transition: BlackScreen(None, Fade(South))
+        });
       }
     }
     #end
@@ -3535,12 +3550,17 @@ class PlayState extends MusicBeatSubState
       else
       {
         if (currentStage != null) this.remove(currentStage);
-        FlxG.switchState(() -> new CameraEditorState({
+        var cameraEditorParams = {
           loadFromTemplate: currentSong.id,
           targetSongDifficulty: currentDifficulty,
           targetSongVariation: currentVariation,
           targetSongPosition: Conductor.instance.songPosition
-        }));
+        };
+
+        Transition.switchState(() -> new CameraEditorState(cameraEditorParams), {
+          assetQuery: Transition.NO_ASSETS, // CameraEditorState.queryAssets.bind(_, params),
+          transition: BlackScreen(None, Fade(South))
+        });
       }
     }
     #end

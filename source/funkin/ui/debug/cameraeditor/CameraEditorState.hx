@@ -76,6 +76,7 @@ import funkin.ui.haxeui.components.editors.timeline.TimelineEvent;
 import funkin.ui.haxeui.components.editors.timeline.TimelineLayerData;
 import funkin.ui.haxeui.components.editors.timeline.TimelineUtil;
 import funkin.ui.mainmenu.MainMenuState;
+import funkin.ui.transition.Transition;
 import funkin.ui.transition.preload.hotreload.HotReloadState.HotReloadStateParams;
 import funkin.util.FileUtil;
 import funkin.util.InputUtil;
@@ -2410,11 +2411,8 @@ class CameraEditorState extends UIState implements ConsoleClass
       currentStage.kill();
       currentStage = null;
     }
-    FunkinAssetCache.instance.preparePurgeCache();
 
     destroyHaxeUIComponents();
-
-    FunkinAssetCache.instance.purgeCache(true);
 
     writePreferences(!saved);
     resetWindowTitle();
@@ -2867,12 +2865,17 @@ class CameraEditorState extends UIState implements ConsoleClass
         if (f != null) f.focus = false;
       }
 
-      FlxG.switchState(() -> new ChartEditorState({
+      var chartEditorParams = {
         loadFromPath: this.currentWorkingFilePath,
         targetSongDifficulty: this.currentDifficulty,
         targetSongVariation: this.currentVariation,
         targetSongPosition: startTimestamp,
-      }));
+      };
+
+      Transition.switchState(() -> new ChartEditorState(chartEditorParams), {
+        assetQuery: ChartEditorState.queryAssets.bind(_, chartEditorParams),
+        transition: BlackScreen(None, Fade(South))
+      });
     }
   }
 

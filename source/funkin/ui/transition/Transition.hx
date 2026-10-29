@@ -230,7 +230,10 @@ class Transition
       case TransitionType.BlackWithThrobber(fadeIn, fadeOut):
         var onTransOutDone:Void->Void = () ->
         {
-          FlxStateUtil.openSubStateAtTop(new ThrobberLoadingState(State(builder), params, false));
+          FlxStateUtil.openSubStateAtTop(new ThrobberLoadingState(State(builder), params, {
+            transparent: false,
+            delay: 0.0,
+          }));
         };
 
         prepareFadeOut(fadeOut);
@@ -239,7 +242,10 @@ class Transition
       case TransitionType.Throbber:
         var onTransOutDone:Void->Void = () ->
         {
-          FlxStateUtil.openSubStateAtTop(new ThrobberLoadingState(State(builder), params, true));
+          FlxStateUtil.openSubStateAtTop(new ThrobberLoadingState(State(builder), params, {
+            transparent: true,
+            delay: 1.0,
+          }));
         };
 
         // Make sure to reset the fade to None,
@@ -329,7 +335,10 @@ class Transition
       case TransitionType.BlackWithThrobber(fadeIn, fadeOut):
         var onTransOutDone:Void->Void = () ->
         {
-          FlxStateUtil.openSubStateAtTop(new ThrobberLoadingState(SubState(builder), params, false));
+          FlxStateUtil.openSubStateAtTop(new ThrobberLoadingState(SubState(builder), params, {
+            transparent: false,
+            delay: 0.0
+          }));
         };
 
         prepareFadeOut(fadeOut);
@@ -338,7 +347,10 @@ class Transition
       case TransitionType.Throbber:
         var onTransOutDone:Void->Void = () ->
         {
-          FlxStateUtil.openSubStateAtTop(new ThrobberLoadingState(SubState(builder), params, true));
+          FlxStateUtil.openSubStateAtTop(new ThrobberLoadingState(SubState(builder), params, {
+            transparent: true,
+            delay: 1.0
+          }));
         };
 
         // Make sure to reset the fade to None,
@@ -735,8 +747,9 @@ enum TransitionType
 
   /**
    * Display no transition, but display a throbber in the bottom right.
-   * Suitable for when you need a loading screen but don't want to switch to another screen,
-   * such as Freeplay.
+   * Since the background is transparent and the throbber only appears after a delay,
+   * this essentially acts like None, but with a guard to show a throbber only if loading takes longer than expected.
+   * Suitable for when you need a loading screen but don't want to switch to another screen.
    */
   Throbber;
 

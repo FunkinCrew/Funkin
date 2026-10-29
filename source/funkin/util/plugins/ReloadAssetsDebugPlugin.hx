@@ -117,6 +117,7 @@ class ReloadAssetsDebugPlugin extends FlxBasic
             return newState;
           }
         };
+        // Directly switch to HotReloadState; we don't need Transition since HotReloadState handles asset loading.
         FlxG.switchState(() -> new HotReloadState(hotReloadParams));
         return;
       }

@@ -1,7 +1,6 @@
 package funkin.ui.debug.charting;
 
-import funkin.assets.Paths.AssetPath;
-import funkin.assets.Assets.AssetType;
+import funkin.ui.transition.Transition;
 #if FEATURE_CHART_EDITOR
 import funkin.ui.debug.charting.components.ChartEditorCommandPalette;
 import flixel.FlxBasic;
@@ -137,7 +136,6 @@ import haxe.ui.events.MouseEvent;
 import haxe.ui.events.UIEvent;
 import haxe.ui.focus.FocusManager;
 import openfl.display.BitmapData;
-import funkin.assets.Assets.AssetType;
 import funkin.assets.Assets;
 import funkin.assets.ValidatedPaths as Paths;
 
@@ -6883,8 +6881,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function performCleanup():Void
   {
-    FunkinAssetCache.instance.preparePurgeCache();
-
     destroyHaxeUIComponents();
 
     @:privateAccess
@@ -6893,9 +6889,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     ChartEditorEventSprite.eventFrames = null;
 
     activeToolboxes.clear();
-
-    // TODO: In loading screens, you should be  caching BETWEEN these.
-    FunkinAssetCache.instance.purgeCache(true);
 
     criticalFailure = true;
   }
@@ -6958,7 +6951,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       return;
     }
 
-    funkin.ui.transition.Transition.switchState(() -> new MainMenuState(), {
+    Transition.switchState(() -> new MainMenuState(), {
       assetQuery: MainMenuState.queryAssets,
       transition: BlackScreen(None, None)
     });
@@ -7400,12 +7393,17 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       writePreferences(false);
       performCleanup();
 
-      FlxG.switchState(() -> new CameraEditorState({
+      var cameraEditorParams = {
         loadFromPath: this.currentWorkingFilePath,
         targetSongDifficulty: this.selectedDifficulty,
         targetSongVariation: this.selectedVariation,
         targetSongPosition: startTimestamp,
-      }));
+      };
+
+      Transition.switchState(() -> new CameraEditorState(cameraEditorParams), {
+        assetQuery: Transition.NO_ASSETS, // CameraEditorState.queryAssets.bind(_, cameraEditorParams),
+        transition: BlackScreen(None, Fade(South))
+      });
     }
   }
 

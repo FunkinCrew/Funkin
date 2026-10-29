@@ -22,6 +22,7 @@ import funkin.input.Controls;
 import funkin.ui.quickpanel.QuickPanelState;
 import funkin.ui.quickpanel.QuickPanelPullTab;
 import flixel.FlxSubState;
+import funkin.ui.transition.Transition;
 //
 // ~PATHS~
 //
@@ -236,9 +237,10 @@ class QuickPanelGroup extends FunkinSpriteGroup
         @:privateAccess
         var path:String = s._asc?.fullyQualifiedName ?? Type.getClassName(Type.getClass(FlxG.state));
         funkin.ui.options.OptionsState.backState = path;
-        funkin.ui.transition.Transition.switchState(() -> new funkin.ui.options.OptionsState(), {
-          assetQuery: funkin.ui.options.OptionsState.queryAssets,
-          transition: BlackScreen(Fade(North), Fade(South))
+        Transition.switchState(() -> new OptionsSubState(), {
+          assetQuery: OptionsSubState.queryAssets,
+          transition: None,
+          shouldPurgeCache: false
         });
       },
       icon: 'options',

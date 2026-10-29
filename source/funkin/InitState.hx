@@ -33,6 +33,7 @@ import funkin.play.PlayStatePlaylist;
 import funkin.ui.debug.charting.ChartEditorState;
 import funkin.ui.debug.stageeditor.StageEditorState;
 import funkin.ui.title.TitleState;
+import funkin.ui.transition.Transition;
 import funkin.util.CLIUtil;
 import funkin.util.CLIUtil.CLIParams;
 import funkin.util.macro.MacroUtil;
@@ -333,25 +334,43 @@ class InitState extends FlxState
     startLevel(defineLevel(), defineDifficulty());
     #elseif FREEPLAY
     // -DFREEPLAY
-    FlxG.switchState(() -> new funkin.ui.freeplay.FreeplayState());
+    Transition.switchState(() -> new funkin.ui.freeplay.FreeplayState(), {
+      assetQuery: funkin.ui.freeplay.FreeplayState.queryAssets,
+      transition: None
+    });
     #elseif DIALOGUE
     // -DDIALOGUE
-    FlxG.switchState(() -> new funkin.ui.debug.dialogue.ConversationDebugState());
+    Transition.switchState(() -> new funkin.ui.debug.dialogue.ConversationDebugState(), {
+      assetQuery: funkin.ui.debug.dialogue.ConversationDebugState.queryAssets,
+      transition: None
+    });
     #elseif ANIMATE
     // -DANIMATE
-    FlxG.switchState(() -> new funkin.ui.debug.anim.FlxAnimateTest());
+    Transition.switchState(() -> new funkin.ui.debug.anim.FlxAnimateTest(), {
+      assetQuery: funkin.ui.debug.anim.FlxAnimateTest.queryAssets,
+      transition: None
+    });
     #elseif CHARTING
     // -DCHARTING
-    FlxG.switchState(() -> new funkin.ui.debug.charting.ChartEditorState());
+    Transition.switchState(() -> new funkin.ui.debug.charting.ChartEditorState(), {
+      assetQuery: funkin.ui.debug.charting.ChartEditorState.queryAssets,
+      transition: None
+    });
     #elseif STAGING
     // -DSTAGING
-    FlxG.switchState(() -> new funkin.ui.debug.stageeditor.StageEditorState());
+    Transition.switchState(() -> new funkin.ui.debug.stageeditor.StageEditorState(), {
+      assetQuery: funkin.ui.debug.stageeditor.StageEditorState.queryAssets,
+      transition: None
+    });
     #elseif EYESOFGOD
     // -DEYESOFGOD
-    FlxG.switchState(() -> new funkin.ui.debug.cameraeditor.CameraEditorState());
+    Transition.switchState(() -> new funkin.ui.debug.cameraeditor.CameraEditorState(), {
+      assetQuery: funkin.ui.debug.cameraeditor.CameraEditorState.queryAssets,
+      transition: None
+    });
     #elseif RESULTS
     // -DRESULTS
-    FlxG.switchState(() -> new funkin.play.ResultState({
+    var params = {
       storyMode: true,
       title: 'Cum Song Erect by Kawai Sprite',
       songId: 'cum',
@@ -378,13 +397,23 @@ class InitState extends FlxState
         // 210 total notes = 91% = EXCELLENT
         // 190 total notes = PERFECT
       },
-    }));
+    };
+    Transition.switchState(() -> new funkin.play.ResultState(params), {
+      assetQuery: funkin.play.ResultState.queryAssets(_, params),
+      transition: None
+    });
     #elseif ANIMDEBUG
     // -DANIMDEBUG
-    FlxG.switchState(() -> new funkin.ui.debug.anim.DebugBoundingState());
+    Transition.switchState(() -> new funkin.ui.debug.anim.DebugBoundingState(), {
+      assetQuery: Transition.NO_ASSETS,
+      transition: None
+    });
     #elseif LATENCY
     // -DLATENCY
-    FlxG.switchState(() -> new funkin.LatencyState());
+    Transition.switchState(() -> new funkin.LatencyState(), {
+      assetQuery: Transition.NO_ASSETS,
+      transition: None
+    });
     #else
     startGameNormally();
     #end
@@ -420,7 +449,7 @@ class InitState extends FlxState
     {
       funkin.ui.transition.Transition.switchState(() -> new funkin.ui.modmenu.ModMenuState(), {
         assetQuery: funkin.ui.modmenu.ModMenuState.queryAssets,
-        transition: BlackScreen(Fade(North), Fade(South))
+        transition: BlackScreen(None, Fade(South))
       });
       return;
     }
@@ -429,50 +458,66 @@ class InitState extends FlxState
     if (params.chart.shouldLoadChart)
     {
       #if FEATURE_CHART_EDITOR
-      FlxG.switchState(() -> new ChartEditorState({
+      var params = {
         loadFromPath: params.chart.chartPath,
-      }));
+      };
+      Transition.switchState(() -> new ChartEditorState(params), {
+        assetQuery: ChartEditorState.queryAssets.bind(_, params),
+        transition: BlackScreen(None, Fade(South))
+      });
       #else
       funkin.ui.transition.Transition.switchState(() -> new TitleState(), {
         assetQuery: TitleState.queryAssets,
-        transition: BlackScreen(Fade(North), Fade(South))
+        transition: None
       });
       #end
     }
     else if (params.camera.shouldLoadChart)
     {
       #if FEATURE_CAMERA_EDITOR
-      FlxG.switchState(() -> new CameraEditorState({
+      var params = {
         loadFromPath: params.camera.chartPath,
-      }));
+      };
+      Transition.switchState(() -> new CameraEditorState(params), {
+        assetQuery: Transition.NO_ASSETS, // CameraEditorState.queryAssets.bind(_, params),
+        transition: BlackScreen(None, Fade(South))
+      });
       #else
       funkin.ui.transition.Transition.switchState(() -> new TitleState(), {
         assetQuery: TitleState.queryAssets,
-        transition: BlackScreen(Fade(North), Fade(South))
+        transition: None
       });
       #end
     }
     else if (params.stage.shouldLoadStage)
     {
       #if FEATURE_STAGE_EDITOR
-      FlxG.switchState(() -> new StageEditorState({
+      var params = {
         fnfsTargetPath: params.stage.stagePath,
-      }));
+      };
+
+      Transition.switchState(() -> new StageEditorState(params), {
+        assetQuery: Transition.NO_ASSETS,
+        transition: BlackScreen(None, Fade(South))
+      });
       #else
       funkin.ui.transition.Transition.switchState(() -> new TitleState(), {
         assetQuery: TitleState.queryAssets,
-        transition: BlackScreen(Fade(North), Fade(South))
+        transition: None
       });
       #end
     }
     else if (params.song.shouldLoadSong && params.song.songPath != null)
     {
       #if sys
-      FlxG.switchState(() -> new ChartPlaytestMenu(params.song.songPath));
+      Transition.switchState(() -> new ChartPlaytestMenu(params.song.songPath), {
+        assetQuery: Transition.NO_ASSETS,
+        transition: BlackScreen(None, Fade(South))
+      });
       #else
       funkin.ui.transition.Transition.switchState(() -> new TitleState(), {
         assetQuery: TitleState.queryAssets,
-        transition: BlackScreen(Fade(North), Fade(South))
+        transition: None
       });
       #end
     }
@@ -490,7 +535,10 @@ class InitState extends FlxState
           FlxG.sound.music = null;
         }
 
-        FlxG.switchState(() -> new ChartPlaytestMenu(fnfcFile));
+        Transition.switchState(() -> new ChartPlaytestMenu(fnfcFile), {
+          assetQuery: Transition.NO_ASSETS,
+          transition: BlackScreen(None, Fade(South))
+        });
       });
 
       final fnfcFile = funkin.mobile.util.FNFLoaderProvider.queryFNFC();
@@ -499,7 +547,11 @@ class InitState extends FlxState
       {
         trace('launching FNFC from $fnfcFile');
 
-        FlxG.switchState(() -> new ChartPlaytestMenu(fnfcFile));
+        Transition.switchState(() -> new ChartPlaytestMenu(fnfcFile), {
+          assetQuery: Transition.NO_ASSETS,
+          transition: BlackScreen(None, Fade(South))
+        });
+
         return;
       }
       #end
