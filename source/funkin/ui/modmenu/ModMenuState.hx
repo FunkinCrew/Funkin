@@ -1471,7 +1471,6 @@ class ModMenuState extends MusicBeatState
 
     // Directly switch to HotReloadState; we don't need Transition since HotReloadState handles asset loading.
     Transition.switchState(() -> new HotReloadState(), {
-      assetQuery: HotReloadState.queryAssets,
       transition: None,
       shouldPurgeCache: false
     });

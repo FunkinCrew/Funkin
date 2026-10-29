@@ -22,6 +22,7 @@ import funkin.input.Controls;
 import funkin.ui.quickpanel.QuickPanelState;
 import funkin.ui.quickpanel.QuickPanelPullTab;
 import flixel.FlxSubState;
+import funkin.ui.options.OptionsState;
 import funkin.ui.transition.Transition;
 //
 // ~PATHS~

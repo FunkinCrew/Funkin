@@ -34,6 +34,7 @@ import funkin.util.MathUtil;
 import funkin.util.SwipeUtil;
 import funkin.util.TouchUtil;
 import funkin.util.WindowUtil;
+import funkin.ui.transition.Transition;
 #if FEATURE_DEBUG_MENU
 import funkin.ui.debug.DebugMenuSubState;
 #end
@@ -206,8 +207,8 @@ class MainMenuState extends MusicBeatState
         character: targetCharacter
       };
 
-      Transition.openSubState(() -> new FreeplayState(freeplayParams), {
-        assetQuery: FreeplayState.queryAssets.bind(_, freeplayParams),
+      Transition.openSubState(() -> new FreeplayState(params), {
+        assetQuery: FreeplayState.queryAssets.bind(_, params),
         transition: TransitionType.BlackScreen(FadeType.Fade(FadeDirection.North), FadeType.Fade(FadeDirection.South)),
         shouldPurgeCache: false
       });

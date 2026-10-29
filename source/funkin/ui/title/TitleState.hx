@@ -276,10 +276,11 @@ class TitleState extends MusicBeatState
     FlxG.sound.music.fadeOut(2.0, 0);
     FlxG.camera.fade(FlxColor.BLACK, 2.0, false, function()
     {
-      Transition.switchState(() -> new AttractState(params), {
-      assetQuery: AttractState.queryAssets,
-      transition: TransitionType.BlackScreen(FadeType.Fade(FadeDirection.North), FadeType.Fade(FadeDirection.South)),
-      shouldPurgeCache: false
+      Transition.switchState(() -> new AttractState(), {
+        assetQuery: AttractState.queryAssets,
+        transition: TransitionType.BlackScreen(FadeType.Fade(FadeDirection.North), FadeType.Fade(FadeDirection.South)),
+        shouldPurgeCache: false
+      });
     });
   }
 
