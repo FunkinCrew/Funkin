@@ -227,7 +227,7 @@ class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
         {
           // We have to change the song time to match the playhead position when we move it.
           var currentWaveformIndex:Int = Std.int(playheadAbsolutePos * (waveformScale / BASE_SCALE * waveformMagicFactor));
-          var targetSongTimeSeconds:Float = waveformPlayer.waveform.waveformData.indexToSeconds(currentWaveformIndex);
+          var targetSongTimeSeconds:Float = waveformInstrumental.waveform.waveformData.indexToSeconds(currentWaveformIndex);
           audioPreviewTracks.time = targetSongTimeSeconds * Constants.MS_PER_SEC;
         }
 
@@ -411,7 +411,7 @@ class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
 
     // Move the audio preview to the playhead position.
     var currentWaveformIndex:Int = Std.int(playheadAbsolutePos * (waveformScale / BASE_SCALE * waveformMagicFactor));
-    var targetSongTimeSeconds:Float = waveformPlayer.waveform.waveformData.indexToSeconds(currentWaveformIndex);
+    var targetSongTimeSeconds:Float = waveformInstrumental.waveform.waveformData.indexToSeconds(currentWaveformIndex);
     audioPreviewTracks.time = targetSongTimeSeconds * Constants.MS_PER_SEC;
   }
 
