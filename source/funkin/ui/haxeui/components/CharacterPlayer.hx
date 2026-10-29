@@ -102,17 +102,12 @@ class CharacterPlayer extends Box
     // Set character properties.
     if (characterType != null) character.characterType = characterType;
     if (flip) character.flipX = !character.flipX;
-    if (targetScale != 1.0) character.setScale(targetScale);
-
-    if (character._data.isPixel)
-    {
-      character.scale.x *= Constants.PIXEL_ART_SCALE;
-      character.scale.y *= Constants.PIXEL_ART_SCALE;
-    }
+    if (targetScale != 1.0) character.setScale(character.getBaseScale() * targetScale);
 
     character.animation.onFrameChange.add(onFrame);
     character.animation.onFinish.add(onFinish);
     add(character);
+    repositionChildren();
 
     invalidateComponentLayout();
 
@@ -159,7 +154,8 @@ class CharacterPlayer extends Box
 
     if (character != null)
     {
-      character.setScale(value);
+      character.setScale(character.getBaseScale() * value);
+      repositionChildren();
     }
 
     return targetScale = value;
