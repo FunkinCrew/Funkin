@@ -1063,7 +1063,7 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
    * @param key The name of the field to retrieve.
    * @return The field value, or `null` if not provided.
    */
-  public function getStringArray(key:String):Array<Float>
+  public function getStringArray(key:String):Array<String>
   {
     var result:Dynamic = getDynamic(key);
     if (result == null) return null;
