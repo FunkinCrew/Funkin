@@ -358,14 +358,36 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   }
 
   /**
-   * The length of the current instrumental, in PIXELS.
+   * The length of the chart grid, in steps.
+   * This is `songLengthInSteps` rounded up, so the last row of the grid doesn't cut off weirdly.
+   */
+  var gridLengthInSteps(get, never):Float;
+
+  function get_gridLengthInSteps():Float
+  {
+    return Math.ceil(songLengthInSteps);
+  }
+
+  /**
+   * Last step a note can be snapped to while still fitting on the grid.
+   * Dependent on the current note snap.
+   */
+  var lastSnappedGridStep(get, never):Float;
+
+  function get_lastSnappedGridStep():Float
+  {
+    return Math.floor((gridLengthInSteps - 1) / noteSnapRatio) * noteSnapRatio;
+  }
+
+  /**
+   * The length of the chart grid, in PIXELS.
    * Dependent on BPM, because the size of a grid square does not change with BPM but the length of a beat does.
    */
   var songLengthInPixels(get, set):Int;
 
   function get_songLengthInPixels():Int
   {
-    return Std.int(songLengthInSteps * GRID_SIZE);
+    return Std.int(gridLengthInSteps * GRID_SIZE);
   }
 
   function set_songLengthInPixels(value:Int):Int
@@ -4722,7 +4744,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           {
             var stepTime:Float = (noteSprite.noteData == null) ? 0.0 : noteSprite.noteData.getStepTime();
             // Update the note's "ghost" step time.
-            noteSprite.overrideStepTime = (stepTime + dragTargetCurrentStep).clamp(0, songLengthInSteps - (1 * noteSnapRatio));
+            noteSprite.overrideStepTime = (stepTime + dragTargetCurrentStep).clamp(0, lastSnappedGridStep);
             // Then reapply the note sprite's position relative to the grid.
             noteSprite.updateNotePosition(renderedNotes);
 
@@ -4829,7 +4851,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           if (dragTargetCurrentStep != 0.0 || dragTargetCurrentColumn != 0)
           {
             var stepTime = (eventSprite.eventData == null) ? 0 : eventSprite.eventData.getStepTime();
-            eventSprite.overrideStepTime = (stepTime + dragTargetCurrentStep).clamp(0, songLengthInSteps);
+            eventSprite.overrideStepTime = (stepTime + dragTargetCurrentStep).clamp(0, lastSnappedGridStep);
             // Then reapply the note sprite's position relative to the grid.
             eventSprite.updateEventPosition(renderedEvents);
           }
@@ -5560,6 +5582,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     var cursorMs:Float = Conductor.instance.getStepTimeInMs(cursorFractionalStep);
     // Round the cursor step to the nearest snap quant.
     var cursorSnappedStep:Float = Math.floor(cursorFractionalStep / noteSnapRatio) * noteSnapRatio;
+    cursorSnappedStep = Math.min(cursorSnappedStep, lastSnappedGridStep);
     var cursorSnappedMs:Float = Conductor.instance.getStepTimeInMs(cursorSnappedStep);
 
     // The direction value for the column at the cursor.
@@ -5897,8 +5920,22 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
         // calculate distance between the position dragged to and the original position.
         var dragDistanceSteps:Float =
-          Conductor.instance.getTimeInSteps(cursorSnappedMs).clamp(0, songLengthInSteps - (1 * noteSnapRatio))
+          Conductor.instance.getTimeInSteps(cursorSnappedMs).clamp(0, lastSnappedGridStep)
           - dragStartCursorStep;
+
+        var selectionEndStep:Float = 0;
+        for (note in currentNoteSelection)
+        {
+          selectionEndStep = Math.max(selectionEndStep, note.getStepTime() + note.getStepLength() + 1);
+        }
+        for (event in currentEventSelection)
+        {
+          selectionEndStep = Math.max(selectionEndStep, event.getStepTime() + 1);
+        }
+
+        var maxDragDistanceSteps:Float = Math.max(Math.floor((gridLengthInSteps - selectionEndStep) / noteSnapRatio) * noteSnapRatio, 0);
+        if (dragDistanceSteps > maxDragDistanceSteps) dragDistanceSteps = maxDragDistanceSteps;
+
         var dragDistanceColumns:Int = cursorGridPos - dragStartCursorColumn;
 
         if ((dragTargetCurrentColumn != dragDistanceColumns && overlapsGrid) || dragTargetCurrentStep != dragDistanceSteps)
@@ -6501,6 +6538,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     var playheadFractionalStep:Float = (scrollPositionInPixels + playheadPositionInPixels) / GRID_SIZE;
     var playheadSnappedStep:Float = Math.floor(playheadFractionalStep / noteSnapRatio) * noteSnapRatio;
+    playheadSnappedStep = Math.min(playheadSnappedStep, lastSnappedGridStep);
     var playheadSnappedMs:Float = Conductor.instance.getStepTimeInMs(playheadSnappedStep);
 
     // Look for notes within 1 step of the playhead.
@@ -6536,6 +6574,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     var playheadFractionalStep:Float = (scrollPositionInPixels + playheadPositionInPixels) / GRID_SIZE;
     var playheadSnappedStep:Float = Math.floor(playheadFractionalStep / noteSnapRatio) * noteSnapRatio;
+    playheadSnappedStep = Math.min(playheadSnappedStep, lastSnappedGridStep);
     var playheadSnappedMs:Float = Conductor.instance.getStepTimeInMs(playheadSnappedStep);
 
     // Look for events within 1 step of the playhead.
@@ -6615,6 +6654,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
       var playheadFractionalStep:Float = (scrollPositionInPixels + playheadPositionInPixels) / GRID_SIZE;
       var playheadSnappedStep:Float = Math.floor(playheadFractionalStep / noteSnapRatio) * noteSnapRatio;
+      playheadSnappedStep = Math.min(playheadSnappedStep, lastSnappedGridStep);
       var playheadSnappedMs:Float = Conductor.instance.getStepTimeInMs(playheadSnappedStep);
 
       var newNoteLength:Float = playheadSnappedMs - ghostHold.noteData.time;
@@ -6655,6 +6695,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     var playheadFractionalStep:Float = (scrollPositionInPixels + playheadPositionInPixels) / GRID_SIZE;
     var playheadSnappedStep:Float = Math.floor(playheadFractionalStep / noteSnapRatio) * noteSnapRatio;
+    playheadSnappedStep = Math.min(playheadSnappedStep, lastSnappedGridStep);
     var playheadSnappedMs:Float = Conductor.instance.getStepTimeInMs(playheadSnappedStep);
 
     var newNoteLength:Float = playheadSnappedMs - currentLiveInputPlaceNoteData[column].time;
@@ -7676,7 +7717,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (audioInstTrack != null && currentSongChartData.notes.get(selectedDifficulty) != null)
     {
       // Remove any notes past the end of the song, if this difficulty exists.
-      var songCutoffPointSteps:Float = songLengthInSteps - 0.1;
+      var songCutoffPointSteps:Float = gridLengthInSteps - 0.1;
       var songCutoffPointMs:Float = Conductor.instance.getStepTimeInMs(songCutoffPointSteps);
       currentSongChartNoteData = SongDataUtils.clampSongNoteData(currentSongChartNoteData, 0.0, songCutoffPointMs);
       currentSongChartEventData = SongDataUtils.clampSongEventData(currentSongChartEventData, 0.0, songCutoffPointMs);

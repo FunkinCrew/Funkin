@@ -55,7 +55,7 @@ class MoveItemsCommand implements ChartEditorCommand
     {
       // Clone the notes to prevent editing from affecting the history.
       var resultNote = note.clone();
-      resultNote.time = (resultNote.time + offset).clamp(0, Conductor.instance.getStepTimeInMs(state.songLengthInSteps - (1 * state.noteSnapRatio)));
+      resultNote.time = (resultNote.time + offset).clamp(0, Conductor.instance.getStepTimeInMs(state.lastSnappedGridStep));
       resultNote.data = ChartEditorState.gridColumnToNoteData(
         (ChartEditorState.noteDataToGridColumn(resultNote.data) + columns).clamp(0, ChartEditorState.STRUMLINE_SIZE * 2 - 1)
       );
@@ -67,7 +67,7 @@ class MoveItemsCommand implements ChartEditorCommand
     {
       // Clone the notes to prevent editing from affecting the history.
       var resultEvent = event.clone();
-      resultEvent.time = (resultEvent.time + offset).clamp(0, Conductor.instance.getStepTimeInMs(state.songLengthInSteps - (1 * state.noteSnapRatio)));
+      resultEvent.time = (resultEvent.time + offset).clamp(0, Conductor.instance.getStepTimeInMs(state.lastSnappedGridStep));
 
       movedEvents.pushUnique(resultEvent);
     }
