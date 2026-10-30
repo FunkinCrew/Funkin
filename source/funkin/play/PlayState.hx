@@ -450,7 +450,7 @@ class PlayState extends MusicBeatSubState
     #if FEATURE_CHART_EDITOR
     return this._parentState != null && Std.isOfType(this._parentState, ChartEditorState);
     #else
-    return false;
+    return forceChartingMode;
     #end
   }
 
