@@ -70,7 +70,8 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
   override function finishTransIn()
   {
-    super.finishTransIn();
+    if (FlxStateUtil.hasSubState(this)) FlxStateUtil.closeTransitionAtTop(this);
+    else super.finishTransIn();
 
     default_trans_isTransitioning = false;
   }
