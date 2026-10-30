@@ -1265,6 +1265,9 @@ class PlayState extends MusicBeatSubState
       // Delete all notes and reset the arrays.
       regenNoteData(startTimestamp);
 
+      // Make sure ScrollSpeed tweens don't persist between restarts.
+      cancelScrollSpeedTweens();
+
       // Reset camera zooming
       cameraBopIntensity = Constants.DEFAULT_BOP_INTENSITY;
       hudCameraZoomIntensity = (cameraBopIntensity - 1.0) * 2.0;
