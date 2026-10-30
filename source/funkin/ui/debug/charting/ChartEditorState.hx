@@ -7565,7 +7565,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
         playState.vocals = audioVocalTrackGroup;
       }
-    }, true);
+    }, true, false);
 
     /*LoadingState.loadPlayState(targetStateParams, false, true, function(targetState)
       {
