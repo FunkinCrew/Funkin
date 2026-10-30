@@ -4064,8 +4064,15 @@ class PlayState extends MusicBeatSubState
     FlxTween.globalManager.clear();
     FlxTimer.globalManager.clear();
 
+    // Remove listeners.
     PreciseInputManager.instance.onInputPressed.remove(onKeyPress);
     PreciseInputManager.instance.onInputReleased.remove(onKeyRelease);
+
+    #if FEATURE_TOUCH_CONTROLS
+    VideoCutscene.onVideoEnded.remove(tweenPauseButtonIn);
+    VideoCutscene.onVideoResumed.remove(tweenPauseButtonIn);
+    VideoCutscene.onVideoRestarted.remove(tweenPauseButtonIn);
+    #end
 
     // Remove reference to stage and remove sprites from it to save memory.
     if (currentStage != null)
