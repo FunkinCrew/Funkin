@@ -15,6 +15,9 @@ import funkin.data.song.SongRegistry;
 import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
 import funkin.modding.events.ScriptEvent;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
+import funkin.ui.transition.Transition.TransitionType;
+import funkin.ui.transition.Transition.FadeType;
+import flixel.util.typeLimit.OneOfTwo;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.data.event.SongEventRegistry;
@@ -358,6 +361,20 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
   }
 
   /**
+   * Get the loading transition used when this song is opened.
+   * @param diffId The difficulty ID.
+   * @param variation The song variation ID.
+   */
+  public function getLoadingScreenType(diffId:String,
+    variation:String,
+    fadeIn:FadeType = FadeType.None,
+    fadeOut:FadeType = FadeType.None):OneOfTwo<String, TransitionType>
+  {
+    var diff:Null<SongDifficulty> = getDifficulty(diffId, variation);
+    return diff?.loadingScreen ?? 'default';
+  }
+
+  /**
    * Populate the difficulty data from the provided metadata.
    * Does not load chart data (that is triggered later when we want to play the song).
    */
@@ -399,6 +416,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
 
         difficulty.difficultyRating = metadata.playData.ratings.get(diffId) ?? 0;
         difficulty.album = metadata.playData.album;
+        difficulty.loadingScreen = metadata.playData.loadingScreen;
         difficulty.stickerPack = metadata.playData.stickerPack;
         difficulty.discordRPCImage = metadata.playData.discordRPCImage;
 
@@ -467,6 +485,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
 
           difficulty.stage = metadata.playData.stage;
           difficulty.noteStyle = metadata.playData.noteStyle;
+          difficulty.loadingScreen = metadata.playData.loadingScreen;
 
           difficulty.characters = metadata.playData.characters;
         }
@@ -868,6 +887,7 @@ class SongDifficulty
   public var scrollSpeed:Float = Constants.DEFAULT_SCROLLSPEED;
   public var difficultyRating:Int = 0;
   public var album:Null<String> = null;
+  public var loadingScreen:Null<String> = null;
   public var stickerPack:Null<String> = null;
   public var discordRPCImage:Null<String> = null;
 
