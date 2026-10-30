@@ -1272,6 +1272,7 @@ class PlayState extends MusicBeatSubState
       cameraBopIntensity = Constants.DEFAULT_BOP_INTENSITY;
       hudCameraZoomIntensity = (cameraBopIntensity - 1.0) * 2.0;
       cameraZoomRate = Constants.DEFAULT_ZOOM_RATE;
+      cameraZoomRateOffset = Constants.DEFAULT_ZOOM_OFFSET;
 
       health = Constants.HEALTH_STARTING;
       songScore = 0.0;
