@@ -464,6 +464,14 @@ class SongPlayData implements ICloneable<SongPlayData>
   public var discordRPCImage:String;
 
   /**
+   * The loading screen to use when this song is launched.
+   * If `null` or `default`, the transition chosen by the caller is preserved.
+   * Scripted Song classes can override Song.getLoadingScreenType() to return a full TransitionType, instead of this field .
+   */
+  @:optional
+  public var loadingScreen:Null<String>;
+
+  /**
    * The sticker pack for the song to use during transitions.
    * If `null`, display the character's sticker pack.
    */
@@ -503,6 +511,7 @@ class SongPlayData implements ICloneable<SongPlayData>
     result.ratings = this.ratings.clone();
     result.album = this.album;
     result.stickerPack = this.stickerPack;
+    result.loadingScreen = this.loadingScreen;
     result.previewStart = this.previewStart;
     result.previewEnd = this.previewEnd;
 
