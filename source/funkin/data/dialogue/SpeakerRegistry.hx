@@ -1,12 +1,24 @@
 package funkin.data.dialogue;
 
 import funkin.play.cutscene.dialogue.Speaker;
-import funkin.util.tools.ISingleton;
 import funkin.data.DefaultRegistryImpl;
 
 @:nullSafety
-class SpeakerRegistry extends BaseRegistry<Speaker, SpeakerData, SpeakerEntryParams> implements ISingleton implements DefaultRegistryImpl
+class SpeakerRegistry extends BaseRegistry<Speaker, SpeakerData, SpeakerEntryParams> implements DefaultRegistryImpl
 {
+  static var _instance:Null<SpeakerRegistry>;
+
+  public static var instance(get, never):SpeakerRegistry;
+
+  static function get_instance():SpeakerRegistry
+  {
+    if (_instance == null)
+    {
+      _instance = new SpeakerRegistry();
+    }
+    return _instance;
+  }
+
   /**
    * The current version string for the speaker data format.
    * Handle breaking changes by incrementing this value

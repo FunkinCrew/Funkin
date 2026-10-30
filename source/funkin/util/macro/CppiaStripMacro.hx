@@ -1,5 +1,6 @@
 package funkin.util.macro;
 
+#if FEATURE_CPPIA
 #if macro
 import haxe.io.Bytes;
 import haxe.macro.Compiler;
@@ -254,4 +255,5 @@ private class CppiaCursor
     }
   }
 }
+#end
 #end
