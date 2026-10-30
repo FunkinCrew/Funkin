@@ -3941,6 +3941,7 @@ class PlayState extends MusicBeatSubState
               targetSong: targetSong,
               targetDifficulty: PlayStatePlaylist.campaignDifficulty,
               targetVariation: targetVariation,
+              practiceMode: isPracticeMode,
               cameraFollowPoint: cameraFollowPoint.getPosition(),
             }, {
               transition: LoadingScreen(None, None),
@@ -3963,6 +3964,7 @@ class PlayState extends MusicBeatSubState
             targetSong: targetSong,
             targetDifficulty: PlayStatePlaylist.campaignDifficulty,
             targetVariation: targetVariation,
+            practiceMode: isPracticeMode,
             cameraFollowPoint: cameraFollowPoint.getPosition(),
           }, {
             transition: LoadingScreen(None, None),
