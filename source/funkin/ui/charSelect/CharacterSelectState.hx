@@ -31,7 +31,6 @@ import funkin.util.SwipeUtil;
 import funkin.util.TouchUtil;
 #end
 import funkin.assets.Assets.AssetType;
-import funkin.assets.Paths.AssetPath;
 import funkin.assets.Paths;
 import funkin.ui.transition.Transition;
 

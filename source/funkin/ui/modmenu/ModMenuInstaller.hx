@@ -12,8 +12,6 @@ import funkin.util.WindowUtil;
 import haxe.io.Path;
 import polymod.PolymodConfig;
 #if FEATURE_ONE_CLICK_INSTALL
-import funkin.modding.install.ModInstaller.OneClickMod;
-import funkin.modding.install.ModInstaller.OneClickRequest;
 import funkin.modding.install.ModInstaller;
 import funkin.modding.install.OneClickInstallHandler;
 #end

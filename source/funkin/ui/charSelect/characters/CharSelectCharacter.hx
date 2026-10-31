@@ -5,7 +5,6 @@ import flixel.graphics.frames.FlxFramesCollection;
 import flixel.math.FlxPoint;
 import funkin.data.animation.AnimationData;
 import funkin.data.freeplay.player.PlayerData;
-import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
 import funkin.modding.IScriptedClass.IBPMSyncedScriptedClass;
 import funkin.modding.IScriptedClass.ICharacterSelectScriptedClass;

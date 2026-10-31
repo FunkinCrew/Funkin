@@ -9,16 +9,8 @@ import funkin.util.tasks.TaskHandler.Task;
 import hx.concurrent.collection.SynchronizedArray;
 import hx.concurrent.collection.SynchronizedMap;
 #end
-//
-// ~PATHS~
-//
 import funkin.assets.Assets;
-import funkin.assets.Assets.AssetType;
-import funkin.assets.Assets;
-import funkin.assets.Paths.AnimateAtlasAssetPathBuilder;
 import funkin.assets.Paths.AssetPath;
-import funkin.assets.Paths.MusicAssetPathBuilder;
-import funkin.assets.ValidatedPaths as Paths;
 
 typedef RegistryParams =
 {

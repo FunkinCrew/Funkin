@@ -12,7 +12,6 @@ import funkin.util.SRTUtil.SRTParser;
 //
 import funkin.assets.ValidatedPaths as Paths;
 import funkin.assets.Paths.AssetPath;
-import funkin.assets.Assets.AssetType;
 
 /**
  * A Sprite Group for displaying in-game subtitles.

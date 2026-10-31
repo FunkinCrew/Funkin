@@ -1,16 +1,10 @@
 package funkin.play;
 
-import funkin.assets.FunkinAssetCache;
 import flixel.math.FlxAngle;
-import flixel.FlxState;
-import funkin.ui.transition.Transition;
 import flixel.addons.display.FlxBackdrop;
 import flixel.effects.FlxFlicker;
 import flixel.FlxSprite;
-import flixel.FlxSubState;
-import flixel.graphics.frames.FlxBitmapFont;
 import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.util.FlxSignal;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.text.FlxBitmapText;
@@ -21,14 +15,9 @@ import flixel.util.FlxGradient;
 import flixel.util.FlxSignal;
 import flixel.util.FlxTimer;
 import flixel.util.typeLimit.NextState;
-import funkin.assets.Assets.AssetType;
-import funkin.assets.FunkinAssetCache;
-import funkin.assets.Paths.AssetPath;
-import funkin.assets.Paths.MusicAssetPathBuilder;
 import funkin.audio.FunkinSound;
 import funkin.data.freeplay.player.PlayerData.PlayerResultsAnimationData;
 import funkin.data.freeplay.player.PlayerRegistry;
-import funkin.data.freeplay.style.FreeplayStyleRegistry;
 import funkin.data.song.SongRegistry;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
@@ -40,14 +29,11 @@ import funkin.play.song.Song;
 import funkin.save.Save.SaveScoreData;
 import funkin.ui.FullScreenScaleMode;
 import funkin.ui.MusicBeatSubState;
-import funkin.ui.debug.charting.ChartEditorState;
 import funkin.ui.freeplay.FreeplayState;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.ui.story.StoryMenuState;
 import funkin.ui.transition.NextSubState;
-import funkin.ui.transition.Transition.TransitionType;
 import funkin.ui.transition.Transition;
-import funkin.util.DeviceUtil;
 import funkin.util.HapticUtil;
 #if FEATURE_NEWGROUNDS
 import funkin.api.newgrounds.Medals;
@@ -61,7 +47,6 @@ import funkin.mobile.util.AdMobUtil;
 import funkin.mobile.util.InAppReviewUtil;
 #end
 #end
-import funkin.util.DeviceUtil;
 import funkin.assets.Paths;
 import funkin.assets.Assets;
 
@@ -224,7 +209,7 @@ class ResultState extends MusicBeatSubState
         for (animData in playerAnimationDatas)
         {
           if (animData?.assetPath == null) continue;
-          
+
           switch (animData.renderType)
           {
             case 'animateatlas':

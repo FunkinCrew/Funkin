@@ -11,7 +11,6 @@ import funkin.graphics.FunkinSprite;
 import funkin.graphics.framebuffer.DropShadowLayer;
 import funkin.graphics.shaders.PureColor;
 import funkin.ui.FullScreenScaleMode;
-import funkin.ui.MusicBeatState;
 import funkin.ui.modmenu.ModMenuCharacter.CharacterAnimation;
 
 /**

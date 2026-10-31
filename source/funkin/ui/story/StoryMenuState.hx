@@ -25,7 +25,6 @@ import funkin.ui.MusicBeatState;
 import funkin.ui.transition.Transition;
 import funkin.util.MathUtil;
 import funkin.util.SwipeUtil;
-import funkin.util.TouchUtil;
 import funkin.ui.FullScreenScaleMode;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;

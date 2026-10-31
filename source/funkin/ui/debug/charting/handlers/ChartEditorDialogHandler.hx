@@ -44,8 +44,6 @@ import haxe.ui.core.Component;
 import haxe.ui.events.UIEvent;
 import haxe.ui.RuntimeComponentBuilder;
 import thx.semver.Version;
-import funkin.assets.Assets.AssetType;
-import funkin.assets.Assets;
 import funkin.assets.ValidatedPaths as Paths;
 
 using Lambda;

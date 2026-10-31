@@ -19,16 +19,7 @@ import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.data.event.SongEventRegistry;
 import funkin.util.SortUtil;
-import funkin.assets.Paths.AssetPath;
-//
-// ~PATHS~
-//
-import funkin.assets.Assets;
 import funkin.assets.Assets.AssetType;
-import funkin.assets.Paths.AnimateAtlasAssetPathBuilder;
-import funkin.assets.Paths.AssetPath;
-import funkin.assets.Paths.MusicAssetPathBuilder;
-import funkin.assets.ValidatedPaths as Paths;
 import funkin.assets.Paths.AssetPath;
 
 /**

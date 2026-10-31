@@ -1,6 +1,5 @@
 package funkin.ui.freeplay;
 
-import funkin.graphics.FunkinSprite;
 import flixel.group.FlxSpriteGroup;
 import flixel.util.FlxSort;
 import flixel.util.FlxTimer;

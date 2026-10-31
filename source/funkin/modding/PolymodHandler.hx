@@ -1,31 +1,12 @@
 package funkin.modding;
 
-import funkin.data.character.CharacterRegistry;
 import funkin.assets.Assets.AssetType;
 import funkin.assets.Paths.AssetPath;
-import funkin.data.dialogue.ConversationRegistry;
-import funkin.data.dialogue.DialogueBoxRegistry;
-import funkin.data.dialogue.SpeakerRegistry;
-import funkin.data.event.SongEventRegistry;
-import funkin.data.freeplay.album.AlbumRegistry;
-import funkin.data.freeplay.player.PlayerRegistry;
-import funkin.data.freeplay.style.FreeplayStyleRegistry;
-import funkin.data.notestyle.NoteStyleRegistry;
-import funkin.data.song.SongRegistry;
-import funkin.data.stage.StageRegistry;
-import funkin.data.stickers.StickerRegistry;
-import funkin.data.story.level.LevelRegistry;
-import funkin.modding.module.ModuleHandler;
-import funkin.play.notes.notekind.NoteKindManager;
-import funkin.save.Save;
 import funkin.util.FileUtil;
 import funkin.util.SortUtil;
-import funkin.util.VersionUtil;
 import funkin.util.macro.ClassMacro;
 import polymod.Polymod;
-import polymod.PolymodAssets.PolymodAssetType;
 import polymod.PolymodAssets;
-import polymod.PolymodConfig;
 import polymod.format.ParseRules.TextFileFormat;
 import thx.semver.VersionRule;
 #if sys
@@ -919,47 +900,6 @@ class PolymodHandler
     });
 
     return disabledMods;
-  }
-
-  /**
-   * Clear and reload from disk all data assets, synchronously.
-   * Useful for "hot reloading" for fast iteration!
-   */
-  public static function forceReloadAssets():Void
-  {
-    // Forcibly clear scripts so that scripts can be edited.
-    ModuleHandler.clearModuleCache();
-    Polymod.clearScripts();
-
-    // Forcibly reload Polymod so it finds any new files.
-    // This will also register all scripts.
-    funkin.modding.PolymodHandler.loadEnabledMods();
-
-    // Reload everything that is cached.
-    // Currently this freezes the game for a second but I guess that's tolerable?
-
-    // TODO: Reload event callbacks
-
-    // These MUST be imported at the top of the file and not referred to by fully qualified name,
-    // to ensure build macros work properly.
-    SongEventRegistry.loadEventCache();
-
-    SongRegistry.instance.loadEntries();
-    LevelRegistry.instance.loadEntries();
-    NoteStyleRegistry.instance.loadEntries();
-    PlayerRegistry.instance.loadEntries();
-    ConversationRegistry.instance.loadEntries();
-    DialogueBoxRegistry.instance.loadEntries();
-    SpeakerRegistry.instance.loadEntries();
-    AlbumRegistry.instance.loadEntries();
-    StageRegistry.instance.loadEntries();
-    StickerRegistry.instance.loadEntries();
-    FreeplayStyleRegistry.instance.loadEntries();
-
-    CharacterRegistry.instance.loadEntries();
-    NoteKindManager.initialize();
-    ModuleHandler.loadModuleCache();
-    ModuleHandler.callOnCreate();
   }
 
   /**
