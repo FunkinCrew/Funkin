@@ -11,6 +11,7 @@ import flixel.math.FlxRect;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import flixel.util.typeLimit.NextState;
+import flixel.util.typeLimit.OneOfTwo;
 import funkin.assets.Assets.AssetType;
 import funkin.assets.Paths.AssetPath;
 import funkin.data.song.SongRegistry;
@@ -21,6 +22,7 @@ import funkin.ui.transition.loading.StickerLoadingState;
 import funkin.ui.transition.StickerTransition;
 import funkin.ui.transition.loading.ThrobberLoadingState;
 import funkin.util.FlxStateUtil;
+import funkin.util.Constants;
 import funkin.util.tasks.TaskHandler;
 import funkin.assets.Assets;
 import funkin.assets.ValidatedPaths as Paths;
@@ -140,7 +142,7 @@ class Transition
     results.append(FunkayLoadingState.queryAssets(type));
     results.append(ThrobberLoadingState.queryAssets(type));
 
-    // Scripted loading screens must keep their assets cached before a transition starts.
+    // Scripted loading screens must have their assets cached before they are displayed.
     for (scriptedClass in LoadingState.listScriptClasses())
     {
       if (!LoadingState.scriptStaticHas(scriptedClass, 'queryAssets')) continue;
@@ -399,15 +401,60 @@ class Transition
 
   /**
    * Open and transition to a PlayState, with a defined transition between.
-   * Ensures all the assets require for that PlayState are loaded before continuing.
+   * Ensures all the assets required for that PlayState are loaded before continuing.
    * @param playStateParams Parameters for the PlayState.
    * @param transitionParams Parameters for the transition.
    * @param asSubState Whether the PlayState should be opened as a substate or switched to as a state.
    */
   public static function openPlayState(playStateParams:PlayStateParams,
     transitionParams:BaseTransitionParams,
-    asSubState:Bool = false):Void
+    asSubState:Bool = false,
+    ?allowCustomTransitions:Bool = true):Void
   {
+    if (allowCustomTransitions)
+    {
+      var fadeIn:FadeType = FadeType.None;
+      var fadeOut:FadeType = FadeType.None;
+
+      switch (transitionParams.transition)
+      {
+        case TransitionType.LoadingScreen(
+          inFade,
+          outFade
+        ) | TransitionType.BlackScreen(inFade, outFade) | TransitionType.BlackWithThrobber(inFade, outFade) | TransitionType.Custom(_, inFade, outFade):
+          fadeIn = inFade;
+          fadeOut = outFade;
+
+        default:
+      }
+
+      var songTransition:OneOfTwo<String, TransitionType> = playStateParams.targetSong.getLoadingScreenType(
+        playStateParams.targetDifficulty,
+        playStateParams.targetVariation,
+        fadeIn,
+        fadeOut
+      );
+
+      if (Std.isOfType(songTransition, String))
+      {
+        var requestedScreen:String = songTransition.trim();
+        if (requestedScreen.length > 0 && requestedScreen.toLowerCase() != 'default')
+        {
+          transitionParams.transition = resolveSongTransition(
+            requestedScreen,
+            playStateParams.targetSong,
+            playStateParams.targetDifficulty,
+            playStateParams.targetVariation,
+            fadeIn,
+            fadeOut
+          );
+        }
+      }
+      else
+      {
+        transitionParams.transition = songTransition;
+      }
+    }
     // Get the list of assets we need in order to parse the charts.
     var priorityAssetQuery:(AssetType) -> Array<AssetPath> = (type:AssetType) ->
     {
@@ -433,9 +480,7 @@ class Transition
       var future = TaskHandler.performSimpleTask(() ->
       {
         trace('[LOADING] Caching charts...');
-        final targetDifficulty = playStateParams.targetSong.getDifficulty(
-          playStateParams.targetDifficulty, playStateParams.targetVariation
-        );
+        final targetDifficulty = playStateParams.targetSong.getDifficulty(playStateParams.targetDifficulty, playStateParams.targetVariation);
         if (targetDifficulty?.notes == null)
         {
           var forceReload:Bool = true;
@@ -482,6 +527,37 @@ class Transition
         return result;
       };
       Transition.switchState(targetState, buildTransitionParams(assetQuery, priorityAssetQuery, transitionParams));
+    }
+  }
+
+  /**
+   * Resolve a loading-screen name returned by Song.getLoadingScreenType().
+   * Unknown names are treated as Custom TransitionType.
+   */
+  public static function resolveSongTransition(requestedScreen:String,
+    song:funkin.play.song.Song,
+    difficulty:Null<String>,
+    variation:Null<String>,
+    fadeIn:FadeType,
+    fadeOut:FadeType):TransitionType
+  {
+    var screenKey:String = requestedScreen.toLowerCase();
+
+    return switch (screenKey)
+    {
+      case 'funkay' | 'funkayloadingstate' | 'loading' | 'loadingscreen':
+        TransitionType.LoadingScreen(fadeIn, fadeOut);
+      case 'black' | 'blackscreen':
+        TransitionType.BlackScreen(fadeIn, fadeOut);
+      case 'throbber' | 'blackwiththrobber':
+        TransitionType.BlackWithThrobber(fadeIn, fadeOut);
+      case 'none':
+        TransitionType.None;
+      case 'sticker':
+        var songDifficulty = song.getDifficulty(difficulty, variation);
+        TransitionType.Sticker(songDifficulty?.stickerPack ?? Constants.DEFAULT_STICKER_PACK);
+      default:
+        TransitionType.Custom(requestedScreen, fadeIn, fadeOut);
     }
   }
 
@@ -751,7 +827,7 @@ class Transition
 
 /**
  * Provides data on what the transition looks like.
- * Does it use a loading screen? How does it fade into and out of that loading screen?
+ * Does it use a loading screen? How does it fade into and out of the loading screen?
  */
 enum TransitionType
 {
