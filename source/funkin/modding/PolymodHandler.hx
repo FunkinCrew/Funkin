@@ -19,6 +19,7 @@ import funkin.modding.module.ModuleHandler;
 import funkin.play.notes.notekind.NoteKindManager;
 import funkin.save.Save;
 import funkin.util.FileUtil;
+import funkin.util.ReflectUtil;
 import funkin.util.SortUtil;
 import funkin.util.VersionUtil;
 import funkin.util.macro.ClassMacro;
@@ -370,6 +371,12 @@ class PolymodHandler
     for (cls in DEFAULT_IMPORTS)
     {
       Polymod.addDefaultImport(cls);
+    }
+
+    // Redirect standard reflection (Type/Reflect) to ReflectUtil so scripts automatically use our methods.
+    for (aliase in ["Type", "Reflect"])
+    {
+      Polymod.addDefaultImport(funkin.util.ReflectUtil, aliase);
     }
   }
 
@@ -930,6 +937,7 @@ class PolymodHandler
     // Forcibly clear scripts so that scripts can be edited.
     ModuleHandler.clearModuleCache();
     Polymod.clearScripts();
+    ReflectUtil.clearScriptCache();
 
     // Forcibly reload Polymod so it finds any new files.
     // This will also register all scripts.
