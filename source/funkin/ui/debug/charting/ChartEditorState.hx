@@ -330,6 +330,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     resetPreviewTimes();
     updateGridHeight();
+    scrollPositionInPixels = 0;
+    playheadPositionInPixels = 0;
 
     return this.songLengthInMs;
   }
@@ -7752,8 +7754,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       trace('Skipping difficulty that does not exist');
     }
 
-    scrollPositionInPixels = 0;
-    playheadPositionInPixels = 0;
     notePreviewDirty = true;
     notePreviewViewportBoundsDirty = true;
     noteDisplayDirty = true;
@@ -8011,6 +8011,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     // We need to update the note sprites because we changed the scroll position.
     noteDisplayDirty = true;
+  }
+
+  function moveScrollPositionToSong():Void
+  {
+    scrollPositionInPixels = (Conductor.instance.currentStepTime + Conductor.instance.instrumentalOffsetSteps) * GRID_SIZE - playheadPositionInPixels;
+    currentScrollEase = scrollPositionInPixels;
   }
 
   /**

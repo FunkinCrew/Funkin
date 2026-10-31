@@ -63,7 +63,6 @@ class ModifyTimeChangeCommand implements ChartEditorCommand
     state.noteDisplayDirty = true;
     state.notePreviewDirty = true;
     state.notePreviewViewportBoundsDirty = true;
-    state.scrollPositionInPixels = 0;
 
     var metadataToolbox:ChartEditorMetadataToolbox = cast state.getToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
 
@@ -73,6 +72,7 @@ class ModifyTimeChangeCommand implements ChartEditorCommand
 
     state.updateSongTime();
     state.updateGridHeight();
+    state.moveScrollPositionToSong();
     state.updateTimeSignature();
   }
 
@@ -101,7 +101,6 @@ class ModifyTimeChangeCommand implements ChartEditorCommand
     state.noteDisplayDirty = true;
     state.notePreviewDirty = true;
     state.notePreviewViewportBoundsDirty = true;
-    state.scrollPositionInPixels = 0;
 
     var metadataToolbox:ChartEditorMetadataToolbox = cast state.getToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
 
@@ -111,6 +110,7 @@ class ModifyTimeChangeCommand implements ChartEditorCommand
 
     state.updateSongTime();
     state.updateGridHeight();
+    state.moveScrollPositionToSong();
     state.updateTimeSignature();
   }
 
