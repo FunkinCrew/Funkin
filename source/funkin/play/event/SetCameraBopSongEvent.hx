@@ -73,6 +73,7 @@ class SetCameraBopSongEvent extends SongEvent
       {
         name: 'intensity',
         title: 'Intensity',
+        tooltip: 'The zoom amount.',
         defaultValue: Constants.DEFAULT_BOP_INTENSITY,
         min: 0,
         step: 0.1,
@@ -82,6 +83,7 @@ class SetCameraBopSongEvent extends SongEvent
       {
         name: 'offset',
         title: 'Offset',
+        tooltip: 'How many beats to offset Zoom Rate by.',
         defaultValue: Constants.DEFAULT_ZOOM_OFFSET,
         step: 0.25,
         type: SongEventFieldType.FLOAT,
@@ -90,6 +92,7 @@ class SetCameraBopSongEvent extends SongEvent
       {
         name: 'rate',
         title: 'Rate',
+        tooltip: 'The rate at which the zoom changes to.',
         defaultValue: Constants.DEFAULT_ZOOM_RATE,
         min: 0,
         step: 0.25,
