@@ -104,9 +104,14 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
       default:
         ChartEditorThemeHandler.GRID_MEASURE_DIVIDER_COLOR_LIGHT;
     };
+    var beatTickLength:Float = ChartEditorState.GRID_SIZE * 2 / 3;
 
     // Start the bitmap with the basic gray color.
     var measureTickBitmap = new BitmapData(ChartEditorState.GRID_SIZE, ChartEditorState.GRID_SIZE * Constants.STEPS_PER_BEAT, true, backingColor);
+
+    // Render the first-half of a beat.
+    var bottomTickY:Float = measureTickBitmap.height - (ChartEditorThemeHandler.MEASURE_TICKS_BEAT_WIDTH / 2);
+    measureTickBitmap.fillRect(new Rectangle(0, bottomTickY, beatTickLength, ChartEditorThemeHandler.MEASURE_TICKS_BEAT_WIDTH / 2), dividerColor);
 
     // Draw the beat ticks and dividers, and step ticks. No need for two separate loops thankfully.
     for (i in 0...Constants.STEPS_PER_BEAT)
@@ -115,9 +120,7 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
       // The measure tick is always going to overlap within the beat itself.
       if (i == 0)
       {
-        var beatTickY:Float = ChartEditorState.GRID_SIZE * i - (ChartEditorThemeHandler.MEASURE_TICKS_BEAT_WIDTH / 2);
-        var beatTickLength:Float = ChartEditorState.GRID_SIZE * 2 / 3;
-        measureTickBitmap.fillRect(new Rectangle(0, beatTickY, beatTickLength, ChartEditorThemeHandler.MEASURE_TICKS_BEAT_WIDTH), dividerColor);
+        measureTickBitmap.fillRect(new Rectangle(0, 0, beatTickLength, ChartEditorThemeHandler.MEASURE_TICKS_BEAT_WIDTH / 2), dividerColor);
       }
       else
       {
