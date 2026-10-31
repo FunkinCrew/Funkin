@@ -26,6 +26,9 @@ import funkin.util.SwipeUtil;
 #end
 import funkin.util.HapticUtil;
 import lime.ui.WindowVSyncMode;
+#if FEATURE_NEWGROUNDS
+import funkin.api.newgrounds.NewgroundsClient;
+#end
 
 class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
 {
@@ -254,6 +257,17 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     {
       Preferences.enabledDiscordRPC = value;
     }, Preferences.enabledDiscordRPC);
+    #end
+
+    #if FEATURE_NEWGROUNDS
+    createPrefItemCheckbox('NG Save Files Auto Sync', 'When enabled, save files uploaded to NG will sync automatically with local.', function(value:Bool):Void
+    {
+      Preferences.autoSync = value;
+      if(Preferences.autoSync)
+      {
+        NewgroundsClient.instance.autoSyncSavesFromNewgrounds();
+      }
+    }, Preferences.autoSync);
     #end
   }
 
