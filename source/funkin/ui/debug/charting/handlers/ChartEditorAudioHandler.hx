@@ -172,8 +172,22 @@ class ChartEditorAudioHandler
     }
 
     var totalVoicesCount = (vocalTrackIds.length + oppositeVocalTracksIds.length);
-    var shouldUseLegacyVocals = totalVoicesCount == 0 && state.audioVocalTrackData.exists(''); // Setup for Voices.ogg
-    // we set up legacy vocals as the bf side for ease of use
+
+    // Check if the specific requested vocal tracks actually exist in the map.
+    var specificTracksExist:Bool = false;
+    for (id in vocalTrackIds.concat(oppositeVocalTracksIds))
+    {
+      var trackKeySuffix:String = (variation.isBlank() || variation == Constants.DEFAULT_VARIATION) ? '' : '-${variation}';
+      var testKey = '$id$trackKeySuffix';
+      if (state.audioVocalTrackData.exists(testKey) || state.audioVocalTrackData.exists(id))
+      {
+        specificTracksExist = true;
+        break;
+      }
+    }
+
+    var legacyKey:String = (variation.isBlank() || variation == Constants.DEFAULT_VARIATION) ? '' : '-${variation}';
+    var shouldUseLegacyVocals = !specificTracksExist && state.audioVocalTrackData.exists(legacyKey);
     var setUpLegacyVocals = shouldUseLegacyVocals && charType == BF;
 
     if (vocalTrackIds.length == 0 && !setUpLegacyVocals)
@@ -189,7 +203,7 @@ class ChartEditorAudioHandler
 
     if (setUpLegacyVocals)
     {
-      var vocalTrackData:Null<Bytes> = state.audioVocalTrackData.get('');
+      var vocalTrackData:Null<Bytes> = state.audioVocalTrackData.get(legacyKey);
       var vocalTrack:Null<FunkinSound> = SoundUtil.buildSoundFromBytes(vocalTrackData);
 
       if (vocalTrack != null)
@@ -200,6 +214,7 @@ class ChartEditorAudioHandler
 
     for (trackBaseKey in vocalTrackIds)
     {
+      if (setUpLegacyVocals) break;
       var trackKeySuffix:String = (variation.isBlank() || variation == Constants.DEFAULT_VARIATION) ? '' : '-${variation}';
       var trackKey:String = '$trackBaseKey$trackKeySuffix';
       // For example, for voice ID "bf" on variation "pico", the file name would be "Voices-bf-pico.ogg"
