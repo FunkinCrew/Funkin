@@ -55,7 +55,6 @@ class AddNewTimeChangeCommand implements ChartEditorCommand
     state.noteDisplayDirty = true;
     state.notePreviewDirty = true;
     state.notePreviewViewportBoundsDirty = true;
-    state.scrollPositionInPixels = 0;
 
     var metadataToolbox:ChartEditorMetadataToolbox = cast state.getToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
 
@@ -65,6 +64,7 @@ class AddNewTimeChangeCommand implements ChartEditorCommand
 
     state.updateSongTime(); // basically will update the time signature for the editor if necessary.
     state.updateGridHeight();
+    state.moveScrollPositionToSong();
     state.updateTimeSignature();
   }
 
@@ -85,7 +85,6 @@ class AddNewTimeChangeCommand implements ChartEditorCommand
     state.noteDisplayDirty = true;
     state.notePreviewDirty = true;
     state.notePreviewViewportBoundsDirty = true;
-    state.scrollPositionInPixels = 0;
 
     var metadataToolbox:ChartEditorMetadataToolbox = cast state.getToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
 
@@ -95,6 +94,7 @@ class AddNewTimeChangeCommand implements ChartEditorCommand
 
     state.updateSongTime();
     state.updateGridHeight();
+    state.moveScrollPositionToSong();
     state.updateTimeSignature();
   }
 
