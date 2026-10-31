@@ -93,6 +93,11 @@ class ChartEditorCommentPinSprite extends FunkinSprite
       0, chartEditorState.songLengthInMs, // ...to note preview position.
       ChartEditorState.NOTE_PREVIEW_Y_POS, ChartEditorState.NOTE_PREVIEW_Y_POS + (chartEditorState.notePreview?.height ?? 0.0));
 
+    if (chartEditorState.isViewDownscroll)
+    {
+      position = 2 * ChartEditorState.NOTE_PREVIEW_Y_POS + (chartEditorState.notePreview?.height ?? 0.0) - position;
+    }
+
     this.x = ChartEditorState.NOTE_PREVIEW_X_POS - this.height + 6;
     this.y = position - (this.height / 2);
   }
