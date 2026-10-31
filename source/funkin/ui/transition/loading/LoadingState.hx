@@ -522,6 +522,8 @@ class LoadingState extends MusicBeatSubState
         {
           trace('[LOADING] Skipping global cache purge for SubState transition; parent state remains alive.');
         }
+        FlxG.state.persistentUpdate = previousPersistentUpdate;
+        FlxG.state.persistentDraw = previousPersistentDraw;
         this.switchSubState(targetSubState.createInstance());
 
       default:
