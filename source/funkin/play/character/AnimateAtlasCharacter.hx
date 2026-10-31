@@ -1,20 +1,13 @@
 package funkin.play.character;
 
 import funkin.data.animation.AnimationData;
-import funkin.data.character.CharacterData.CharacterRenderType;
 import funkin.data.character.CharacterData;
 import funkin.graphics.FunkinSprite;
 import funkin.modding.events.ScriptEvent;
 import funkin.util.assets.FlxAnimationUtil;
 import funkin.data.character.CharacterRegistry;
-//
-// ~PATHS~
-//
-import funkin.assets.Assets;
 import funkin.assets.Assets.AssetType;
-import funkin.assets.Paths.AnimateAtlasAssetPathBuilder;
 import funkin.assets.Paths.AssetPath;
-import funkin.assets.Paths.MusicAssetPathBuilder;
 import funkin.assets.ValidatedPaths as Paths;
 
 /**

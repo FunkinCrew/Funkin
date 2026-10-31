@@ -4,8 +4,6 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
 import funkin.audio.FunkinSoundscape;
-import funkin.assets.Assets.AssetType;
-import funkin.assets.Assets;
 import funkin.assets.ValidatedPaths as Paths;
 
 /**

@@ -1,8 +1,5 @@
 package funkin.ui.freeplay;
 
-import funkin.assets.Assets.AssetType;
-import flixel.FlxCamera;
-import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
@@ -74,7 +71,6 @@ import funkin.mobile.input.ControlsHandler;
 import funkin.assets.Paths;
 import funkin.ui.transition.Transition;
 import funkin.assets.Assets;
-import lime.app.Future;
 
 /**
  * The state for the freeplay menu, allowing the player to select any song to play.

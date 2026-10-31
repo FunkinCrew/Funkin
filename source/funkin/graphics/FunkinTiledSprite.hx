@@ -1,7 +1,6 @@
 package funkin.graphics;
 
 import flixel.math.FlxPoint;
-import flixel.math.FlxRect;
 import flixel.FlxCamera;
 import flixel.addons.display.FlxTiledSprite;
 import flixel.system.FlxAssets.FlxGraphicAsset;

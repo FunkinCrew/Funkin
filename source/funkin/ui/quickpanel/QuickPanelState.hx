@@ -2,26 +2,14 @@ package funkin.ui.quickpanel;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.math.FlxMath;
-import flixel.math.FlxPoint;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
-import openfl.filters.ShaderFilter;
 import flixel.util.FlxTimer;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
-import funkin.audio.FunkinSound;
-import funkin.ui.quickpanel.QuickPanelButton;
-import funkin.input.Controls;
-import funkin.util.InputUtil;
-import flixel.input.keyboard.FlxKey;
-import funkin.group.FunkinGroup;
-import funkin.ui.quickpanel.QuickPanelShader;
 import funkin.ui.quickpanel.CircleWipeShader;
-import funkin.graphics.shaders.BoilShader;
 import funkin.util.PropertyAnimator;
 import funkin.ui.quickpanel.QuickPanelGroup;
 //

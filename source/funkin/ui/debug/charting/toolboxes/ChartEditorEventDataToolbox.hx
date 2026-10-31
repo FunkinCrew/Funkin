@@ -1,8 +1,6 @@
 package funkin.ui.debug.charting.toolboxes;
 
 #if FEATURE_CHART_EDITOR
-import flixel.FlxG;
-import flixel.tweens.FlxEase;
 import flixel.util.FlxTimer;
 import funkin.data.event.SongEventRegistry;
 import funkin.data.event.SongEventSchema;
@@ -12,7 +10,6 @@ import funkin.ui.debug.charting.util.ChartEditorDropdowns;
 import funkin.ui.debug.charting.commands.SetItemSelectionCommand;
 import funkin.data.song.SongData.SongEventData;
 import haxe.Timer;
-import haxe.ui.backend.ImageData;
 import haxe.ui.components.Button;
 import haxe.ui.components.CheckBox;
 import haxe.ui.components.DropDown;
@@ -28,10 +25,7 @@ import haxe.ui.containers.VBox;
 import haxe.ui.core.Component;
 import haxe.ui.data.ArrayDataSource;
 import haxe.ui.events.UIEvent;
-import openfl.display.Bitmap;
 import openfl.display.BitmapData;
-import openfl.geom.Point;
-import openfl.geom.Rectangle;
 
 /**
  * The toolbox which allows modifying information like Song Title, Scroll Speed, Characters/Stages, and starting BPM.

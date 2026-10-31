@@ -11,9 +11,7 @@ import flixel.math.FlxRect;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import flixel.util.typeLimit.NextState;
-import funkin.assets.Assets.AssetType;
 import funkin.assets.Paths.AssetPath;
-import funkin.data.song.SongRegistry;
 import funkin.play.PlayState;
 import funkin.ui.transition.loading.FunkayLoadingState;
 import funkin.ui.transition.loading.LoadingState;
@@ -23,7 +21,6 @@ import funkin.ui.transition.loading.ThrobberLoadingState;
 import funkin.util.FlxStateUtil;
 import funkin.util.tasks.TaskHandler;
 import funkin.assets.Assets;
-import funkin.assets.ValidatedPaths as Paths;
 
 /**
  * Provides information about how to transition between states, including the asset query function to use during loading.

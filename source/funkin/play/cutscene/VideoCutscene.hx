@@ -13,14 +13,7 @@ import funkin.graphics.video.FlxVideo;
 #if hxvlc
 import funkin.graphics.video.FunkinVideoSprite;
 #end
-//
-// ~PATHS~
-//
-import funkin.assets.Assets;
 import funkin.assets.Paths.AssetPath;
-import funkin.assets.Paths.AnimateAtlasAssetPathBuilder;
-import funkin.assets.Paths.MusicAssetPathBuilder;
-import funkin.assets.ValidatedPaths as Paths;
 
 /**
  * Assumes you are in the PlayState.

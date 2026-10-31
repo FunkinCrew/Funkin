@@ -6,7 +6,6 @@ import funkin.input.Controls.Device;
 import funkin.data.character.CharacterRegistry;
 import funkin.play.scoring.Scoring;
 import funkin.play.scoring.Scoring.ScoringRank;
-import funkin.save.migrator.RawSaveData_v1_0_0;
 import funkin.save.migrator.SaveDataMigrator;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorLiveInputStyle;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorWaveformPos;
@@ -14,16 +13,8 @@ import funkin.ui.debug.charting.ChartEditorState.ChartEditorTheme;
 import funkin.ui.debug.stageeditor.StageEditorState.StageEditorTheme;
 import funkin.util.FileUtil;
 import funkin.util.macro.ConsoleMacro;
-import funkin.util.macro.SaveMacro;
-import funkin.util.SerializerUtil;
 import funkin.mobile.ui.FunkinHitbox;
 import thx.semver.Version;
-import flixel.util.FlxSave.SaveFailureType;
-import flixel.util.FlxSave.LoadFailureType;
-#if FEATURE_NEWGROUNDS
-import funkin.api.newgrounds.Medals;
-import funkin.api.newgrounds.Leaderboards;
-#end
 
 @:nullSafety
 @:build(funkin.util.macro.SaveMacro.buildSaveProperties())

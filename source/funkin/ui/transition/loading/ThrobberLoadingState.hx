@@ -1,8 +1,6 @@
 package funkin.ui.transition.loading;
 
 import flixel.util.FlxColor;
-import funkin.graphics.FunkinCamera;
-import funkin.graphics.FunkinSprite;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
 import funkin.ui.transition.Transition.TransitionTarget;
@@ -12,14 +10,10 @@ import funkin.ui.transition.Transition.TransitionParams;
 //
 import funkin.assets.Assets;
 import funkin.assets.Assets.AssetType;
-import funkin.assets.Paths.AnimateAtlasAssetPathBuilder;
 import funkin.assets.Paths.AssetPath;
-import funkin.assets.Paths.MusicAssetPathBuilder;
 import funkin.assets.ValidatedPaths as Paths;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
-import funkin.ui.transition.Transition.TransitionParams;
-import funkin.ui.transition.Transition.TransitionTarget;
 
 /**
  * Parameters for performing a throbber transition.

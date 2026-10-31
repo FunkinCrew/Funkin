@@ -1,10 +1,8 @@
 package funkin.graphics;
 
 import flixel.math.FlxPoint;
-import flixel.math.FlxRect;
 import flixel.FlxCamera;
 import flixel.addons.display.FlxBackdrop;
-import flixel.system.FlxAssets.FlxGraphicAsset;
 
 /**
  * An FunkinBackdrop that inherits the vcam positioning from FunkinSprite.

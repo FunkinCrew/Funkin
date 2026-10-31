@@ -1,16 +1,7 @@
 package funkin.memory;
 
-import funkin.assets.Paths.AssetPath;
 import flixel.graphics.FlxGraphic;
-import flixel.FlxG;
 import funkin.play.notes.notestyle.NoteStyle;
-// import openfl.utils.AssetType;
-import funkin.assets.Assets.AssetType;
-import funkin.assets.Paths.AssetPath;
-import openfl.Assets as OpenFLAssets;
-import openfl.media.Sound;
-import funkin.assets.Assets;
-import funkin.assets.FunkinAssetCache;
 import lime.app.Future;
 
 /**

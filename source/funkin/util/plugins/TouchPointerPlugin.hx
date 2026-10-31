@@ -11,8 +11,6 @@ import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
-import flixel.util.FlxTimer;
-import funkin.graphics.FunkinCamera;
 
 // TODO: Replace all the touchBuddy littered around the game's code with the ACTUAL touchBuddy.
 // Thnk u agua and toffee <3

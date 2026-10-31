@@ -8,8 +8,6 @@ import funkin.ui.debug.cameraeditor.handlers.CameraEditorImportExportHandler;
 import funkin.ui.debug.cameraeditor.handlers.CameraEditorNotificationHandler;
 import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog.DialogDropTarget;
 import funkin.util.FileUtil;
-import haxe.ui.containers.dialogs.Dialog.DialogButton;
-import haxe.ui.containers.dialogs.Dialog.DialogEvent;
 import haxe.ui.containers.dialogs.Dialog;
 import haxe.ui.events.MouseEvent;
 
