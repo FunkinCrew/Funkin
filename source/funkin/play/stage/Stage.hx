@@ -570,7 +570,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
   }
 
   /**
-   * Get the zIndex of the dad character, as defined in the stage data.
+   * Get the scrollFactor of the dad character, as defined in the stage data.
    */
   public inline function getDadScroll():FlxPoint
   {
@@ -594,7 +594,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
   }
 
   /**
-   * Get the scrollFactor of the dad character, as defined in the stage data.
+   * Get the zIndex of the dad character, as defined in the stage data.
    */
   public inline function getDadIndex():Int
   {
