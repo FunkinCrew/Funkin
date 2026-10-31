@@ -158,18 +158,37 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
 
   // The last measure number we updated the ticks on.
   var previousMeasure:Int = -1;
+  var previousMostVisibleMeasure:Int = -1;
 
-  function updateMeasureNumbers(force:Bool = false):Void
+  public function updateMeasureNumbers(force:Bool = false):Void
   {
     if (chartEditorState == null || Conductor.instance == null) return;
 
     // Get the time at the top of the screen, in measures, rounded down.
     // This is the earliest measure we'll need to display a tick for.
     var currentMeasure:Int = Math.floor(Conductor.instance.getTimeInMeasures(chartEditorState.scrollPositionInMs));
-    if (previousMeasure == currentMeasure && !force) return;
-    if (currentMeasure < 0) currentMeasure = previousMeasure = 0;
-    else
-      previousMeasure = currentMeasure;
+
+    // Retrieve the step time of the bottom part of the grid, and get the measure time to know how many measure ticks we can render.
+    var nextVisibleMeasure:Int = Math.floor(
+      Conductor.instance.getTimeInMeasures(
+        Conductor.instance.getStepTimeInMs(
+          ((chartEditorState.scrollPositionInPixels + FlxG.height - ChartEditorState.PLAYBAR_HEIGHT) / ChartEditorState.GRID_SIZE)
+        )
+      )
+    );
+
+    // If the greatest measure is the same as the current one we're on, avoid unnecessary re-renders.
+    if (nextVisibleMeasure == currentMeasure && !force) return;
+
+    // Don't re-render if neither the current measure of greatest visible measure has changed.
+    if (previousMeasure == currentMeasure && previousMostVisibleMeasure == nextVisibleMeasure && !force) return;
+
+    // Make sure these never go below 0.
+    currentMeasure = Std.int(Math.max(0, currentMeasure));
+    nextVisibleMeasure = Std.int(Math.max(0, nextVisibleMeasure));
+
+    previousMeasure = currentMeasure;
+    previousMostVisibleMeasure = nextVisibleMeasure;
 
     // Remove existing measure numbers.
     measureNumbers.forEachAlive(function(measureNumber:FlxText)
@@ -181,18 +200,10 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
       measureDivider.kill();
     });
 
-    final ARBITRARY_LIMIT = 5;
-
-    for (i in 0...ARBITRARY_LIMIT)
+    for (i in currentMeasure...nextVisibleMeasure + 1)
     {
-      // NOTE: i = 0 when rendering Measure 1 here.
-      var targetMeasure:Int = currentMeasure + i - 1;
-      if (targetMeasure < 0) continue;
-
-      var measureTimeInMs:Float = Conductor.instance.getMeasureTimeInMs(targetMeasure);
-
-      var measureTimeInSteps:Float = Conductor.instance.getTimeInSteps(measureTimeInMs);
-      var measureTimeInPixels:Float = measureTimeInSteps * ChartEditorState.GRID_SIZE;
+      var measureTimeInMs:Float = Conductor.instance.getMeasureTimeInMs(i);
+      var measureTimeInPixels:Float = Conductor.instance.getTimeInSteps(measureTimeInMs) * ChartEditorState.GRID_SIZE;
 
       // If we've gone past the end of the song, we're done.
       if (measureTimeInPixels > chartEditorState.songLengthInPixels) break;
@@ -204,16 +215,7 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
 
       var relativeMeasureTimeInPixels:Float = measureTimeInPixels + this.y;
 
-      final SCREEN_PADDING:Float = ChartEditorState.GRID_SIZE / 2;
-
-      // Below the visible area, quit it.
-      if (relativeMeasureTimeInPixels > FlxG.height + SCREEN_PADDING)
-      {
-        break;
-      }
-
       // Else, display a number and divider.
-
       if (shouldDisplayMeasureNumber)
       {
         // Reuse an existing number. If we need a new number, create one with makeMeasureNumber().
@@ -222,7 +224,7 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
 
         // Measures are base ZERO gah!
         final OFFSET = 2;
-        measureNumber.text = '${targetMeasure + 1}';
+        measureNumber.text = '${i + 1}';
         measureNumber.y = relativeMeasureTimeInPixels + OFFSET;
         measureNumber.x = this.x;
       }

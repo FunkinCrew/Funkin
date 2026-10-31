@@ -5929,9 +5929,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         scrollMouseToGrid();
 
         // calculate distance between the position dragged to and the original position.
-        var dragDistanceSteps:Float =
-          Conductor.instance.getTimeInSteps(cursorSnappedMs).clamp(0, lastSnappedGridStep)
-          - dragStartCursorStep;
+        var dragDistanceSteps:Float = Conductor.instance.getTimeInSteps(cursorSnappedMs).clamp(0, lastSnappedGridStep) - dragStartCursorStep;
 
         var selectionEndStep:Float = 0;
         for (note in currentNoteSelection)
@@ -8124,6 +8122,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   function updateTimeSignature():Void
   {
+    measureTicks.updateMeasureNumbers(true);
   }
 
   /**
