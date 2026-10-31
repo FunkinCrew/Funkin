@@ -74,7 +74,9 @@ class Paths implements ConsoleClass
     {
       trace(' ERROR '.bold().error() + 'Asset path "$assetPath" points to an asset that does not exist!');
       FlxG.log.warn('Asset path "$assetPath" points to an asset that does not exist!');
+      #if VERBOSE_ASSET_CACHE
       funkin.util.DebugUtil.printCallStack();
+      #end
       // TODO: Improve error handling here.
       return assetPath;
     }

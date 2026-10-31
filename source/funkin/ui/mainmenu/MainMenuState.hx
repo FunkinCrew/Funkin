@@ -208,7 +208,7 @@ class MainMenuState extends MusicBeatState
       };
 
       Transition.openSubState(() -> new FreeplayState(params), {
-        assetQuery: FreeplayState.queryAssets.bind(_, params),
+        assetQuery: FreeplayState.queryAssets.bind(_, params, params.character),
         transition: Throbber,
         shouldPurgeCache: false
       });

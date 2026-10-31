@@ -18,6 +18,9 @@ import lime.graphics.Image as LimeImage;
 import flixel.graphics.frames.FlxFrame;
 import flixel.graphics.frames.FlxFramesCollection;
 import lime.media.AudioBuffer as LimeAudioBuffer;
+#if (js && html5 && lime_howlerjs)
+import lime.media.howlerjs.Howl;
+#end
 import lime.utils.AssetCache as LimeAssetCache;
 import lime.utils.AssetType as LimeAssetType;
 import lime.utils.Assets as LimeAssets;
@@ -181,7 +184,16 @@ class FunkinAssetCache implements OpenFLIAssetCache
       #if VERBOSE_ASSET_CACHE
       trace(' ASSETS '.bold().bg_lime() + ' Force clearing asset cache...');
       #end
-      for (cache in stagedCaches) cache.clearCache();
+      for (cache in stagedCaches)
+      {
+        if (cache == stagedSound) continue;
+        cache.clearCache();
+      }
+      for (key in stagedSound.keys())
+      {
+        final sound:Null<Sound> = stagedSound.get(key, false);
+        if (sound != null && !isSoundBufferInUse(sound)) stagedSound.remove(key);
+      }
       FunkinBitmapFrontend.instance.reset();
       assetListCaches = [];
       assetListBaseCache = null;
@@ -191,7 +203,17 @@ class FunkinAssetCache implements OpenFLIAssetCache
       #if FEATURE_DEBUG_TRACY
       cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.clear($prefix)');
       #end
-      for (cache in stagedCaches) cache.clearCacheByPrefix(prefix);
+      for (cache in stagedCaches)
+      {
+        if (cache == stagedSound) continue;
+        cache.clearCacheByPrefix(prefix);
+      }
+      for (key in stagedSound.keys())
+      {
+        if (!StringTools.startsWith(key, prefix)) continue;
+        final sound:Null<Sound> = stagedSound.get(key, false);
+        if (sound != null && !isSoundBufferInUse(sound)) stagedSound.remove(key);
+      }
       FunkinBitmapFrontend.instance.resetByPrefix(prefix);
     }
   }
@@ -299,7 +321,12 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
     isPurgeCycleActive = false;
 
-    for (cache in stagedCaches) cache.purgeCache();
+    for (cache in stagedCaches)
+    {
+      if (cache == stagedSound) continue;
+      cache.purgeCache();
+    }
+    stagedSound.purgeCacheByPredicate((key:String, sound:Sound) -> !isSoundBufferInUse(sound));
 
     #if FEATURE_HAXEUI
     purgeHaxeUIAssets();
@@ -623,6 +650,8 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function removeSound(id:String):Bool
   {
+    var sound:Null<Sound> = stagedSound.get(id, false);
+    if (sound != null && isSoundBufferInUse(sound)) return false;
     return stagedSound.remove(id);
   }
 
@@ -1199,6 +1228,26 @@ class FunkinAssetCache implements OpenFLIAssetCache
     return promise.future;
   }
 
+  #if (js && html5 && lime_howlerjs)
+  /**
+   * This is needed on HTML5 because loading the Lime AudioBuffer does not necessarily
+   * start the Howler request until the sound is explicitly loaded.
+   * @param sound
+   */
+  function preloadAudioAsset(sound:Sound):Void
+  {
+    if (sound == null) return;
+
+    final buffer:Null<LimeAudioBuffer> = @:privateAccess sound.__buffer;
+    if (buffer == null) return;
+
+    final howl:Null<Howl> = cast buffer.src;
+    if (howl == null || howl.state() != 'unloaded') return;
+
+    howl.load();
+  }
+  #end
+
   /**
    * Cache a Sound asynchronously.
    * If it's previously cached, it will be returned immediately.
@@ -1219,8 +1268,13 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
     fetchSound(assetPath).then((sound:Sound) ->
     {
-      // On success, resolve the promise with true
+      if (sound == null)
+      {
+        promise.complete(false);
+        return Future.withValue(sound);
+      }
 
+      // On success, resolve the promise with true
       if (permanent)
       {
         #if VERBOSE_ASSET_CACHE
@@ -1229,7 +1283,20 @@ class FunkinAssetCache implements OpenFLIAssetCache
         stagedSound.cachePermanent(assetPath.toString(), sound);
       }
 
-      promise.complete(sound != null);
+      #if (js && html5 && lime_howlerjs)
+      try
+      {
+        preloadAudioAsset(sound);
+      }
+      catch (err:Dynamic)
+      {
+        #if VERBOSE_ASSET_CACHE
+        trace(' ASSETS '.bold().bg_lime() + ' WARNING '.warning() + ' Could not preload Sound (${assetPath}): ${err}');
+        #end
+      }
+      #end
+
+      promise.complete(true);
       return Future.withValue(sound);
     }).onError((err) ->
       {
