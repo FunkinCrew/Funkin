@@ -274,13 +274,15 @@ class BaseCharacter extends Bopper implements IRegistryEntry<CharacterData>
     ignoreExclusionPref = ['sing'];
 
     _data = CharacterRegistry.instance.fetchCharacterData(this.id);
+
+    var expectedRenderType:CharacterRenderType = params?.renderType ?? _data.renderType;
     if (_data == null)
     {
       throw 'Could not find character data for characterId: $id';
     }
-    else if (_data.renderType != (params?.renderType ?? _data.renderType))
+    else if (_data.renderType != expectedRenderType)
     {
-      throw 'Render type mismatch for character ($id): expected ${renderType}, got ${_data.renderType}';
+      throw 'Render type mismatch for character ($id): expected ${expectedRenderType}, got ${_data.renderType}';
     }
     else
     {
@@ -290,7 +292,7 @@ class BaseCharacter extends Bopper implements IRegistryEntry<CharacterData>
       this.singTimeSteps = _data.singTime;
       this.globalOffsets = _data.offsets;
       this.flipX = _data.flipX;
-      this.renderType = params?.renderType ?? _data.renderType;
+      this.renderType = expectedRenderType;
     }
 
     if (PlayState.instance != null) currentStage = PlayState.instance.currentStage;
