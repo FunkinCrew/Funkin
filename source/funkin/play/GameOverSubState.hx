@@ -541,8 +541,13 @@ class GameOverSubState extends MusicBeatSubState
     super.onFocusLost();
     if (Preferences.autoPause)
     {
+      gameOverSfx?.pause();
       gameOverMusic?.pause();
+      RetroCameraFade.pauseFade(FlxG.camera);
+      FlxG.camera.followActive = false;
+      FlxG.camera.fxActive = false;
       confirmTimer.active = false;
+      if (boyfriend != null) boyfriend.active = false;
     }
   }
 
@@ -551,8 +556,13 @@ class GameOverSubState extends MusicBeatSubState
     super.onFocus();
     if (Preferences.autoPause)
     {
+      gameOverSfx?.resume();
       gameOverMusic?.resume();
+      RetroCameraFade.resumeFade(FlxG.camera);
+      FlxG.camera.followActive = true;
+      FlxG.camera.fxActive = true;
       confirmTimer.active = true;
+      if (boyfriend != null) boyfriend.active = true;
     }
   }
 
