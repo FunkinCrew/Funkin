@@ -141,6 +141,7 @@ class Save implements ConsoleClass implements ISerializable
         // Reasonable defaults.
         framerate: #if mobile refreshRate #else 60 #end,
         naughtyness: true,
+        noteQuantColors: false,
         downscroll: false,
         flashingLights: true,
         zoomCamera: true,
@@ -1417,6 +1418,12 @@ typedef SaveDataOptions =
    * @default `true`
    */
   var naughtyness:Bool;
+
+  /**
+   * If enabled, notes are colored by their quantization (4th, 8th, 16th, etc.).
+   * @default `false`
+   */
+  var ?noteQuantColors:Bool;
 
   /**
    * If enabled, the strumline is at the bottom of the screen rather than the top.
