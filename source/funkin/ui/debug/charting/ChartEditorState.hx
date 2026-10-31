@@ -921,6 +921,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   var scrollAnchorScreenPos:Null<FlxPoint> = null;
 
+  /**
+   * Distance from the scroll anchor that doesn't add up to a full grid tile yet.
+   */
+  var scrollAnchorRemainder:Float = 0;
+
   // Note Placement
 
   /**
@@ -5042,15 +5047,19 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       // How much scrolling should be done based on the distance of the cursor from the anchor.
       final ANCHOR_SCROLL_SPEED = 0.2;
 
-      scrollAmount = ANCHOR_SCROLL_SPEED * verticalDistance;
+      scrollAnchorRemainder += ANCHOR_SCROLL_SPEED * verticalDistance;
+      scrollAmount = Std.int(scrollAnchorRemainder / GRID_SIZE) * GRID_SIZE;
+      scrollAnchorRemainder -= scrollAmount;
       shouldPause = true;
+      shouldSnap = true;
     }
 
     // Mouse Wheel = Scroll
     if (FlxG.mouse.deltaWheel.y != 0)
     {
-      scrollAmount = -50 * FlxG.mouse.deltaWheel.y;
+      scrollAmount = -GRID_SIZE * FlxG.mouse.deltaWheel.y;
       shouldPause = true;
+      shouldSnap = true;
     }
 
     // Up Arrow = Scroll Up
@@ -5476,6 +5485,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       if (scrollAnchorScreenPos == null)
       {
         scrollAnchorScreenPos = FlxPoint.get(FlxG.mouse.x, FlxG.mouse.y);
+        scrollAnchorRemainder = 0;
         selectionBoxStartPos = null;
       }
       else
