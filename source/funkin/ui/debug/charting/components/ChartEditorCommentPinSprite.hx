@@ -2,7 +2,6 @@ package funkin.ui.debug.charting.components;
 
 import funkin.util.HaxeUIUtil;
 #if FEATURE_CHART_EDITOR
-import flixel.FlxSprite;
 import flixel.input.mouse.FlxMouseEvent;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;

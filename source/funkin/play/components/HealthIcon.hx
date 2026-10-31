@@ -5,8 +5,6 @@ import flixel.FlxSprite;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.tweens.FlxTween;
-import flixel.tweens.FlxEase;
-import funkin.data.character.CharacterRegistry;
 import funkin.graphics.FunkinSprite;
 import funkin.util.MathUtil;
 

@@ -1,6 +1,5 @@
 package funkin.play.cutscene.dialogue;
 
-import flixel.FlxSprite;
 import funkin.graphics.FunkinSprite;
 import funkin.data.IRegistryEntry;
 import funkin.modding.events.ScriptEvent;
@@ -8,16 +7,7 @@ import flixel.graphics.frames.FlxFramesCollection;
 import funkin.util.assets.FlxAnimationUtil;
 import funkin.modding.IScriptedClass.IDialogueScriptedClass;
 import funkin.data.dialogue.SpeakerData;
-import funkin.data.dialogue.SpeakerRegistry;
 import funkin.data.dialogue.SpeakerRegistry.SpeakerEntryParams;
-//
-// ~PATHS~
-//
-import funkin.assets.Assets;
-import funkin.assets.Assets.AssetType;
-import funkin.assets.Paths.AnimateAtlasAssetPathBuilder;
-import funkin.assets.Paths.AssetPath;
-import funkin.assets.Paths.MusicAssetPathBuilder;
 import funkin.assets.ValidatedPaths as Paths;
 
 /**

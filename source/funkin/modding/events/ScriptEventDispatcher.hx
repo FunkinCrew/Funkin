@@ -1,6 +1,5 @@
 package funkin.modding.events;
 
-import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
 import funkin.modding.IScriptedClass;
 import funkin.modding.ScriptGuard;
 import funkin.modding.module.Module;

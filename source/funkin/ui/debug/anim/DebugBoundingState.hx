@@ -15,7 +15,6 @@ import funkin.input.Cursor;
 import funkin.play.character.BaseCharacter;
 import funkin.data.character.CharacterData;
 import funkin.data.character.CharacterRegistry;
-import funkin.ui.mainmenu.MainMenuState;
 import funkin.util.MouseUtil;
 import funkin.util.SerializerUtil;
 import funkin.util.SortUtil;

@@ -3,8 +3,6 @@ package funkin.play.cutscene.dialogue;
 import flixel.FlxSprite;
 import flixel.sound.FlxSound;
 import funkin.data.IRegistryEntry;
-import flixel.group.FlxSpriteGroup;
-import funkin.group.FunkinGroup;
 import funkin.group.FunkinGroup.FunkinSpriteGroup;
 import flixel.graphics.frames.FlxFramesCollection;
 import funkin.graphics.FunkinSprite;
@@ -18,11 +16,6 @@ import funkin.data.dialogue.DialogueBoxRegistry;
 //
 // ~PATHS~
 //
-import funkin.assets.Assets;
-import funkin.assets.Assets.AssetType;
-import funkin.assets.Paths.AnimateAtlasAssetPathBuilder;
-import funkin.assets.Paths.AssetPath;
-import funkin.assets.Paths.MusicAssetPathBuilder;
 import funkin.assets.ValidatedPaths as Paths;
 
 class DialogueBox extends FunkinSpriteGroup implements IDialogueScriptedClass implements IRegistryEntry<DialogueBoxData>

@@ -5,7 +5,6 @@ import funkin.audio.SoundGroup;
 import haxe.ui.components.Button;
 import haxe.ui.components.Label;
 import flixel.addons.display.FlxTiledSprite;
-import flixel.math.FlxMath;
 import haxe.ui.components.NumberStepper;
 import haxe.ui.backend.flixel.components.SpriteWrapper;
 import funkin.ui.debug.charting.commands.SetAudioOffsetCommand;

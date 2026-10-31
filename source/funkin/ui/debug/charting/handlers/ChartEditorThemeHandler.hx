@@ -6,7 +6,6 @@ import flixel.addons.display.FlxSliceSprite;
 import flixel.FlxSprite;
 import flixel.math.FlxRect;
 import flixel.util.FlxColor;
-import funkin.data.song.SongData.SongTimeChange;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorTheme;
 import openfl.display.BitmapData;
 import openfl.geom.Rectangle;

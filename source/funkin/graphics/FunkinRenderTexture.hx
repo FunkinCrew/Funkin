@@ -2,7 +2,6 @@ package funkin.graphics;
 
 import animate.internal.RenderTexture;
 import flixel.FlxSprite;
-import flixel.math.FlxRect;
 import flixel.graphics.frames.FlxFrame;
 
 /**

@@ -1,15 +1,11 @@
 package funkin.ui.charSelect;
 
 import flixel.util.typeLimit.NextState;
-import funkin.ui.transition.NextSubState;
-import funkin.assets.FunkinAssetCache;
 import flixel.FlxSprite;
-import flixel.FlxState;
 import flixel.group.FlxSpriteGroup;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
-import funkin.graphics.FunkinSprite;
 import flixel.util.FlxColor;
 import funkin.data.character.CharacterRegistry;
 import funkin.play.components.HealthIcon;
@@ -26,9 +22,7 @@ import funkin.util.DeviceUtil;
 //
 import funkin.assets.Assets;
 import funkin.assets.Assets.AssetType;
-import funkin.assets.Paths.AnimateAtlasAssetPathBuilder;
 import funkin.assets.Paths.AssetPath;
-import funkin.assets.Paths.MusicAssetPathBuilder;
 import funkin.assets.ValidatedPaths as Paths;
 
 using flixel.util.FlxSpriteUtil;

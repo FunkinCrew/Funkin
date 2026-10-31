@@ -7,8 +7,6 @@ import funkin.data.freeplay.player.PlayerData.PlayerFreeplayDJData;
 import funkin.modding.IScriptedClass.IFreeplayScriptedClass;
 import funkin.modding.events.ScriptEvent;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
-import funkin.assets.Assets;
-import funkin.assets.Paths;
 import funkin.data.character.CharacterData.CharacterRenderType;
 
 enum FreeplayDJState

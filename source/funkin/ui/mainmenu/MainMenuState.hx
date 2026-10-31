@@ -22,17 +22,13 @@ import funkin.ui.MenuList.MenuListItem;
 import funkin.ui.MenuList.MenuTypedList;
 import funkin.ui.MusicBeatState;
 import funkin.ui.Prompt;
-import funkin.ui.UIStateMachine.UIState;
 import funkin.ui.UIStateMachine;
 import funkin.ui.freeplay.FreeplayState;
 import funkin.ui.mainmenu.UpgradeSparkle;
-import funkin.ui.quickpanel.QuickPanelState;
 import funkin.ui.story.StoryMenuState;
 import funkin.ui.title.TitleState;
 import funkin.util.InputUtil;
 import funkin.util.MathUtil;
-import funkin.util.SwipeUtil;
-import funkin.util.TouchUtil;
 import funkin.util.WindowUtil;
 import funkin.ui.transition.Transition;
 #if FEATURE_DEBUG_MENU
@@ -52,12 +48,7 @@ import funkin.mobile.util.InAppPurchasesUtil;
 // ~PATHS~
 //
 import funkin.assets.Assets as Assets;
-import funkin.assets.Assets.AssetType;
-import funkin.assets.Paths.AssetPath;
-import funkin.assets.Paths.AnimateAtlasAssetPathBuilder;
-import funkin.assets.Paths.MusicAssetPathBuilder;
 import funkin.assets.ValidatedPaths as Paths;
-import funkin.assets.Paths as NewPaths;
 
 @:nullSafety
 class MainMenuState extends MusicBeatState

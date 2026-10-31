@@ -2,13 +2,11 @@ package funkin.play.stage;
 
 import openfl.display.BlendMode;
 import flixel.util.FlxColor;
-import funkin.graphics.FunkinCamera;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxPoint;
 import flixel.system.FlxAssets.FlxShader;
 import flixel.util.FlxSort;
-import openfl.display.BitmapData;
 import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
 import funkin.modding.events.ScriptEvent;
 import funkin.play.PlayState;
@@ -22,14 +20,7 @@ import funkin.util.SortUtil;
 import funkin.util.assets.FlxAnimationUtil;
 import funkin.graphics.FunkinSprite;
 import funkin.group.FunkinGroup;
-//
-// ~PATHS~
-//
-import funkin.assets.Assets;
-import funkin.assets.Assets.AssetType;
-import funkin.assets.Paths.AnimateAtlasAssetPathBuilder;
 import funkin.assets.Paths.AssetPath;
-import funkin.assets.Paths.MusicAssetPathBuilder;
 import funkin.assets.ValidatedPaths as Paths;
 
 typedef StagePropGroup = FlxTypedSpriteGroup<StageProp>;

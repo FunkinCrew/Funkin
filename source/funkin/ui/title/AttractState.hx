@@ -21,9 +21,6 @@ import funkin.util.TouchUtil;
 //
 import funkin.assets.Assets;
 import funkin.assets.Paths.AssetPath;
-import funkin.assets.Paths.AnimateAtlasAssetPathBuilder;
-import funkin.assets.Paths.MusicAssetPathBuilder;
-import funkin.assets.ValidatedPaths as Paths;
 import funkin.assets.Paths as NewPaths;
 
 /**

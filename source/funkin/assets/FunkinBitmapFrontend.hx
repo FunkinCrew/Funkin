@@ -1,15 +1,11 @@
 package funkin.assets;
 
-import animate.FlxAnimateFrames;
 import flixel.FlxBasic;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.graphics.FlxGraphic;
-import flixel.graphics.frames.FlxFrame;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
-import flixel.system.FlxAssets.FlxGraphicAsset;
-import flixel.util.FlxColor;
 import funkin.util.assets.StagedCache;
 import haxe.ds.ObjectMap;
 import openfl.display.BitmapData;

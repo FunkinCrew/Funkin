@@ -4,7 +4,6 @@ import funkin.ui.FullScreenScaleMode;
 import funkin.ui.freeplay.FreeplayState.FreeplaySongData;
 import funkin.data.story.level.LevelRegistry;
 import funkin.graphics.shaders.HSVShader;
-import funkin.graphics.shaders.GaussianBlurShader;
 import flixel.group.FlxGroup;
 import flixel.text.FlxText;
 import flixel.FlxSprite;
@@ -24,10 +23,7 @@ import funkin.play.scoring.Scoring.ScoringRank;
 import flixel.util.FlxColor;
 import funkin.ui.story.Level;
 import funkin.ui.PixelatedIcon;
-import funkin.util.TouchUtil;
-import funkin.util.SwipeUtil;
 import funkin.assets.Paths;
-import funkin.assets.Assets;
 
 using StringTools;
 

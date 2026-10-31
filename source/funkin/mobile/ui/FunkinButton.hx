@@ -8,7 +8,6 @@ import flixel.input.FlxInput;
 import flixel.input.IFlxInput;
 import flixel.input.touch.FlxTouch;
 import flixel.math.FlxPoint;
-import flixel.util.FlxDestroyUtil;
 import flixel.util.FlxSignal;
 import openfl.display.Graphics;
 import haxe.ds.Map;

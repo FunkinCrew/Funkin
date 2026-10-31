@@ -3,7 +3,6 @@ package funkin.ui.debug.stageeditor;
 #if FEATURE_STAGE_EDITOR
 import flixel.math.FlxPoint;
 import flixel.text.FlxText;
-import openfl.display.BitmapData;
 import openfl.geom.Point;
 import flixel.util.FlxTimer;
 import flixel.FlxCamera;
@@ -29,7 +28,6 @@ import haxe.ui.containers.menus.MenuCheckBox;
 import funkin.util.FileUtil;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.debug.FunkinDebugDisplay.DebugDisplayMode;
-import funkin.ui.debug.stageeditor.handlers.AssetDataHandler;
 import funkin.ui.debug.stageeditor.handlers.AssetDataHandler.StageEditorObjectData;
 import funkin.ui.debug.stageeditor.handlers.StageDataHandler;
 import funkin.ui.debug.stageeditor.handlers.UndoRedoHandler.UndoAction;

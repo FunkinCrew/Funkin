@@ -2,7 +2,6 @@ package funkin.ui.freeplay.dj;
 
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.util.assets.FlxAnimationUtil;
-import funkin.assets.Assets;
 import funkin.assets.Paths;
 import funkin.data.freeplay.player.PlayerData;
 

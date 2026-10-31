@@ -2,8 +2,6 @@ package funkin.util.plugins;
 
 import flixel.FlxBasic;
 import flixel.FlxG;
-import openfl.events.KeyboardEvent;
-import openfl.ui.Keyboard;
 import funkin.ui.quickpanel.QuickPanelState;
 import funkin.ui.quickpanel.QuickPanelGroup;
 import funkin.save.Save;

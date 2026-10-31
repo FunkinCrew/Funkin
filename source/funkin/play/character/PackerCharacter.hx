@@ -2,14 +2,12 @@ package funkin.play.character;
 
 import flixel.graphics.frames.FlxFramesCollection;
 import funkin.modding.events.ScriptEvent;
-import funkin.data.character.CharacterData.CharacterRenderType;
 import funkin.util.assets.FlxAnimationUtil;
 import funkin.data.character.CharacterData;
 import funkin.data.character.CharacterRegistry;
 //
 // ~PATHS~
 //
-import funkin.assets.Assets;
 import funkin.assets.ValidatedPaths as Paths;
 import funkin.assets.Paths.AssetPath;
 import funkin.assets.Assets.AssetType;

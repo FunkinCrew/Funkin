@@ -1,16 +1,9 @@
 package funkin.tweens;
 
-import flixel.FlxObject;
-import flixel.FlxSprite;
-import flixel.math.FlxMath;
-import flixel.math.FlxPoint;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxTween.TweenOptions;
 import flixel.tweens.FlxTween.FlxTweenManager;
 import flixel.tweens.misc.VarTween;
-import flixel.tweens.motion.QuadPath;
-import flixel.tweens.motion.Motion;
-import flixel.util.FlxDestroyUtil;
 import funkin.Conductor;
 
 typedef FunkinTweenOptions =

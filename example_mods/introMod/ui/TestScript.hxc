@@ -1,0 +1,18 @@
+import haxe.ds.IntMap;
+import funkin.modding.module.Module;
+
+using StringTools;
+
+@:access(funkin.play.PlayState, funkin.FunkinGame)
+class TestModule extends Module
+{
+  public function new()
+  {
+    super('abstract_testing');
+  }
+
+  override function onCreate(e):Void
+  {
+
+  }
+}

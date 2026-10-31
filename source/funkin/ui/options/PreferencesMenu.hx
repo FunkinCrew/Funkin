@@ -7,7 +7,6 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.FlxG;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
-import flixel.math.FlxPoint;
 import funkin.ui.AtlasText.AtlasFont;
 import funkin.ui.Page;
 import funkin.graphics.FunkinCamera;
@@ -21,10 +20,10 @@ import funkin.ui.debug.FunkinDebugDisplay.DebugDisplayMode;
 import funkin.mobile.ui.FunkinBackButton;
 import funkin.mobile.input.ControlsHandler;
 import funkin.mobile.ui.FunkinHitbox.FunkinHitboxControlSchemes;
+import funkin.util.HapticUtil;
 import funkin.util.TouchUtil;
 import funkin.util.SwipeUtil;
 #end
-import funkin.util.HapticUtil;
 import lime.ui.WindowVSyncMode;
 
 class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>

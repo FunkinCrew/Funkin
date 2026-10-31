@@ -1,7 +1,6 @@
 package funkin.graphics.shaders;
 
 import flixel.system.FlxAssets.FlxShader;
-import openfl.display.BitmapData;
 
 class BlurShaderUp extends FlxShader
 {

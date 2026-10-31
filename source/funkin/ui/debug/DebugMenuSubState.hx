@@ -5,7 +5,6 @@ import flixel.FlxObject;
 import flixel.FlxSprite;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.FullScreenScaleMode;
-import funkin.ui.mainmenu.MainMenuState;
 import funkin.audio.FunkinSound;
 import funkin.ui.TextMenuList;
 import funkin.ui.debug.charting.ChartEditorState;

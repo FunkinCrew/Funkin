@@ -1,17 +1,16 @@
 package funkin.ui;
 
 import flixel.FlxSprite;
-import flixel.util.FlxColor;
 import flixel.effects.FlxFlicker;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.util.FlxSignal.FlxTypedSignal;
 import funkin.audio.FunkinSound;
-import funkin.util.TouchUtil;
-import funkin.util.SwipeUtil;
 import funkin.ui.Page.PageName;
-import flixel.tweens.FlxEase;
 import funkin.util.HapticUtil;
-import flixel.tweens.FlxTween;
+import funkin.util.SwipeUtil;
+import funkin.util.TouchUtil;
 
 @:nullSafety
 class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
