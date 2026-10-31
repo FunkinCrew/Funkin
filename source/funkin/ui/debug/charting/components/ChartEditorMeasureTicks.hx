@@ -105,26 +105,15 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
         ChartEditorThemeHandler.GRID_MEASURE_DIVIDER_COLOR_LIGHT;
     };
 
-    // TODO: This does NOT account for time signature, and always assumes 4/4!
-    // Better to have the little lines not line up than be required to redraw the image every frame,
-    // but we need to fix this eventually.
-    var stepsPerMeasure:Int = Constants.STEPS_PER_BEAT * 4;
-
     // Start the bitmap with the basic gray color.
-    var measureTickBitmap = new BitmapData(ChartEditorState.GRID_SIZE, ChartEditorState.GRID_SIZE * 16, true, backingColor);
-
-    // Draw the measure ticks at the top and bottom.
-    measureTickBitmap.fillRect(new Rectangle(0, 0, ChartEditorState.GRID_SIZE, ChartEditorThemeHandler.MEASURE_TICKS_MEASURE_WIDTH / 2), dividerColor);
-    var bottomTickY:Float = measureTickBitmap.height - (ChartEditorThemeHandler.MEASURE_TICKS_MEASURE_WIDTH / 2);
-    measureTickBitmap.fillRect(
-      new Rectangle(0, bottomTickY, ChartEditorState.GRID_SIZE, ChartEditorThemeHandler.MEASURE_TICKS_MEASURE_WIDTH / 2),
-      dividerColor
-    );
+    var measureTickBitmap = new BitmapData(ChartEditorState.GRID_SIZE, ChartEditorState.GRID_SIZE * Constants.STEPS_PER_BEAT, true, backingColor);
 
     // Draw the beat ticks and dividers, and step ticks. No need for two separate loops thankfully.
-    for (i in 1...stepsPerMeasure)
+    for (i in 0...Constants.STEPS_PER_BEAT)
     {
-      if ((i % Constants.STEPS_PER_BEAT) == 0) // If we're on a beat, draw a beat tick and divider.
+      // Since this sprite is tiled, every `4` regular steps is always going to represent a beat, so we can simply have the first step represent the beat.
+      // The measure tick is always going to overlap within the beat itself.
+      if (i == 0)
       {
         var beatTickY:Float = ChartEditorState.GRID_SIZE * i - (ChartEditorThemeHandler.MEASURE_TICKS_BEAT_WIDTH / 2);
         var beatTickLength:Float = ChartEditorState.GRID_SIZE * 2 / 3;
@@ -148,6 +137,7 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
       measureNumber.destroy();
     });
     measureNumbers.clear();
+
     // Destroy these so they get rebuilt with the right theme later.
     measureDividers.forEach(function(measureDivider:FlxSprite)
     {
@@ -233,7 +223,7 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
         final REVIVE:Bool = true;
         var measureDivider = measureDividers.recycle(makeMeasureDivider, false, REVIVE);
         measureDivider.y = relativeMeasureTimeInPixels - (ChartEditorThemeHandler.MEASURE_TICKS_MEASURE_WIDTH / 2);
-        measureDivider.x = this.x + (measureTicksSprite.width);
+        measureDivider.x = this.x;
       }
     }
   }
@@ -261,7 +251,7 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
 
     var measureDivider = new FunkinSprite()
       .makeSolidColor(
-        ChartEditorState.GRID_SIZE * ChartEditorThemeHandler.TOTAL_COLUMN_COUNT,
+        ChartEditorState.GRID_SIZE * (ChartEditorThemeHandler.TOTAL_COLUMN_COUNT + 1),
         ChartEditorThemeHandler.MEASURE_TICKS_MEASURE_WIDTH,
         dividerColor
       );
