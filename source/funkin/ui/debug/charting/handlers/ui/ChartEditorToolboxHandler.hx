@@ -673,6 +673,10 @@ class ChartEditorToolboxHandler
 
     toolbox.draggable = false;
     toolbox.dragInitiator = toolbox;
+    // Starting position.
+    toolbox.x = 700;
+    toolbox.y = 150;
+    toolbox.dialogContent.padding = 0;
 
     toolbox.onDialogClosed = function(event:DialogEvent)
     {
@@ -706,6 +710,10 @@ class ChartEditorToolboxHandler
 
     toolbox.draggable = false;
     toolbox.dragInitiator = toolbox;
+    // Starting position.
+    toolbox.x = 200;
+    toolbox.y = 150;
+    toolbox.dialogContent.padding = 0;
 
     toolbox.onDialogClosed = (event:DialogEvent) ->
     {
