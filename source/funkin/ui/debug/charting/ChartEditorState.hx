@@ -4397,6 +4397,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         }
       }
 
+      audioVocalTrackGroup.updatePending(audioInstTrack.time, audioInstTrack.isPlaying);
+
       if
         ((!audioInstTrack.isPlaying || (audioVocalTrackGroup.length > 0 && !audioVocalTrackGroup.playing))
           && currentScrollEase != scrollPositionInPixels

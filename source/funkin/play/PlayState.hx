@@ -1361,6 +1361,11 @@ class PlayState extends MusicBeatSubState
       }
     }
 
+    if (!startingSong && vocals != null && FlxG.sound.music != null)
+    {
+      vocals.updatePending(FlxG.sound.music.time, FlxG.sound.music.playing);
+    }
+
     var pauseButtonCheck:Bool = false;
     var androidPause:Bool = false;
     // So the player wouldn't miss when pressing the pause button
