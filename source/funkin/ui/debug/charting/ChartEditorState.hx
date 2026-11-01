@@ -5043,9 +5043,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       var verticalDistance = distance.y;
 
       // How much scrolling should be done based on the distance of the cursor from the anchor.
-      final ANCHOR_SCROLL_SPEED = 0.2;
+      final ANCHOR_SCROLL_SPEED = 12;
 
-      scrollAmount = ANCHOR_SCROLL_SPEED * verticalDistance;
+      scrollAmount = ANCHOR_SCROLL_SPEED * verticalDistance * FlxG.elapsed;
       shouldPause = true;
     }
 
