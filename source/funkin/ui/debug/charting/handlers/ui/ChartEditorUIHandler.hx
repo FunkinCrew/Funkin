@@ -790,15 +790,14 @@ class ChartEditorUIHandler
         charPlayer.flip = true;
         charPlayer.targetScale = 0.5;
 
-        charPreviewToolbox.title = 'Player Preview - ${charPlayer.charName}';
         charPreviewToolbox.invalidateComponentLayout();
       }
     }
 
     if (charPreviewToolbox != null && !charPreviewToolbox.minimized)
     {
-      charPreviewToolbox.width = charPlayer.width + 32;
-      charPreviewToolbox.height = charPlayer.height + 64;
+      charPreviewToolbox.width = charPlayer.width + 2;
+      charPreviewToolbox.height = charPlayer.height + charPreviewToolbox.dialogTitle.height + 2;
     }
     state.currentPlayerCharacterPlayer = charPlayer;
   }
@@ -829,15 +828,14 @@ class ChartEditorUIHandler
         charPlayer.flip = false;
         charPlayer.targetScale = 0.5;
 
-        charPreviewToolbox.title = 'Opponent Preview - ${charPlayer.charName}';
         charPreviewToolbox.invalidateComponentLayout();
       }
     }
 
     if (charPreviewToolbox != null && !charPreviewToolbox.minimized)
     {
-      charPreviewToolbox.width = charPlayer.width + 32;
-      charPreviewToolbox.height = charPlayer.height + 64;
+      charPreviewToolbox.width = charPlayer.width + 2;
+      charPreviewToolbox.height = charPlayer.height + charPreviewToolbox.dialogTitle.height + 2;
     }
     state.currentOpponentCharacterPlayer = charPlayer;
   }
