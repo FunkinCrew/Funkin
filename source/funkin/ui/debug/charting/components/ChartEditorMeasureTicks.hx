@@ -171,9 +171,7 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
     // Retrieve the step time of the bottom part of the grid, and get the measure time to know how many measure ticks we can render.
     var nextVisibleMeasure:Int = Math.floor(
       Conductor.instance.getTimeInMeasures(
-        Conductor.instance.getStepTimeInMs(
-          ((chartEditorState.scrollPositionInPixels + FlxG.height - ChartEditorState.PLAYBAR_HEIGHT) / ChartEditorState.GRID_SIZE)
-        )
+        Conductor.instance.getStepTimeInMs(((chartEditorState.scrollPositionInPixels + FlxG.height) / ChartEditorState.GRID_SIZE))
       )
     );
 
