@@ -6329,7 +6329,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     if (targetCursorMode == null)
     {
-      if (FlxG.mouse.pressed)
+      if (activeToolboxes.get(CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT)?.hitTest(FlxG.mouse.viewX, FlxG.mouse.viewY) == true
+        || activeToolboxes.get(CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT)?.hitTest(FlxG.mouse.viewX, FlxG.mouse.viewY) == true)
+      {
+        targetCursorMode = Pointer;
+      }
+      else if (FlxG.mouse.pressed)
       {
         if (overlapsSelection)
         {
