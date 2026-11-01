@@ -406,6 +406,9 @@ class ChartEditorToolboxHandler
 
     if (toolbox == null) return null;
 
+    toolbox.draggable = false;
+    toolbox.dragInitiator = toolbox;
+
     toolbox.onDialogClosed = function(event:DialogEvent)
     {
       state.menubarItemToggleToolboxPlayerPreview.selected = false;
@@ -435,6 +438,9 @@ class ChartEditorToolboxHandler
     var toolbox:CollapsibleDialog = cast RuntimeComponentBuilder.fromAsset(ChartEditorState.CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT);
 
     if (toolbox == null) return null;
+
+    toolbox.draggable = false;
+    toolbox.dragInitiator = toolbox;
 
     toolbox.onDialogClosed = (event:DialogEvent) ->
     {
