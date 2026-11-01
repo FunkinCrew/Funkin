@@ -169,6 +169,7 @@ class CharacterPlayer extends Box
     return targetScale = value;
   }
 
+  @:access(funkin.play.stage.Bopper)
   function measureCharacter():Void
   {
     characterBounds = FlxDestroyUtil.put(characterBounds);
@@ -178,7 +179,8 @@ class CharacterPlayer extends Box
     {
       if (animName.toLowerCase().contains('death')) continue;
 
-      character.playAnimation(animName, true);
+      character.animation.play(animName, true);
+      character.applyAnimationOffsets(animName);
 
       for (i in 0...character.animation.curAnim.numFrames)
       {
