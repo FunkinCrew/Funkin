@@ -5026,7 +5026,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function handleScrollKeybinds():Void
   {
     // Don't scroll when the user is interacting with the UI, unless a playbar button (the << >> ones) is pressed.
-    if ((isHaxeUIFocused || (isCursorOverHaxeUI && !canScrollComment)) && playbarButtonPressed == null) return;
+    if ((isHaxeUIFocused || (isCursorOverHaxeUI && !canScrollComment && scrollAnchorScreenPos == null)) && playbarButtonPressed == null) return;
 
     var scrollAmount:Float = 0; // Amount to scroll the grid.
     var playheadAmount:Float = 0; // Amount to scroll the playhead relative to the grid.
@@ -5502,6 +5502,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       else
       {
         releaseScrollAnchor();
+        Screen.instance.setCursor('default');
       }
     }
 
@@ -5529,6 +5530,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       if (scrollAnchorScreenPos != null)
       {
         releaseScrollAnchor();
+        Screen.instance.setCursor('default');
       }
       else
       {
@@ -5868,6 +5870,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       // Cursor should be a scroll anchor.
       targetCursorMode = Scroll;
+      Screen.instance.setCursor('scroll');
     }
     else if (dragTargetNote != null || dragTargetEvent != null)
     {
