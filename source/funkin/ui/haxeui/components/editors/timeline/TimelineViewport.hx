@@ -40,8 +40,6 @@ class TimelineViewport extends Box
   public static inline var MIN_BLOCK_WIDTH:Float = 10.0;
   public static inline var INSTANT_BLOCK_WIDTH:Float = 14.0;
   public static inline var INSTANT_BLOCK_SNAPS:Float = 2.0;
-  public static inline var ZOOM_RESIZE_THRESHOLD_PX:Float = 6.0;
-  public static inline var ZOOM_RESIZE_THRESHOLD_SHARE:Float = 0.08;
   public static inline var PIXELS_PER_STEP_BASE:Float = 12.0;
   public static inline var MIN_ZOOM:Float = 0.1;
   public static inline var MAX_ZOOM:Float = 10.0;
@@ -974,15 +972,10 @@ private class TimelineViewportLayout extends DefaultLayout
     }
 
     var instantWidth:Float = vp.instantBlockWidth();
-    var zoomEasing:Bool = vp._easingZoom;
 
     for (block in vp.eventBlocks)
     {
-      var blockLeftPos = vp.msToPixelX(block.eventData.time);
-      var blockWidthVal = block.isInstant() ? TimelineViewport.INSTANT_BLOCK_WIDTH : Math.max(
-        TimelineViewport.MIN_BLOCK_WIDTH,
-        vp.msToPixelX(vp.eventEndMs(block.eventData)) - blockLeftPos
-      );
+      var blockLeftPos = Math.fround(vp.msToPixelX(block.eventData.time));
       var blockTopPos = vp.getBlockTopPositionFromLayerIndex(block.layerIndex);
 
       if (blockLeftPos > w || blockTopPos + vp.blockHeight < 0 || blockTopPos > caHeight)
@@ -991,16 +984,9 @@ private class TimelineViewportLayout extends DefaultLayout
         continue;
       }
 
-      var blockWidthVal = block.isInstant() ? instantWidth : Math.max(
-        TimelineViewport.MIN_BLOCK_WIDTH,
-        vp.msToPixelX(vp.eventEndMs(block.eventData)) - blockLeftPos
-      );
-      blockWidthVal = Math.fround(blockWidthVal);
-      if (zoomEasing && block.width > 0)
-      {
-        var threshold:Float = Math.max(TimelineViewport.ZOOM_RESIZE_THRESHOLD_PX, blockWidthVal * TimelineViewport.ZOOM_RESIZE_THRESHOLD_SHARE);
-        if (Math.abs(block.width - blockWidthVal) < threshold) blockWidthVal = block.width;
-      }
+      var blockWidthVal = block.isInstant() ? Math.fround(
+        instantWidth
+      ) : Math.max(TimelineViewport.MIN_BLOCK_WIDTH, Math.fround(vp.msToPixelX(vp.eventEndMs(block.eventData))) - blockLeftPos);
 
       var isOffscreen = blockLeftPos + blockWidthVal < 0;
 
