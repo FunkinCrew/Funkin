@@ -48,6 +48,8 @@ class FunkinProgressBar extends FunkinSpriteGroup
   public var barTargetX:Float = 0;
 
   var dataList:Array<LoadingCharacterData> = [];
+  var dataPaths:Array<String> = [];
+  var dataModIds:Array<String> = [];
   var bar:FunkinSprite;
   var micStand:FunkinSprite;
 
@@ -132,12 +134,8 @@ class FunkinProgressBar extends FunkinSpriteGroup
   {
     var enabledModIds:Array<String> = PolymodHandler.enabledModIds.copy();
     var dataFolderPaths:Array<String> = BASE_GAME_CHARACTER_PATHS.copy();
-
-    for (path in dataFolderPaths)
-    {
-      // '' -> base game
-      enabledModIds.insert(0, '');
-    }
+    // Parallel to dataFolderPaths. '' -> base game
+    var dataFolderModIds:Array<String> = [for (_ in dataFolderPaths) ''];
 
     for (modId in enabledModIds)
     {
@@ -150,10 +148,16 @@ class FunkinProgressBar extends FunkinSpriteGroup
       {
         if (!asset.startsWith(CHARACTER_PATH) && !asset.endsWith('.json')) continue;
         dataFolderPaths.push(asset);
+        dataFolderModIds.push(modId);
       }
     }
 
-    loadDataFromPaths(dataFolderPaths, enabledModIds);
+    dataList = [];
+    dataPaths = [];
+    dataModIds = [];
+    loadDataFromPaths(dataFolderPaths, dataFolderModIds);
+
+    if (dataList.length == 0) return;
 
     var weights:Array<Float> = [];
     for (data in dataList)
@@ -164,7 +168,7 @@ class FunkinProgressBar extends FunkinSpriteGroup
     var characterData:LoadingCharacterData = FlxG.random.getObject(dataList, weights);
     var idx:Int = dataList.indexOf(characterData);
     var characterId:String = dataFolderPaths[idx].split('/').pop().split('.')[0];
-    character.loadCharacter(characterData, '$CHARACTER_PATH$characterId/$characterId', enabledModIds[idx]);
+    character.loadCharacter(characterData, '$CHARACTER_PATH$characterId/$characterId', dataModIds[idx]);
     character.zIndex = 300;
     add(character);
   }
@@ -176,10 +180,21 @@ class FunkinProgressBar extends FunkinSpriteGroup
    */
   public function loadDataFromPaths(paths:Array<String>, modIds:Array<String>):Void
   {
-    for (path in paths)
+    for (i in 0...paths.length)
     {
+      var path:String = paths[i];
+      var modId:String = modIds[i];
+      if (modId == 'basegame') modId = '';
+
+      #if html5
+      if (!lime.utils.Assets.isLocal(path, lime.utils.AssetType.TEXT)) continue;
+      #end
+
+      var jsonString:Null<String> = null;
       @:privateAccess
-      var jsonString:String = Polymod.assetLibrary.getTextDirectly(path, modIds[paths.indexOf(path)]);
+      jsonString = Polymod.assetLibrary.getTextDirectly(path, modId);
+
+      if (jsonString == null || jsonString == '') continue;
 
       var parser:JsonParser<LoadingCharacterData> = new JsonParser<LoadingCharacterData>({
         ignoreUnknownVariables: false
@@ -194,6 +209,8 @@ class FunkinProgressBar extends FunkinSpriteGroup
       else
       {
         dataList.push(parser.value);
+        dataPaths.push(path);
+        dataModIds.push(modId);
       }
     }
   }
