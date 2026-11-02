@@ -44,7 +44,8 @@ class FunkinLoadingCharacter extends FunkinSprite
 
     loadSparrow(graphicPath, modId);
     // Hacky fix for modded characters not being cached properly
-    FunkinAssetCache.instance.permaCacheFlxGraphic(graphicPath, this.graphic);
+
+    if (this.graphic != null) FunkinAssetCache.instance.permaCacheFlxGraphic(graphicPath, this.graphic);
 
     scale.set(data.scale, data.scale);
     updateHitbox();
