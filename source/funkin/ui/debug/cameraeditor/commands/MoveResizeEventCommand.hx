@@ -19,9 +19,16 @@ class MoveResizeEventCommand implements CameraEditorCommand
   var newTime:Float;
   var newDuration:Float;
   var newLayerName:String;
+  var easeChanged:Bool;
+  var oldEase:Null<String>;
+  var newEase:Null<String>;
 
-  public function new(event:SongEventData, oldTime:Float, oldDuration:Float, oldLayerName:String, newTime:Float, newDuration:Float, newLayerName:String)
+  public function new(event:SongEventData, oldTime:Float, oldDuration:Float, oldLayerName:String, newTime:Float, newDuration:Float, newLayerName:String,
+      easeChanged:Bool = false, ?oldEase:String, ?newEase:String)
   {
+    this.easeChanged = easeChanged;
+    this.oldEase = oldEase;
+    this.newEase = newEase;
     this.event = event;
     this.oldTime = oldTime;
     this.oldDuration = oldDuration;
@@ -40,6 +47,7 @@ class MoveResizeEventCommand implements CameraEditorCommand
   {
     event.time = newTime;
     TimelineUtil.setEventDurationSteps(event, newDuration);
+    if (easeChanged) TimelineUtil.setEventField(event, 'ease', newEase);
     var raw:SongEventDataRaw = event;
     raw.editorLayer = newLayerName == 'Default' ? null : newLayerName;
 
@@ -64,6 +72,7 @@ class MoveResizeEventCommand implements CameraEditorCommand
   {
     event.time = oldTime;
     TimelineUtil.setEventDurationSteps(event, oldDuration);
+    if (easeChanged) TimelineUtil.setEventField(event, 'ease', oldEase);
     var raw:SongEventDataRaw = event;
     raw.editorLayer = oldLayerName == 'Default' ? null : oldLayerName;
 
@@ -91,7 +100,7 @@ class MoveResizeEventCommand implements CameraEditorCommand
    */
   public function shouldAddToHistory(state:CameraEditorState):Bool
   {
-    return oldTime != newTime || oldDuration != newDuration || oldLayerName != newLayerName;
+    return oldTime != newTime || oldDuration != newDuration || oldLayerName != newLayerName || easeChanged;
   }
 
   public function toString():String

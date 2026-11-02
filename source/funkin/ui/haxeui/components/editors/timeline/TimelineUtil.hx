@@ -23,6 +23,28 @@ class TimelineUtil
     return ease == 'CLASSIC' || ease == 'INSTANT';
   }
 
+  /**
+   * Whether the event has a duration that can be dragged on the timeline.
+   */
+  public static function canResize(event:SongEventData):Bool
+  {
+    var schema:Null<SongEventSchema> = event.getSchema();
+    if (schema != null) return schema.hasField('duration');
+    return !isFixedDuration(event);
+  }
+
+  /**
+   * Sets or removes a single field in the event's value.
+   */
+  public static function setEventField(event:SongEventData, field:String, value:Dynamic):Void
+  {
+    var struct:haxe.DynamicAccess<Dynamic> = cast event.valueAsStruct();
+    if (value == null) struct.remove(field);
+    else
+      struct.set(field, value);
+    event.value = cast struct;
+  }
+
   public static function getMinDurationSteps(event:SongEventData):Float
   {
     var schema = event.getSchema();
