@@ -1,7 +1,6 @@
 package funkin.ui.debug.cameraeditor.commands;
 
 #if FEATURE_CAMERA_EDITOR
-import funkin.audio.FunkinSound;
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongEventDataRaw;
 import funkin.data.song.SongDataUtils;
@@ -73,7 +72,7 @@ class PasteEventsCommand implements CameraEditorCommand
 
     state.replayCameraTimeline(state.conductorInUse.songPosition);
 
-    FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/note-place'));
+    state.playEditSound('ui/editors/chart-editor/charting-sounds/note-place');
 
     var plural = addedEvents.length != 1 ? 'events' : 'event';
     state.showToast(isRedo ? 'Redid paste' : 'Pasted ${addedEvents.length} $plural');
@@ -96,7 +95,7 @@ class PasteEventsCommand implements CameraEditorCommand
 
     state.replayCameraTimeline(state.conductorInUse.songPosition);
 
-    FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/undo'));
+    state.playEditSound('ui/editors/chart-editor/charting-sounds/undo');
 
     isRedo = true;
   }

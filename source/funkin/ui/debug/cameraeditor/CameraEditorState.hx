@@ -587,6 +587,22 @@ class CameraEditorState extends UIState implements ConsoleClass
    */
   var toastTween:Null<FlxTween> = null;
 
+  /**
+   * Whether an edit sound already played this frame.
+   */
+  var editSoundPlayed:Bool = false;
+
+  /**
+   * Plays an editing sound, at most once per frame.
+   * @param path The sound path, as passed to `Paths.sound`.
+   */
+  public function playEditSound(path:String):Void
+  {
+    if (editSoundPlayed) return;
+    editSoundPlayed = true;
+    FunkinSound.playOnce(Paths.sound(path));
+  }
+
   // History
 
   /**
@@ -662,6 +678,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     WindowManager.instance.reset();
     instance = this;
+    TimelineUtil.clearSchemaCache();
 
     chart.savedChanged.add(onChartSavedChanged);
     chart.workingFileChanged.add(onChartWorkingFileChanged);
@@ -1085,6 +1102,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   override public function update(elapsed:Float):Void
   {
+    editSoundPlayed = false;
     if (criticalFailure) return;
 
     Preferences.debugDisplay == DebugDisplayMode.Off ? menubar.paddingLeft = null : menubar.paddingLeft = 256;

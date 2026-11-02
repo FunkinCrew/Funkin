@@ -85,6 +85,7 @@ class EventTimeline extends VBox
   {
     var n:Int = SNAP_GRIDS.length;
     snapIndex = ((snapIndex + by) % n + n) % n;
+    viewport?.refreshLayout();
   }
 
   /**

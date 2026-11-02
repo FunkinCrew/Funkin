@@ -8,12 +8,41 @@ import funkin.play.event.ZoomCameraSongEvent;
 
 class TimelineUtil
 {
+  /**
+   * Cache for schema information per event kind.
+   */
+  static var schemaInfoCache:Map<String, TimelineSchemaInfo> = [];
+
+  /**
+   * Clears the cached schema info.
+   */
+  public static function clearSchemaCache():Void
+  {
+    schemaInfoCache.clear();
+  }
+
+  static function getSchemaInfo(event:SongEventData):TimelineSchemaInfo
+  {
+    var info:Null<TimelineSchemaInfo> = schemaInfoCache.get(event.eventKind);
+    if (info != null) return info;
+
+    var schema:Null<SongEventSchema> = event.getSchema();
+    var field = schema?.getByName('duration');
+    info = {
+      hasSchema: schema != null,
+      hasDuration: field != null,
+      minSteps: (field != null && field.step != null) ? field.step : 0.5
+    };
+    schemaInfoCache.set(event.eventKind, info);
+    return info;
+  }
+
   public static function isFixedDuration(event:SongEventData):Bool
   {
     // If the event's schema has no 'duration' field, it is inherently fixed-duration.
     // Prevents edge-drag from writing a spurious 'duration' key into event.value.
-    var schema:Null<SongEventSchema> = event.getSchema();
-    if (schema != null && !schema.hasField('duration')) return true;
+    var info:TimelineSchemaInfo = getSchemaInfo(event);
+    if (info.hasSchema && !info.hasDuration) return true;
 
     if (event.eventKind != "FocusCamera" && event.eventKind != "ZoomCamera") return false;
     var ease:Null<String> = event.getString('ease');
@@ -28,8 +57,8 @@ class TimelineUtil
    */
   public static function canResize(event:SongEventData):Bool
   {
-    var schema:Null<SongEventSchema> = event.getSchema();
-    if (schema != null) return schema.hasField('duration');
+    var info:TimelineSchemaInfo = getSchemaInfo(event);
+    if (info.hasSchema) return info.hasDuration;
     return !isFixedDuration(event);
   }
 
@@ -47,13 +76,7 @@ class TimelineUtil
 
   public static function getMinDurationSteps(event:SongEventData):Float
   {
-    var schema = event.getSchema();
-    if (schema != null)
-    {
-      var field = schema.getByName('duration');
-      if (field != null && field.step != null) return field.step;
-    }
-    return 0.5;
+    return getSchemaInfo(event).minSteps;
   }
 
   public static function getEventDurationSteps(event:SongEventData):Float
@@ -78,4 +101,10 @@ class TimelineUtil
     event.value = cast struct;
   }
 }
+typedef TimelineSchemaInfo =
+{
+  hasSchema:Bool,
+  hasDuration:Bool,
+  minSteps:Float
+};
 #end

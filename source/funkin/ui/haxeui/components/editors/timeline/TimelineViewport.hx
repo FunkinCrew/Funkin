@@ -39,6 +39,9 @@ class TimelineViewport extends Box
   public static inline var BLOCK_INSET:Float = 3.0;
   public static inline var MIN_BLOCK_WIDTH:Float = 10.0;
   public static inline var INSTANT_BLOCK_WIDTH:Float = 14.0;
+  public static inline var INSTANT_BLOCK_SNAPS:Float = 2.0;
+  public static inline var ZOOM_RESIZE_THRESHOLD_PX:Float = 6.0;
+  public static inline var ZOOM_RESIZE_THRESHOLD_SHARE:Float = 0.08;
   public static inline var PIXELS_PER_STEP_BASE:Float = 12.0;
   public static inline var MIN_ZOOM:Float = 0.1;
   public static inline var MAX_ZOOM:Float = 10.0;
@@ -412,10 +415,36 @@ class TimelineViewport extends Box
    */
   function isFollowingPlayback():Bool
   {
-    if (!chasing) return false;
+    return chasing && isPlaybackAutoScrolling();
+  }
+
+  /**
+   * Whether the song is running with an auto-scroll mode, whether or not the view is on the playhead right now.
+   */
+  function isPlaybackAutoScrolling():Bool
+  {
     var timeline:Null<EventTimeline> = findAncestor(EventTimeline);
     if (timeline == null || !timeline.isPlaying) return false;
     return (timeline.autoScrollMode : TimelinePlaybackAutoScrollMode) != NONE;
+  }
+
+  /**
+   * Where the playhead should sit on screen during a zoom while playback auto-scrolls.
+   */
+  function playbackAnchorX(playheadX:Float):Float
+  {
+    var timeline:Null<EventTimeline> = findAncestor(EventTimeline);
+    if (timeline != null && (timeline.autoScrollMode : TimelinePlaybackAutoScrollMode) == SMOOTH) return width * 0.5;
+    if (playheadX >= 0 && playheadX <= width * 0.95) return playheadX;
+    return width * 0.05;
+  }
+
+  /**
+   * How wide an instant event is drawn: a couple of snaps, but never too thin to grab.
+   */
+  public function instantBlockWidth():Float
+  {
+    return Math.max(INSTANT_BLOCK_WIDTH, INSTANT_BLOCK_SNAPS * snapGridSteps() * pixelsPerStep * zoomLevel);
   }
 
   public function cancelLayerScrollEase():Void
@@ -500,6 +529,7 @@ class TimelineViewport extends Box
    */
   public function zoomAnchorX(fallbackX:Float):Float
   {
+    if (isPlaybackAutoScrolling()) return playbackAnchorX(msToPixelX(songPositionMs));
     if (!zoomToPlayhead) return fallbackX;
 
     var playheadX:Float = msToPixelX(songPositionMs);
@@ -525,8 +555,13 @@ class TimelineViewport extends Box
 
     var playheadSteps:Float = msToSteps(songPositionMs);
     var playheadX:Float = (playheadSteps - fromScrollSteps) * pxFrom;
-    // While the song runs the view keeps the playhead put anyway.
-    if ((zoomToPlayhead || isFollowingPlayback()) && playheadX >= 0 && playheadX <= width)
+    if (isPlaybackAutoScrolling())
+    {
+      _zoomAnchorPlayhead = true;
+      _zoomAnchorSteps = playheadSteps;
+      _zoomAnchorX = playbackAnchorX(playheadX);
+    }
+    else if (zoomToPlayhead && playheadX >= 0 && playheadX <= width)
     {
       _zoomAnchorPlayhead = true;
       _zoomAnchorSteps = playheadSteps;
@@ -938,6 +973,9 @@ private class TimelineViewportLayout extends DefaultLayout
       if (vp.contentArea.height != caHeight) vp.contentArea.height = caHeight;
     }
 
+    var instantWidth:Float = vp.instantBlockWidth();
+    var zoomEasing:Bool = vp._easingZoom;
+
     for (block in vp.eventBlocks)
     {
       var blockLeftPos = vp.msToPixelX(block.eventData.time);
@@ -947,7 +985,24 @@ private class TimelineViewportLayout extends DefaultLayout
       );
       var blockTopPos = vp.getBlockTopPositionFromLayerIndex(block.layerIndex);
 
-      var isOffscreen = (blockLeftPos + blockWidthVal < 0) || (blockLeftPos > w) || (blockTopPos + vp.blockHeight < 0) || (blockTopPos > caHeight);
+      if (blockLeftPos > w || blockTopPos + vp.blockHeight < 0 || blockTopPos > caHeight)
+      {
+        if (!block.hidden) block.hidden = true;
+        continue;
+      }
+
+      var blockWidthVal = block.isInstant() ? instantWidth : Math.max(
+        TimelineViewport.MIN_BLOCK_WIDTH,
+        vp.msToPixelX(vp.eventEndMs(block.eventData)) - blockLeftPos
+      );
+      blockWidthVal = Math.fround(blockWidthVal);
+      if (zoomEasing && block.width > 0)
+      {
+        var threshold:Float = Math.max(TimelineViewport.ZOOM_RESIZE_THRESHOLD_PX, blockWidthVal * TimelineViewport.ZOOM_RESIZE_THRESHOLD_SHARE);
+        if (Math.abs(block.width - blockWidthVal) < threshold) blockWidthVal = block.width;
+      }
+
+      var isOffscreen = blockLeftPos + blockWidthVal < 0;
 
       if (isOffscreen != block.hidden) block.hidden = isOffscreen;
 
