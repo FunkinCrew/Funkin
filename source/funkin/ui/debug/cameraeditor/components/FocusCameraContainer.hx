@@ -69,11 +69,7 @@ class FocusCameraContainer extends BaseEventContainer
   function onChange_focusCameraTarget(_):Void
   {
     if (primaryEvent == null || focusCameraTarget.disabled) return;
-    if (focusCameraTarget.selectedItem == null)
-    {
-      setOnAll('char', FocusCameraSongEvent.DEFAULT_TARGET);
-      return;
-    }
+    if (focusCameraTarget.selectedItem == null) return;
 
     var value:Int = Std.parseInt(focusCameraTarget.selectedItem.id);
 

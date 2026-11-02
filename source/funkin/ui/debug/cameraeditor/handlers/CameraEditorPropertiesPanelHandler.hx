@@ -7,6 +7,7 @@ import funkin.ui.debug.cameraeditor.components.BaseEventContainer;
 import funkin.ui.debug.cameraeditor.components.EditorContainer;
 import funkin.ui.debug.cameraeditor.components.FocusCameraContainer;
 import funkin.ui.debug.cameraeditor.components.PlayAnimationContainer;
+import funkin.ui.debug.cameraeditor.components.SharedPropertiesContainer;
 import funkin.ui.debug.cameraeditor.components.ZoomCameraContainer;
 import haxe.ui.containers.VBox;
 import haxe.ui.core.Component;
@@ -52,6 +53,11 @@ class CameraEditorPropertiesPanelHandler
   static final containers:Map<String, Class<EditorContainer>> = new Map();
 
   /**
+   * The panel used when the selected events are of different kinds.
+   */
+  static inline var SHARED_KIND:String = '__shared__';
+
+  /**
    * Bootstrap the registry. Called once from `CameraEditorState.create()`.
    */
   public static function initialize():Void
@@ -59,6 +65,7 @@ class CameraEditorPropertiesPanelHandler
     registerContainer('FocusCamera', FocusCameraContainer);
     registerContainer('ZoomCamera', ZoomCameraContainer);
     registerContainer('PlayAnimation', PlayAnimationContainer);
+    registerContainer(SHARED_KIND, SharedPropertiesContainer);
   }
 
   /**
@@ -207,7 +214,8 @@ class CameraEditorPropertiesPanelHandler
     {
       if (event.eventKind != selected.eventKind)
       {
-        hidePropertiesPanel(state);
+        // Different kinds of events share a panel with the fields they all have.
+        useContainer(state, SharedPropertiesContainer, SHARED_KIND, events.length);
         return;
       }
     }
@@ -232,8 +240,8 @@ class CameraEditorPropertiesPanelHandler
   {
     state.propertiesPanel.hidden = false;
 
-    var title:String = resolveTitle(eventKind);
-    title = count > 1 ? '$title ($count events)' : title;
+    var title:String = eventKind == SHARED_KIND ? '$count events' : resolveTitle(eventKind);
+    if (eventKind != SHARED_KIND && count > 1) title = '$title ($count events)';
 
     var target:Null<Component> = getContainer(state, eventKind);
     if (target == null) return;

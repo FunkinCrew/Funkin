@@ -5,6 +5,7 @@ import funkin.data.song.SongData.SongEventData;
 import funkin.ui.debug.cameraeditor.commands.EditEventPropertiesCommand;
 import funkin.ui.haxeui.components.editors.camera.EaseGraphPreview;
 import haxe.ui.components.CheckBox;
+import haxe.ui.components.DropDown;
 import haxe.ui.components.NumberStepper;
 import haxe.ui.components.TextField;
 import haxe.ui.containers.VBox;
@@ -87,7 +88,89 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
   public function reload():Void
   {
     lastSnapshot = takeSnapshot();
+    mixedFields = [];
     loadCurrentEventData();
+    applyMixedPlaceholders();
+  }
+
+  /**
+   * What fields show when the selected events have different values for them.
+   */
+  public static inline var MIXED_TEXT:String = '---';
+
+  /**
+   * Fields whose value differs between the selected events, filled in by `markShared`.
+   */
+  var mixedFields:Array<Component> = [];
+
+  /**
+   * The real label of each checkbox, since a mixed one gets the placeholder added to it.
+   */
+  var checkboxLabels:Map<Component, String> = new Map();
+
+  /**
+   * What each text field was last filled with, so loading it does not count as an edit.
+   */
+  var loadedTexts:Map<Component, String> = new Map();
+
+  /**
+   * Changes a field without its change event going through.
+   */
+  function quietly(component:Component, apply:Void->Void):Void
+  {
+    component.pauseEvent(UIEvent.CHANGE, true);
+    apply();
+    component.syncComponentValidation(false);
+    component.resumeEvent(UIEvent.CHANGE, true, true);
+  }
+
+  /**
+   * Shows the placeholder in every field the selected events have different values for.
+   */
+  function applyMixedPlaceholders():Void
+  {
+    for (component in mixedFields)
+    {
+      if (Std.isOfType(component, NumberStepper))
+      {
+        var stepper:NumberStepper = cast component;
+        quietly(stepper, () -> {});
+        var inner:Null<TextField> = stepper.findComponent('value', TextField);
+        if (inner != null) quietly(inner, () -> inner.text = MIXED_TEXT);
+        loadedNumbers.set(stepper, Math.NaN);
+      }
+      else if (Std.isOfType(component, DropDown))
+      {
+        var dropdown:DropDown = cast component;
+        quietly(dropdown, () -> dropdown.selectedIndex = -1);
+        quietly(dropdown, () -> dropdown.text = MIXED_TEXT);
+      }
+      else if (Std.isOfType(component, CheckBox))
+      {
+        var checkbox:CheckBox = cast component;
+        if (!checkboxLabels.exists(checkbox)) checkboxLabels.set(checkbox, checkbox.text);
+        quietly(checkbox, () ->
+        {
+          checkbox.selected = false;
+          checkbox.text = '${checkboxLabels.get(checkbox)} $MIXED_TEXT';
+        });
+      }
+      else if (Std.isOfType(component, TextField))
+      {
+        var field:TextField = cast component;
+        quietly(field, () -> field.text = '');
+        field.placeholder = MIXED_TEXT;
+        loadedTexts.set(field, '');
+      }
+      else
+      {
+        // Groups like the ease picker
+        for (dropdown in component.findComponents(null, DropDown))
+        {
+          quietly(dropdown, () -> dropdown.text = MIXED_TEXT);
+        }
+      }
+    }
   }
 
   /**
@@ -133,8 +216,27 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
    */
   function markShared(component:Component, shared:Bool):Void
   {
-    component.disabled = !shared;
-    component.tooltip = shared ? null : 'The selected events have different values';
+    component.tooltip = shared ? null : 'The selected events have different values, changing this sets all of them';
+    if (!shared)
+    {
+      if (!mixedFields.contains(component)) mixedFields.push(component);
+      return;
+    }
+
+    mixedFields.remove(component);
+    restoreMixedLabel(component);
+    if (Std.isOfType(component, TextField))
+    {
+      var field:TextField = cast component;
+      field.placeholder = null;
+    }
+  }
+
+  function restoreMixedLabel(component:Component):Void
+  {
+    if (!checkboxLabels.exists(component)) return;
+    component.text = checkboxLabels.get(component);
+    checkboxLabels.remove(component);
   }
 
   /**
@@ -258,8 +360,9 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
     final selected:Null<SongEventData> = primaryEvent;
     if (selected == null) return;
     markShared(field, allMatch(fieldName, defaultValue));
-    final value:Null<String> = selected.getString(fieldName);
-    field.text = value ?? defaultValue;
+    final value:String = selected.getString(fieldName) ?? defaultValue;
+    quietly(field, () -> field.text = value);
+    loadedTexts.set(field, value);
   }
 
   /**
@@ -272,6 +375,8 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
     field.registerEvent(UIEvent.CHANGE, function(_:UIEvent):Void
     {
       if (primaryEvent == null || field.disabled) return;
+      if (loadedTexts.get(field) == field.text) return;
+      loadedTexts.set(field, field.text);
       setOnAll(fieldName, field.text);
       updateCameraPreview();
       if (fieldAffectsBlockVisuals(fieldName)) updateBlockVisuals();
@@ -288,8 +393,8 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
     final selected:Null<SongEventData> = primaryEvent;
     if (selected == null) return;
     markShared(field, allMatch(fieldName, defaultValue));
-    final value:Null<Bool> = selected.getBool(fieldName);
-    field.selected = value ?? defaultValue;
+    final value:Bool = selected.getBool(fieldName) ?? defaultValue;
+    quietly(field, () -> field.selected = value);
   }
 
   /**
@@ -302,6 +407,7 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
     field.registerEvent(UIEvent.CHANGE, function(_:UIEvent):Void
     {
       if (primaryEvent == null || field.disabled) return;
+      restoreMixedLabel(field);
       setOnAll(fieldName, field.selected);
       updateCameraPreview();
       if (fieldAffectsBlockVisuals(fieldName)) updateBlockVisuals();

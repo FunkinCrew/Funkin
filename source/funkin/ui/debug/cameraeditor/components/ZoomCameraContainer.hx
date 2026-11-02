@@ -114,11 +114,8 @@ class ZoomCameraContainer extends BaseEventContainer
   function onChange_zoomCameraMode(_):Void
   {
     if (primaryEvent == null || zoomCameraMode.disabled) return;
-    if (zoomCameraMode.selectedItem == null)
-    {
-      setOnAll('mode', ZoomCameraSongEvent.DEFAULT_MODE);
-      return;
-    }
+    // Nothing picked means the field is showing the placeholder, which is not a value.
+    if (zoomCameraMode.selectedItem == null) return;
 
     var index:Int = zoomCameraMode.selectedIndex;
     var value:String = 'stage';

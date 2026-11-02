@@ -56,8 +56,7 @@ class PlayAnimationContainer extends BaseEventContainer
     final targetShared:Bool = allMatch('target', PlayAnimationSongEvent.DEFAULT_TARGET);
     markShared(playAnimationTarget, targetShared);
 
-    if (!targetShared || !allMatch('anim', PlayAnimationSongEvent.DEFAULT_ANIM)) markShared(playAnimationAnim, false);
-    else if (playAnimationAnim.tooltip != null) markShared(playAnimationAnim, true);
+    markShared(playAnimationAnim, targetShared && allMatch('anim', PlayAnimationSongEvent.DEFAULT_ANIM));
 
     loadBoolField(playAnimationForce, 'force', PlayAnimationSongEvent.DEFAULT_FORCE);
 
