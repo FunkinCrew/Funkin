@@ -88,7 +88,46 @@ class CameraEditorPropertiesPanelHandler
       }
     }
 
+    for (eventKind in containers.keys()) getContainer(state, eventKind);
+
     hidePropertiesPanel(state);
+  }
+
+  /**
+   * The panels built for the current editor.
+   */
+  static var builtContainers:Map<String, Component> = [];
+
+  static var builtFor:Null<CameraEditorState> = null;
+
+  static function getContainer(state:CameraEditorState, eventKind:String):Null<Component>
+  {
+    if (builtFor != state)
+    {
+      builtContainers = [];
+      builtFor = state;
+    }
+
+    var container:Null<Component> = builtContainers.get(eventKind);
+    if (container != null) return container;
+
+    var containerClass:Null<Class<EditorContainer>> = containers.get(eventKind);
+    if (containerClass == null) return null;
+
+    container = cast Type.createInstance(containerClass, [state]);
+    setContainerShown(container, false);
+    state.propertiesPanel.addComponent(container);
+    builtContainers.set(eventKind, container);
+    return container;
+  }
+
+  /**
+   * Hidden panels are also switched off, so they skip their per-frame update.
+   */
+  static function setContainerShown(container:Component, shown:Bool):Void
+  {
+    if (container.hidden == shown) container.hidden = !shown;
+    if (container.active != shown) container.active = shown;
   }
 
   /**
@@ -106,7 +145,10 @@ class CameraEditorPropertiesPanelHandler
    */
   public static function hidePropertiesPanel(state:CameraEditorState):Void
   {
-    state.removePropertiesContainer();
+    if (builtFor == state)
+    {
+      for (container in builtContainers) setContainerShown(container, false);
+    }
     state.propertiesPanel.hidden = true;
   }
 
@@ -193,21 +235,25 @@ class CameraEditorPropertiesPanelHandler
     var title:String = resolveTitle(eventKind);
     title = count > 1 ? '$title ($count events)' : title;
 
-    var existing:Null<Component> = state.propertiesPanel.findComponent('propertiesContainer');
-    if (existing != null && Std.isOfType(existing, containerClass) && Std.isOfType(existing, BaseEventContainer))
+    var target:Null<Component> = getContainer(state, eventKind);
+    if (target == null) return;
+
+    for (container in builtContainers)
     {
-      var reused:BaseEventContainer = cast existing;
-      reused.reload();
-      state.setPropertiesContainerTitle(title);
-      return;
+      if (container != target) setContainerShown(container, false);
     }
+    setContainerShown(target, true);
 
-    state.removePropertiesContainer();
-
-    var container:EditorContainer = Type.createInstance(containerClass, [state]);
-    state.propertiesPanel.addComponent(cast(container, Component));
-
-    container.loadCurrentEventData();
+    if (Std.isOfType(target, BaseEventContainer))
+    {
+      var panel:BaseEventContainer = cast target;
+      panel.reload();
+    }
+    else
+    {
+      var panel:EditorContainer = cast target;
+      panel.loadCurrentEventData();
+    }
 
     state.setPropertiesContainerTitle(title);
   }
