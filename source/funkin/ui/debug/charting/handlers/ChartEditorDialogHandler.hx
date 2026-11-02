@@ -157,6 +157,7 @@ class ChartEditorDialogHandler
   {
     var dialog:Null<Dialog> = openDialog(state, CHART_EDITOR_DIALOG_BACKUP_AVAILABLE_LAYOUT, true, true);
     if (dialog == null) throw 'Could not locate Backup Available dialog';
+    dialog.draggable = false;
     dialog.onDialogClosed = function(event)
     {
       state.isHaxeUIDialogOpen = false;
