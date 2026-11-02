@@ -120,6 +120,7 @@ class FunkinProgressBar extends FunkinSpriteGroup
     bar.zIndex = 200;
     add(bar);
 
+    refresh();
     updateProgress(0, 10);
   }
 
@@ -164,6 +165,7 @@ class FunkinProgressBar extends FunkinSpriteGroup
     var idx:Int = dataList.indexOf(characterData);
     var characterId:String = dataFolderPaths[idx].split('/').pop().split('.')[0];
     character.loadCharacter(characterData, '$CHARACTER_PATH$characterId/$characterId', enabledModIds[idx]);
+    character.zIndex = 300;
     add(character);
   }
 
