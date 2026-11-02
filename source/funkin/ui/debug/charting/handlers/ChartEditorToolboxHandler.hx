@@ -47,11 +47,17 @@ class ChartEditorToolboxHandler
   public static function showToolbox(state:ChartEditorState, id:String):Void
   {
     var toolbox:Null<CollapsibleDialog> = state.activeToolboxes.get(id);
+    var hasOpened:Bool = toolbox != null;
 
     if (toolbox == null) toolbox = initToolbox(state, id);
 
     if (toolbox != null)
     {
+      if (hasOpened)
+      {
+        toolbox.left = toolbox.left;
+        toolbox.top = toolbox.top;
+      }
       toolbox.showDialog(false);
       clearHaxeUIFocus();
 
