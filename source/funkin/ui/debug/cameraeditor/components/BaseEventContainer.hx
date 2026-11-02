@@ -2,11 +2,14 @@ package funkin.ui.debug.cameraeditor.components;
 
 #if FEATURE_CAMERA_EDITOR
 import funkin.data.song.SongData.SongEventData;
+import funkin.ui.debug.cameraeditor.commands.EditEventPropertiesCommand;
 import funkin.ui.haxeui.components.editors.camera.EaseGraphPreview;
 import haxe.ui.components.CheckBox;
 import haxe.ui.components.NumberStepper;
 import haxe.ui.components.TextField;
 import haxe.ui.containers.VBox;
+import haxe.ui.core.Component;
+import funkin.ui.haxeui.components.editors.timeline.TimelineUtil;
 import haxe.ui.events.UIEvent;
 
 /**
@@ -16,10 +19,99 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
 {
   public var cameraEditorState:CameraEditorState;
 
+  /**
+   * Every event being edited. All of them share the same event kind.
+   */
+  var editedEvents(get, never):Array<SongEventData>;
+
+  function get_editedEvents():Array<SongEventData>
+  {
+    return cameraEditorState.selectedSongEvents;
+  }
+
+  /**
+   * The event the panel reads its values from.
+   */
+  var primaryEvent(get, never):Null<SongEventData>;
+
+  function get_primaryEvent():Null<SongEventData>
+  {
+    return editedEvents.length > 0 ? editedEvents[0] : null;
+  }
+
+  /**
+   * A copy of each edited event's value as of the last recorded edit.
+   */
+  var lastSnapshot:Array<Dynamic> = [];
+
   public function new(state:CameraEditorState)
   {
     super();
     cameraEditorState = state;
+    lastSnapshot = takeSnapshot();
+  }
+
+  function takeSnapshot():Array<Dynamic>
+  {
+    return [for (event in editedEvents) Reflect.copy(event.valueAsStruct())];
+  }
+
+  /**
+   * Records what has changed since the last snapshot into the undo history.
+   */
+  function commitEdit():Void
+  {
+    var current:Array<Dynamic> = takeSnapshot();
+    if (current.length != lastSnapshot.length) return;
+    EditEventPropertiesCommand.push(cameraEditorState, editedEvents, lastSnapshot, current);
+    lastSnapshot = current;
+  }
+
+  /**
+   * Writes a value to the field on every edited event.
+   */
+  function setOnAll(fieldName:String, value:Dynamic):Void
+  {
+    for (event in editedEvents) event.set(fieldName, value);
+  }
+
+  /**
+   * Copies a field from the primary event onto the other edited events.
+   */
+  function copyFromPrimary(fieldName:String):Void
+  {
+    final primary:Null<SongEventData> = primaryEvent;
+    if (primary == null) return;
+    final value:Dynamic = primary.getDynamic(fieldName);
+    for (event in editedEvents)
+    {
+      if (event != primary) TimelineUtil.setEventField(event, fieldName, value);
+    }
+  }
+
+  /**
+   * Whether every edited event has the same value for the field.
+   */
+  function allMatch(fieldName:String, defaultValue:Dynamic):Bool
+  {
+    final primary:Null<SongEventData> = primaryEvent;
+    if (primary == null) return true;
+    final value:Dynamic = primary.getDynamic(fieldName) ?? defaultValue;
+    for (event in editedEvents)
+    {
+      final other:Dynamic = event.getDynamic(fieldName) ?? defaultValue;
+      if (other != value) return false;
+    }
+    return true;
+  }
+
+  /**
+   * Fields only stay editable when they are the same.
+   */
+  function markShared(component:Component, shared:Bool):Void
+  {
+    component.disabled = !shared;
+    component.tooltip = shared ? null : 'The selected events have different values';
   }
 
   /**
@@ -45,6 +137,7 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
    */
   function updateCameraPreview():Void
   {
+    commitEdit();
     cameraEditorState.replayCameraTimeline(cameraEditorState.conductorInUse.songPosition, true);
   }
 
@@ -80,8 +173,9 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
    */
   function loadFloatField(stepper:NumberStepper, fieldName:String, defaultValue:Float):Void
   {
-    final selected:Null<SongEventData> = cameraEditorState.selectedSongEvent;
+    final selected:Null<SongEventData> = primaryEvent;
     if (selected == null) return;
+    markShared(stepper, allMatch(fieldName, defaultValue));
     stepper.value = selected.getFloat(fieldName) ?? defaultValue;
   }
 
@@ -92,10 +186,10 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
    */
   function bindFloatField(stepper:NumberStepper, fieldName:String):Void
   {
-    stepper.registerEvent(UIEvent.CHANGE, function(_:UIEvent):Void {
-      final selected:Null<SongEventData> = cameraEditorState.selectedSongEvent;
-      if (selected == null) return;
-      selected.set(fieldName, stepper.value);
+    stepper.registerEvent(UIEvent.CHANGE, function(_:UIEvent):Void
+    {
+      if (primaryEvent == null || stepper.disabled) return;
+      setOnAll(fieldName, stepper.value);
       updateCameraPreview();
       if (fieldAffectsBlockVisuals(fieldName)) updateBlockVisuals();
     });
@@ -108,8 +202,9 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
    */
   function loadStringField(field:TextField, fieldName:String, defaultValue:String):Void
   {
-    final selected:Null<SongEventData> = cameraEditorState.selectedSongEvent;
+    final selected:Null<SongEventData> = primaryEvent;
     if (selected == null) return;
+    markShared(field, allMatch(fieldName, defaultValue));
     final value:Null<String> = selected.getString(fieldName);
     field.text = value ?? defaultValue;
   }
@@ -121,10 +216,10 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
    */
   function bindStringField(field:TextField, fieldName:String):Void
   {
-    field.registerEvent(UIEvent.CHANGE, function(_:UIEvent):Void {
-      final selected:Null<SongEventData> = cameraEditorState.selectedSongEvent;
-      if (selected == null) return;
-      selected.set(fieldName, field.text);
+    field.registerEvent(UIEvent.CHANGE, function(_:UIEvent):Void
+    {
+      if (primaryEvent == null || field.disabled) return;
+      setOnAll(fieldName, field.text);
       updateCameraPreview();
       if (fieldAffectsBlockVisuals(fieldName)) updateBlockVisuals();
     });
@@ -137,8 +232,9 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
    */
   function loadBoolField(field:CheckBox, fieldName:String, defaultValue:Bool):Void
   {
-    final selected:Null<SongEventData> = cameraEditorState.selectedSongEvent;
+    final selected:Null<SongEventData> = primaryEvent;
     if (selected == null) return;
+    markShared(field, allMatch(fieldName, defaultValue));
     final value:Null<Bool> = selected.getBool(fieldName);
     field.selected = value ?? defaultValue;
   }
@@ -150,10 +246,10 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
    */
   function bindBoolField(field:CheckBox, fieldName:String):Void
   {
-    field.registerEvent(UIEvent.CHANGE, function(_:UIEvent):Void {
-      final selected:Null<SongEventData> = cameraEditorState.selectedSongEvent;
-      if (selected == null) return;
-      selected.set(fieldName, field.selected);
+    field.registerEvent(UIEvent.CHANGE, function(_:UIEvent):Void
+    {
+      if (primaryEvent == null || field.disabled) return;
+      setOnAll(fieldName, field.selected);
       updateCameraPreview();
       if (fieldAffectsBlockVisuals(fieldName)) updateBlockVisuals();
     });

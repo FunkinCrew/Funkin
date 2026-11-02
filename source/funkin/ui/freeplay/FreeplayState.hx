@@ -3237,7 +3237,7 @@ class FreeplayState extends MusicBeatSubState
       });
     }
 
-    new FlxTimer().start(styleData?.getStartDelay(), function(tmr:FlxTimer)
+    new FlxTimer().start(styleData?.getStartDelay(), (tmr:FlxTimer) ->
     {
       FunkinSound.emptyPartialQueue();
 
@@ -3252,7 +3252,7 @@ class FreeplayState extends MusicBeatSubState
         });
       }
       #end
-      funnyCam.fade(FlxColor.BLACK, 0.2, false, function()
+      funnyCam.fade(FlxColor.BLACK, 0.2, false, () ->
       {
         criticalFailure = true;
 
@@ -3277,9 +3277,8 @@ class FreeplayState extends MusicBeatSubState
           // playbackRate: 0.5,
           // botPlayMode: true,
         }, {
-          transition: LoadingScreen(Fade(North), Fade(South)),
-          shouldStopMusic: true,
-          shouldPurgeCache: true,
+          transition: LoadingScreen(None, Fade(South)),
+          shouldStopMusic: true
         }, false);
       });
     });

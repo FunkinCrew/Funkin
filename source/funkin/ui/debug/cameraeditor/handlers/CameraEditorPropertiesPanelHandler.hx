@@ -66,7 +66,8 @@ class CameraEditorPropertiesPanelHandler
    * @param eventKind The event kind to register.
    * @param containerClass The container class to register.
    */
-  public static function registerContainer(eventKind:String, containerClass:Class<EditorContainer>):Void
+  public static function registerContainer(eventKind:String,
+    containerClass:Class<EditorContainer>):Void
   {
     containers.set(eventKind, containerClass);
   }
@@ -151,11 +152,21 @@ class CameraEditorPropertiesPanelHandler
    */
   public static function loadSelectedSongEvent(state:CameraEditorState):Void
   {
-    var selected:Null<funkin.data.song.SongData.SongEventData> = state.selectedSongEvent;
-    if (selected == null)
+    var events:Array<funkin.data.song.SongData.SongEventData> = state.selectedSongEvents;
+    if (events.length == 0)
     {
       hidePropertiesPanel(state);
       return;
+    }
+
+    var selected:funkin.data.song.SongData.SongEventData = events[0];
+    for (event in events)
+    {
+      if (event.eventKind != selected.eventKind)
+      {
+        hidePropertiesPanel(state);
+        return;
+      }
     }
 
     var containerClass:Null<Class<EditorContainer>> = containers.get(selected.eventKind);
@@ -165,13 +176,16 @@ class CameraEditorPropertiesPanelHandler
       return;
     }
 
-    useContainer(state, containerClass, selected.eventKind);
+    useContainer(state, containerClass, selected.eventKind, events.length);
   }
 
   /**
    * Mount a properties container into the panel.
    */
-  static function useContainer(state:CameraEditorState, containerClass:Class<EditorContainer>, eventKind:String):Void
+  static function useContainer(state:CameraEditorState,
+    containerClass:Class<EditorContainer>,
+    eventKind:String,
+    count:Int = 1):Void
   {
     state.propertiesPanel.hidden = false;
     state.removePropertiesContainer();
@@ -181,7 +195,8 @@ class CameraEditorPropertiesPanelHandler
 
     container.loadCurrentEventData();
 
-    state.setPropertiesContainerTitle(resolveTitle(eventKind));
+    var title:String = resolveTitle(eventKind);
+    state.setPropertiesContainerTitle(count > 1 ? '$title ($count events)' : title);
   }
 
   /**

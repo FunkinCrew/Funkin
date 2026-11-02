@@ -1,7 +1,6 @@
 package funkin.ui.debug.cameraeditor.commands;
 
 #if FEATURE_CAMERA_EDITOR
-import funkin.audio.FunkinSound;
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongEventDataRaw;
 import funkin.data.song.SongDataUtils;
@@ -52,22 +51,12 @@ class PasteEventsCommand implements CameraEditorCommand
 
     var viewport = state.timeline.viewport;
     var selectedIndex:Int = viewport.selectedLayerIndex;
-    var sourceIndices:Array<Int> = [];
-    var topmostSource:Int = selectedIndex;
+
     for (event in addedEvents)
     {
       var raw:SongEventDataRaw = event;
-      var sourceIndex:Int = viewport.getLayerIndex(raw.editorLayer ?? 'Default');
-      if (sourceIndex < 0) sourceIndex = selectedIndex;
-      sourceIndices.push(sourceIndex);
-      if (sourceIndices.length == 1 || sourceIndex < topmostSource) topmostSource = sourceIndex;
-    }
-    var layerShift:Int = selectedIndex - topmostSource;
-
-    for (i => event in addedEvents)
-    {
-      var raw:SongEventDataRaw = event;
-      var targetIndex:Int = sourceIndices[i] + layerShift;
+      var targetIndex:Int = viewport.getLayerIndex(raw.editorLayer ?? 'Default');
+      if (targetIndex < 0) targetIndex = selectedIndex;
       if (targetIndex < 0) targetIndex = 0;
       if (targetIndex >= viewport.layers.length) targetIndex = viewport.layers.length - 1;
       var targetLayer = viewport.layers[targetIndex];
@@ -83,11 +72,10 @@ class PasteEventsCommand implements CameraEditorCommand
 
     state.replayCameraTimeline(state.conductorInUse.songPosition);
 
-    FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/note-place'));
+    state.playEditSound('ui/editors/chart-editor/charting-sounds/note-place');
 
-    var title = isRedo ? 'Redone Paste Successfully' : 'Paste Successful';
-    var msg = isRedo ? 'Successfully placed pasted event(s) back.' : 'Successfully pasted clipboard contents.';
-    CameraEditorNotificationHandler.success(state, title, msg);
+    var plural = addedEvents.length != 1 ? 'events' : 'event';
+    state.showToast(isRedo ? 'Redid paste' : 'Pasted ${addedEvents.length} $plural');
 
     isRedo = false;
   }
@@ -107,7 +95,7 @@ class PasteEventsCommand implements CameraEditorCommand
 
     state.replayCameraTimeline(state.conductorInUse.songPosition);
 
-    FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/undo'));
+    state.playEditSound('ui/editors/chart-editor/charting-sounds/undo');
 
     isRedo = true;
   }

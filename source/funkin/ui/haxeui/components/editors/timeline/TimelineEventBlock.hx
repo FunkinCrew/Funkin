@@ -15,6 +15,7 @@ class TimelineEventBlock extends Box
   static inline var CORNER_RADIUS:Int = 5;
   public static inline var TRIANGLE_OPACITY:Float = 0.3;
   public static inline var EDGE_DRAG_ZONE:Float = 6.0;
+  public static inline var INSTANT_EDGE_DRAG_ZONE:Float = 4.0;
   public static final ICON_RESOURCES:Map<String, String> = [
     "FocusCamera" => "assets/ui/editors/camera-editor/event-icons/focus_event.png",
     "ZoomCamera" => "assets/ui/editors/camera-editor/event-icons/zoom_event.png",
@@ -67,6 +68,11 @@ class TimelineEventBlock extends Box
 
   public function getHitZone(localX:Float):TimelineBlockHitZone
   {
+    if (isInstant())
+    {
+      if (TimelineUtil.canResize(eventData) && localX > this.componentWidth - INSTANT_EDGE_DRAG_ZONE) return RIGHT_EDGE;
+      return BODY;
+    }
     if (localX < EDGE_DRAG_ZONE) return LEFT_EDGE;
     if (localX > this.componentWidth - EDGE_DRAG_ZONE) return RIGHT_EDGE;
     return BODY;

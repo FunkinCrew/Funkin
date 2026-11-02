@@ -49,11 +49,17 @@ class ChartEditorToolboxHandler
   public static function showToolbox(state:ChartEditorState, id:String):Void
   {
     var toolbox:Null<CollapsibleDialog> = state.activeToolboxes.get(id);
+    var hasOpened:Bool = toolbox != null;
 
     if (toolbox == null) toolbox = initToolbox(state, id);
 
     if (toolbox != null)
     {
+      if (hasOpened)
+      {
+        toolbox.left = toolbox.left;
+        toolbox.top = toolbox.top;
+      }
       toolbox.showDialog(false);
       clearHaxeUIFocus();
 
@@ -213,6 +219,13 @@ class ChartEditorToolboxHandler
     // Make sure we can reuse the toolbox later.
     toolbox.destroyOnClose = false;
     state.activeToolboxes.set(id, toolbox);
+
+    final box:CollapsibleDialog = toolbox;
+    box.registerEvent(MouseEvent.MOUSE_DOWN, function(_)
+    {
+      var roots = Screen.instance.rootComponents;
+      if (roots[roots.length - 1] != box) Screen.instance.moveComponentToFront(box);
+    });
 
     return toolbox;
   }
@@ -392,10 +405,6 @@ class ChartEditorToolboxHandler
 
     if (toolbox == null) return null;
 
-    // Starting position.
-    toolbox.x = 700;
-    toolbox.y = 150;
-
     toolbox.onDialogClosed = function(event:DialogEvent)
     {
       state.menubarItemToggleToolboxPlayerPreview.selected = false;
@@ -425,10 +434,6 @@ class ChartEditorToolboxHandler
     var toolbox:CollapsibleDialog = cast RuntimeComponentBuilder.fromAsset(ChartEditorState.CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT);
 
     if (toolbox == null) return null;
-
-    // Starting position.
-    toolbox.x = 200;
-    toolbox.y = 150;
 
     toolbox.onDialogClosed = (event:DialogEvent) ->
     {

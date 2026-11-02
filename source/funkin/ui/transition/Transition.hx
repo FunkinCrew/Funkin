@@ -20,6 +20,7 @@ import funkin.ui.transition.loading.LoadingState;
 import funkin.ui.transition.loading.StickerLoadingState;
 import funkin.ui.transition.StickerTransition;
 import funkin.ui.transition.loading.ThrobberLoadingState;
+import funkin.ui.transition.progress.FunkinProgressBar;
 import funkin.util.FlxStateUtil;
 import funkin.util.tasks.TaskHandler;
 import funkin.assets.Assets;
@@ -137,7 +138,7 @@ class Transition
     // We keep all the assets for all loading screens cached,
     // because we don't want to have a loading screen for a loading screen.
     results.append(LoadingState.queryAssets(type));
-    results.append(FunkayLoadingState.queryAssets(type));
+    results.append(FunkinProgressBar.queryAssets(type));
     results.append(ThrobberLoadingState.queryAssets(type));
 
     // Scripted loading screens must keep their assets cached before a transition starts.

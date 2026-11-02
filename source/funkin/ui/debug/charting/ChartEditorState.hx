@@ -131,6 +131,7 @@ import haxe.ui.containers.menus.MenuBar;
 import haxe.ui.containers.menus.MenuCheckBox;
 import haxe.ui.containers.menus.MenuItem;
 import haxe.ui.core.Screen;
+import haxe.ui.dragdrop.DragManager;
 import haxe.ui.events.DragEvent;
 import haxe.ui.events.MouseEvent;
 import haxe.ui.events.UIEvent;
@@ -920,11 +921,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * `null` if no scroll anchor is present.
    */
   var scrollAnchorScreenPos:Null<FlxPoint> = null;
-
-  /**
-   * Distance from the scroll anchor that doesn't add up to a full grid tile yet.
-   */
-  var scrollAnchorRemainder:Float = 0;
 
   // Note Placement
 
@@ -5049,11 +5045,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       // How much scrolling should be done based on the distance of the cursor from the anchor.
       final ANCHOR_SCROLL_SPEED = 0.2;
 
-      scrollAnchorRemainder += ANCHOR_SCROLL_SPEED * verticalDistance;
-      scrollAmount = Std.int(scrollAnchorRemainder / GRID_SIZE) * GRID_SIZE;
-      scrollAnchorRemainder -= scrollAmount;
+      scrollAmount = ANCHOR_SCROLL_SPEED * verticalDistance;
       shouldPause = true;
-      shouldSnap = true;
     }
 
     // Mouse Wheel = Scroll
@@ -5282,6 +5275,21 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (scrollAmount != 0) currentScrollEase += scrollAmount;
   }
 
+  function releaseScrollAnchor():Void
+  {
+    scrollAnchorScreenPos.put();
+    scrollAnchorScreenPos = null;
+
+    if (currentScrollEase == null) return;
+    var gridPixels:Float = GRID_SIZE * noteSnapRatio;
+    var playheadAbsolute:Float = currentScrollEase + this.playheadPositionInPixels;
+    var gridSteps:Float = playheadAbsolute / gridPixels;
+    var targetSteps:Float = Math.fround(gridSteps);
+    if (currentScrollEase > scrollPositionInPixels) targetSteps = Math.fceil(gridSteps - 0.001);
+    else if (currentScrollEase < scrollPositionInPixels) targetSteps = Math.ffloor(gridSteps + 0.001);
+    currentScrollEase += targetSteps * gridPixels - playheadAbsolute;
+  }
+
   /**
    * Snap a move to the nearest grid step, based on the current note snap ratio.
    * @param fromPixels The absolute position of the playhead in the song, in pixels.
@@ -5329,9 +5337,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (FlxG.mouse.justPressed) FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/click-down').toString());
     if (FlxG.mouse.justReleased) FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/click-up').toString());
 
+    if (playbarHeadDragging) Screen.instance.setCursor('grabbing');
+
     // Note: If a menu is open in HaxeUI, don't handle cursor behavior.
     var shouldHandleCursor:Bool =
-      !(isHaxeUIFocused || playbarHeadDragging || isHaxeUIDialogOpen)
+      !(isHaxeUIFocused || playbarHeadDragging || isHaxeUIDialogOpen || DragManager.instance.isDragging)
       || (selectionBoxStartPos != null)
       || (dragTargetNote != null || dragTargetEvent != null);
 
@@ -5487,13 +5497,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       if (scrollAnchorScreenPos == null)
       {
         scrollAnchorScreenPos = FlxPoint.get(FlxG.mouse.x, FlxG.mouse.y);
-        scrollAnchorRemainder = 0;
         selectionBoxStartPos = null;
       }
       else
       {
-        scrollAnchorScreenPos.put();
-        scrollAnchorScreenPos = null;
+        releaseScrollAnchor();
       }
     }
 
@@ -5520,8 +5528,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       if (scrollAnchorScreenPos != null)
       {
-        scrollAnchorScreenPos.put();
-        scrollAnchorScreenPos = null;
+        releaseScrollAnchor();
       }
       else
       {
