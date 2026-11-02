@@ -131,6 +131,7 @@ import haxe.ui.containers.menus.MenuBar;
 import haxe.ui.containers.menus.MenuCheckBox;
 import haxe.ui.containers.menus.MenuItem;
 import haxe.ui.core.Screen;
+import haxe.ui.dragdrop.DragManager;
 import haxe.ui.events.DragEvent;
 import haxe.ui.events.MouseEvent;
 import haxe.ui.events.UIEvent;
@@ -5329,9 +5330,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (FlxG.mouse.justPressed) FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/click-down').toString());
     if (FlxG.mouse.justReleased) FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/click-up').toString());
 
+    if (playbarHeadDragging) Screen.instance.setCursor('grabbing');
+
     // Note: If a menu is open in HaxeUI, don't handle cursor behavior.
     var shouldHandleCursor:Bool =
-      !(isHaxeUIFocused || playbarHeadDragging || isHaxeUIDialogOpen)
+      !(isHaxeUIFocused || playbarHeadDragging || isHaxeUIDialogOpen || DragManager.instance.isDragging)
       || (selectionBoxStartPos != null)
       || (dragTargetNote != null || dragTargetEvent != null);
 
