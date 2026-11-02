@@ -1924,7 +1924,7 @@ class FreeplayState extends MusicBeatSubState
 
   override public function draw():Void
   {
-    if (criticalFailure) return;
+    if (criticalFailure && subState == null) return;
 
     super.draw();
   }
