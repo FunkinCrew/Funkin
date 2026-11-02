@@ -691,20 +691,17 @@ class StoryMenuState extends MusicBeatState
 
       var targetVariation:Null<String> = targetSong.getFirstValidVariation(PlayStatePlaylist.campaignDifficulty);
 
-      FlxG.camera.fade(FlxColor.BLACK, 0.2, false, () ->
-      {
-        // Null safety kinda stupid......
-        if (targetSong == null) throw 'Bwuh?';
-        var targetSongNotNull:Song = targetSong;
+      // Null safety kinda stupid......
+      if (targetSong == null) throw 'Bwuh?';
+      var targetSongNotNull:Song = targetSong;
 
-        funkin.ui.transition.Transition.openPlayState({
-          targetSong: targetSongNotNull,
-          targetDifficulty: PlayStatePlaylist.campaignDifficulty,
-          targetVariation: targetVariation
-        }, {
-          transition: LoadingScreen(None, Fade(South))
-        }, false);
-      });
+      funkin.ui.transition.Transition.openPlayState({
+        targetSong: targetSongNotNull,
+        targetDifficulty: PlayStatePlaylist.campaignDifficulty,
+        targetVariation: targetVariation
+      }, {
+        transition: LoadingScreen(Fade(North), Fade(South))
+      }, false);
     });
   }
 
