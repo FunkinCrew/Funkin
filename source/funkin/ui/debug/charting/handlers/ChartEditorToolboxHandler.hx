@@ -5,9 +5,11 @@ import funkin.play.character.BaseCharacter.CharacterType;
 import haxe.ui.RuntimeComponentBuilder;
 import funkin.ui.haxeui.components.CharacterPlayer;
 import haxe.ui.components.CheckBox;
+import haxe.ui.containers.menus.Menu;
 import haxe.ui.containers.dialogs.CollapsibleDialog;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialog.DialogEvent;
+import haxe.ui.core.Screen;
 import haxe.ui.focus.FocusManager;
 import funkin.ui.debug.charting.toolboxes.ChartEditorBaseToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorMetadataToolbox;
@@ -54,6 +56,11 @@ class ChartEditorToolboxHandler
     {
       toolbox.showDialog(false);
       clearHaxeUIFocus();
+
+      for (component in Screen.instance.rootComponents.copy())
+      {
+        if (Std.isOfType(component, Menu)) Screen.instance.moveComponentToFront(component);
+      }
 
       state.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/window-open'));
 
