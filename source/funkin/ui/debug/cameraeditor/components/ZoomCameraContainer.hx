@@ -56,8 +56,8 @@ class ZoomCameraContainer extends BaseEventContainer
     var zoomShared:Bool = allMatch('zoom', ZoomCameraSongEvent.DEFAULT_ZOOM);
     markShared(zoomCameraZoomLevel, zoomShared);
     markShared(zoomCameraZoomLevelSlider, zoomShared);
-    zoomCameraZoomLevel.value = primaryEvent.getFloat('zoom') ?? ZoomCameraSongEvent.DEFAULT_ZOOM;
-    zoomCameraZoomLevelSlider.value = zoomCameraZoomLevel.value;
+    loadNumber(zoomCameraZoomLevel, primaryEvent.getFloat('zoom') ?? ZoomCameraSongEvent.DEFAULT_ZOOM);
+    loadNumber(zoomCameraZoomLevelSlider, zoomCameraZoomLevel.value);
 
     loadFloatField(zoomCameraDuration, 'duration', ZoomCameraSongEvent.DEFAULT_DURATION);
     loadFloatField(zoomCameraWidescreenScaleX, 'widescreenScaleX', ZoomCameraSongEvent.DEFAULT_WIDESCREEN_SCALE);
@@ -76,6 +76,7 @@ class ZoomCameraContainer extends BaseEventContainer
   function onChange_zoomCameraZoomLevel(_):Void
   {
     if (primaryEvent == null || zoomCameraZoomLevel.disabled) return;
+    if (!isUserNumberChange(zoomCameraZoomLevel, zoomCameraZoomLevel.value)) return;
     var value:Float = zoomCameraZoomLevel.value;
 
     if (zoomCameraZoomLevelSlider != null && zoomCameraZoomLevel.value != zoomCameraZoomLevelSlider.value)
@@ -94,6 +95,7 @@ class ZoomCameraContainer extends BaseEventContainer
   function onChange_zoomCameraZoomLevelSlider(_):Void
   {
     if (primaryEvent == null || zoomCameraZoomLevelSlider.disabled) return;
+    if (!isUserNumberChange(zoomCameraZoomLevelSlider, zoomCameraZoomLevelSlider.value)) return;
     var value:Float = zoomCameraZoomLevelSlider.value;
 
     if (zoomCameraZoomLevel != null && zoomCameraZoomLevel.value != zoomCameraZoomLevelSlider.value)

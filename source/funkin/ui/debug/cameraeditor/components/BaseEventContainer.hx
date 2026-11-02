@@ -199,7 +199,36 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
     final selected:Null<SongEventData> = primaryEvent;
     if (selected == null) return;
     markShared(stepper, allMatch(fieldName, defaultValue));
-    stepper.value = selected.getFloat(fieldName) ?? defaultValue;
+    loadNumber(stepper, selected.getFloat(fieldName) ?? defaultValue);
+  }
+
+  /**
+   * What each number field was last filled with, either by loading or by the user.
+   */
+  var loadedNumbers:Map<Component, Float> = new Map();
+
+  var loadingNumber:Bool = false;
+
+  /**
+   * Fills a number field without the change counting as an edit.
+   */
+  function loadNumber(field:Component, value:Float):Void
+  {
+    loadingNumber = true;
+    field.value = value;
+    loadingNumber = false;
+    loadedNumbers.set(field, field.value);
+  }
+
+  /**
+   * Whether a number field change came from the user, and not from loading it.
+   */
+  function isUserNumberChange(field:Component, value:Float):Bool
+  {
+    if (loadingNumber) return false;
+    if (loadedNumbers.exists(field) && loadedNumbers.get(field) == value) return false;
+    loadedNumbers.set(field, value);
+    return true;
   }
 
   /**
@@ -212,6 +241,7 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
     stepper.registerEvent(UIEvent.CHANGE, function(_:UIEvent):Void
     {
       if (primaryEvent == null || stepper.disabled) return;
+      if (!isUserNumberChange(stepper, stepper.value)) return;
       setOnAll(fieldName, stepper.value);
       updateCameraPreview();
       if (fieldAffectsBlockVisuals(fieldName)) updateBlockVisuals();

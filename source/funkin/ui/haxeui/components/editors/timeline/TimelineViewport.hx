@@ -1095,19 +1095,24 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
     var contentY:Float = localY - TimelineViewport.TOP_BAR_HEIGHT;
     if (contentY < 0) return null;
 
-    var i:Int = _viewport.eventBlocks.length;
-    while (i-- > 0)
+    // Selected events win over anything they overlap, so their edges can always be grabbed.
+    for (pass in 0...2)
     {
-      var block:TimelineEventBlock = _viewport.eventBlocks[i];
-      if (block.hidden) continue;
-      if (
-        localX >= block.blockLeft
-        && localX <= block.blockLeft + block.blockWidth
-        && contentY >= block.blockTop
-        && contentY <= block.blockTop + _viewport.blockHeight
-      )
+      var i:Int = _viewport.eventBlocks.length;
+      while (i-- > 0)
       {
-        return block;
+        var block:TimelineEventBlock = _viewport.eventBlocks[i];
+        if (block.hidden) continue;
+        if (block.selected != (pass == 0)) continue;
+        if (
+          localX >= block.blockLeft
+          && localX <= block.blockLeft + block.blockWidth
+          && contentY >= block.blockTop
+          && contentY <= block.blockTop + _viewport.blockHeight
+        )
+        {
+          return block;
+        }
       }
     }
     return null;
