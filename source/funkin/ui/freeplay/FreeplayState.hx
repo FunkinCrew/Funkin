@@ -3549,7 +3549,7 @@ class FreeplayState extends MusicBeatSubState
   {
     var results:Array<AssetPath> = [];
     results.appendUnique(MainMenuState.queryAssets(type));
-    results.appendUnique(FreeplayState.queryAssets(type, params));
+    results.appendUnique(FreeplayState.queryAssets(type, params, params.character));
     return results;
   }
 
