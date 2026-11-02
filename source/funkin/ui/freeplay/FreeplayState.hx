@@ -529,7 +529,8 @@ class FreeplayState extends MusicBeatSubState
       @:privateAccess
       this._parentState._constructor = () ->
       {
-        return FreeplayState.build(null);
+        return FreeplayState.build({
+        });
       }
     }
 
@@ -3522,18 +3523,34 @@ class FreeplayState extends MusicBeatSubState
 
   /**
    * Build an instance of `FreeplayState` that is above the `MainMenuState`.
+   * @param params FreeplayState params.
    * @return The MainMenuState with the FreeplayState as a substate.
    */
   public static function build(?params:FreeplayStateParams):MusicBeatState
   {
-    // Since CUTOUT_WIDTH is static it might retain some old incorrect values so we update it before loading freeplay
     CUTOUT_WIDTH = FullScreenScaleMode.gameCutoutSize.x / 1.5;
-    var result:MainMenuState;
-    result = new MainMenuState(true);
+    var result:MainMenuState = new MainMenuState();
+
+    // Assets were already loaded by whoever called Transition.switchState (see buildAssetQuery).
     result.openSubState(new FreeplayState(params));
+
     result.persistentUpdate = false;
     result.persistentDraw = true;
     return result;
+  }
+
+  /**
+   * Helper asset query covering everything needed to open Freeplay over the MainMenuState.
+   * @param type Asset Type
+   * @param params FreeplayState params.
+   * @return The list of assets to query.
+   */
+  public static function buildAssetQuery(type:AssetType, params:FreeplayStateParams):Array<AssetPath>
+  {
+    var results:Array<AssetPath> = [];
+    results.appendUnique(MainMenuState.queryAssets(type));
+    results.appendUnique(FreeplayState.queryAssets(type, params));
+    return results;
   }
 
   function favoriteSong():Void

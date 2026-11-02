@@ -1,5 +1,7 @@
 package funkin.ui.charSelect;
 
+import flixel.util.typeLimit.NextState;
+import funkin.ui.transition.Transition;
 import flixel.FlxObject;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -34,6 +36,7 @@ import funkin.assets.Assets.AssetType;
 import funkin.assets.Paths.AssetPath;
 import funkin.assets.Paths;
 import funkin.ui.transition.Transition;
+import funkin.ui.charSelect.icons.Lock;
 
 /**
  * Parameters used to initialize the CharacterSelectState.
@@ -1176,11 +1179,12 @@ class CharacterSelectState extends MusicBeatSubState
           character: wentBackToFreeplay ? rememberedCharacterId : currentCharacterId,
           fromCharSelect: true
         };
+        var targetState:NextState = () -> FreeplayState.build(freeplayParams);
+        // TODO: THis is very hacky imo, find a better way -Moon.
 
-        Transition.switchState(() -> FreeplayState.build(freeplayParams), {
-          assetQuery: FreeplayState.queryAssets.bind(_, freeplayParams, freeplayParams.character),
-          transition: BlackScreen(None, None),
-          shouldStopMusic: false,
+        Transition.switchState(targetState, {
+          transition: TransitionType.BlackScreen(FadeType.Fade(FadeDirection.North), FadeType.Fade(FadeDirection.South)),
+          assetQuery: FreeplayState.buildAssetQuery.bind(_, freeplayParams),
           shouldPurgeCache: true
         });
       }
