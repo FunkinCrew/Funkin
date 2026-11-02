@@ -167,7 +167,7 @@ class FunkinProgressBar extends FunkinSpriteGroup
 
     var characterData:LoadingCharacterData = FlxG.random.getObject(dataList, weights);
     var idx:Int = dataList.indexOf(characterData);
-    var characterId:String = dataFolderPaths[idx].split('/').pop().split('.')[0];
+    var characterId:String = dataPaths[idx].split('/').pop().split('.')[0];
     character.loadCharacter(characterData, '$CHARACTER_PATH$characterId/$characterId', dataModIds[idx]);
     character.zIndex = 300;
     add(character);
@@ -186,13 +186,23 @@ class FunkinProgressBar extends FunkinSpriteGroup
       var modId:String = modIds[i];
       if (modId == 'basegame') modId = '';
 
-      #if html5
-      if (!lime.utils.Assets.isLocal(path, lime.utils.AssetType.TEXT)) continue;
-      #end
-
       var jsonString:Null<String> = null;
+
+      #if html5
+      if (modId == '')
+      {
+        if (!lime.utils.Assets.isLocal(path, lime.utils.AssetType.TEXT)) continue;
+
+        jsonString = lime.utils.Assets.getText(path);
+      }
+      else
+      {
+        jsonString = PolymodAssets.getTextFromMod(path, modId);
+      }
+      #else
       @:privateAccess
       jsonString = Polymod.assetLibrary.getTextDirectly(path, modId);
+      #end
 
       if (jsonString == null || jsonString == '') continue;
 
