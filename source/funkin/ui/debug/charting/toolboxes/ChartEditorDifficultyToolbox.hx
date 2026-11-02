@@ -61,8 +61,8 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
   {
     // Starting position.
     // TODO: Save and load this.
-    this.x = 150;
-    this.y = 250;
+    // this.x = 150;
+    // this.y = 250;
 
     difficultyToolboxAddVariation.onClick = function(_:UIEvent)
     {
