@@ -3278,8 +3278,7 @@ class FreeplayState extends MusicBeatSubState
           // botPlayMode: true,
         }, {
           transition: LoadingScreen(None, Fade(South)),
-          shouldStopMusic: true,
-          shouldPurgeCache: true,
+          shouldStopMusic: true
         }, false);
       });
     });
