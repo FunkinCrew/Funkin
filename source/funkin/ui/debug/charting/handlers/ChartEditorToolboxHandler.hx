@@ -395,8 +395,8 @@ class ChartEditorToolboxHandler
     if (toolbox == null) return null;
 
     // Starting position.
-    toolbox.x = 700;
-    toolbox.y = 150;
+    // toolbox.x = 700;
+    // toolbox.y = 150;
 
     toolbox.onDialogClosed = function(event:DialogEvent)
     {
@@ -429,8 +429,8 @@ class ChartEditorToolboxHandler
     if (toolbox == null) return null;
 
     // Starting position.
-    toolbox.x = 200;
-    toolbox.y = 150;
+    // toolbox.x = 200;
+    // toolbox.y = 150;
 
     toolbox.onDialogClosed = (event:DialogEvent) ->
     {
