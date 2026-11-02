@@ -59,12 +59,35 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
   /**
    * Records what has changed since the last snapshot into the undo history.
    */
-  function commitEdit():Void
+  function commitEdit():Bool
   {
     var current:Array<Dynamic> = takeSnapshot();
-    if (current.length != lastSnapshot.length) return;
+    if (current.length != lastSnapshot.length) return false;
+    if (!snapshotsDiffer(lastSnapshot, current)) return false;
     EditEventPropertiesCommand.push(cameraEditorState, editedEvents, lastSnapshot, current);
     lastSnapshot = current;
+    return true;
+  }
+
+  static function snapshotsDiffer(a:Array<Dynamic>, b:Array<Dynamic>):Bool
+  {
+    for (i in 0...a.length)
+    {
+      for (field in Reflect.fields(a[i]).concat(Reflect.fields(b[i])))
+      {
+        if (Reflect.field(a[i], field) != Reflect.field(b[i], field)) return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Points the panel at the current selection again, without rebuilding it.
+   */
+  public function reload():Void
+  {
+    lastSnapshot = takeSnapshot();
+    loadCurrentEventData();
   }
 
   /**
@@ -137,8 +160,8 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
    */
   function updateCameraPreview():Void
   {
-    commitEdit();
-    cameraEditorState.replayCameraTimeline(cameraEditorState.conductorInUse.songPosition, true);
+    // Loading a selection also comes through here, the replay only matters when something changed.
+    if (commitEdit()) cameraEditorState.requestCameraReplay();
   }
 
   /**

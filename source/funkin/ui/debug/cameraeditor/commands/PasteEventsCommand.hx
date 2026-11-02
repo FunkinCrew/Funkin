@@ -70,7 +70,7 @@ class PasteEventsCommand implements CameraEditorCommand
     state.selectedSongEvents = addedEvents.copy();
     state.saved = false;
 
-    state.replayCameraTimeline(state.conductorInUse.songPosition);
+    state.requestCameraReplay();
 
     state.playEditSound('ui/editors/chart-editor/charting-sounds/note-place');
 
@@ -93,7 +93,7 @@ class PasteEventsCommand implements CameraEditorCommand
     state.timeline.viewport.refreshLayout();
     state.saved = false;
 
-    state.replayCameraTimeline(state.conductorInUse.songPosition);
+    state.requestCameraReplay();
 
     state.playEditSound('ui/editors/chart-editor/charting-sounds/undo');
 

@@ -2,17 +2,12 @@ package funkin.ui.haxeui.components.editors.timeline;
 
 #if FEATURE_CAMERA_EDITOR
 import funkin.data.song.SongData.SongEventData;
-import haxe.ui.behaviours.DefaultBehaviour;
-import haxe.ui.components.Image;
-import haxe.ui.containers.Box;
-import haxe.ui.core.CompositeBuilder;
-import flixel.util.FlxColor;
-
-@:composite(TimelineBlockBuilder)
-class TimelineEventBlock extends Box
+/**
+ * A block representing a single event on the timeline.
+ */
+class TimelineEventBlock
 {
-  public static inline var BLOCK_HEIGHT:Int = 42;
-  static inline var CORNER_RADIUS:Int = 5;
+  public static inline var CORNER_RADIUS:Int = 5;
   public static inline var TRIANGLE_OPACITY:Float = 0.3;
   public static inline var EDGE_DRAG_ZONE:Float = 6.0;
   public static inline var INSTANT_EDGE_DRAG_ZONE:Float = 4.0;
@@ -21,60 +16,68 @@ class TimelineEventBlock extends Box
     "ZoomCamera" => "assets/ui/editors/camera-editor/event-icons/zoom_event.png",
     "PlayAnimation" => "assets/ui/editors/camera-editor/event-icons/playanim_event.png",
   ];
+  public static inline var TRIANGLE_RESOURCE:String = 'assets/ui/editors/camera-editor/triangle.png';
 
   public var eventData:SongEventData;
   public var layerIndex:Int = 0;
-  @:clonable @:behaviour(DefaultBehaviour, false)
-  public var selected:Bool;
+  public var selected:Bool = false;
+
+  /**
+   * Whether the block is out of view.
+   */
+  public var hidden:Bool = true;
+
+  /**
+   * Where the event starts and how long it is on screen.
+   */
   public var blockLeft:Float = 0;
   public var blockTop:Float = 0;
   public var blockWidth:Float = 0;
-  public var _cachedIcon:Image;
-  public var _cachedTriangle:Image;
 
-  public function new()
-  {
-    super();
-    addClass("timeline-event-block");
-    this.height = BLOCK_HEIGHT;
-  }
+  /**
+   * The part of the block that gets drawn, cut down to the visible area.
+   */
+  public var drawLeft:Float = 0;
+  public var drawWidth:Float = 0;
 
+  /**
+   * Which edge is highlighted for resizing, if any.
+   */
+  public var hoverEdge:Null<TimelineBlockHitZone> = null;
+
+  /**
+   * Cached result of `isInstant()`, refreshed by `updateVisuals()`.
+   */
+  public var instant:Bool = false;
+
+  public function new() {}
+
+  /**
+   * Colors the block based on the layer it is on.
+   * @param layerColor The color of the layer the block is on.
+   */
   public function applyColor(layerColor:Int):Void
   {
-    var bodyColor = selected ? FlxColor.fromInt(layerColor).getLightened(0.3) : layerColor;
-    var borderColor = selected ? 0xFFFFFF : layerColor;
-
-    customStyle.backgroundColor = bodyColor;
-    customStyle.backgroundOpacity = selected ? 0.6 : 0.4;
-
-    this.borderColor = borderColor;
-    this.borderSize = selected ? 2 : 1;
-    this.borderRadius = isInstant() ? 0 : CORNER_RADIUS;
-
-    invalidateComponentStyle();
+    updateVisuals();
   }
 
+  /**
+   * Refreshes state that depends on the event's values.
+   */
   public function updateVisuals():Void
   {
-    this.borderRadius = isInstant() ? 0 : CORNER_RADIUS;
-
-    if (_cachedTriangle != null)
-    {
-      _cachedTriangle.opacity = isInstant() ? TRIANGLE_OPACITY : 0;
-    }
-
-    invalidateComponentStyle();
+    instant = isInstant();
   }
 
   public function getHitZone(localX:Float):TimelineBlockHitZone
   {
     if (isInstant())
     {
-      if (TimelineUtil.canResize(eventData) && localX > this.componentWidth - INSTANT_EDGE_DRAG_ZONE) return RIGHT_EDGE;
+      if (TimelineUtil.canResize(eventData) && localX > blockWidth - INSTANT_EDGE_DRAG_ZONE) return RIGHT_EDGE;
       return BODY;
     }
     if (localX < EDGE_DRAG_ZONE) return LEFT_EDGE;
-    if (localX > this.componentWidth - EDGE_DRAG_ZONE) return RIGHT_EDGE;
+    if (localX > blockWidth - EDGE_DRAG_ZONE) return RIGHT_EDGE;
     return BODY;
   }
 
@@ -86,31 +89,6 @@ class TimelineEventBlock extends Box
   public function isInstant():Bool
   {
     return TimelineUtil.isFixedDuration(eventData);
-  }
-}
-
-@:dox(hide)
-@:noCompletion
-private class TimelineBlockBuilder extends CompositeBuilder
-{
-  override public function create():Void
-  {
-    var triangle = new Image();
-    var triangle:Image = new Image();
-    triangle.id = "block-instantTriangle";
-    triangle.addClass("timeline-block-instant-triangle");
-    triangle.customStyle.pointerEvents = "none";
-    triangle.resource = 'assets/ui/editors/camera-editor/triangle.png';
-    triangle.opacity = 0.3;
-    triangle.includeInLayout = false;
-    _component.addComponent(triangle);
-
-    var icon:Image = new Image();
-    icon.id = "block-icon";
-    icon.addClass("timeline-block-icon");
-    icon.customStyle.pointerEvents = "none";
-    icon.includeInLayout = false;
-    _component.addComponent(icon);
   }
 }
 

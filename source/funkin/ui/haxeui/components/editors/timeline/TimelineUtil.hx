@@ -97,7 +97,8 @@ class TimelineUtil
   public static function setEventDurationSteps(event:SongEventData, steps:Float):Void
   {
     var struct:haxe.DynamicAccess<Dynamic> = cast event.valueAsStruct();
-    struct.set('duration', Math.max(getMinDurationSteps(event), steps));
+    var rounded:Float = Math.fround(steps * TimelineViewport.DURATION_PRECISION) / TimelineViewport.DURATION_PRECISION;
+    struct.set('duration', Math.max(getMinDurationSteps(event), rounded));
     event.value = cast struct;
   }
 }

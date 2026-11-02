@@ -111,7 +111,7 @@ class EditEventPropertiesCommand implements CameraEditorCommand
     state.selectedSongEvents = events.copy();
     state.timeline.viewport.refreshBlockVisuals();
     state.timeline.viewport.refreshLayout();
-    state.replayCameraTimeline(state.conductorInUse.songPosition, true);
+    state.requestCameraReplay();
     state.saved = false;
   }
 

@@ -25,7 +25,7 @@ class VolumePlugin extends FlxBasic
   {
     super.update(elapsed);
 
-    var isHaxeUIFocused:Bool = #if FEATURE_HAXEUI haxe.ui.focus.FocusManager.instance?.focus != null #else false #end;
+    var isHaxeUIFocused:Bool = funkin.util.HaxeUIFocusUtil.isFocused();
 
     if (!isHaxeUIFocused)
     {

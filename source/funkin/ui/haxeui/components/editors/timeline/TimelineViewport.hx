@@ -40,6 +40,9 @@ class TimelineViewport extends Box
   public static inline var MIN_BLOCK_WIDTH:Float = 10.0;
   public static inline var INSTANT_BLOCK_WIDTH:Float = 14.0;
   public static inline var INSTANT_BLOCK_SNAPS:Float = 2.0;
+  public static inline var BLOCK_DRAW_MARGIN:Float = 16.0;
+  // Durations are rounded to this many parts of a step.
+  public static inline var DURATION_PRECISION:Float = 1000;
   public static inline var PIXELS_PER_STEP_BASE:Float = 12.0;
   public static inline var MIN_ZOOM:Float = 0.1;
   public static inline var MAX_ZOOM:Float = 10.0;
@@ -181,7 +184,9 @@ class TimelineViewport extends Box
   public function durationStepsBetween(startMs:Float, endMs:Float):Float
   {
     var stepMs:Float = stepLengthAtMs(startMs);
-    return stepMs > 0 ? (endMs - startMs) / stepMs : 1.0;
+    if (stepMs <= 0) return 1.0;
+    // Going through milliseconds leaves float error, so a snapped length like 4 would come out as 3.9999.
+    return Math.fround((endMs - startMs) / stepMs * DURATION_PRECISION) / DURATION_PRECISION;
   }
 
   public var scrollOffsetSteps(get, never):Float;
@@ -491,7 +496,6 @@ class TimelineViewport extends Box
     if (h == layerHeight) return;
 
     layerHeight = h;
-    for (block in eventBlocks) block.height = blockHeight;
     refreshLayout();
   }
 
@@ -727,7 +731,6 @@ class TimelineViewport extends Box
    */
   public function rebuildBlocks(events:Array<SongEventData>):Void
   {
-    for (block in eventBlocks) contentArea.removeComponent(block);
     eventBlocks = [];
 
     for (event in events) addEventBlock(event);
@@ -746,26 +749,10 @@ class TimelineViewport extends Box
     var layerName = raw.editorLayer != null ? raw.editorLayer : "Default";
     block.layerIndex = getLayerIndex(layerName);
 
-    if (block.layerIndex >= 0 && block.layerIndex < layers.length) block.applyColor(layers[block.layerIndex].color);
-
-    contentArea.addComponent(block);
-
-    var triangle = block.findComponent("block-instantTriangle", Image);
-    if (triangle != null)
-    {
-      if (!block.isInstant()) triangle.opacity = 0;
-      block._cachedTriangle = triangle;
-    }
-
-    var icon = block.findComponent("block-icon", Image);
-    if (icon != null)
-    {
-      var iconRes = TimelineEventBlock.getIconResource(event.eventKind);
-      if (iconRes != null) icon.resource = iconRes;
-      block._cachedIcon = icon;
-    }
+    block.updateVisuals();
 
     eventBlocks.push(block);
+    refreshLayout();
     return block;
   }
 
@@ -779,8 +766,8 @@ class TimelineViewport extends Box
   {
     var block = findBlockByEvent(event);
     if (block == null) return false;
-    contentArea.removeComponent(block);
     eventBlocks.remove(block);
+    refreshLayout();
     return true;
   }
 
@@ -808,6 +795,7 @@ class TimelineViewport extends Box
       if (targetSelected && !block.selected) continue;
       block.updateVisuals();
     }
+    refreshLayout();
   }
 
   public function getSelectedEvents():Array<SongEventData>
@@ -904,7 +892,8 @@ private class TimelineViewportBuilder extends CompositeBuilder
     _viewport.addComponent(topper);
     _viewport.playheadTopper = topper;
 
-    var contentArea:Box = new Box();
+    var contentArea:TimelineBlockArea = new TimelineBlockArea();
+    contentArea.viewport = _viewport;
     contentArea.id = "timeline-content-area";
     contentArea.layout = new AbsoluteLayout();
     contentArea.left = 0;
@@ -973,6 +962,7 @@ private class TimelineViewportLayout extends DefaultLayout
 
     var instantWidth:Float = vp.instantBlockWidth();
 
+    // Blocks are drawn by the content area itself, this only works out where they go.
     for (block in vp.eventBlocks)
     {
       var blockLeftPos = Math.fround(vp.msToPixelX(block.eventData.time));
@@ -980,69 +970,29 @@ private class TimelineViewportLayout extends DefaultLayout
 
       if (blockLeftPos > w || blockTopPos + vp.blockHeight < 0 || blockTopPos > caHeight)
       {
-        if (!block.hidden) block.hidden = true;
+        block.hidden = true;
         continue;
       }
 
-      var blockWidthVal = block.isInstant() ? Math.fround(
-        instantWidth
-      ) : Math.max(TimelineViewport.MIN_BLOCK_WIDTH, Math.fround(vp.msToPixelX(vp.eventEndMs(block.eventData))) - blockLeftPos);
+      block.instant = block.isInstant();
+      var blockWidthVal = block.instant ? Math.fround(instantWidth) : Math.max(TimelineViewport.MIN_BLOCK_WIDTH,
+        Math.fround(vp.msToPixelX(vp.eventEndMs(block.eventData))) - blockLeftPos);
 
-      var isOffscreen = blockLeftPos + blockWidthVal < 0;
+      if (blockLeftPos + blockWidthVal < 0)
+      {
+        block.hidden = true;
+        continue;
+      }
 
-      if (isOffscreen != block.hidden) block.hidden = isOffscreen;
+      var drawLeft:Float = Math.max(blockLeftPos, -TimelineViewport.BLOCK_DRAW_MARGIN);
+      var drawRight:Float = Math.min(blockLeftPos + blockWidthVal, w + TimelineViewport.BLOCK_DRAW_MARGIN);
 
-      if (isOffscreen) continue;
-      if (block.left != blockLeftPos) block.left = blockLeftPos;
-      if (block.top != blockTopPos) block.top = blockTopPos;
-      if (block.width != blockWidthVal) block.width = blockWidthVal;
-      if (block.height != vp.blockHeight) block.height = vp.blockHeight;
-
+      block.hidden = false;
       block.blockLeft = blockLeftPos;
       block.blockTop = blockTopPos;
       block.blockWidth = blockWidthVal;
-
-      if (block._cachedIcon == null) block._cachedIcon = block.findComponent("block-icon", Image);
-      if (block._cachedTriangle == null) block._cachedTriangle = block.findComponent("block-instantTriangle", Image);
-
-      var icon = block._cachedIcon;
-      var triangle = block._cachedTriangle;
-      if (icon != null && triangle != null)
-      {
-        var maxIconSize = vp.blockHeight - 4;
-        var preferredPadding = maxIconSize * 0.05;
-        var iconSize:Float;
-        var iconLeft:Float;
-
-        if (blockWidthVal >= maxIconSize + preferredPadding * 2)
-        {
-          // Block is wide enough: full-size icon with padding
-          iconSize = maxIconSize;
-          iconLeft = preferredPadding;
-
-          // size triangle
-          if (triangle.width != iconSize / 2) triangle.width = iconSize / 2;
-        }
-        else
-        {
-          // Block is too narrow: fill the block and center
-          iconSize = Math.max(16, blockWidthVal);
-          iconLeft = (blockWidthVal - iconSize) / 2;
-
-          if (triangle.width != blockWidthVal) triangle.width = blockWidthVal;
-        }
-
-        var triangleColor:Null<Int> = triangle.color;
-        var blockColor:Null<Int> = block.backgroundColor;
-        if (triangleColor != blockColor) triangle.color = block.backgroundColor;
-        if (triangle.height != vp.blockHeight) triangle.height = vp.blockHeight;
-
-        if (icon.width != iconSize) icon.width = iconSize;
-        if (icon.height != iconSize) icon.height = iconSize;
-        var iconTop = (vp.blockHeight - iconSize) / 2;
-        if (icon.top != iconTop) icon.top = iconTop;
-        if (icon.left != iconLeft) icon.left = iconLeft;
-      }
+      block.drawLeft = drawLeft;
+      block.drawWidth = Math.max(1, drawRight - drawLeft);
     }
   }
 }
@@ -1737,8 +1687,7 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
   {
     if (_hoverBlock != null)
     {
-      _hoverBlock.removeClass("resize-left");
-      _hoverBlock.removeClass("resize-right");
+      _hoverBlock.hoverEdge = null;
       _hoverBlock = null;
     }
 
@@ -1752,11 +1701,11 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
       {
         case LEFT_EDGE:
           desiredCursor = "col-resize";
-          hitBlock.addClass("resize-left");
+          hitBlock.hoverEdge = LEFT_EDGE;
           _hoverBlock = hitBlock;
         case RIGHT_EDGE:
           desiredCursor = "col-resize";
-          hitBlock.addClass("resize-right");
+          hitBlock.hoverEdge = RIGHT_EDGE;
           _hoverBlock = hitBlock;
         case BODY:
           desiredCursor = "move";

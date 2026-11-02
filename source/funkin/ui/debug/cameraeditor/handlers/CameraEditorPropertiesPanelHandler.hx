@@ -3,6 +3,7 @@ package funkin.ui.debug.cameraeditor.handlers;
 #if FEATURE_CAMERA_EDITOR
 import funkin.data.event.SongEventRegistry;
 import funkin.play.event.SongEvent;
+import funkin.ui.debug.cameraeditor.components.BaseEventContainer;
 import funkin.ui.debug.cameraeditor.components.EditorContainer;
 import funkin.ui.debug.cameraeditor.components.FocusCameraContainer;
 import funkin.ui.debug.cameraeditor.components.PlayAnimationContainer;
@@ -188,6 +189,19 @@ class CameraEditorPropertiesPanelHandler
     count:Int = 1):Void
   {
     state.propertiesPanel.hidden = false;
+
+    var title:String = resolveTitle(eventKind);
+    title = count > 1 ? '$title ($count events)' : title;
+
+    var existing:Null<Component> = state.propertiesPanel.findComponent('propertiesContainer');
+    if (existing != null && Std.isOfType(existing, containerClass) && Std.isOfType(existing, BaseEventContainer))
+    {
+      var reused:BaseEventContainer = cast existing;
+      reused.reload();
+      state.setPropertiesContainerTitle(title);
+      return;
+    }
+
     state.removePropertiesContainer();
 
     var container:EditorContainer = Type.createInstance(containerClass, [state]);
@@ -195,8 +209,7 @@ class CameraEditorPropertiesPanelHandler
 
     container.loadCurrentEventData();
 
-    var title:String = resolveTitle(eventKind);
-    state.setPropertiesContainerTitle(count > 1 ? '$title ($count events)' : title);
+    state.setPropertiesContainerTitle(title);
   }
 
   /**

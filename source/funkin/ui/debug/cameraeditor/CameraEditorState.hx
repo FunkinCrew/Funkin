@@ -238,6 +238,19 @@ class CameraEditorState extends UIState implements ConsoleClass
     replayPosition = -1;
   }
 
+  /**
+   * Whether a full camera replay is waiting for the next frame.
+   */
+  var cameraReplayPending:Bool = false;
+
+  /**
+   * Asks for a full camera replay on the next frame.
+   */
+  public function requestCameraReplay():Void
+  {
+    cameraReplayPending = true;
+  }
+
   function trackPlayAnimationEvent(eventData:SongEventData):Void
   {
     var targetName:Null<String> = eventData.getString('target');
@@ -502,7 +515,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   function get_isHaxeUIFocused():Bool
   {
-    return FocusManager.instance.focus != null;
+    return funkin.util.HaxeUIFocusUtil.isFocused();
   }
 
   /**
@@ -1103,6 +1116,12 @@ class CameraEditorState extends UIState implements ConsoleClass
   override public function update(elapsed:Float):Void
   {
     editSoundPlayed = false;
+
+    if (cameraReplayPending)
+    {
+      cameraReplayPending = false;
+      replayCameraTimeline(conductorInUse.songPosition, true);
+    }
     if (criticalFailure) return;
 
     Preferences.debugDisplay == DebugDisplayMode.Off ? menubar.paddingLeft = null : menubar.paddingLeft = 256;
@@ -1151,7 +1170,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       timeline.viewport.tick(elapsed);
       timeline.viewport.handleTrackpadScroll();
     }
-    if (mainView != null && !isCursorOverHaxeUI) mainView.handleTrackpadScroll();
+    if (mainView != null && (FlxG.mouse.deltaWheel.x != 0 || FlxG.mouse.deltaWheel.y != 0) && !isCursorOverHaxeUI) mainView.handleTrackpadScroll();
 
     super.update(elapsed);
 
