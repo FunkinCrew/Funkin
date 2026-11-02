@@ -464,6 +464,17 @@ class PolymodHandler
    */
   static function buildBlacklist():Void
   {
+    function blacklistPackage(pkg:String)
+    {
+      for (cls in ClassMacro.listClassesInPackage('$pkg'))
+      {
+        if (cls == null) continue;
+        var className:String = Type.getClassName(cls);
+        if (polymod.hscript._internal.PolymodScriptClass.importOverrides.exists(className)) continue;
+        Polymod.blacklistImport(className);
+      }
+    }
+
     // `lime.utils.Assets` literally just has a private `resolveClass` function for some reason? so we replace it with our own.
     Polymod.addImportAlias('lime.utils.Assets', funkin.Assets);
     Polymod.addImportAlias('openfl.utils.Assets', funkin.Assets);
@@ -515,20 +526,10 @@ class PolymodHandler
     Polymod.blacklistImport('haxe.Unserializer');
 
     // Disable access to all Mobile Utils
-    for (cls in ClassMacro.listClassesInPackage('funkin.mobile.util'))
-    {
-      if (cls == null) continue;
-      var className:String = Type.getClassName(cls);
-      Polymod.blacklistImport(className);
-    }
+    blacklistPackage('funkin.mobile.util');
 
     // Disable access to all Extension in the extension package
-    for (cls in ClassMacro.listClassesInPackage('extension'))
-    {
-      if (cls == null) continue;
-      var className:String = Type.getClassName(cls);
-      Polymod.blacklistImport(className);
-    }
+    blacklistPackage('extension');
 
     // `lime.system.CFFI`
     // Can load and execute compiled binaries.
@@ -542,21 +543,10 @@ class PolymodHandler
     // System.load() can load malicious DLLs
     Polymod.blacklistImport('lime.system.System');
 
-    // `lime.utils.Assets`
-    // Literally just has a private `resolveClass` function for some reason?
-    Polymod.blacklistImport('lime.utils.Assets');
-    Polymod.blacklistImport('openfl.utils.Assets');
-    Polymod.blacklistImport('openfl.Lib');
-    Polymod.blacklistImport('openfl.system.ApplicationDomain');
-    Polymod.blacklistImport('openfl.net.SharedObject');
-
     // `openfl.desktop.NativeProcess`
     // Can load native processes on the host operating system.
     Polymod.blacklistImport('openfl.desktop.NativeProcess');
 
-    // `flixel.util.FlxSave`
-    // resolveFlixelClasses() can access blacklisted packages
-    Polymod.blacklistStaticFields(flixel.util.FlxSave, ['resolveFlixelClasses']);
     // Disallow direct manipulation of save data.
     Polymod.blacklistStaticFields(flixel.FlxG, ['save']);
 
@@ -612,59 +602,28 @@ class PolymodHandler
 
     // `funkin.api.*`
     // Contains functions which may allow for cheating and such.
-    for (cls in ClassMacro.listClassesInPackage('funkin.api'))
-    {
-      if (cls == null) continue;
-      var className:String = Type.getClassName(cls);
-      if (polymod.hscript._internal.PolymodScriptClass.importOverrides.exists(className)) continue;
-      Polymod.blacklistImport(className);
-    }
+    blacklistPackage('funkin.api');
 
     // `polymod.*`
     // Contains functions which may allow for un-blacklisting other modules.
-    for (cls in ClassMacro.listClassesInPackage('polymod'))
-    {
-      if (cls == null) continue;
-      var className:String = Type.getClassName(cls);
-      Polymod.blacklistImport(className);
-    }
+    blacklistPackage('polymod');
 
     // `hscript.*
     // Contains functions which may allow for interpreting unsanitized strings.
-    for (cls in ClassMacro.listClassesInPackage('hscript'))
-    {
-      if (cls == null) continue;
-      var className:String = Type.getClassName(cls);
-      Polymod.blacklistImport(className);
-    }
+    blacklistPackage('hscript');
 
     // `io.newgrounds.*`
     // Contains functions which allow for cheating medals and leaderboards.
-    for (cls in ClassMacro.listClassesInPackage('io.newgrounds'))
-    {
-      if (cls == null) continue;
-      var className:String = Type.getClassName(cls);
-      Polymod.blacklistImport(className);
-    }
+    blacklistPackage('io.newgrounds');
 
     // `sys.*`
     // Access to system utilities such as the file system.
-    for (cls in ClassMacro.listClassesInPackage('sys'))
-    {
-      if (cls == null) continue;
-      var className:String = Type.getClassName(cls);
-      Polymod.blacklistImport(className);
-    }
+    blacklistPackage('sys');
 
     // `funkin.util.macro.*`
     // CompiledClassList's get function allows access to sys and Newgrounds classes
     // None of the classes are suitable for mods anyway
-    for (cls in ClassMacro.listClassesInPackage('funkin.util.macro'))
-    {
-      if (cls == null) continue;
-      var className:String = Type.getClassName(cls);
-      Polymod.blacklistImport(className);
-    }
+    blacklistPackage('funkin.util.macro');
 
     // External classes for android that bridge to private JNI methods & callbacks
     Polymod.blacklistImport('funkin.external.android.CallbackUtil');
