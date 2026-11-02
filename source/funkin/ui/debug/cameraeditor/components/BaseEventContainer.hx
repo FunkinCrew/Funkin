@@ -88,9 +88,48 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
   public function reload():Void
   {
     lastSnapshot = takeSnapshot();
+    var previousPlaceholders:Array<Component> = placeholdersShown;
+    placeholdersShown = [];
     mixedFields = [];
     loadCurrentEventData();
+    for (component in previousPlaceholders)
+    {
+      if (!mixedFields.contains(component)) clearPlaceholder(component);
+    }
     applyMixedPlaceholders();
+  }
+
+  /**
+   * Fields currently showing the placeholder.
+   */
+  var placeholdersShown:Array<Component> = [];
+
+  function clearPlaceholder(component:Component):Void
+  {
+    if (Std.isOfType(component, NumberStepper))
+    {
+      var stepper:NumberStepper = cast component;
+      var inner:Null<TextField> = stepper.findComponent('value', TextField);
+      if (inner == null) return;
+      var text:String = haxe.ui.util.StringUtil.padDecimal(stepper.value, stepper.precision);
+      quietly(inner, () -> inner.text = text);
+    }
+    else if (Std.isOfType(component, DropDown))
+    {
+      showSelectedText(cast component);
+    }
+    else
+    {
+      for (dropdown in component.findComponents(null, DropDown)) showSelectedText(dropdown);
+    }
+  }
+
+  function showSelectedText(dropdown:DropDown):Void
+  {
+    var item:Dynamic = dropdown.selectedItem;
+    if (item == null || item.text == null) return;
+    var text:String = item.text;
+    quietly(dropdown, () -> dropdown.text = text);
   }
 
   /**
@@ -131,6 +170,7 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
   {
     for (component in mixedFields)
     {
+      placeholdersShown.push(component);
       if (Std.isOfType(component, NumberStepper))
       {
         var stepper:NumberStepper = cast component;
