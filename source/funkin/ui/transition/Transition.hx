@@ -2,6 +2,7 @@ package funkin.ui.transition;
 
 import flixel.FlxState;
 import flixel.FlxSubState;
+import flixel.addons.transition.Transition as FlxTransition;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.transition.FlxTransitionableSubState;
 import flixel.addons.transition.TransitionData;
@@ -268,8 +269,7 @@ class Transition
           stickerPack: stickerPack
         });
 
-        prepareStickerOut(stickerLoadingState);
-        prepareStickerIn(stickerLoadingState);
+        prepareStickerTransition(stickerLoadingState);
 
       case TransitionType.Custom(name, fadeIn, fadeOut):
         var onTransOutDone:Void->Void = () ->
@@ -382,8 +382,7 @@ class Transition
         var stickerLoadingState:StickerLoadingState = new StickerLoadingState(SubState(builder), params, {
           stickerPack: stickerPack
         });
-        prepareStickerOut(stickerLoadingState);
-        prepareStickerIn(stickerLoadingState);
+        prepareStickerTransition(stickerLoadingState);
 
       case TransitionType.Custom(name, fadeIn, fadeOut):
         var onTransOutDone:Void->Void = () ->
@@ -522,7 +521,7 @@ class Transition
           // Call immediately.
           onTransOutDone();
         }
-      case FadeType.DiamondTile | FadeType.CircleTile | FadeType.SquareTile:
+      case FadeType.DiamondTile | FadeType.CircleTile | FadeType.SquareTile | FadeType.Custom(_):
         FlxTransitionableState.skipNextTransOut = false;
 
         FlxTransitionableState.defaultTransOut = buildTransitionData(fadeType);
@@ -581,7 +580,7 @@ class Transition
         FlxTransitionableState.skipNextTransIn = false;
 
         FlxTransitionableState.defaultTransIn = buildTransitionData(fadeType, duration);
-      case FadeType.DiamondTile | FadeType.CircleTile | FadeType.SquareTile:
+      case FadeType.DiamondTile | FadeType.CircleTile | FadeType.SquareTile | FadeType.Custom(_):
         FlxTransitionableState.skipNextTransIn = false;
 
         FlxTransitionableState.defaultTransIn = buildTransitionData(fadeType);
@@ -593,7 +592,7 @@ class Transition
     }
   }
 
-  static function prepareStickerIn(state:StickerLoadingState):Void
+  static function prepareStickerTransition(state:StickerLoadingState):Void
   {
     var currentState:FlxState = FlxG.state;
     var stickerPackId:String = state.stickerPackId;
@@ -601,48 +600,14 @@ class Transition
     // cache assets before touching the transition system.
     StickerTransition.cacheAssets(stickerPackId).onComplete((_) ->
     {
-      var transData:TransitionData = new TransitionData(CUSTOM);
-      transData.transitionState = state.buildTransition();
-
-      FlxTransitionableState.skipNextTransOut = false;
-      FlxTransitionableState.defaultTransOut = transData;
-
-      if (Std.isOfType(currentState, FlxTransitionableState))
+      var fadeType:FadeType = FadeType.Custom(state.buildTransition);
+      prepareFadeOut(fadeType);
+      prepareFadeIn(fadeType, () ->
       {
-        var currentTransState:FlxTransitionableState = cast currentState;
-        currentTransState.transOut = transData;
-        currentTransState.transitionOut(() ->
-        {
-          trace('Transition into sticker state is done.');
-          FlxStateUtil.openSubStateAtTop(state, currentState);
-        });
-      }
-      else if (Std.isOfType(currentState, FlxTransitionableSubState))
-      {
-        var currentTransState:FlxTransitionableSubState = cast currentState;
-        currentTransState.transOut = transData;
-        currentTransState.transitionOut(() ->
-        {
-          trace('Transition into sticker state is done.');
-          FlxStateUtil.openSubStateAtTop(state, currentState);
-        });
-      }
-      else
-      {
-        // Call immediately.
-        trace('[WARNING] Cannot play transition on non-transition state: ${Type.typeof(currentState)}');
+        trace('Transition into sticker state is done.');
         FlxStateUtil.openSubStateAtTop(state, currentState);
-      }
+      });
     });
-  }
-
-  static function prepareStickerOut(state:StickerLoadingState):Void
-  {
-    var transData:TransitionData = new TransitionData(CUSTOM);
-    transData.transitionState = state.buildTransition();
-
-    FlxTransitionableState.skipNextTransIn = false;
-    FlxTransitionableState.defaultTransIn = transData;
   }
 
   static function buildTransitionData(fadeType:FadeType, duration:Float = 0.5):Null<TransitionData>
@@ -706,6 +671,12 @@ class Transition
 
         // NOTE: tileData is ignored if TransitionData.type is FADE instead of TILES.
         return new TransitionData(TILES, color, duration, direction, tileData, region, cameraMode);
+
+      case FadeType.Custom(buildTransition):
+        var customTransition:FlxTransition = buildTransition();
+        var transitionData:TransitionData = new TransitionData(CUSTOM);
+        transitionData.transitionState = customTransition;
+        return transitionData;
 
       case FadeType.None:
         return null;
@@ -852,6 +823,12 @@ enum FadeType
    * WARNING: These lag the game to hell and I'm not sure how to make it better.
    */
   SquareTile;
+
+  /**
+   * Use a custom transition.
+   * @param transition A function that returns the custom flixel Transition to use.
+   */
+  Custom(transition:() -> FlxTransition);
 }
 
 /**
