@@ -2,6 +2,7 @@ package funkin.ui.debug.cameraeditor.components;
 
 #if FEATURE_CAMERA_EDITOR
 import funkin.data.song.SongData.SongEventData;
+import funkin.ui.debug.cameraeditor.commands.EditEventPropertiesCommand;
 import funkin.ui.haxeui.components.editors.camera.EaseGraphPreview;
 import haxe.ui.components.CheckBox;
 import haxe.ui.components.NumberStepper;
@@ -38,10 +39,32 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
     return editedEvents.length > 0 ? editedEvents[0] : null;
   }
 
+  /**
+   * A copy of each edited event's value as of the last recorded edit.
+   */
+  var lastSnapshot:Array<Dynamic> = [];
+
   public function new(state:CameraEditorState)
   {
     super();
     cameraEditorState = state;
+    lastSnapshot = takeSnapshot();
+  }
+
+  function takeSnapshot():Array<Dynamic>
+  {
+    return [for (event in editedEvents) Reflect.copy(event.valueAsStruct())];
+  }
+
+  /**
+   * Records what has changed since the last snapshot into the undo history.
+   */
+  function commitEdit():Void
+  {
+    var current:Array<Dynamic> = takeSnapshot();
+    if (current.length != lastSnapshot.length) return;
+    EditEventPropertiesCommand.push(cameraEditorState, editedEvents, lastSnapshot, current);
+    lastSnapshot = current;
   }
 
   /**
@@ -114,6 +137,7 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
    */
   function updateCameraPreview():Void
   {
+    commitEdit();
     cameraEditorState.replayCameraTimeline(cameraEditorState.conductorInUse.songPosition, true);
   }
 
