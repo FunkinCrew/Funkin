@@ -58,20 +58,23 @@ private class DeferredVerticalSplitterEvents extends SplitterEvents
 
   function showGuide(gripper:Component, screenY:Float):Void
   {
-    if (guide == null || guide.parentComponent != gripper)
+    var host:Null<Component> = _splitter.parentComponent;
+    if (host == null) return;
+
+    if (guide == null || guide.parentComponent != host)
     {
       guide = new Box();
       guide.includeInLayout = false;
       guide.customStyle.backgroundColor = GUIDE_COLOR;
       guide.customStyle.pointerEvents = 'none';
       guide.height = GUIDE_HEIGHT;
-      gripper.addComponent(guide);
+      host.addComponent(guide);
     }
 
     var top:Float = clampSplit(screenY - _splitter.screenTop - _currentOffset.y);
-    guide.left = 0;
-    guide.width = gripper.width;
-    guide.top = top + _splitter.screenTop - gripper.screenTop;
+    guide.left = _splitter.screenLeft - host.screenLeft;
+    guide.width = _splitter.width;
+    guide.top = top + _splitter.screenTop - host.screenTop;
     guide.hidden = false;
   }
 
