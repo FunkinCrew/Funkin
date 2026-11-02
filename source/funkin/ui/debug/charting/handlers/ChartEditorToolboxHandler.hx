@@ -8,6 +8,8 @@ import haxe.ui.components.CheckBox;
 import haxe.ui.containers.dialogs.CollapsibleDialog;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialog.DialogEvent;
+import haxe.ui.core.Screen;
+import haxe.ui.events.MouseEvent;
 import haxe.ui.focus.FocusManager;
 import funkin.ui.debug.charting.toolboxes.ChartEditorBaseToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorMetadataToolbox;
@@ -206,6 +208,13 @@ class ChartEditorToolboxHandler
     // Make sure we can reuse the toolbox later.
     toolbox.destroyOnClose = false;
     state.activeToolboxes.set(id, toolbox);
+
+    final box:CollapsibleDialog = toolbox;
+    box.registerEvent(MouseEvent.MOUSE_DOWN, function(_)
+    {
+      var roots = Screen.instance.rootComponents;
+      if (roots[roots.length - 1] != box) Screen.instance.moveComponentToFront(box);
+    });
 
     return toolbox;
   }
