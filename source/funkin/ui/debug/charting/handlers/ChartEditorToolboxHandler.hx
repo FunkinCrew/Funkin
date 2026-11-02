@@ -394,10 +394,6 @@ class ChartEditorToolboxHandler
 
     if (toolbox == null) return null;
 
-    // Starting position.
-    toolbox.x = 700;
-    toolbox.y = 150;
-
     toolbox.onDialogClosed = function(event:DialogEvent)
     {
       state.menubarItemToggleToolboxPlayerPreview.selected = false;
@@ -427,10 +423,6 @@ class ChartEditorToolboxHandler
     var toolbox:CollapsibleDialog = cast RuntimeComponentBuilder.fromAsset(ChartEditorState.CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT);
 
     if (toolbox == null) return null;
-
-    // Starting position.
-    toolbox.x = 200;
-    toolbox.y = 150;
 
     toolbox.onDialogClosed = (event:DialogEvent) ->
     {
