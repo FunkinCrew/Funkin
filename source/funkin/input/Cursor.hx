@@ -8,6 +8,7 @@ import lime.app.Application;
 import lime.ui.MouseCursor;
 import haxe.ui.backend.flixel.MouseHelper;
 import haxe.ui.core.Screen;
+import haxe.ui.dragdrop.DragManager;
 import haxe.ui.events.MouseEvent;
 #end
 import lime.app.Future;
@@ -408,6 +409,10 @@ class Cursor
         break;
       }
     }
+
+    if (DragManager.instance.isDragging) name = "grabbing";
+
+    Screen.instance.setCursor(name);
 
     if (name == lastResolvedCursor) return;
     lastResolvedCursor = name;
