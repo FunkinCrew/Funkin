@@ -238,6 +238,27 @@ interface IFreeplayScriptedClass extends IScriptedClass
 }
 
 /**
+ * Defines a set of callbacks activated in Story Menu.
+ */
+interface IStoryMenuScriptedClass extends IScriptedClass
+{
+  /**
+   * Called when a level is selected.
+   */
+  public function onLevelSelected(event:LevelScriptEvent):Void;
+
+  /**
+   * Called when the current difficulty is changed.
+   */
+  public function onLevelDifficultySwitch(event:LevelScriptEvent):Void;
+
+  /**
+   * Called when a level is confirmed to start.
+   */
+  public function onLevelConfirm(event:LevelScriptEvent):Void;
+}
+
+/**
  * Defines a set of callbacks activated in Character Select.
  */
 interface ICharacterSelectScriptedClass extends IScriptedClass

@@ -330,6 +330,27 @@ enum abstract ScriptEventType(String) from String to String
   public var FREEPLAY_CAPSULE_SLAM = 'FREEPLAY_CAPSULE_SLAM';
 
   /**
+   * Called when a story menu level is selected.
+   *
+   * This event is not cancelable.
+   */
+  public var LEVEL_SELECTED = 'LEVEL_SELECTED';
+
+  /**
+   * Called when the current level difficulty is switched.
+   *
+   * This event is not cancelable.
+   */
+  public var LEVEL_DIFFICULTY_SWITCH = 'LEVEL_DIFFICULTY_SWITCH';
+
+  /**
+   * Called when a level is confirmed in Story Menu.
+   *
+   * This event is not cancelable.
+   */
+  public var LEVEL_CONFIRMED = 'LEVEL_CONFIRMED';
+
+  /**
    * Called when a character is selected, but not confirmed, in Character Select.
    *
    * This event is not cancelable.

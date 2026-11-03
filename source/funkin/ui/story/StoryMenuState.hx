@@ -567,6 +567,12 @@ class StoryMenuState extends MusicBeatState
     updateBackground(previousLevelId);
     updateProps();
     refresh();
+
+    if (currentLevel != null)
+    {
+      var event = LevelScriptEvent.get(LEVEL_SELECTED, currentLevel, currentDifficultyId);
+      dispatchEvent(event);
+    }
   }
 
   /**
@@ -610,6 +616,12 @@ class StoryMenuState extends MusicBeatState
 
     updateText();
     refresh();
+
+    if (currentLevel != null)
+    {
+      var event = LevelScriptEvent.get(LEVEL_DIFFICULTY_SWITCH, currentLevel, currentDifficultyId);
+      dispatchEvent(event);
+    }
   }
 
   override public function dispatchEvent(event:ScriptEvent, finish:Bool = true):Void
@@ -627,6 +639,12 @@ class StoryMenuState extends MusicBeatState
       }
     }
 
+    if (currentLevel != null)
+    {
+      // Dispatch event to the current level.
+      ScriptEventDispatcher.callEvent(currentLevel, event);
+    }
+
     if (finish) event.finish();
   }
 
@@ -639,6 +657,12 @@ class StoryMenuState extends MusicBeatState
     }
 
     if (selectedLevel) return;
+
+    if (currentLevel != null)
+    {
+      var event = LevelScriptEvent.get(LEVEL_CONFIRMED, currentLevel, currentDifficultyId);
+      dispatchEvent(event);
+    }
 
     selectedLevel = true;
 

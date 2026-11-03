@@ -3,8 +3,10 @@ package funkin.ui.story;
 import funkin.play.stage.Bopper;
 import funkin.util.assets.FlxAnimationUtil;
 import funkin.data.story.level.LevelData.LevelPropData;
+import funkin.modding.IScriptedClass.IStoryMenuScriptedClass;
+import funkin.modding.events.ScriptEvent.LevelScriptEvent;
 
-class LevelProp extends Bopper
+class LevelProp extends Bopper implements IStoryMenuScriptedClass
 {
   public var propData(default, set):Null<LevelPropData> = null;
 
@@ -96,6 +98,18 @@ class LevelProp extends Bopper
       this.dance();
       this.animation.paused = true;
     }
+  }
+
+  public function onLevelSelected(event:LevelScriptEvent)
+  {
+  }
+
+  public function onLevelDifficultySwitch(event:LevelScriptEvent)
+  {
+  }
+
+  public function onLevelConfirm(event:LevelScriptEvent)
+  {
   }
 
   public static function build(propData:Null<LevelPropData>):Null<LevelProp>

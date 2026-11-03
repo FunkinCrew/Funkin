@@ -10,13 +10,15 @@ import funkin.data.story.level.LevelData;
 import funkin.assets.Paths;
 import funkin.assets.Assets;
 import funkin.data.story.level.LevelRegistry;
+import funkin.modding.IScriptedClass.IStoryMenuScriptedClass;
+import funkin.modding.events.ScriptEvent;
 
 /**
  * An object used to retrieve data about a story mode level (also known as "weeks").
  * Can be scripted to override each function, for custom behavior.
  */
 @:nullSafety
-class Level implements IRegistryEntry<LevelData>
+class Level implements IStoryMenuScriptedClass implements IRegistryEntry<LevelData>
 {
   /**
    * Retrieve a list of all the asset paths required to load the level in the Story Mode menu.
@@ -364,4 +366,33 @@ class Level implements IRegistryEntry<LevelData>
 
     return props;
   }
+
+  public function onScriptEvent(event:ScriptEvent)
+  {
+  }
+
+  public function onCreate(event:ScriptEvent)
+  {
+  }
+
+  public function onDestroy(event:ScriptEvent)
+  {
+  }
+
+  public function onUpdate(event:UpdateScriptEvent)
+  {
+  }
+
+  public function onLevelSelected(event:LevelScriptEvent)
+  {
+  }
+
+  public function onLevelDifficultySwitch(event:LevelScriptEvent)
+  {
+  }
+
+  public function onLevelConfirm(event:LevelScriptEvent)
+  {
+  }
+
 }

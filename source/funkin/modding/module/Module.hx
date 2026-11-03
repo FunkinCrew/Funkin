@@ -3,6 +3,7 @@ package funkin.modding.module;
 import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
 import funkin.modding.IScriptedClass.IStateChangingScriptedClass;
 import funkin.modding.IScriptedClass.IFreeplayScriptedClass;
+import funkin.modding.IScriptedClass.IStoryMenuScriptedClass;
 import funkin.modding.IScriptedClass.ICharacterSelectScriptedClass;
 import funkin.modding.events.ScriptEvent;
 
@@ -23,7 +24,7 @@ typedef ModuleParams =
  * You may have the module active at all times, or only when another script enables it.
  */
 @:nullSafety
-class Module implements IPlayStateScriptedClass implements IStateChangingScriptedClass implements IFreeplayScriptedClass implements ICharacterSelectScriptedClass
+class Module implements IPlayStateScriptedClass implements IStateChangingScriptedClass implements IFreeplayScriptedClass implements IStoryMenuScriptedClass implements ICharacterSelectScriptedClass
 {
   /**
    * Whether the module is currently active.
@@ -371,6 +372,27 @@ class Module implements IPlayStateScriptedClass implements IStateChangingScripte
   {
   }
 
+  /**
+   * Called when a level is selected.
+   */
+  public function onLevelSelected(event:LevelScriptEvent):Void
+  {
+  }
+
+  /**
+   * Called when the current level difficulty is changed in story menu.
+   */
+  public function onLevelDifficultySwitch(event:LevelScriptEvent):Void
+  {
+  }
+
+  /**
+   * Called when a level is confirmed to start.
+   */
+  public function onLevelConfirm(event:LevelScriptEvent):Void
+  {
+  }
+  
   /**
    * Called when a character is selected.
    */

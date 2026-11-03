@@ -347,6 +347,36 @@ class ScriptEventDispatcher
       }
     }
 
+    if (Std.isOfType(target, IStoryMenuScriptedClass))
+    {
+      var t:IStoryMenuScriptedClass = cast target;
+      switch (event.type)
+      {
+        case LEVEL_SELECTED:
+          t.onLevelSelected(cast event);
+          return;
+        case LEVEL_DIFFICULTY_SWITCH:
+          t.onLevelDifficultySwitch(cast event);
+          return;
+        case LEVEL_CONFIRMED:
+          t.onLevelConfirm(cast event);
+          return;
+        default: // Continue;
+      }
+    }
+    else
+    {
+      // If the target doesn't support the event, stop trying to dispatch.
+      if ([
+        ScriptEventType.LEVEL_SELECTED,
+        ScriptEventType.LEVEL_DIFFICULTY_SWITCH,
+        ScriptEventType.LEVEL_CONFIRMED
+      ].contains(event.type))
+      {
+        return;
+      }
+    }
+
     if (Std.isOfType(target, ICharacterSelectScriptedClass))
     {
       var t:ICharacterSelectScriptedClass = cast target;

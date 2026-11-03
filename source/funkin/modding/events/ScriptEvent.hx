@@ -10,6 +10,7 @@ import funkin.play.cutscene.dialogue.Conversation;
 import funkin.play.Countdown.CountdownStep;
 import funkin.play.notes.NoteDirection;
 import funkin.ui.freeplay.SongMenuItem;
+import funkin.ui.story.Level;
 import funkin.play.scoring.Scoring.ScoringRank;
 import openfl.events.KeyboardEvent;
 
@@ -616,6 +617,35 @@ class CapsuleScriptEvent extends ScriptEvent
   {
     var songName = this.capsule.freeplayData?.fullSongName ?? 'Random';
     return 'CapsuleScriptEvent(type=$type, capsule=$songName)';
+  }
+}
+
+/**
+ * An event that is fired when a level is selected.
+ */
+class LevelScriptEvent extends ScriptEvent
+{
+  /**
+   * The level that was selected.
+   */
+  public var level(default, null):Level;
+
+  /**
+   * The difficulty ID of the selected level.
+   */
+  public var difficultyId(default, null):String;
+
+  public function new(type:ScriptEventType, level:Level, difficultyId:String):Void
+  {
+    super(type, false);
+    this.level = level;
+    this.difficultyId = difficultyId;
+  }
+
+  override public function toString():String
+  {
+    var levelName = this.level?.getTitle() ?? 'Unknown';
+    return 'LevelScriptEvent(type=$type, level=$levelName)';
   }
 }
 
