@@ -52,6 +52,11 @@ class FunkinProgressBar extends FunkinSpriteGroup
   var dataModIds:Array<String> = [];
   var bar:FunkinSprite;
   var micStand:FunkinSprite;
+  var barGraphicPaths:String;
+  var barGraphicOffset:Array<Float>;
+  var barScale:Float;
+  var useAntialiasing:Bool;
+  var useFlipX:Bool;
 
   public function new()
   {
@@ -60,6 +65,13 @@ class FunkinProgressBar extends FunkinSpriteGroup
     bar = new FunkinSprite();
     micStand = new FunkinSprite();
     character = new FunkinLoadingCharacter();
+
+    barGraphicPaths = "ui/loading/mic-stand";
+    barGraphicOffset = [0, 0];
+    barScale = 0.34;
+
+    useAntialiasing = true;
+    useFlipX = false;
 
     customChildUpdate = true;
   }
@@ -107,11 +119,11 @@ class FunkinProgressBar extends FunkinSpriteGroup
 
     loadCharacter();
 
-    micStand.loadTexture('ui/loading/mic-stand');
-    micStand.scale.set(0.34, 0.34);
+    micStand.loadTexture('${barGraphicPaths}');
+    micStand.scale.set(barScale, barScale);
     micStand.updateHitbox();
-    micStand.x = FlxG.width - (micStand.width + 45);
-    micStand.y = FlxG.height - (micStand.height + 30);
+    micStand.x = FlxG.width - (micStand.width + 45) + barGraphicOffset[0];
+    micStand.y = FlxG.height - (micStand.height + 30) + barGraphicOffset[1];
     add(micStand);
 
     barTargetX = micStand.x;
@@ -121,6 +133,8 @@ class FunkinProgressBar extends FunkinSpriteGroup
     bar.setPosition(barTargetX, micStand.y);
     bar.zIndex = 200;
     add(bar);
+    micStand.antialiasing = bar.antialiasing = useAntialiasing;
+    bar.flipX = micStand.flipX = useFlipX;
 
     refresh();
     updateProgress(0, 10);
@@ -166,11 +180,25 @@ class FunkinProgressBar extends FunkinSpriteGroup
     }
 
     var characterData:LoadingCharacterData = FlxG.random.getObject(dataList, weights);
+
     var idx:Int = dataList.indexOf(characterData);
     var characterId:String = dataPaths[idx].split('/').pop().split('.')[0];
     character.loadCharacter(characterData, '$CHARACTER_PATH$characterId/$characterId', dataModIds[idx]);
     character.zIndex = 300;
     add(character);
+
+    // Check if the bar asset exist. if not, it loads the original one.
+    if (Assets.exists('$CHARACTER_PATH$characterId/bar-$characterId.png'))
+    {
+      barGraphicPaths = '$CHARACTER_PATH$characterId/bar-$characterId';
+    }
+
+    useFlipX = characterData.barFlipX;
+
+    barGraphicOffset = characterData.barOffsets;
+    barScale = characterData.barScale;
+
+    useAntialiasing = characterData.barAntialiasing;
   }
 
   /**
@@ -210,7 +238,7 @@ class FunkinProgressBar extends FunkinSpriteGroup
         ignoreUnknownVariables: false
       });
       parser.fromJson(jsonString, path);
-
+      trace(parser.value);
       if (parser.errors.length > 0)
       {
         trace(' LOADING SCREEN '.bold().bg_orange() + ' Failed to parse character data! (asset path: $path)');
