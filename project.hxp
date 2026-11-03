@@ -696,7 +696,7 @@ class Project extends HXProject
       'extension',
       'funkin.api.discord',
       'funkin.external',
-      'funkin.mobile.util',
+      'funkin.util.mobile',
       'funkin.modding.install'
     ];
 

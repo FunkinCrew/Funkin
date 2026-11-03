@@ -36,6 +36,14 @@ import funkin.data.story.level.LevelRegistry;
 import funkin.modding.module.ModuleHandler;
 import funkin.data.character.CharacterRegistry;
 import funkin.play.notes.notekind.NoteKindManager;
+import funkin.util.MathUtil;
+import funkin.util.mobile.ScreenUtil;
+import lime.app.Future;
+import openfl.display.Sprite;
+import openfl.events.MouseEvent;
+import openfl.text.TextField;
+import openfl.text.TextFormat;
+import openfl.text.TextFormatAlign;
 
 using StringTools;
 
