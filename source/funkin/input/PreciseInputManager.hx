@@ -163,6 +163,16 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
     #end
   }
 
+  /**
+   * Returns half the length of the current frame in milliseconds.
+   *
+   * @return Float
+   */
+  public static function getHalfFrameMs():Float
+  {
+    return FlxG.elapsed * Constants.MS_PER_SEC / 2;
+  }
+
   static function getPreventDefaultKeys():Array<FlxKey>
   {
     return FlxG.keys.preventDefaultKeys;

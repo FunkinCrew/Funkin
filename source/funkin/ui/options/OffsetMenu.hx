@@ -942,7 +942,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     var inputLatencyNs:Int64 = PreciseInputManager.getCurrentTimestamp() - input.timestamp;
     var inputLatencyMs:Float = inputLatencyNs.toFloat() / Constants.NS_PER_MS;
 
-    var noteDiff:Int = Std.int(note.noteData.time - inputPosition + inputLatencyMs);
+    var noteDiff:Int = Std.int(note.noteData.time - inputPosition + inputLatencyMs + PreciseInputManager.getHalfFrameMs());
     addDifference(noteDiff);
 
     if (noteDiff == 0)

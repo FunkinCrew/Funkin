@@ -3342,7 +3342,7 @@ class PlayState extends MusicBeatSubState
 
     // Use the input's song position when calculating the ms difference.
     // Also compensate for input latency.
-    var noteDiff:Int = Std.int(inputPosition - note.noteData.time - inputLatencyMs);
+    var noteDiff:Int = Std.int(inputPosition - note.noteData.time - inputLatencyMs - PreciseInputManager.getHalfFrameMs());
 
     var score = Scoring.scoreNote(noteDiff);
     var daRating = Scoring.judgeNote(noteDiff);
