@@ -16,8 +16,8 @@ class FlipNotesCommand implements ChartEditorCommand
 
   public function new(notes:Array<SongNoteData>)
   {
-    this.notes = notes;
-    this.flippedNotes = SongDataUtils.flipNotes(notes);
+    this.notes = [for (note in notes) note.clone()];
+    this.flippedNotes = SongDataUtils.flipNotes(this.notes);
   }
 
   /**

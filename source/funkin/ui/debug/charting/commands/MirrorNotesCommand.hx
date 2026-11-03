@@ -18,7 +18,7 @@ class MirrorNotesCommand implements ChartEditorCommand
 
   public function new(notes:Array<SongNoteData>, mirrorIndividually:Bool = true, flipMiddle:Bool = false, mirrorX:Bool = true, mirrorY:Bool = true)
   {
-    this.notes = notes;
+    this.notes = [for (note in notes) note.clone()];
     this.mirrorX = mirrorX;
     this.mirrorY = mirrorY;
     if (mirrorIndividually)
@@ -26,7 +26,7 @@ class MirrorNotesCommand implements ChartEditorCommand
       var playerNotes:Array<SongNoteData> = [];
       var opponentNotes:Array<SongNoteData> = [];
       // Sort the selection by the strumline positions and then mirror each individually
-      for (note in notes)
+      for (note in this.notes)
       {
         if (note.data < ChartEditorState.STRUMLINE_SIZE)
         {
@@ -48,7 +48,7 @@ class MirrorNotesCommand implements ChartEditorCommand
     }
     else
     {
-      this.mirroredNotes = SongDataUtils.mirrorNotes(notes, ChartEditorState.STRUMLINE_SIZE, flipMiddle, mirrorX, mirrorY);
+      this.mirroredNotes = SongDataUtils.mirrorNotes(this.notes, ChartEditorState.STRUMLINE_SIZE, flipMiddle, mirrorX, mirrorY);
     }
   }
 
