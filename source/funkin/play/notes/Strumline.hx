@@ -773,7 +773,7 @@ class Strumline extends FlxSpriteGroup
 
         holdNote.sustainLength = (holdNote.strumTime + holdNote.fullSustainLength) - conductorInUse.songPosition;
 
-        if (holdNote.sustainLength <= 10)
+        if (holdNote.sustainLength <= 0)
         {
           holdNote.visible = false;
         }
@@ -1423,6 +1423,7 @@ class Strumline extends FlxSpriteGroup
       holdNoteSprite.noteDirection = note.getDirection();
       holdNoteSprite.fullSustainLength = note.length;
       holdNoteSprite.sustainLength = note.length;
+      holdNoteSprite.lastSustainLength = note.length;
       holdNoteSprite.missedNote = false;
       holdNoteSprite.hitNote = false;
       holdNoteSprite.visible = true;
