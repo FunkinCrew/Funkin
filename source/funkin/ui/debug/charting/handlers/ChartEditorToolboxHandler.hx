@@ -10,7 +10,7 @@ import haxe.ui.containers.dialogs.CollapsibleDialog;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialog.DialogEvent;
 import haxe.ui.core.Screen;
-import haxe.ui.events.MouseEvent;
+import haxe.ui.events.DragEvent;
 import haxe.ui.focus.FocusManager;
 import funkin.ui.debug.charting.toolboxes.ChartEditorBaseToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorMetadataToolbox;
@@ -64,7 +64,7 @@ class ChartEditorToolboxHandler
       toolbox.showDialog(false);
       clearHaxeUIFocus();
 
-      for (component in Screen.instance.rootComponents.copy())
+      for (component in Screen.instance.rootComponents)
       {
         if (Std.isOfType(component, Menu)) Screen.instance.moveComponentToFront(component);
       }
@@ -221,11 +221,11 @@ class ChartEditorToolboxHandler
     toolbox.destroyOnClose = false;
     state.activeToolboxes.set(id, toolbox);
 
-    final box:CollapsibleDialog = toolbox;
-    box.registerEvent(MouseEvent.MOUSE_DOWN, function(_)
+    // Set the component above everything else when dragging.
+    toolbox.registerEvent(DragEvent.DRAG_START, function(_)
     {
       var roots = Screen.instance.rootComponents;
-      if (roots[roots.length - 1] != box) Screen.instance.moveComponentToFront(box);
+      if (roots[roots.length - 1] != toolbox) Screen.instance.moveComponentToFront(toolbox);
     });
 
     return toolbox;
