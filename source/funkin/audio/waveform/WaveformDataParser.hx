@@ -38,7 +38,7 @@ class WaveformDataParser
     // TODO: Make this work better on HTML5.
     var soundData:lime.utils.Int16Array = cast soundBuffer.data;
 
-    var soundDataSampleCount:Int = Std.int(Math.ceil(soundData.length / channels / (bitsPerSample == 16 ? 2 : 1)));
+    var soundDataSampleCount:Int = Std.int(Math.ceil(soundData.length / channels));
     var outputPointCount:Int = Std.int(Math.ceil(soundDataSampleCount / samplesPerPoint));
 
     // Pre-allocate Vector with exact final size for better performance and memory efficiency
