@@ -13,7 +13,7 @@ import polymod.Polymod;
 import polymod.PolymodAssets;
 
 /**
- * A FunkinGroup that holds a progress bar and a a loading character on top.
+ * A FunkinGroup that holds a progress bar and a loading character on top.
  */
 @:nullSafety
 class FunkinProgressBar extends FunkinSpriteGroup
