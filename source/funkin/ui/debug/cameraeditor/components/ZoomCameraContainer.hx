@@ -23,10 +23,7 @@ class ZoomCameraContainer extends BaseEventContainer
 
     zoomCameraEaseFrame.easeGraphPreview.registerEvent(UIEvent.CHANGE, function(_:UIEvent):Void
     {
-      copyFromPrimary('ease');
-      copyFromPrimary('easeDir');
-      updateCameraPreview();
-      updateBlockVisuals();
+      onEasePreviewChange();
     });
   }
 
@@ -46,12 +43,13 @@ class ZoomCameraContainer extends BaseEventContainer
     var modeType:String = primaryEvent.getString('mode') ?? ZoomCameraSongEvent.DEFAULT_MODE;
     if (modeType == 'stage')
     {
-      zoomCameraMode.selectedIndex = 0;
+      quietly(zoomCameraMode, () -> zoomCameraMode.selectedIndex = 0);
     }
     else if (modeType == 'direct')
     {
-      zoomCameraMode.selectedIndex = 1;
+      quietly(zoomCameraMode, () -> zoomCameraMode.selectedIndex = 1);
     }
+    rememberChoice(zoomCameraMode, modeType);
 
     var zoomShared:Bool = allMatch('zoom', ZoomCameraSongEvent.DEFAULT_ZOOM);
     markShared(zoomCameraZoomLevel, zoomShared);
@@ -65,6 +63,7 @@ class ZoomCameraContainer extends BaseEventContainer
 
     markShared(zoomCameraEaseFrame, allMatch('ease', SongEvent.DEFAULT_EASE) && allMatch('easeDir', SongEvent.DEFAULT_EASE_DIR));
     zoomCameraEaseFrame.easeGraphPreview.event = primaryEvent;
+    rememberEase();
     updateCameraPreview();
     updateBlockVisuals();
   }
@@ -120,6 +119,7 @@ class ZoomCameraContainer extends BaseEventContainer
     var index:Int = zoomCameraMode.selectedIndex;
     var value:String = 'stage';
     if (index == 1) value = 'direct';
+    if (!isUserChoiceChange(zoomCameraMode, value)) return;
 
     setOnAll('mode', value);
     updateCameraPreview();

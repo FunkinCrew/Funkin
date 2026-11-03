@@ -177,7 +177,6 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
         quietly(stepper, () -> {});
         var inner:Null<TextField> = stepper.findComponent('value', TextField);
         if (inner != null) quietly(inner, () -> inner.text = MIXED_TEXT);
-        loadedNumbers.set(stepper, Math.NaN);
       }
       else if (Std.isOfType(component, DropDown))
       {
@@ -194,6 +193,7 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
           checkbox.selected = false;
           checkbox.text = '${checkboxLabels.get(checkbox)} $MIXED_TEXT';
         });
+        loadedBools.set(checkbox, false);
       }
       else if (Std.isOfType(component, TextField))
       {
@@ -368,9 +368,109 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
   function isUserNumberChange(field:Component, value:Float):Bool
   {
     if (loadingNumber) return false;
-    if (loadedNumbers.exists(field) && loadedNumbers.get(field) == value) return false;
+    if (loadedNumbers.exists(field) && loadedNumbers.get(field) == value && !(mixedFields.contains(field) && hasFocusWithin(field))) return false;
     loadedNumbers.set(field, value);
     return true;
+  }
+
+  /**
+   * What each checkbox was last set to, by loading or by the user.
+   */
+  var loadedBools:Map<Component, Bool> = new Map();
+
+  /**
+   * Whether a checkbox change came from the user, and not from a late change event of loading it.
+   */
+  function isUserBoolChange(field:Component, value:Bool):Bool
+  {
+    if (loadedBools.exists(field) && loadedBools.get(field) == value) return false;
+    loadedBools.set(field, value);
+    return true;
+  }
+
+  /**
+   * Change events this soon after loading a field come from the loading itself, HaxeUI can send them a frame late.
+   */
+  static inline var LOAD_SETTLE_MS:Float = 150;
+
+  var easeLoadTicks:Float = -1;
+
+  /**
+   * What each dropdown was last set to, by loading or by the user.
+   */
+  var loadedChoices:Map<Component, Dynamic> = new Map();
+
+  var choiceLoadTicks:Float = -1;
+
+  /**
+   * Remembers what a dropdown was loaded with. Call right after selecting the loaded value.
+   */
+  function rememberChoice(field:Component, value:Dynamic):Void
+  {
+    loadedChoices.set(field, value);
+    choiceLoadTicks = FlxG.game.ticks;
+  }
+
+  /**
+   * Whether a dropdown change came from the user.
+   */
+  function isUserChoiceChange(field:Component, value:Dynamic):Bool
+  {
+    if (loadedChoices.exists(field) && loadedChoices.get(field) == value && FlxG.game.ticks - choiceLoadTicks < LOAD_SETTLE_MS) return false;
+    loadedChoices.set(field, value);
+    return true;
+  }
+  var loadedEase:Dynamic = null;
+  var loadedEaseDir:Dynamic = null;
+
+  /**
+   * Remembers the primary event's ease, call after pointing the ease picker at it.
+   */
+  function rememberEase():Void
+  {
+    easeLoadTicks = FlxG.game.ticks;
+    loadedEase = primaryEvent?.getDynamic('ease');
+    loadedEaseDir = primaryEvent?.getDynamic('easeDir');
+  }
+
+  /**
+   * The ease picker only edits the primary event, this passes the parts that changed on to the rest.
+   */
+  function onEasePreviewChange():Void
+  {
+    var primary:Null<SongEventData> = primaryEvent;
+    if (primary == null) return;
+
+    if (FlxG.game.ticks - easeLoadTicks < LOAD_SETTLE_MS)
+    {
+      TimelineUtil.setEventField(primary, 'ease', loadedEase);
+      TimelineUtil.setEventField(primary, 'easeDir', loadedEaseDir);
+      return;
+    }
+
+    var ease:Dynamic = primary.getDynamic('ease');
+    var easeDir:Dynamic = primary.getDynamic('easeDir');
+    if (ease != loadedEase) copyFromPrimary('ease');
+    if (easeDir != loadedEaseDir) copyFromPrimary('easeDir');
+    loadedEase = ease;
+    loadedEaseDir = easeDir;
+
+    updateCameraPreview();
+    updateBlockVisuals();
+  }
+
+  /**
+   * Whether the focused HaxeUI component is this one or inside it.
+   */
+  static function hasFocusWithin(field:Component):Bool
+  {
+    var focused:Null<Component> = cast haxe.ui.focus.FocusManager.instance.focus;
+    while (focused != null)
+    {
+      if (focused == field) return true;
+      focused = focused.parentComponent;
+    }
+    return false;
   }
 
   /**
@@ -435,6 +535,7 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
     markShared(field, allMatch(fieldName, defaultValue));
     final value:Bool = selected.getBool(fieldName) ?? defaultValue;
     quietly(field, () -> field.selected = value);
+    loadedBools.set(field, value);
   }
 
   /**
@@ -447,6 +548,7 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
     field.registerEvent(UIEvent.CHANGE, function(_:UIEvent):Void
     {
       if (primaryEvent == null || field.disabled) return;
+      if (!isUserBoolChange(field, field.selected)) return;
       restoreMixedLabel(field);
       setOnAll(fieldName, field.selected);
       updateCameraPreview();

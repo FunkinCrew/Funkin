@@ -117,6 +117,7 @@ class SharedPropertiesContainer extends BaseEventContainer
     controls = [];
     loadedNumbers.clear();
     loadedTexts.clear();
+    loadedBools.clear();
     checkboxLabels.clear();
 
     if (fields.length == 0)
@@ -174,6 +175,7 @@ class SharedPropertiesContainer extends BaseEventContainer
         checkbox.registerEvent(UIEvent.CHANGE, function(_:UIEvent):Void
         {
           if (primaryEvent == null) return;
+          if (!isUserBoolChange(checkbox, checkbox.selected)) return;
           restoreMixedLabel(checkbox);
           setOnAll(field.name, checkbox.selected);
           afterEdit(field.name);
@@ -189,6 +191,7 @@ class SharedPropertiesContainer extends BaseEventContainer
         dropdown.registerEvent(UIEvent.CHANGE, function(_:UIEvent):Void
         {
           if (primaryEvent == null || dropdown.selectedItem == null) return;
+          if (!isUserChoiceChange(dropdown, dropdown.selectedItem.id)) return;
           setOnAll(field.name, dropdown.selectedItem.id);
           afterEdit(field.name);
         });
@@ -247,10 +250,12 @@ class SharedPropertiesContainer extends BaseEventContainer
       case BOOL:
         var checkbox:CheckBox = cast control;
         quietly(checkbox, () -> checkbox.selected = value == true);
+        loadedBools.set(checkbox, value == true);
 
       case ENUM:
         var dropdown:DropDown = cast control;
         quietly(dropdown, () -> dropdown.selectItemBy(item -> item != null && item.id == value));
+        rememberChoice(dropdown, value);
 
       default:
         var text:TextField = cast control;

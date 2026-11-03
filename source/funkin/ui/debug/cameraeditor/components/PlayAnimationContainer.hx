@@ -49,9 +49,11 @@ class PlayAnimationContainer extends BaseEventContainer
 
     populateTargetDropdown(currentTarget);
     selectStringItem(playAnimationTarget, currentTarget);
+    rememberChoice(playAnimationTarget, currentTarget);
 
     populateAnimDropdown(currentTarget, currentAnim);
     selectStringItem(playAnimationAnim, currentAnim);
+    rememberChoice(playAnimationAnim, currentAnim);
 
     final targetShared:Bool = allMatch('target', PlayAnimationSongEvent.DEFAULT_TARGET);
     markShared(playAnimationTarget, targetShared);
@@ -79,6 +81,7 @@ class PlayAnimationContainer extends BaseEventContainer
     if (playAnimationTarget.selectedItem == null) return;
 
     final newTarget:String = Std.string(playAnimationTarget.selectedItem.id);
+    if (!isUserChoiceChange(playAnimationTarget, newTarget)) return;
     setOnAll('target', newTarget);
 
     final currentAnim:String = selected.getString('anim') ?? PlayAnimationSongEvent.DEFAULT_ANIM;
@@ -113,6 +116,7 @@ class PlayAnimationContainer extends BaseEventContainer
     if (playAnimationAnim.selectedItem == null) return;
 
     final newAnim:String = Std.string(playAnimationAnim.selectedItem.id);
+    if (!isUserChoiceChange(playAnimationAnim, newAnim)) return;
     setOnAll('anim', newAnim);
 
     updateCameraPreview();
