@@ -473,7 +473,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       if (calibrating) Preferences.globalOffset = savedOffset;
       #if !FEATURE_TOUCH_CONTROLS
       // mobile would play this twice
-      FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu'));
+      if (!destroying) FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu'));
       #end
     }
     else
