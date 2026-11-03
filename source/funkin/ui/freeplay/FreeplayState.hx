@@ -3529,7 +3529,7 @@ class FreeplayState extends MusicBeatSubState
   public static function build(?params:FreeplayStateParams):MusicBeatState
   {
     CUTOUT_WIDTH = FullScreenScaleMode.gameCutoutSize.x / 1.5;
-    var result:MainMenuState = new MainMenuState();
+    var result:MainMenuState = new MainMenuState(true);
 
     // Assets were already loaded by whoever called Transition.switchState (see buildAssetQuery).
     result.openSubState(new FreeplayState(params));
