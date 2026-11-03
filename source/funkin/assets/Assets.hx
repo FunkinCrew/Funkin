@@ -68,7 +68,7 @@ class Assets implements ConsoleClass
   /**
    * Perform initialization for internal asset management.
    */
-  @:access(funkin.assets.FunkinAssetCache, funkin.assets.FuunkinBitmapFrontend)
+  @:access(funkin.assets.FunkinAssetCache, funkin.assets.FunkinBitmapFrontend)
   public static function initialize():Void
   {
     if (initialized) return;
