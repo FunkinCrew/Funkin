@@ -150,6 +150,7 @@ class PasteItemsCommand implements ChartEditorCommand
 
     state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, addedNotes).concat(removedNotes);
     state.currentSongChartEventData = SongDataUtils.subtractEvents(state.currentSongChartEventData, addedEvents);
+    state.currentNoteSelection = [];
     state.currentEventSelection = [];
     var before:Null<Array<Float>> = subBeatsBefore;
     if (before != null)
