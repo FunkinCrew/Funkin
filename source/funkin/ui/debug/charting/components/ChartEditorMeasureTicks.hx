@@ -1,14 +1,11 @@
 package funkin.ui.debug.charting.components;
 
 #if FEATURE_CHART_EDITOR
-import flixel.addons.display.FlxTiledSprite;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import funkin.graphics.FunkinSprite;
-import openfl.display.BitmapData;
-import openfl.geom.Rectangle;
 
 /**
  * Handles the display of the measure ticks and numbers on the left side.
@@ -23,9 +20,9 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
   var chartEditorState:ChartEditorState;
 
   /**
-   * The measure ticks underneath the numbers.
+   * The backing strip underneath the numbers.
    */
-  var measureTicksSprite:FlxTiledSprite = new FlxTiledSprite(ChartEditorState.GRID_SIZE, ChartEditorState.GRID_SIZE * 16);
+  var measureTicksSprite:FunkinSprite = new FunkinSprite();
 
   /**
    * The numbers that display the current measure number.
@@ -33,10 +30,7 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
    */
   var measureNumbers:FlxTypedSpriteGroup<FlxText> = new FlxTypedSpriteGroup<FlxText>();
 
-  /**
-   * The horizontal bars over the grid at each measure tick.
-   */
-  var measureDividers:FlxTypedSpriteGroup<FlxSprite> = new FlxTypedSpriteGroup<FlxSprite>();
+  var ticksHeight:Float = ChartEditorState.GRID_SIZE * 16;
 
   /**
    * A map of the
@@ -63,7 +57,6 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
 
     add(measureTicksSprite);
     add(measureNumbers);
-    add(measureDividers);
 
     buildMeasureTicksSprite();
     updateMeasureNumbers(true);
@@ -75,7 +68,11 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
    */
   public function setHeight(height:Float):Void
   {
-    measureTicksSprite.height = height;
+    ticksHeight = height;
+    measureTicksSprite.setGraphicSize(ChartEditorState.GRID_SIZE, Math.max(1, height) + FlxG.height * 2);
+    measureTicksSprite.updateHitbox();
+    measureTicksSprite.y = this.y - FlxG.height;
+    updateMeasureNumbers(true);
   }
 
   public function updateTheme():Void
@@ -95,52 +92,10 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
       default:
         ChartEditorThemeHandler.MEASTURE_TICKS_BACKING_COLOR_LIGHT;
     };
-    var dividerColor:FlxColor = switch (chartEditorState.currentTheme)
-    {
-      case Light:
-        ChartEditorThemeHandler.GRID_MEASURE_DIVIDER_COLOR_LIGHT;
-      case Dark:
-        ChartEditorThemeHandler.GRID_MEASURE_DIVIDER_COLOR_DARK;
-      default:
-        ChartEditorThemeHandler.GRID_MEASURE_DIVIDER_COLOR_LIGHT;
-    };
-
-    // TODO: This does NOT account for time signature, and always assumes 4/4!
-    // Better to have the little lines not line up than be required to redraw the image every frame,
-    // but we need to fix this eventually.
-    var stepsPerMeasure:Int = Constants.STEPS_PER_BEAT * 4;
-
-    // Start the bitmap with the basic gray color.
-    var measureTickBitmap = new BitmapData(ChartEditorState.GRID_SIZE, ChartEditorState.GRID_SIZE * 16, true, backingColor);
-
-    // Draw the measure ticks at the top and bottom.
-    measureTickBitmap.fillRect(new Rectangle(0, 0, ChartEditorState.GRID_SIZE, ChartEditorThemeHandler.MEASURE_TICKS_MEASURE_WIDTH / 2), dividerColor);
-    var bottomTickY:Float = measureTickBitmap.height - (ChartEditorThemeHandler.MEASURE_TICKS_MEASURE_WIDTH / 2);
-    measureTickBitmap.fillRect(
-      new Rectangle(0, bottomTickY, ChartEditorState.GRID_SIZE, ChartEditorThemeHandler.MEASURE_TICKS_MEASURE_WIDTH / 2),
-      dividerColor
-    );
-
-    // Draw the beat ticks and dividers, and step ticks. No need for two separate loops thankfully.
-    for (i in 1...stepsPerMeasure)
-    {
-      if ((i % Constants.STEPS_PER_BEAT) == 0) // If we're on a beat, draw a beat tick and divider.
-      {
-        var beatTickY:Float = ChartEditorState.GRID_SIZE * i - (ChartEditorThemeHandler.MEASURE_TICKS_BEAT_WIDTH / 2);
-        var beatTickLength:Float = ChartEditorState.GRID_SIZE * 2 / 3;
-        measureTickBitmap.fillRect(new Rectangle(0, beatTickY, beatTickLength, ChartEditorThemeHandler.MEASURE_TICKS_BEAT_WIDTH), dividerColor);
-      }
-      else
-      {
-        // Draw a step tick.
-        var stepTickY:Float = ChartEditorState.GRID_SIZE * i - (ChartEditorThemeHandler.MEASURE_TICKS_STEP_WIDTH / 2);
-        var stepTickLength:Float = ChartEditorState.GRID_SIZE * 1 / 3;
-        measureTickBitmap.fillRect(new Rectangle(0, stepTickY, stepTickLength, ChartEditorThemeHandler.MEASURE_TICKS_STEP_WIDTH), dividerColor);
-      }
-    }
-
-    // Finally, set the sprite to use the image.
-    measureTicksSprite.loadGraphic(measureTickBitmap);
+    measureTicksSprite.makeSolidColor(2, 2, backingColor);
+    measureTicksSprite.setGraphicSize(ChartEditorState.GRID_SIZE, Math.max(1, ticksHeight) + FlxG.height * 2);
+    measureTicksSprite.updateHitbox();
+    measureTicksSprite.y = this.y - FlxG.height;
 
     // Destroy these so they get rebuilt with the right theme later.
     measureNumbers.forEach(function(measureNumber:FlxText)
@@ -148,18 +103,12 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
       measureNumber.destroy();
     });
     measureNumbers.clear();
-    // Destroy these so they get rebuilt with the right theme later.
-    measureDividers.forEach(function(measureDivider:FlxSprite)
-    {
-      measureDivider.destroy();
-    });
-    measureDividers.clear();
   }
 
   // The last measure number we updated the ticks on.
   var previousMeasure:Int = -1;
 
-  function updateMeasureNumbers(force:Bool = false):Void
+  public function updateMeasureNumbers(force:Bool = false):Void
   {
     if (chartEditorState == null || Conductor.instance == null) return;
 
@@ -176,14 +125,11 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
     {
       measureNumber.kill();
     });
-    measureDividers.forEachAlive(function(measureDivider:FlxSprite)
-    {
-      measureDivider.kill();
-    });
 
-    final ARBITRARY_LIMIT = 5;
+    // The maximum number of measures to render at once.
+    final MEASURE_LIMIT = 64;
 
-    for (i in 0...ARBITRARY_LIMIT)
+    for (i in 0...MEASURE_LIMIT)
     {
       // NOTE: i = 0 when rendering Measure 1 here.
       var targetMeasure:Int = currentMeasure + i - 1;
@@ -192,7 +138,7 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
       var measureTimeInMs:Float = Conductor.instance.getMeasureTimeInMs(targetMeasure);
 
       var measureTimeInSteps:Float = Conductor.instance.getTimeInSteps(measureTimeInMs);
-      var measureTimeInPixels:Float = measureTimeInSteps * ChartEditorState.GRID_SIZE;
+      var measureTimeInPixels:Float = measureTimeInSteps * ChartEditorState.STEP_HEIGHT;
 
       // If we've gone past the end of the song, we're done.
       if (measureTimeInPixels > chartEditorState.songLengthInPixels) break;
@@ -200,13 +146,12 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
       // Handle the case where the measure at the end of the song is too short to display a measure number.
       final MIN_MEASURE_HEIGHT:Float = 24; // The minimum height of a measure, in pixels, in order for a measure number to display.
       var shouldDisplayMeasureNumber:Bool = measureTimeInPixels + MIN_MEASURE_HEIGHT <= chartEditorState.songLengthInPixels;
-      var shouldDisplayMeasureDivider:Bool = true;
 
       var relativeMeasureTimeInPixels:Float = measureTimeInPixels + this.y;
 
-      final SCREEN_PADDING:Float = ChartEditorState.GRID_SIZE / 2;
+      final SCREEN_PADDING:Float = FlxG.height;
 
-      // Below the visible area, quit it.
+      // Far below the visible area, quit it.
       if (relativeMeasureTimeInPixels > FlxG.height + SCREEN_PADDING)
       {
         break;
@@ -226,15 +171,6 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
         measureNumber.y = relativeMeasureTimeInPixels + OFFSET;
         measureNumber.x = this.x;
       }
-
-      if (shouldDisplayMeasureDivider)
-      {
-        // Reuse an existing divider. If we need a new divider, create one with makeMeasureDivider().
-        final REVIVE:Bool = true;
-        var measureDivider = measureDividers.recycle(makeMeasureDivider, false, REVIVE);
-        measureDivider.y = relativeMeasureTimeInPixels - (ChartEditorThemeHandler.MEASURE_TICKS_MEASURE_WIDTH / 2);
-        measureDivider.x = this.x + (measureTicksSprite.width);
-      }
     }
   }
 
@@ -245,27 +181,6 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
     measureNumber.borderStyle = FlxTextBorderStyle.OUTLINE;
     measureNumber.borderColor = FlxColor.BLACK;
     return measureNumber;
-  }
-
-  function makeMeasureDivider():FlxSprite
-  {
-    var dividerColor:FlxColor = switch (chartEditorState.currentTheme)
-    {
-      case Light:
-        ChartEditorThemeHandler.GRID_MEASURE_DIVIDER_COLOR_LIGHT;
-      case Dark:
-        ChartEditorThemeHandler.GRID_MEASURE_DIVIDER_COLOR_DARK;
-      default:
-        ChartEditorThemeHandler.GRID_MEASURE_DIVIDER_COLOR_LIGHT;
-    };
-
-    var measureDivider = new FunkinSprite()
-      .makeSolidColor(
-        ChartEditorState.GRID_SIZE * ChartEditorThemeHandler.TOTAL_COLUMN_COUNT,
-        ChartEditorThemeHandler.MEASURE_TICKS_MEASURE_WIDTH,
-        dividerColor
-      );
-    return measureDivider;
   }
 }
 #end

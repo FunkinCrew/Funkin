@@ -12,7 +12,7 @@ class WaveformDataParser
   @:native('int8_min')
   static final INT8_MIN:Int = -128;
 
-  public static function interpretFlxSound(sound:Null<flixel.sound.FlxSound>):Null<WaveformData>
+  public static function interpretFlxSound(sound:Null<flixel.sound.FlxSound>, samplesPerPoint:Int = 256, mono:Bool = false):Null<WaveformData>
   {
     if (sound == null) return null;
 
@@ -26,19 +26,24 @@ class WaveformDataParser
       return null;
     }
 
-    return interpretAudioBuffer(soundBuffer);
+    return interpretAudioBuffer(soundBuffer, samplesPerPoint, mono);
   }
 
-  public static function interpretAudioBuffer(soundBuffer:lime.media.AudioBuffer):Null<WaveformData>
+  /**
+   * @param samplesPerPoint How many audio samples each data point covers.
+   * @param mono Merge every channel into one, which halves the memory for stereo audio.
+   */
+  public static function interpretAudioBuffer(soundBuffer:lime.media.AudioBuffer, samplesPerPoint:Int = 256, mono:Bool = false):Null<WaveformData>
   {
-    var channels = soundBuffer.channels;
+    var inputChannels = soundBuffer.channels;
+    var channels = mono ? 1 : inputChannels;
     var bitsPerSample = soundBuffer.bitsPerSample;
-    var samplesPerPoint:Int = 256; // I don't think we need to configure this.
 
     // TODO: Make this work better on HTML5.
     var soundData:lime.utils.Int16Array = cast soundBuffer.data;
 
-    var soundDataSampleCount:Int = Std.int(Math.ceil(soundData.length / channels / (bitsPerSample == 16 ? 2 : 1)));
+    // Lime decodes 16 bit audio into an Int16Array, so its length is already in samples and not bytes.
+    var soundDataSampleCount:Int = Std.int(Math.ceil(soundData.length / inputChannels));
     var outputPointCount:Int = Std.int(Math.ceil(soundDataSampleCount / samplesPerPoint));
 
     // Pre-allocate Vector with exact final size for better performance and memory efficiency
@@ -64,12 +69,13 @@ class WaveformDataParser
       // Process all samples in this range
       for (sampleIndex in rangeStart...rangeEnd)
       {
-        for (channelIndex in 0...channels)
+        for (channelIndex in 0...inputChannels)
         {
-          var sampleValue:Int = soundData[sampleIndex * channels + channelIndex];
+          var sampleValue:Int = soundData[sampleIndex * inputChannels + channelIndex];
+          var outputChannel:Int = mono ? 0 : channelIndex;
 
-          if (sampleValue < minValues[channelIndex]) minValues[channelIndex] = sampleValue;
-          if (sampleValue > maxValues[channelIndex]) maxValues[channelIndex] = sampleValue;
+          if (sampleValue < minValues[outputChannel]) minValues[outputChannel] = sampleValue;
+          if (sampleValue > maxValues[outputChannel]) maxValues[outputChannel] = sampleValue;
         }
       }
 
@@ -98,7 +104,7 @@ class WaveformDataParser
     var parser = new json2object.JsonParser<WaveformData>({
       ignoreUnknownVariables: false
     });
-    trace('[WAVEFORM] Parsing waveform data: ${contents}');
+    trace('[WAVEFORM] Parsing waveform data: ${fileName ?? 'unknown'} (${contents.length} characters)');
     parser.fromJson(contents, fileName);
 
     if (parser.errors.length > 0)

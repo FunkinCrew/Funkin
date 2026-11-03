@@ -129,7 +129,7 @@ class ChartEditorCommentPanel extends Panel
 
     var songTimeMs:Float = commentData.time;
     var songTimeSteps:Float = Conductor.instance.getTimeInSteps(songTimeMs);
-    var songTimePixels:Float = songTimeSteps * ChartEditorState.GRID_SIZE;
+    var songTimePixels:Float = songTimeSteps * ChartEditorState.STEP_HEIGHT;
 
     var relativeSongPixels:Float = chartEditorState.renderedNotes.y;
 

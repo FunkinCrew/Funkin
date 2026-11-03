@@ -4,6 +4,9 @@ package funkin.ui.debug.charting.handlers;
 import flixel.system.FlxAssets.FlxSoundAsset;
 import funkin.audio.VoicesGroup;
 import funkin.audio.FunkinSound;
+import funkin.audio.waveform.WaveformData;
+import funkin.audio.waveform.WaveformDataParser;
+import funkin.ui.debug.charting.components.ChartEditorWaveformSprite;
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.util.FileUtil;
 import funkin.util.assets.SoundUtil;
@@ -54,6 +57,7 @@ class ChartEditorAudioHandler
     var trackId:String = '${charId}${instId == '' ? '' : '-${instId}'}';
     if (wipeFirst) wipeVocalData(state);
     state.audioVocalTrackData.set(trackId, bytes);
+    state.audioWaveformDataCache.remove(trackId);
     return true;
   }
 
@@ -186,6 +190,7 @@ class ChartEditorAudioHandler
     if (state.audioVocalTrackGroup == null) state.audioVocalTrackGroup = new VoicesGroup();
 
     var vocalTracks:Array<FunkinSound> = [];
+    var firstVocalTrackKey:Null<String> = null;
 
     if (setUpLegacyVocals)
     {
@@ -195,6 +200,7 @@ class ChartEditorAudioHandler
       if (vocalTrack != null)
       {
         vocalTracks.push(vocalTrack);
+        firstVocalTrackKey = '';
       }
     }
 
@@ -223,10 +229,13 @@ class ChartEditorAudioHandler
       }
 
       vocalTracks.push(vocalTrack);
+      if (firstVocalTrackKey == null) firstVocalTrackKey = trackKey;
     }
 
     var firstVocalTrack:Null<FunkinSound> = vocalTracks[0];
     if (firstVocalTrack == null) return false;
+
+    var waveformData:Null<WaveformData> = getCachedWaveformData(state, firstVocalTrackKey ?? '', firstVocalTrack);
 
     if (totalVoicesCount < 2 && vocalTracks.length != totalVoicesCount)
     {
@@ -242,12 +251,10 @@ class ChartEditorAudioHandler
           state.audioVocalTrackGroup.addPlayerVoice(vocalTrack);
         }
 
-        var waveformData:Null<WaveformData> = firstVocalTrack.waveformData;
-
         if (waveformData != null)
         {
-          var waveformSprite:WaveformSprite = initWaveformSprite(waveformData, state, charType);
-          state.audioWaveforms.add(waveformSprite);
+          state.audioWaveforms.add(new ChartEditorWaveformSprite(state, waveformData, charType));
+          state.waveformsDirty = true;
         }
         else
         {
@@ -263,12 +270,10 @@ class ChartEditorAudioHandler
           state.audioVocalTrackGroup.addOpponentVoice(vocalTrack);
         }
 
-        var waveformData:Null<WaveformData> = firstVocalTrack.waveformData;
-
         if (waveformData != null)
         {
-          var waveformSprite:WaveformSprite = initWaveformSprite(waveformData, state, charType);
-          state.audioWaveforms.add(waveformSprite);
+          state.audioWaveforms.add(new ChartEditorWaveformSprite(state, waveformData, charType));
+          state.waveformsDirty = true;
         }
         else
         {
@@ -286,18 +291,23 @@ class ChartEditorAudioHandler
     return false;
   }
 
-  // initializes a waveform sprite with buncho non-charType specific things
-
-  static function initWaveformSprite(waveformData:WaveformData, state:ChartEditorState, charType:CharacterType):WaveformSprite
+  /**
+   * Parsing waveform data reads every sample of the track, so keep it per track key until the track's audio is replaced.
+   */
+  static function getCachedWaveformData(state:ChartEditorState, trackKey:String, track:FunkinSound):Null<WaveformData>
   {
-    var waveformSprite:WaveformSprite = new WaveformSprite(waveformData, VERTICAL, FlxColor.WHITE);
-    waveformSprite.y = Math.max(state.gridTiledSprite?.y ?? 0.0, ChartEditorState.GRID_INITIAL_Y_POS - ChartEditorState.GRID_TOP_PAD);
-    waveformSprite.height = (ChartEditorState.GRID_SIZE) * 16;
-    waveformSprite.width = (ChartEditorState.GRID_SIZE) * 2;
-    waveformSprite.time = 0;
-    waveformSprite.duration = Conductor.instance.getStepTimeInMs(16) * 0.001;
-    waveformSprite.iconId = charType;
-    return waveformSprite;
+    var cached:Null<WaveformData> = state.audioWaveformDataCache.get(trackKey);
+    if (cached != null) return cached;
+
+    // Parse the waveform data for the given track if it hasn't been cached already.
+    var waveformData:Null<WaveformData> = WaveformDataParser.interpretFlxSound(track, 16, true);
+    if (waveformData == null)
+    {
+      trace(' WARNING '.warning() + ' Failed to parse waveform data for vocal track.');
+      return null;
+    }
+    state.audioWaveformDataCache.set(trackKey, waveformData);
+    return waveformData;
   }
 
   public static function stopExistingVocals(state:ChartEditorState):Void
@@ -305,6 +315,10 @@ class ChartEditorAudioHandler
     state.audioVocalTrackGroup.clear();
     if (state.audioWaveforms != null)
     {
+      for (waveform in state.audioWaveforms.members)
+      {
+        if (waveform != null) waveform.destroy();
+      }
       state.audioWaveforms.clear();
     }
   }
@@ -372,6 +386,7 @@ class ChartEditorAudioHandler
   public static function wipeVocalData(state:ChartEditorState):Void
   {
     state.audioVocalTrackData.clear();
+    state.audioWaveformDataCache.clear();
     stopExistingVocals(state);
   }
 }

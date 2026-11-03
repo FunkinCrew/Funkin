@@ -184,7 +184,7 @@ class ChartEditorNotePreview extends FlxSprite
     if (mustHit) noteX += NOTE_WIDTH * 4;
     if (dir == -1) noteX = NOTE_WIDTH * 8;
 
-    var strumTimeInPixels:Int = Std.int(Conductor.instance.getTimeInSteps(strumTimeInMs) * ChartEditorState.GRID_SIZE);
+    var strumTimeInPixels:Int = Std.int(Conductor.instance.getTimeInSteps(strumTimeInMs) * ChartEditorState.STEP_HEIGHT);
 
     var noteY:Float = FlxMath.remapToRange(strumTimeInPixels, 0, songLengthInPixels, 0, previewHeight);
     drawRect(noteX, noteY, NOTE_WIDTH, noteHeight, color);

@@ -175,7 +175,7 @@ class ChartEditorEventSprite extends FlxSprite
     this.x = (ChartEditorState.STRUMLINE_SIZE * 2 + 1 - 1) * ChartEditorState.GRID_SIZE;
 
     var stepTime:Float = (overrideStepTime != null) ? overrideStepTime : eventData.getStepTime();
-    this.y = stepTime * ChartEditorState.GRID_SIZE;
+    this.y = stepTime * ChartEditorState.STEP_HEIGHT - ChartEditorState.GRID_SIZE / 2;
 
     if (origin != null)
     {
@@ -234,7 +234,8 @@ class ChartEditorEventSprite extends FlxSprite
     if (this.eventData == null)
     {
       // Disable the tooltip.
-      ToolTipManager.instance.unregisterTooltipRegion(this.tooltip);
+      if (tooltipRegistered) ToolTipManager.instance.unregisterTooltipRegion(this.tooltip);
+      tooltipRegistered = false;
     }
     else
     {
@@ -244,10 +245,12 @@ class ChartEditorEventSprite extends FlxSprite
       this.tooltip.width = this.width;
       this.tooltip.height = this.height;
 
-      // Enable the tooltip.
-      ToolTipManager.instance.registerTooltipRegion(this.tooltip);
+      if (!tooltipRegistered) ToolTipManager.instance.registerTooltipRegion(this.tooltip);
+      tooltipRegistered = true;
     }
   }
+
+  var tooltipRegistered:Bool = false;
 
   override public function kill()
   {
@@ -256,7 +259,8 @@ class ChartEditorEventSprite extends FlxSprite
     overlappingEventDatas = null;
 
     // Remove the tooltip to prevent recently deleted events from showing a tooltip.
-    ToolTipManager.instance.unregisterTooltipRegion(this.tooltip);
+    if (tooltipRegistered) ToolTipManager.instance.unregisterTooltipRegion(this.tooltip);
+    tooltipRegistered = false;
   }
 
   /**
@@ -279,7 +283,7 @@ class ChartEditorEventSprite extends FlxSprite
   public static function wouldEventBeVisible(viewAreaBottom:Float, viewAreaTop:Float, eventData:SongEventData, ?origin:FlxObject):Bool
   {
     var noteHeight:Float = ChartEditorState.GRID_SIZE;
-    var notePosY:Float = eventData.getStepTime() * ChartEditorState.GRID_SIZE;
+    var notePosY:Float = eventData.getStepTime() * ChartEditorState.STEP_HEIGHT - noteHeight / 2;
     if (origin != null) notePosY += origin.y;
 
     // True if the note is above the view area.

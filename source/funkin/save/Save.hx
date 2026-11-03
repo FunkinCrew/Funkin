@@ -201,8 +201,9 @@ class Save implements ConsoleClass implements ISerializable
         // Reasonable defaults.
         previousFiles: [],
         noteQuant: 3,
-        chartEditorLiveInputStyle: ChartEditorLiveInputStyle.None,
-        chartEditorWaveformPos: ChartEditorWaveformPos.Adjacent,
+        zoomLevel: 6,
+        chartEditorLiveInputStyle: ChartEditorLiveInputStyle.NumberKeys,
+        chartEditorWaveformPos: ChartEditorWaveformPos.Overlay,
         theme: ChartEditorTheme.Light,
         playtestStartTime: false,
         playtestAudioSettings: false,
@@ -306,9 +307,11 @@ class Save implements ConsoleClass implements ISerializable
   public var chartEditorHasBackup:SaveProperty<Bool>;
   @:saveProperty(data.optionsChartEditor.noteQuant, 3)
   public var chartEditorNoteQuant:SaveProperty<Int>;
-  @:saveProperty(data.optionsChartEditor.chartEditorLiveInputStyle, ChartEditorLiveInputStyle.None)
+  @:saveProperty(data.optionsChartEditor.zoomLevel, 6)
+  public var chartEditorZoomLevel:SaveProperty<Int>;
+  @:saveProperty(data.optionsChartEditor.chartEditorLiveInputStyle, ChartEditorLiveInputStyle.NumberKeys)
   public var chartEditorLiveInputStyle:SaveProperty<ChartEditorLiveInputStyle>;
-  @:saveProperty(data.optionsChartEditor.chartEditorWaveformPos, ChartEditorWaveformPos.Adjacent)
+  @:saveProperty(data.optionsChartEditor.chartEditorWaveformPos, ChartEditorWaveformPos.Overlay)
   public var chartEditorWaveformPos:SaveProperty<ChartEditorWaveformPos>;
   @:saveProperty(data.optionsChartEditor.downscroll, false)
   public var chartEditorDownscroll:SaveProperty<Bool>;
@@ -1703,14 +1706,20 @@ typedef SaveDataChartEditorOptions =
   var ?noteQuant:Int;
 
   /**
+   * Grid zoom level index in the Chart Editor.
+   * @default `6`
+   */
+  var ?zoomLevel:Int;
+
+  /**
    * Live input style in the Chart Editor.
-   * @default `ChartEditorLiveInputStyle.None`
+   * @default `ChartEditorLiveInputStyle.NumberKeys`
    */
   var ?chartEditorLiveInputStyle:ChartEditorLiveInputStyle;
 
   /**
    * Where the waveform is placed in the Chart Editor.
-   * @default `ChartEditorWaveformPos.Adjacent`
+   * @default `ChartEditorWaveformPos.Overlay`
    */
   var ?chartEditorWaveformPos:ChartEditorWaveformPos;
 

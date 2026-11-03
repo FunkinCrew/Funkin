@@ -1,7 +1,6 @@
 package funkin.ui.debug.charting.handlers;
 
 #if FEATURE_CHART_EDITOR
-import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.display.FlxSliceSprite;
 import flixel.FlxSprite;
 import flixel.math.FlxRect;
@@ -21,8 +20,8 @@ class ChartEditorThemeHandler
   // TODO: There's probably a better system of organization for these colors.
   // An enum of typedefs or something?
   // ================================
-  static final BACKGROUND_COLOR_LIGHT:FlxColor = 0xFF673AB7;
-  static final BACKGROUND_COLOR_DARK:FlxColor = 0xFF361E60;
+  static final BACKGROUND_COLOR_LIGHT:FlxColor = 0xFF4A3D66;
+  static final BACKGROUND_COLOR_DARK:FlxColor = 0xFF241C36;
   // Color 1 of the grid pattern. Alternates with Color 2.
   public static final GRID_COLOR_1_LIGHT:FlxColor = 0xFFE7E6E6;
   public static final GRID_COLOR_1_DARK:FlxColor = 0xFF181919;
@@ -40,8 +39,8 @@ class ChartEditorThemeHandler
   public static final GRID_MEASURE_DIVIDER_COLOR_LIGHT:FlxColor = 0xFF111111;
   public static final GRID_MEASURE_DIVIDER_COLOR_DARK:FlxColor = 0xFFC4C4C4;
   static final GRID_MEASURE_DIVIDER_WIDTH:Float = ChartEditorState.GRID_SELECTION_BORDER_WIDTH;
-  public static final MEASTURE_TICKS_BACKING_COLOR_LIGHT:FlxColor = 0xFFC1C1C1;
-  public static final MEASTURE_TICKS_BACKING_COLOR_DARK:FlxColor = 0xFF484848;
+  public static final MEASTURE_TICKS_BACKING_COLOR_LIGHT:FlxColor = 0xFFD4D4DA;
+  public static final MEASTURE_TICKS_BACKING_COLOR_DARK:FlxColor = 0xFF060608;
   // Border on the square highlighting selected notes.
   static final SELECTION_SQUARE_BORDER_COLOR_LIGHT:FlxColor = 0xFF339933;
   static final SELECTION_SQUARE_BORDER_COLOR_DARK:FlxColor = 0xFF339933;
@@ -69,6 +68,49 @@ class ChartEditorThemeHandler
   static final NOTE_PREVIEW_VIEWPORT_FILL_COLOR_LIGHT = 0x80F8A657;
   static final NOTE_PREVIEW_VIEWPORT_FILL_COLOR_DARK = 0x80F8A657;
   public static final TOTAL_COLUMN_COUNT:Int = ChartEditorState.STRUMLINE_SIZE * 2 + 1;
+
+  /**
+   * Height of the grid backing bitmap.
+   */
+  public static final BACKING_PIXELS:Int = 2;
+
+  // Backing behind the notes and waveforms.
+  static final GRID_BACKING_COLOR_LIGHT:FlxColor = 0xFFE4E4E8;
+  static final GRID_BACKING_COLOR_DARK:FlxColor = 0xFF060608;
+  public static final GRID_BACKING_ALPHA:Float = 0.92;
+
+  // Faint vertical divider between the opponent, player and event columns.
+  static final GRID_SIDE_DIVIDER_COLOR_LIGHT:FlxColor = 0xFFC2C2CA;
+  static final GRID_SIDE_DIVIDER_COLOR_DARK:FlxColor = 0xFF2A2A33;
+  static final GRID_SIDE_DIVIDER_WIDTH:Int = 2;
+
+  // Thin horizontal lines on the grid.
+  static final GRID_LINE_COLOR_LIGHT:FlxColor = 0xFF18181E;
+  static final GRID_LINE_COLOR_DARK:FlxColor = 0xFFD0D0D8;
+
+  public static final GRID_MEASURE_LINE_WIDTH:Int = 2;
+  public static final GRID_MEASURE_LINE_ALPHA:Float = 0.75;
+  public static final GRID_BEAT_LINE_WIDTH:Int = 1;
+  public static final GRID_BEAT_LINE_ALPHA:Float = 0.25;
+
+  // Solid waveform drawn across each side's lanes.
+  static final WAVEFORM_OVERLAY_COLOR_LIGHT:FlxColor = 0xFF5C5C66;
+  static final WAVEFORM_OVERLAY_COLOR_DARK:FlxColor = 0xFF4A4A56;
+
+  public static function getGridLineColor(theme:ChartEditorTheme):FlxColor
+  {
+    return (theme == Dark) ? GRID_LINE_COLOR_DARK : GRID_LINE_COLOR_LIGHT;
+  }
+
+  public static function getWaveformOverlayColor(theme:ChartEditorTheme):FlxColor
+  {
+    return (theme == Dark) ? WAVEFORM_OVERLAY_COLOR_DARK : WAVEFORM_OVERLAY_COLOR_LIGHT;
+  }
+
+  /**
+   * Beat lines closer together than this many pixels are not drawn.
+   */
+  public static final GRID_MIN_BEAT_PIXELS:Float = 8;
 
   /**
    * When the theme is changed, this function updates all of the UI elements to match the new theme.
@@ -103,129 +145,33 @@ class ChartEditorThemeHandler
   }
 
   /**
-   * Builds the checkerboard background image of the chart editor, and adds dividing lines to it.
+   * Builds the backing image of the chart editor grid.
    * @param state The ChartEditorState to update.
    */
   static function updateGridBitmap(state:ChartEditorState):Void
   {
-    var gridColor1:FlxColor = switch (state.currentTheme)
+    var backingColor:FlxColor = switch (state.currentTheme)
     {
-      case Light:
-        GRID_COLOR_1_LIGHT;
       case Dark:
-        GRID_COLOR_1_DARK;
+        GRID_BACKING_COLOR_DARK;
       default:
-        GRID_COLOR_1_LIGHT;
+        GRID_BACKING_COLOR_LIGHT;
     };
 
-    var gridColor2:FlxColor = switch (state.currentTheme)
-    {
-      case Light:
-        GRID_COLOR_2_LIGHT;
-      case Dark:
-        GRID_COLOR_2_DARK;
-      default:
-        GRID_COLOR_2_LIGHT;
-    };
+    // A thin strip, stretched over the visible part of the grid.
+    var gridWidth:Int = ChartEditorState.GRID_SIZE * TOTAL_COLUMN_COUNT;
+    state.gridBitmap = new BitmapData(gridWidth, BACKING_PIXELS, true, backingColor);
 
-    var dividerColor:FlxColor = switch (state.currentTheme)
-    {
-      case Light:
-        GRID_STRUMLINE_DIVIDER_COLOR_LIGHT;
-      case Dark:
-        GRID_STRUMLINE_DIVIDER_COLOR_DARK;
-      default:
-        GRID_STRUMLINE_DIVIDER_COLOR_LIGHT;
-    }
-
-    // Draw the base grid.
-
-    // 2 * (Strumline Size) + 1 grid squares wide, by (4 * quarter notes per measure) grid squares tall.
-    // This gets reused to fill the screen.
-    var gridWidth:Int = Std.int(ChartEditorState.GRID_SIZE * TOTAL_COLUMN_COUNT);
-    var gridHeight:Int = Std.int(ChartEditorState.GRID_SIZE * Conductor.instance.stepsPerMeasure);
-    state.gridBitmap = FlxGridOverlay.createGrid(ChartEditorState.GRID_SIZE, ChartEditorState.GRID_SIZE, gridWidth, gridHeight, true, gridColor1, gridColor2);
-
-    // Selection borders
-    var selectionBorderColor:FlxColor = switch (state.currentTheme)
-    {
-      case Light:
-        GRID_COLOR_3_LIGHT;
-      case Dark:
-        GRID_COLOR_3_DARK;
-      default:
-        GRID_COLOR_3_LIGHT;
-    };
-
-    // Selection border at top.
-    state.gridBitmap.fillRect(
-      new Rectangle(0, -(ChartEditorState.GRID_SELECTION_BORDER_WIDTH / 2), state.gridBitmap.width, ChartEditorState.GRID_SELECTION_BORDER_WIDTH),
-      selectionBorderColor
-    );
-
-    // Selection borders horizontally along the middle.
-    for (i in 1...(Conductor.instance.stepsPerMeasure))
-    {
-      state.gridBitmap.fillRect(
-        new Rectangle(
-          0,
-          (ChartEditorState.GRID_SIZE * i) - (ChartEditorState.GRID_SELECTION_BORDER_WIDTH / 2),
-          state.gridBitmap.width,
-          ChartEditorState.GRID_SELECTION_BORDER_WIDTH
-        ),
-        selectionBorderColor
-      );
-    }
-
-    // Selection border at bottom.
-    state.gridBitmap.fillRect(
-      new Rectangle(
-        0,
-        state.gridBitmap.height - (ChartEditorState.GRID_SELECTION_BORDER_WIDTH / 2),
-        state.gridBitmap.width,
-        ChartEditorState.GRID_SELECTION_BORDER_WIDTH
-      ),
-      selectionBorderColor
-    );
-
-    // Selection border at far left.
-    state.gridBitmap.fillRect(
-      new Rectangle(-(ChartEditorState.GRID_SELECTION_BORDER_WIDTH / 2), 0, ChartEditorState.GRID_SELECTION_BORDER_WIDTH, state.gridBitmap.height),
-      selectionBorderColor
-    );
-
-    // Selection borders vertically along the middle.
     for (i in 1...TOTAL_COLUMN_COUNT)
     {
-      var isStrumlineColumn:Bool = (i % ChartEditorState.STRUMLINE_SIZE == 0) && (i > 0);
-
+      if (i % ChartEditorState.STRUMLINE_SIZE != 0) continue;
       state.gridBitmap.fillRect(
-        new Rectangle(
-          (ChartEditorState.GRID_SIZE * i) - (ChartEditorState.GRID_SELECTION_BORDER_WIDTH / 2),
-          0,
-          ChartEditorState.GRID_SELECTION_BORDER_WIDTH,
-          state.gridBitmap.height
-        ),
-        isStrumlineColumn ? dividerColor : selectionBorderColor
+        new Rectangle(ChartEditorState.GRID_SIZE * i - GRID_SIDE_DIVIDER_WIDTH / 2, 0, GRID_SIDE_DIVIDER_WIDTH, BACKING_PIXELS),
+        (state.currentTheme == Dark) ? GRID_SIDE_DIVIDER_COLOR_DARK : GRID_SIDE_DIVIDER_COLOR_LIGHT
       );
     }
 
-    // Selection border at far right.
-    state.gridBitmap.fillRect(
-      new Rectangle(
-        state.gridBitmap.width - (ChartEditorState.GRID_SELECTION_BORDER_WIDTH / 2),
-        0,
-        ChartEditorState.GRID_SELECTION_BORDER_WIDTH,
-        state.gridBitmap.height
-      ),
-      selectionBorderColor
-    );
-
-    if (state.gridTiledSprite != null)
-    {
-      state.gridTiledSprite.loadGraphic(state.gridBitmap);
-    }
-    // Else, gridTiledSprite will be built later.
+    state.gridLines?.updateTheme();
   }
 
   /**

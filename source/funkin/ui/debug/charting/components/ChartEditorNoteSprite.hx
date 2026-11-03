@@ -209,10 +209,7 @@ class ChartEditorNoteSprite extends FlxSprite
     // Notes far in the song will start far down, but the group they belong to will have a high negative offset.
     // noteData.getStepTime() returns a calculated value which accounts for BPM changes
     var stepTime:Float = (overrideStepTime != null) ? overrideStepTime : noteData.getStepTime();
-    if (stepTime >= 0)
-    {
-      this.y = stepTime * ChartEditorState.GRID_SIZE;
-    }
+    if (stepTime >= 0) this.y = stepTime * ChartEditorState.STEP_HEIGHT - ChartEditorState.GRID_SIZE / 2;
 
     if (origin != null)
     {
@@ -240,20 +237,24 @@ class ChartEditorNoteSprite extends FlxSprite
     if (this.noteData == null || (this.tooltip.tipData?.text ?? "").length == 0)
     {
       // Disable the tooltip.
-      ToolTipManager.instance.unregisterTooltipRegion(this.tooltip);
+      if (tooltipRegistered) ToolTipManager.instance.unregisterTooltipRegion(this.tooltip);
+      tooltipRegistered = false;
     }
     else
     {
-      // Update the position.
+      // Update the position. The manager keeps a reference, so this moves an already registered region too.
       this.tooltip.left = this.x;
       this.tooltip.top = this.y;
       this.tooltip.width = this.width;
       this.tooltip.height = this.height;
 
-      // Enable the tooltip.
-      ToolTipManager.instance.registerTooltipRegion(this.tooltip);
+      // Registering searches every region, so only do it once instead of every frame.
+      if (!tooltipRegistered) ToolTipManager.instance.registerTooltipRegion(this.tooltip);
+      tooltipRegistered = true;
     }
   }
+
+  var tooltipRegistered:Bool = false;
 
   override public function draw():Void
   {
@@ -272,7 +273,8 @@ class ChartEditorNoteSprite extends FlxSprite
     super.kill();
 
     // Remove the tooltip to prevent recently deleted notes from showing a tooltip.
-    ToolTipManager.instance.unregisterTooltipRegion(this.tooltip);
+    if (tooltipRegistered) ToolTipManager.instance.unregisterTooltipRegion(this.tooltip);
+    tooltipRegistered = false;
   }
 
   function get_noteStyle():Null<String>
@@ -341,7 +343,7 @@ class ChartEditorNoteSprite extends FlxSprite
   {
     var noteHeight:Float = ChartEditorState.GRID_SIZE;
     var stepTime:Float = inline noteData.getStepTime();
-    var notePosY:Float = stepTime * ChartEditorState.GRID_SIZE;
+    var notePosY:Float = stepTime * ChartEditorState.STEP_HEIGHT - noteHeight / 2;
     if (origin != null) notePosY += origin.y;
 
     // True if the note is above the view area.

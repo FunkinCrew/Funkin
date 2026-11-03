@@ -102,7 +102,7 @@ class ChartEditorHoldNoteSprite extends SustainTrail
 
     zoom = 1.0;
     zoom *= noteStyle.fetchHoldNoteScale();
-    zoom *= 0.7;
+    zoom *= 0.9;
     zoom *= ChartEditorState.GRID_SIZE / Strumline.STRUMLINE_SIZE;
 
     graphicWidth = graphic.width / 8 * zoom; // amount of notes * 2
@@ -219,9 +219,9 @@ class ChartEditorHoldNoteSprite extends SustainTrail
    */
   public static function wouldHoldNoteBeVisible(viewAreaBottom:Float, viewAreaTop:Float, noteData:SongNoteData, ?origin:FlxObject):Bool
   {
-    var noteHeight:Float = noteData.getStepLength() * ChartEditorState.GRID_SIZE;
+    var noteHeight:Float = noteData.getStepLength() * ChartEditorState.STEP_HEIGHT;
     var stepTime:Float = inline noteData.getStepTime();
-    var notePosY:Float = stepTime * ChartEditorState.GRID_SIZE;
+    var notePosY:Float = stepTime * ChartEditorState.STEP_HEIGHT;
     if (origin != null) notePosY += origin.y;
 
     // True if the note is above the view area.
@@ -267,13 +267,11 @@ class ChartEditorHoldNoteSprite extends SustainTrail
     {
       // Add epsilon to fix rounding issues?
       // var roundedStepTime:Float = Math.floor((stepTime + 0.01) / noteSnapRatio) * noteSnapRatio;
-      this.y = stepTime * ChartEditorState.GRID_SIZE;
+      this.y = stepTime * ChartEditorState.STEP_HEIGHT;
     }
 
     this.x += ChartEditorState.GRID_SIZE / 2;
     this.x -= this.graphicWidth / 2;
-
-    this.y += ChartEditorState.GRID_SIZE / 2;
 
     if (origin != null)
     {
