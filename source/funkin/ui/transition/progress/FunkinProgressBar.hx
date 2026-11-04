@@ -66,7 +66,7 @@ class FunkinProgressBar extends FunkinSpriteGroup
     micStand = new FunkinSprite();
     character = new FunkinLoadingCharacter();
 
-    barGraphicPaths = "ui/loading/mic-stand";
+    barGraphicPaths = 'ui/loading/mic-stand';
     barGraphicOffset = [0, 0];
     barScale = 0.34;
 
@@ -238,7 +238,6 @@ class FunkinProgressBar extends FunkinSpriteGroup
         ignoreUnknownVariables: false
       });
       parser.fromJson(jsonString, path);
-      trace(parser.value);
       if (parser.errors.length > 0)
       {
         trace(' LOADING SCREEN '.bold().bg_orange() + ' Failed to parse character data! (asset path: $path)');

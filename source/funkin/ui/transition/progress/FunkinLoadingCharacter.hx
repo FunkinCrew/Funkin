@@ -46,15 +46,15 @@ class FunkinLoadingCharacter extends FunkinSprite
 
     if (this.graphic != null) FunkinAssetCache.instance.permaCacheFlxGraphic(graphicPath, this.graphic);
 
-    scale.set(data.charScale, data.charScale);
+    scale.set(data.scale, data.scale);
     updateHitbox();
 
-    this.flipX = data.charFlipX;
+    this.flipX = data.flipX;
 
-    this.setPosition(FlxG.width - (this.width + data.charOffsets[0]), FlxG.height - (this.height + data.charOffsets[1]));
+    this.setPosition(FlxG.width - (this.width + data.offsets[0]), FlxG.height - (this.height + data.offsets[1]));
     this.animation.addByPrefix(DEFAULT_ANIMATION, DEFAULT_ANIMATION_PREFIX, 24);
     this.animation.play(DEFAULT_ANIMATION);
 
-    this.antialiasing = data.charAntialiasing;
+    this.antialiasing = data.antialiasing;
   }
 }

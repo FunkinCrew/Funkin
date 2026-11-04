@@ -8,22 +8,26 @@ typedef LoadingCharacterData =
   /**
    * The character's offsets.
    */
-  var charOffsets:Array<Float>;
+  @:optional @:default([40, 105])
+  var offsets:Array<Float>;
 
   /**
    * The character's scale.
    */
-  var charScale:Float;
+  @:optional @:default(0.35)
+  var scale:Float;
 
   /**
    * The antialiasing of the character.
    */
-  var charAntialiasing:Bool;
+  @:optional @:default(true)
+  var antialiasing:Bool;
 
   /**
    * The possibility of flipping the character on the X axis.
    */
-  var charFlipX:Bool;
+  @:optional @:default(false)
+  var flipX:Bool;
 
   /**
    * The weight of the character.
@@ -34,20 +38,24 @@ typedef LoadingCharacterData =
   /**
    * The offset of the loading bar.
    */
+  @:optional @:default([0, 0])
   var barOffsets:Array<Float>;
 
   /**
    * The scale of the loading bar.
    */
+  @:optional @:default(0.34)
   var barScale:Float;
 
   /**
    * The antialiasing of the loading bar.
    */
+  @:optional @:default(true)
   var barAntialiasing:Bool;
 
   /**
    * The possibility of flipping the loading bar on the X axis.
    */
+  @:optional @:default(false)
   var barFlipX:Bool;
 }
