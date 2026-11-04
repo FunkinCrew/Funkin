@@ -1,12 +1,7 @@
 package funkin.ui.quickpanel;
 
-import flixel.math.FlxPoint;
-import flixel.FlxSprite;
 import funkin.graphics.FunkinSprite;
-import funkin.play.PlayState;
-import flixel.util.FlxTimer;
-import funkin.ui.quickpanel.QuickPanelGroup;
-import funkin.audio.FunkinSound;
+import funkin.ui.quickpanel.QuickPanelTypes;
 
 class QuickPanelPullTab extends FunkinSprite
 {
@@ -35,26 +30,26 @@ class QuickPanelPullTab extends FunkinSprite
     this.animation.play(name);
   }
 
-  public function press(state:PanelState)
+  public function press(state:PanelState):Void
   {
     switch (state)
     {
       case CLOSED:
         playAnimation('pressLeft');
       case OPENING:
-        // ???
+        // No press animation mid-drag.
       case OPEN:
         playAnimation('pressRight');
       default:
     }
   }
 
-  public function grab(state:PanelState)
+  public function grab(state:PanelState):Void
   {
     playAnimation('held');
   }
 
-  public function release(state:PanelState)
+  public function release(state:PanelState):Void
   {
     switch (state)
     {
@@ -65,7 +60,7 @@ class QuickPanelPullTab extends FunkinSprite
     }
   }
 
-  public function playIdle(state:PanelState)
+  public function playIdle(state:PanelState):Void
   {
     switch (state)
     {
@@ -81,11 +76,6 @@ class QuickPanelPullTab extends FunkinSprite
 
   function onAnimationFinished(name:String):Void
   {
-    switch (name)
-    {
-      case 'release':
-        playIdle(OPEN);
-      default:
-    }
+    if (name == 'release') playIdle(OPEN);
   }
 }

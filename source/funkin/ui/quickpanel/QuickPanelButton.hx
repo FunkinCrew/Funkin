@@ -1,15 +1,14 @@
 package funkin.ui.quickpanel;
 
 import flixel.FlxG;
-import flixel.FlxSprite;
-import flixel.group.FlxSpriteGroup;
 import flixel.text.FlxText;
-import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import funkin.ui.quickpanel.QuickPanelState;
 import funkin.group.FunkinGroup;
 import funkin.ui.quickpanel.QuickPanelGroup;
+import funkin.ui.quickpanel.QuickPanelState;
+import funkin.ui.quickpanel.QuickPanelTypes;
 import funkin.graphics.shaders.BoilShader;
 import funkin.graphics.FunkinSprite;
 import funkin.util.PropertyAnimator;
@@ -17,8 +16,7 @@ import funkin.audio.FunkinSound;
 import funkin.util.TouchUtil;
 
 /**
- * The interface for an item in the options menu.
- * Extended to provide specific input data types.
+ * One entry in the quick panel.
  */
 class QuickPanelButton extends FunkinSpriteGroup
 {
@@ -44,19 +42,11 @@ class QuickPanelButton extends FunkinSpriteGroup
 
   public var selected(default, set):Bool;
 
-  function set_selected(value:Bool):Bool
-  {
-    selected = value;
-    updateSelected();
-    return selected;
-  }
-
   /**
    * A hitbox for the button.
    */
   public var guide:FunkinSprite;
 
-  public var bg:FunkinSprite;
   public var buttonText:FlxText;
   public var icon:FunkinSprite;
   public var paScale:PropertyAnimator;
@@ -65,12 +55,22 @@ class QuickPanelButton extends FunkinSpriteGroup
   var ICON_SCALE_X:Float;
   var ICON_SCALE_Y:Float;
 
-  // for mobile, when you tap this button itll force select this index
+  /**
+   * This button's index in the panel.
+   */
   public var curIndex:Int = 0;
-  public var panelGroup:QuickPanelGroup;
 
+  /**
+   * Called when a touch that started on this button is released on it.
+   */
+  public var onTapped:Null<QuickPanelButton->Void> = null;
+
+  var touchHeld:Bool = false;
   var left:Bool = true;
-  // specifically cause i cant be bothered to make custom animations for disabled buttons
+
+  /**
+   * Disabled buttons are drawn at half opacity.
+   */
   var alphaMultiplier:Float = 0;
 
   public function repositionSide(_left:Bool = false)
@@ -140,155 +140,79 @@ class QuickPanelButton extends FunkinSpriteGroup
   }
 
   /**
-   * Sets up the animations for the fading and scale.
+   * Sets up the fade and scale animations.
    */
   public function setupAnims()
   {
     paFade = new PropertyAnimator(this);
 
     paFade.addAnimationByName('fade', 24);
-
-    paFade.addProperty('fade', 'localAlpha', [
-      1.0 * alphaMultiplier,
-      0.5 * alphaMultiplier,
-      0.2 * alphaMultiplier,
-      0.1 * alphaMultiplier,
-      0.1 * alphaMultiplier,
-      0.0 * alphaMultiplier
-    ]);
+    paFade.addProperty('fade', 'localAlpha', [for (a in [
+      1.0,
+      0.5,
+      0.2,
+      0.1,
+      0.1,
+      0.0
+    ]) a * alphaMultiplier]);
 
     paFade.addAnimationByName('press', 24);
-
     paFade.addProperty('press', 'localAlpha', [0.7 * alphaMultiplier]);
 
     paFade.addAnimationByName('release', 24);
-
     paFade.addProperty('release', 'localAlpha', [1.0 * alphaMultiplier]);
 
     paFade.setDefaultProperties();
 
     paScale = new PropertyAnimator(this);
-
-    paScale.addAnimationByName('bump', 30);
-
-    paScale.addProperty('bump', 'icon.localScale.x', [
-      ICON_SCALE_X + 0.05,
-      ICON_SCALE_X + 0.05,
-      ICON_SCALE_X + 0.02,
-      ICON_SCALE_X + 0.02,
-      ICON_SCALE_X + 0.02,
-      ICON_SCALE_X + 0.02,
-      ICON_SCALE_X - 0.01,
-      ICON_SCALE_X - 0.01,
-      ICON_SCALE_X - 0.01,
-      ICON_SCALE_X - 0.01,
-      ICON_SCALE_X
-    ]);
-
-    paScale.addProperty('bump', 'icon.localScale.y', [
-      ICON_SCALE_Y + 0.05,
-      ICON_SCALE_Y + 0.05,
-      ICON_SCALE_Y + 0.02,
-      ICON_SCALE_Y + 0.02,
-      ICON_SCALE_Y + 0.02,
-      ICON_SCALE_Y + 0.02,
-      ICON_SCALE_Y - 0.01,
-      ICON_SCALE_Y - 0.01,
-      ICON_SCALE_Y - 0.01,
-      ICON_SCALE_Y - 0.01,
-      ICON_SCALE_Y
-    ]);
-
-    paScale.addProperty('bump', 'localScale.x', [
-      1.04,
-      1.04,
-      1.04,
-      1.04,
-      1.04,
-      1.04,
-      0.98,
-      0.98,
-      0.98,
-      0.98,
-      1
-    ]);
-
-    paScale.addProperty('bump', 'localScale.y', [
-      1.04,
-      1.04,
-      1.04,
-      1.04,
-      1.04,
-      1.04,
-      0.98,
-      0.98,
-      0.98,
-      0.98,
-      1
-    ]);
-
-    paScale.addAnimationByName('bumpBig', 30);
-
-    paScale.addProperty('bumpBig', 'icon.localScale.x', [
-      ICON_SCALE_X + 0.05,
-      ICON_SCALE_X + 0.05,
-      ICON_SCALE_X + 0.02,
-      ICON_SCALE_X + 0.02,
-      ICON_SCALE_X + 0.02,
-      ICON_SCALE_X + 0.02,
-      ICON_SCALE_X - 0.01,
-      ICON_SCALE_X - 0.01,
-      ICON_SCALE_X - 0.01,
-      ICON_SCALE_X - 0.01,
-      ICON_SCALE_X
-    ]);
-
-    paScale.addProperty('bumpBig', 'icon.localScale.y', [
-      ICON_SCALE_Y + 0.05,
-      ICON_SCALE_Y + 0.05,
-      ICON_SCALE_Y + 0.02,
-      ICON_SCALE_Y + 0.02,
-      ICON_SCALE_Y + 0.02,
-      ICON_SCALE_Y + 0.02,
-      ICON_SCALE_Y - 0.01,
-      ICON_SCALE_Y - 0.01,
-      ICON_SCALE_Y - 0.01,
-      ICON_SCALE_Y - 0.01,
-      ICON_SCALE_Y
-    ]);
-
-    paScale.addProperty('bumpBig', 'localScale.x', [
-      1.2,
-      1.2,
-      1.2,
-      1.2,
-      1.2,
-      1.2,
-      0.95,
-      0.95,
-      0.95,
-      0.95,
-      1
-    ]);
-
-    paScale.addProperty('bumpBig', 'localScale.y', [
-      1.2,
-      1.2,
-      1.2,
-      1.2,
-      1.2,
-      1.2,
-      0.95,
-      0.95,
-      0.95,
-      0.95,
-      1
-    ]);
-
+    addBumpAnimation('bump', 1.04, 0.98);
+    addBumpAnimation('bumpBig', 1.2, 0.95);
     paScale.setDefaultProperties();
 
     icon.localScale.x = ICON_SCALE_X;
     icon.localScale.y = ICON_SCALE_Y;
+  }
+
+  /**
+   * Adds a squash-and-settle animation: the whole button peaks then dips, then settles at 1.
+   * @param name Anim name
+   * @param peak The peak scale value
+   * @param dip The dip scale value.
+   */
+  function addBumpAnimation(name:String, peak:Float, dip:Float):Void
+  {
+    final iconOffsets = [
+      0.05,
+      0.05,
+      0.02,
+      0.02,
+      0.02,
+      0.02,
+      -0.01,
+      -0.01,
+      -0.01,
+      -0.01,
+      0.0
+    ];
+    final groupScale = [
+      peak,
+      peak,
+      peak,
+      peak,
+      peak,
+      peak,
+      dip,
+      dip,
+      dip,
+      dip,
+      1.0
+    ];
+
+    paScale.addAnimationByName(name, 30);
+    paScale.addProperty(name, 'icon.localScale.x', [for (o in iconOffsets) ICON_SCALE_X + o]);
+    paScale.addProperty(name, 'icon.localScale.y', [for (o in iconOffsets) ICON_SCALE_Y + o]);
+    paScale.addProperty(name, 'localScale.x', groupScale);
+    paScale.addProperty(name, 'localScale.y', groupScale.copy());
   }
 
   /**
@@ -304,20 +228,16 @@ class QuickPanelButton extends FunkinSpriteGroup
 
     BOIL_INTERVAL = selected ? 4 : 8;
 
-    if (paScale != null)
-    {
-      paScale.stop();
+    if (paScale == null) return; // still constructing
 
-      localScale.x = 1;
-      localScale.y = 1;
-      icon.localScale.x = ICON_SCALE_X;
-      icon.localScale.y = ICON_SCALE_Y;
-    }
+    paScale.stop();
 
-    if (selected)
-    {
-      paScale.playAnimation('bump');
-    }
+    localScale.x = 1;
+    localScale.y = 1;
+    icon.localScale.x = ICON_SCALE_X;
+    icon.localScale.y = ICON_SCALE_Y;
+
+    if (selected) paScale.playAnimation('bump');
   }
 
   override function update(elapsed:Float):Void
@@ -336,25 +256,25 @@ class QuickPanelButton extends FunkinSpriteGroup
     #if FEATURE_TOUCH_CONTROLS
     if (TouchUtil.justPressed && TouchUtil.overlaps(this))
     {
+      touchHeld = true;
       paFade.playAnimation('press');
-
       FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/menu-press'), 0.1);
     }
 
-    if (TouchUtil.justReleased)
+    // Only react to releases of a press that started on this button,
+    // so a stray release doesnt unfade buttons mid-transition.
+    if (TouchUtil.justReleased && touchHeld)
     {
+      touchHeld = false;
       paFade.playAnimation('release');
 
-      if (TouchUtil.overlaps(this) && !panelGroup.lock)
-      {
-        panelGroup.changeSelection(curIndex, true);
-      }
+      if (TouchUtil.overlaps(this) && onTapped != null) onTapped(this);
     }
     #end
   }
 
   /**
-   * Calls the callback assinged in the data, if it exists.
+   * Calls the callback assigned in the data, if it exists.
    */
   public function doCallback()
   {
@@ -363,8 +283,16 @@ class QuickPanelButton extends FunkinSpriteGroup
 
   override function destroy():Void
   {
+    onTapped = null;
     FlxTween.cancelTweensOf(this);
     FlxTween.cancelTweensOf(this.scale);
     super.destroy();
+  }
+
+  function set_selected(value:Bool):Bool
+  {
+    selected = value;
+    updateSelected();
+    return selected;
   }
 }
