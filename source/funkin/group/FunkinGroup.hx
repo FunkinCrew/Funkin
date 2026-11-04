@@ -1050,6 +1050,16 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
   {
     return children.keyValueIterator();
   }
+
+  override function set_active(v:Bool):Bool
+  {
+    for (child in children)
+    {
+      if (child == null) continue;
+      child.active = v;
+    }
+    return super.set_active(v);
+  }
 }
 
 class FunkinGroupIterator<T>
