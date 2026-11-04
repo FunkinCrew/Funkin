@@ -227,6 +227,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
     panelShader.dir = -90 + (SLICE_ANGLE_RANGE - (step * index));
     panelShader.sliceColorStart = disabled ? QuickPanelShader.START_COLOR_DISABLED : QuickPanelShader.START_COLOR_NORMAL;
     panelShader.sliceColorEnd = disabled ? QuickPanelShader.END_COLOR_DISABLED : QuickPanelShader.END_COLOR_NORMAL;
+    paColor.playAnimation('breathe');
   }
 
   /**
@@ -239,6 +240,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
       if (button.selected) button.selected = false;
     }
 
+    paColor.stop();
     panelShader.sliceVisible = false;
   }
 
