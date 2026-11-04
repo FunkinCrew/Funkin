@@ -10,7 +10,6 @@ import flixel.graphics.frames.FlxFramesCollection;
 import funkin.data.song.SongData.SongEventData;
 import haxe.ui.tooltips.ToolTipRegionOptions;
 import funkin.util.HaxeUIUtil;
-import haxe.ui.tooltips.ToolTipManager;
 
 /**
  * A sprite that can be used to display a song event in a chart.
@@ -135,6 +134,7 @@ class ChartEditorEventSprite extends FlxSprite
     if (name == null) name = eventData?.eventKind ?? DEFAULT_EVENT;
 
     var correctedName = correctAnimationName(name);
+    if (this.animation.name == correctedName) return;
     this.animation.play(correctedName);
     refresh();
   }
@@ -153,7 +153,6 @@ class ChartEditorEventSprite extends FlxSprite
       // Disown parent. MAKE SURE TO REVIVE BEFORE REUSING
       this.kill();
       this.visible = false;
-      updateTooltipPosition();
       return null;
     }
     else
@@ -182,8 +181,6 @@ class ChartEditorEventSprite extends FlxSprite
       this.x += origin.x;
       this.y += origin.y;
     }
-
-    this.updateTooltipPosition();
   }
 
   public function updateTooltipText():Void
@@ -226,41 +223,11 @@ class ChartEditorEventSprite extends FlxSprite
     };
   }
 
-  public function updateTooltipPosition():Void
-  {
-    // No tooltip for ghost sprites.
-    if (this.isGhost) return;
-
-    if (this.eventData == null)
-    {
-      // Disable the tooltip.
-      if (tooltipRegistered) ToolTipManager.instance.unregisterTooltipRegion(this.tooltip);
-      tooltipRegistered = false;
-    }
-    else
-    {
-      // Update the position.
-      this.tooltip.left = this.x;
-      this.tooltip.top = this.y;
-      this.tooltip.width = this.width;
-      this.tooltip.height = this.height;
-
-      if (!tooltipRegistered) ToolTipManager.instance.registerTooltipRegion(this.tooltip);
-      tooltipRegistered = true;
-    }
-  }
-
-  var tooltipRegistered:Bool = false;
-
   override public function kill()
   {
     super.kill();
 
     overlappingEventDatas = null;
-
-    // Remove the tooltip to prevent recently deleted events from showing a tooltip.
-    if (tooltipRegistered) ToolTipManager.instance.unregisterTooltipRegion(this.tooltip);
-    tooltipRegistered = false;
   }
 
   /**

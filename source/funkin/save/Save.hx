@@ -10,6 +10,7 @@ import funkin.play.scoring.Scoring.ScoringRank;
 import funkin.save.migrator.RawSaveData_v1_0_0;
 import funkin.save.migrator.SaveDataMigrator;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorLiveInputStyle;
+import funkin.ui.debug.charting.ChartEditorState.ChartEditorWaveformFilter;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorWaveformPos;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorTheme;
 import funkin.ui.debug.stageeditor.StageEditorState.StageEditorTheme;
@@ -204,12 +205,22 @@ class Save implements ConsoleClass implements ISerializable
         zoomLevel: 6,
         chartEditorLiveInputStyle: ChartEditorLiveInputStyle.NumberKeys,
         chartEditorWaveformPos: ChartEditorWaveformPos.Overlay,
+        showInstrumentalWaveform: false,
+        waveformFilter: ChartEditorWaveformFilter.None,
+        waveformFilterStrength: 0.5,
         theme: ChartEditorTheme.Light,
         playtestStartTime: false,
         playtestAudioSettings: false,
         playtestResultsSettings: false,
+        playtestPracticeMode: false,
+        playtestBotPlayMode: false,
+        playtestSongScripts: true,
+        stackedNoteThreshold: 0.0,
         downscroll: false,
         showNoteKinds: true,
+        showBeatLines: true,
+        showCursorLine: true,
+        gridBackingAlpha: 0.92,
         metronomeVolume: 1.0,
         hitsoundVolumePlayer: 1.0,
         hitsoundVolumeOpponent: 1.0,
@@ -313,10 +324,22 @@ class Save implements ConsoleClass implements ISerializable
   public var chartEditorLiveInputStyle:SaveProperty<ChartEditorLiveInputStyle>;
   @:saveProperty(data.optionsChartEditor.chartEditorWaveformPos, ChartEditorWaveformPos.Overlay)
   public var chartEditorWaveformPos:SaveProperty<ChartEditorWaveformPos>;
+  @:saveProperty(data.optionsChartEditor.showInstrumentalWaveform, false)
+  public var chartEditorShowInstrumentalWaveform:SaveProperty<Bool>;
+  @:saveProperty(data.optionsChartEditor.waveformFilter, ChartEditorWaveformFilter.None)
+  public var chartEditorWaveformFilter:SaveProperty<ChartEditorWaveformFilter>;
+  @:saveProperty(data.optionsChartEditor.waveformFilterStrength, 0.5)
+  public var chartEditorWaveformFilterStrength:SaveProperty<Float>;
   @:saveProperty(data.optionsChartEditor.downscroll, false)
   public var chartEditorDownscroll:SaveProperty<Bool>;
   @:saveProperty(data.optionsChartEditor.showNoteKinds, true)
   public var chartEditorShowNoteKinds:SaveProperty<Bool>;
+  @:saveProperty(data.optionsChartEditor.showBeatLines, true)
+  public var chartEditorShowBeatLines:SaveProperty<Bool>;
+  @:saveProperty(data.optionsChartEditor.showCursorLine, true)
+  public var chartEditorShowCursorLine:SaveProperty<Bool>;
+  @:saveProperty(data.optionsChartEditor.gridBackingAlpha, 0.92)
+  public var chartEditorGridBackingAlpha:SaveProperty<Float>;
   @:saveProperty(data.optionsChartEditor.showSubtitles, true)
   public var chartEditorShowSubtitles:SaveProperty<Bool>;
   @:saveProperty(data.optionsChartEditor.playtestStartTime, false)
@@ -325,6 +348,14 @@ class Save implements ConsoleClass implements ISerializable
   public var chartEditorPlaytestAudioSettings:SaveProperty<Bool>;
   @:saveProperty(data.optionsChartEditor.playtestResultsSettings, false)
   public var chartEditorPlaytestResultsSettings:SaveProperty<Bool>;
+  @:saveProperty(data.optionsChartEditor.playtestPracticeMode, false)
+  public var chartEditorPlaytestPracticeMode:SaveProperty<Bool>;
+  @:saveProperty(data.optionsChartEditor.playtestBotPlayMode, false)
+  public var chartEditorPlaytestBotPlayMode:SaveProperty<Bool>;
+  @:saveProperty(data.optionsChartEditor.playtestSongScripts, true)
+  public var chartEditorPlaytestSongScripts:SaveProperty<Bool>;
+  @:saveProperty(data.optionsChartEditor.stackedNoteThreshold, 0.0)
+  public var chartEditorStackedNoteThreshold:SaveProperty<Float>;
   @:saveProperty(data.optionsChartEditor.theme, ChartEditorTheme.Light)
   public var chartEditorTheme:SaveProperty<ChartEditorTheme>;
   @:saveProperty(data.optionsChartEditor.metronomeVolume, 1.0)
@@ -1724,6 +1755,24 @@ typedef SaveDataChartEditorOptions =
   var ?chartEditorWaveformPos:ChartEditorWaveformPos;
 
   /**
+   * Show one instrumental waveform instead of the two vocal waveforms in the Chart Editor.
+   * @default `false`
+   */
+  var ?showInstrumentalWaveform:Bool;
+
+  /**
+   * Filter applied to the waveform overlay in the Chart Editor.
+   * @default `ChartEditorWaveformFilter.None`
+   */
+  var ?waveformFilter:ChartEditorWaveformFilter;
+
+  /**
+   * Strength of the waveform overlay filter in the Chart Editor, from 0 to 1.
+   * @default `0.5`
+   */
+  var ?waveformFilterStrength:Float;
+
+  /**
    * Theme in the Chart Editor.
    * @default `ChartEditorTheme.Light`
    */
@@ -1740,6 +1789,24 @@ typedef SaveDataChartEditorOptions =
    * @default `true`
    */
   var ?showNoteKinds:Bool;
+
+  /**
+   * Show a line on every beat in the Chart Editor.
+   * @default `true`
+   */
+  var ?showBeatLines:Bool;
+
+  /**
+   * Show a line at the cursor's snap in the Chart Editor.
+   * @default `true`
+   */
+  var ?showCursorLine:Bool;
+
+  /**
+   * How opaque the grid backing is in the Chart Editor, from 0 to 1.
+   * @default `0.92`
+   */
+  var ?gridBackingAlpha:Float;
 
   /**
    * Show Subtitles in the Chart Editor.
@@ -1782,6 +1849,30 @@ typedef SaveDataChartEditorOptions =
    * @default `false`
    */
   var ?playtestResultsSettings:Bool;
+
+  /**
+   * If true, playtesting doesn't end the song when you run out of health.
+   * @default `false`
+   */
+  var ?playtestPracticeMode:Bool;
+
+  /**
+   * If true, the computer plays the chart when playtesting.
+   * @default `false`
+   */
+  var ?playtestBotPlayMode:Bool;
+
+  /**
+   * If true, scripts tied to the song run when playtesting.
+   * @default `true`
+   */
+  var ?playtestSongScripts:Bool;
+
+  /**
+   * How close notes must be, in steps, to be highlighted as stacked in the Chart Editor. `0` means exactly the same time.
+   * @default `0.0`
+   */
+  var ?stackedNoteThreshold:Float;
 
   /**
    * Theme music in the Chart Editor.

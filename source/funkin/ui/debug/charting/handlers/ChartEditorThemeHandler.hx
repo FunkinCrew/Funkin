@@ -107,6 +107,15 @@ class ChartEditorThemeHandler
     return (theme == Dark) ? WAVEFORM_OVERLAY_COLOR_DARK : WAVEFORM_OVERLAY_COLOR_LIGHT;
   }
 
+  // Filtered waveform overlay color.
+  static final WAVEFORM_FILTER_COLOR_LIGHT:FlxColor = 0xFF2F5FB8;
+  static final WAVEFORM_FILTER_COLOR_DARK:FlxColor = 0xFF7FB0FF;
+
+  public static function getWaveformFilterColor(theme:ChartEditorTheme):FlxColor
+  {
+    return (theme == Dark) ? WAVEFORM_FILTER_COLOR_DARK : WAVEFORM_FILTER_COLOR_LIGHT;
+  }
+
   /**
    * Beat lines closer together than this many pixels are not drawn.
    */

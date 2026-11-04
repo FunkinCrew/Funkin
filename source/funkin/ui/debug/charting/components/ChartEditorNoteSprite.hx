@@ -15,7 +15,6 @@ import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.notes.NoteDirection;
 import haxe.ui.tooltips.ToolTipRegionOptions;
 import funkin.util.HaxeUIUtil;
-import haxe.ui.tooltips.ToolTipManager;
 
 /**
  * A sprite that can be used to display a note in a chart.
@@ -180,7 +179,6 @@ class ChartEditorNoteSprite extends FlxSprite
     if (this.noteData == null)
     {
       this.kill();
-      updateTooltipPosition();
       return this.noteData;
     }
 
@@ -216,8 +214,6 @@ class ChartEditorNoteSprite extends FlxSprite
       this.x += origin.x;
       this.y += origin.y;
     }
-
-    this.updateTooltipPosition();
   }
 
   public function updateTooltipText():Void
@@ -229,33 +225,6 @@ class ChartEditorNoteSprite extends FlxSprite
     };
   }
 
-  public function updateTooltipPosition():Void
-  {
-    // No tooltip for ghost sprites.
-    if (this.isGhost) return;
-
-    if (this.noteData == null || (this.tooltip.tipData?.text ?? "").length == 0)
-    {
-      // Disable the tooltip.
-      if (tooltipRegistered) ToolTipManager.instance.unregisterTooltipRegion(this.tooltip);
-      tooltipRegistered = false;
-    }
-    else
-    {
-      // Update the position. The manager keeps a reference, so this moves an already registered region too.
-      this.tooltip.left = this.x;
-      this.tooltip.top = this.y;
-      this.tooltip.width = this.width;
-      this.tooltip.height = this.height;
-
-      // Registering searches every region, so only do it once instead of every frame.
-      if (!tooltipRegistered) ToolTipManager.instance.registerTooltipRegion(this.tooltip);
-      tooltipRegistered = true;
-    }
-  }
-
-  var tooltipRegistered:Bool = false;
-
   override public function draw():Void
   {
     super.draw();
@@ -266,15 +235,6 @@ class ChartEditorNoteSprite extends FlxSprite
     kindIndicator.x = this.x;
     kindIndicator.y = this.y;
     kindIndicator.draw();
-  }
-
-  override public function kill():Void
-  {
-    super.kill();
-
-    // Remove the tooltip to prevent recently deleted notes from showing a tooltip.
-    if (tooltipRegistered) ToolTipManager.instance.unregisterTooltipRegion(this.tooltip);
-    tooltipRegistered = false;
   }
 
   function get_noteStyle():Null<String>

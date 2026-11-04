@@ -21,9 +21,16 @@ class VolumePlugin extends FlxBasic
     FlxG.plugins.addPlugin(new VolumePlugin());
   }
 
+  /**
+   * Whether to ignore volume changes when the Ctrl key is pressed.
+   */
+  public static var ignoreWithControl:Bool = false;
+
   override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
+
+    if (ignoreWithControl && (FlxG.keys.pressed.CONTROL || FlxG.keys.pressed.WINDOWS)) return;
 
     var isHaxeUIFocused:Bool = funkin.util.HaxeUIFocusUtil.isFocused();
 

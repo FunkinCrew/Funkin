@@ -142,7 +142,9 @@ class ChartEditorHoldNoteSprite extends SustainTrail
     }
     else
     {
-      sustainLength = h / (getBaseScrollSpeed() * Constants.PIXELS_PER_MS);
+      var newLength:Float = h / (getBaseScrollSpeed() * Constants.PIXELS_PER_MS);
+      if (newLength == sustainLength && fullSustainLength == sustainLength) return;
+      sustainLength = newLength;
     }
 
     fullSustainLength = sustainLength;

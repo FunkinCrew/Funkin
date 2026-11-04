@@ -226,9 +226,9 @@ class ChartEditorCommandPaletteCommands
     {
       openToolbox(palette, ChartEditorState.CHART_EDITOR_TOOLBOX_FREEPLAY_LAYOUT);
     }),
-    command('Playtest Properties Toolbox', 'Show the playtest properties toolbox.', (palette) ->
+    command('Preferences', 'Show the editor preferences, including playtest properties.', (palette) ->
     {
-      openToolbox(palette, ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYTEST_PROPERTIES_LAYOUT);
+      openToolbox(palette, ChartEditorState.CHART_EDITOR_TOOLBOX_PREFERENCES_LAYOUT);
     }),
     command('Player Preview Toolbox', 'Show the player character preview toolbox.', (palette) ->
     {
@@ -303,8 +303,6 @@ class ChartEditorCommandPaletteCommands
         state.menubarItemToggleToolboxEventData.selected = true;
       case ChartEditorState.CHART_EDITOR_TOOLBOX_FREEPLAY_LAYOUT:
         state.menubarItemToggleToolboxFreeplay.selected = true;
-      case ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYTEST_PROPERTIES_LAYOUT:
-        state.menubarItemToggleToolboxPlaytestProperties.selected = true;
       case ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT:
         state.menubarItemToggleToolboxPlayerPreview.selected = true;
         state.playerPreviewDirty = true;

@@ -136,6 +136,7 @@ import haxe.ui.events.DragEvent;
 import haxe.ui.events.MouseEvent;
 import haxe.ui.events.UIEvent;
 import haxe.ui.focus.FocusManager;
+import haxe.ui.tooltips.ToolTipManager;
 import openfl.display.BitmapData;
 import funkin.assets.Assets;
 import funkin.assets.ValidatedPaths as Paths;
@@ -153,6 +154,7 @@ using Lambda;
 // @:nullSafety
 
 @:build(haxe.ui.ComponentBuilder.build('assets/exclude/ui/editors/chart-editor/main-view.xml'))
+@:access(haxe.ui.tooltips.ToolTipManager)
 class ChartEditorState extends UIState // UIState derives from MusicBeatState
 {
   /**
@@ -169,7 +171,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   public static final CHART_EDITOR_TOOLBOX_NOTE_DATA_LAYOUT:String = Paths.xml('exclude/ui/editors/chart-editor/toolboxes/note-data').toString();
   public static final CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT:String = Paths.xml('exclude/ui/editors/chart-editor/toolboxes/event-data').toString();
   public static final CHART_EDITOR_TOOLBOX_FREEPLAY_LAYOUT:String = Paths.xml('exclude/ui/editors/chart-editor/toolboxes/freeplay').toString();
-  public static final CHART_EDITOR_TOOLBOX_PLAYTEST_PROPERTIES_LAYOUT:String = Paths.xml('ui/editors/chart-editor/toolbox/playtest-properties').toString();
+  public static final CHART_EDITOR_TOOLBOX_PREFERENCES_LAYOUT:String = Paths.xml('ui/editors/chart-editor/toolbox/preferences').toString();
   // Validation
   public static final SUPPORTED_MUSIC_FORMATS:Array<String> = ['ogg'];
   // Layout
@@ -187,7 +189,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   /**
    * Zoom levels the grid can be scaled to.
    */
-  public static final ZOOM_LEVELS:Array<Float> = [0.1, 0.15, 0.25, 0.375, 0.5, 0.75, 1, 1.5, 2, 3, 4];
+  public static final ZOOM_LEVELS:Array<Float> = [0.1, 0.15, 0.25, 0.375, 0.5, 0.75, 1, 1.5, 2, 3, 4, 6, 8];
 
   /**
    * The index of the default zoom level in `ZOOM_LEVELS`.
@@ -830,6 +832,182 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   }
 
   /**
+   * Whether the Preferences toolbox should apply changes from its controls.
+   */
+  var preferencesListening:Bool = false;
+
+  /**
+   * Which filter, if any, is applied to the waveform overlay.
+   */
+  var waveformFilter(default, set):ChartEditorWaveformFilter = ChartEditorWaveformFilter.None;
+
+  function set_waveformFilter(value:ChartEditorWaveformFilter):ChartEditorWaveformFilter
+  {
+    if (value != waveformFilter) queueWaveformFilterUpdate();
+    return waveformFilter = value;
+  }
+
+  /**
+   * How strong the waveform filter is, from 0 to 1. Higher cuts more of the sound away.
+   */
+  var waveformFilterStrength(default, set):Float = 0.5;
+
+  function set_waveformFilterStrength(value:Float):Float
+  {
+    value = FlxMath.bound(value, 0, 1);
+    if (value != waveformFilterStrength) queueWaveformFilterUpdate();
+    return waveformFilterStrength = value;
+  }
+
+  /**
+   * The delay before the waveform overlays are rebuilt, in seconds.
+   */
+  var waveformFilterDelay:Float = -1;
+
+  function queueWaveformFilterUpdate():Void
+  {
+    waveformFilterDelay = 0.25;
+  }
+
+  function handleWaveformFilter(elapsed:Float):Void
+  {
+    if (waveformFilterDelay < 0) return;
+    waveformFilterDelay -= elapsed;
+    if (waveformFilterDelay > 0) return;
+    waveformFilterDelay = -1;
+
+    for (waveform in audioWaveforms.members)
+    {
+      // Hidden waveforms get their overlay when shown again, since switching waveforms queues another update.
+      if (waveform == null || !waveform.visible) continue;
+      var buffer:Null<lime.media.AudioBuffer> = waveform.audioBuffer;
+      if (waveformFilter == ChartEditorWaveformFilter.None || buffer == null)
+      {
+        waveform.overlayData = null;
+        continue;
+      }
+
+      var highPass:Bool = waveformFilter == ChartEditorWaveformFilter.HighPass;
+
+      var cutoffHz:Float = highPass ? 20 * Math.pow(250, waveformFilterStrength) : 20000 * Math.pow(0.005, waveformFilterStrength);
+      waveform.overlayData = funkin.audio.waveform.WaveformDataParser.interpretAudioBufferFiltered(buffer, WAVEFORM_SAMPLES_PER_POINT, highPass, cutoffHz);
+    }
+
+    waveformsDirty = true;
+  }
+
+  /**
+   * Whether to show the instrumental waveform in the chart editor.
+   */
+  var showInstrumentalWaveform(default, set):Bool = false;
+
+  function set_showInstrumentalWaveform(value:Bool):Bool
+  {
+    if (value != showInstrumentalWaveform)
+    {
+      waveformsDirty = true;
+      queueWaveformFilterUpdate();
+    }
+    return showInstrumentalWaveform = value;
+  }
+
+  /**
+   * Prefix for the instrumental's key in `audioWaveformDataCache`.
+   */
+  public static final INSTRUMENTAL_WAVEFORM_CACHE_PREFIX:String = 'inst:';
+
+  var instrumentalWaveform:Null<ChartEditorWaveformSprite> = null;
+  var instrumentalWaveformTrack:Null<FunkinSound> = null;
+
+  /**
+   * Update the instrumental waveform sprite to match the current setting and instrumental.
+   */
+  function updateInstrumentalWaveform():Void
+  {
+    var needed:Bool = showInstrumentalWaveform && audioInstTrack != null;
+
+    var current:Null<ChartEditorWaveformSprite> = instrumentalWaveform;
+    if (current != null && (!needed || !current.exists || instrumentalWaveformTrack != audioInstTrack))
+    {
+      if (current.exists)
+      {
+        audioWaveforms.remove(current, true);
+        current.destroy();
+      }
+      instrumentalWaveform = null;
+      instrumentalWaveformTrack = null;
+      waveformsDirty = true;
+    }
+
+    var track:Null<FunkinSound> = audioInstTrack;
+    if (!needed || instrumentalWaveform != null || track == null) return;
+
+    var instId:String = (currentInstrumentalId == '') ? Constants.DEFAULT_VARIATION : currentInstrumentalId;
+    var cacheKey:String = INSTRUMENTAL_WAVEFORM_CACHE_PREFIX + instId;
+    var data:Null<funkin.audio.waveform.WaveformData> = audioWaveformDataCache.get(cacheKey);
+    if (data == null)
+    {
+      data = funkin.audio.waveform.WaveformDataParser.interpretFlxSound(track, WAVEFORM_SAMPLES_PER_POINT, true);
+      if (data == null) return;
+      audioWaveformDataCache.set(cacheKey, data);
+    }
+
+    // Super secret GF key
+    var waveform:ChartEditorWaveformSprite = new ChartEditorWaveformSprite(this, data, GF);
+    @:privateAccess waveform.audioBuffer = track._source?.buffer;
+    audioWaveforms.add(waveform);
+    instrumentalWaveform = waveform;
+    instrumentalWaveformTrack = track;
+    waveformsDirty = true;
+    queueWaveformFilterUpdate();
+  }
+
+  /**
+   * Audio samples per waveform data point in the chart editor.
+   */
+  public static final WAVEFORM_SAMPLES_PER_POINT:Int = 16;
+
+  /**
+   * Whether to draw a line on every beat, in addition to measure lines.
+   */
+  var showBeatLines(default, set):Bool = true;
+
+  function set_showBeatLines(value:Bool):Bool
+  {
+    if (value != showBeatLines) gridLinesDirty = true;
+    return showBeatLines = value;
+  }
+
+  /**
+   * Whether to draw a line at the snap the cursor would place a note on.
+   */
+  var showCursorLine:Bool = true;
+
+  /**
+   * How opaque the grid backing is, from 0 to 1.
+   */
+  var gridBackingAlpha(default, set):Float = ChartEditorThemeHandler.GRID_BACKING_ALPHA;
+
+  function set_gridBackingAlpha(value:Float):Float
+  {
+    gridBackingAlpha = FlxMath.bound(value, 0, 1);
+    if (gridLines != null) gridLines.backing.alpha = gridBackingAlpha;
+    return gridBackingAlpha;
+  }
+
+  /**
+   * Turn the theme music on or off, fading it back in if it should be playing.
+   */
+  function setThemeMusicEnabled(value:Bool):Void
+  {
+    shouldPlayWelcomeMusic = value;
+    if (!welcomeMusic.active || !shouldPlayWelcomeMusic)
+    {
+      fadeInWelcomeMusic(WELCOME_MUSIC_FADE_IN_DELAY, WELCOME_MUSIC_FADE_IN_DURATION);
+    }
+  }
+
+  /**
    * The current theme used by the editor.
    * Dictates the appearance of many UI elements.
    * Currently hardcoded to just Light and Dark.
@@ -868,8 +1046,20 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function get_isHaxeUIFocused():Bool
   {
-    return FocusManager.instance.focus != null;
+    if (!haxeUIFocusedValid)
+    {
+      haxeUIFocusedValid = true;
+      haxeUIFocusedCache = FocusManager.instance.focus != null;
+    }
+    return haxeUIFocusedCache;
   }
+
+  /**
+   * Whether `haxeUIFocusedCache` is up to date.
+   */
+  static var haxeUIFocusedValid:Bool = false;
+
+  static var haxeUIFocusedCache:Bool = false;
 
   /**
    * Whether the user's mouse cursor is hovering over a SOLID component of the HaxeUI.
@@ -1186,6 +1376,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * This happens when we scroll or add/remove notes, and need to update what notes are displayed and where.
    */
   var noteDisplayDirty:Bool = true;
+
+  var notesNeedSort:Bool = true;
 
   // bunch of caches for various sets of notes and events.
   var windowNotes:Array<SongNoteData> = [];
@@ -2335,25 +2527,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   var menuBarItemNoteSnapIncrease:MenuItem;
 
-  /**
-   * The `Edit -> Stacked Note Threshold` menu dropdown
-   */
-  var menuBarStackedNoteThreshold:DropDown;
 
   /**
    * The `View -> Downscroll` menu item.
    */
   var menubarItemDownscroll:MenuCheckBox;
 
-  /**
-   * The `View -> Note Kind Indicator` menu item.
-   */
-  var menubarItemViewIndicators:MenuCheckBox;
-
-  /**
-   * The `View -> Subtitles` menu item.
-   */
-  var menubarItemViewSubtitles:MenuCheckBox;
 
   /**
    * The `View -> Waveforms` menu item.
@@ -2386,69 +2565,65 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var menubarItemLoadVocals:MenuItem;
 
   /**
-   * The `Audio -> Metronome Volume` label.
+   * The `Preferences -> Audio -> Metronome Volume` label.
    */
-  var menubarLabelVolumeMetronome:Label;
+  var preferencesLabelVolumeMetronome:Label;
 
   /**
-   * The `Audio -> Metronome Volume` slider.
+   * The `Preferences -> Audio -> Metronome Volume` slider.
    */
-  var menubarItemVolumeMetronome:Slider;
+  var preferencesVolumeMetronome:Slider;
+
 
   /**
-   * The `Audio -> Play Theme Music` menu checkbox.
+   * The `Preferences -> Audio -> Player Hitsound Volume` label.
    */
-  var menubarItemThemeMusic:MenuCheckBox;
+  var preferencesLabelVolumeHitsoundPlayer:Label;
 
   /**
-   * The `Audio -> Player Hitsound Volume` label.
+   * The `Preferences -> Audio -> Opponent Hitsound Volume` label.
    */
-  var menubarLabelVolumeHitsoundPlayer:Label;
+  var preferencesLabelVolumeHitsoundOpponent:Label;
 
   /**
-   * The `Audio -> Opponent Hitsound Volume` label.
+   * The `Preferences -> Audio -> Player Hitsound Volume` slider.
    */
-  var menubarLabelVolumeHitsoundOpponent:Label;
+  var preferencesVolumeHitsoundPlayer:Slider;
 
   /**
-   * The `Audio -> Player Hitsound Volume` slider.
+   * The `Preferences -> Audio -> Opponent Hitsound Volume` slider.
    */
-  var menubarItemVolumeHitsoundPlayer:Slider;
+  var preferencesVolumeHitsoundOpponent:Slider;
 
   /**
-   * The `Audio -> Opponent Hitsound Volume` slider.
+   * The `Preferences -> Audio -> Instrumental Volume` label.
    */
-  var menubarItemVolumeHitsoundOpponent:Slider;
+  var preferencesLabelVolumeInstrumental:Label;
 
   /**
-   * The `Audio -> Instrumental Volume` label.
+   * The `Preferences -> Audio -> Instrumental Volume` slider.
    */
-  var menubarLabelVolumeInstrumental:Label;
+  var preferencesVolumeInstrumental:Slider;
 
   /**
-   * The `Audio -> Instrumental Volume` slider.
+   * The `Preferences -> Audio -> Player Volume` label.
    */
-  var menubarItemVolumeInstrumental:Slider;
+  var preferencesLabelVolumeVocalsPlayer:Label;
 
   /**
-   * The `Audio -> Player Volume` label.
+   * The `Preferences -> Audio -> Opponent Volume` label.
    */
-  var menubarLabelVolumeVocalsPlayer:Label;
+  var preferencesLabelVolumeVocalsOpponent:Label;
 
   /**
-   * The `Audio -> Opponent Volume` label.
+   * The `Preferences -> Audio -> Player Volume` slider.
    */
-  var menubarLabelVolumeVocalsOpponent:Label;
+  var preferencesVolumeVocalsPlayer:Slider;
 
   /**
-   * The `Audio -> Player Volume` slider.
+   * The `Preferences -> Audio -> Opponent Volume` slider.
    */
-  var menubarItemVolumeVocalsPlayer:Slider;
-
-  /**
-   * The `Audio -> Opponent Volume` slider.
-   */
-  var menubarItemVolumeVocalsOpponent:Slider;
+  var preferencesVolumeVocalsOpponent:Slider;
 
   /**
    * The `Audio -> Playback Speed` label.
@@ -2871,6 +3046,27 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
   }
 
+  /**
+   * Binds the audio volume controls from the Preferences toolbox to the ChartEditorState.
+   */
+  function bindPreferencesAudioControls():Void
+  {
+    var toolbox = ChartEditorToolboxHandler.getToolboxUnCast(this, CHART_EDITOR_TOOLBOX_PREFERENCES_LAYOUT);
+
+    preferencesVolumeMetronome = toolbox.findComponent('preferencesVolumeMetronome', Slider);
+    preferencesLabelVolumeMetronome = toolbox.findComponent('preferencesLabelVolumeMetronome', Label);
+    preferencesVolumeHitsoundPlayer = toolbox.findComponent('preferencesVolumeHitsoundPlayer', Slider);
+    preferencesLabelVolumeHitsoundPlayer = toolbox.findComponent('preferencesLabelVolumeHitsoundPlayer', Label);
+    preferencesVolumeHitsoundOpponent = toolbox.findComponent('preferencesVolumeHitsoundOpponent', Slider);
+    preferencesLabelVolumeHitsoundOpponent = toolbox.findComponent('preferencesLabelVolumeHitsoundOpponent', Label);
+    preferencesVolumeInstrumental = toolbox.findComponent('preferencesVolumeInstrumental', Slider);
+    preferencesLabelVolumeInstrumental = toolbox.findComponent('preferencesLabelVolumeInstrumental', Label);
+    preferencesVolumeVocalsPlayer = toolbox.findComponent('preferencesVolumeVocalsPlayer', Slider);
+    preferencesLabelVolumeVocalsPlayer = toolbox.findComponent('preferencesLabelVolumeVocalsPlayer', Label);
+    preferencesVolumeVocalsOpponent = toolbox.findComponent('preferencesVolumeVocalsOpponent', Slider);
+    preferencesLabelVolumeVocalsOpponent = toolbox.findComponent('preferencesLabelVolumeVocalsOpponent', Label);
+  }
+
   override function create():Void
   {
     // super.create() must be called first, the HaxeUI components get created here.
@@ -2887,6 +3083,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // Show the mouse cursor.
     Cursor.show();
 
+    funkin.util.plugins.VolumePlugin.ignoreWithControl = true;
+
+    bindPreferencesAudioControls();
     loadPreferences();
 
     uiCamera = new FunkinCamera('chartEditorUI');
@@ -3073,21 +3272,31 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     updateGridScale();
     currentLiveInputStyle = save.chartEditorLiveInputStyle.value;
     currentWaveformPos = save.chartEditorWaveformPos.value;
+    showInstrumentalWaveform = save.chartEditorShowInstrumentalWaveform.value;
+    waveformFilter = save.chartEditorWaveformFilter.value;
+    waveformFilterStrength = save.chartEditorWaveformFilterStrength.value;
     isViewDownscroll = save.chartEditorDownscroll.value;
     showNoteKindIndicators = save.chartEditorShowNoteKinds.value;
+    showBeatLines = save.chartEditorShowBeatLines.value;
+    showCursorLine = save.chartEditorShowCursorLine.value;
+    gridBackingAlpha = save.chartEditorGridBackingAlpha.value;
     showSubtitles = save.chartEditorShowSubtitles.value;
     playtestStartTime = save.chartEditorPlaytestStartTime.value;
     playtestAudioSettings = save.chartEditorPlaytestAudioSettings.value;
     playtestShowResults = save.chartEditorPlaytestResultsSettings.value;
+    playtestPracticeMode = save.chartEditorPlaytestPracticeMode.value;
+    playtestBotPlayMode = save.chartEditorPlaytestBotPlayMode.value;
+    playtestSongScripts = save.chartEditorPlaytestSongScripts.value;
+    stackedNoteThreshold = save.chartEditorStackedNoteThreshold.value;
     currentTheme = save.chartEditorTheme.value;
     metronomeVolume = save.chartEditorMetronomeVolume.value;
     hitsoundVolumePlayer = save.chartEditorHitsoundVolumePlayer.value;
     hitsoundVolumeOpponent = save.chartEditorHitsoundVolumeOpponent.value;
     shouldPlayWelcomeMusic = save.chartEditorThemeMusic.value;
 
-    menubarItemVolumeInstrumental.value = Std.int(save.chartEditorInstVolume.value * 100);
-    menubarItemVolumeVocalsPlayer.value = Std.int(save.chartEditorPlayerVoiceVolume.value * 100);
-    menubarItemVolumeVocalsOpponent.value = Std.int(save.chartEditorOpponentVoiceVolume.value * 100);
+    preferencesVolumeInstrumental.value = Std.int(save.chartEditorInstVolume.value * 100);
+    preferencesVolumeVocalsPlayer.value = Std.int(save.chartEditorPlayerVoiceVolume.value * 100);
+    preferencesVolumeVocalsOpponent.value = Std.int(save.chartEditorOpponentVoiceVolume.value * 100);
     menubarItemPlaybackSpeed.value = Math.round(save.chartEditorPlaybackSpeed.value * 100.0);
   }
 
@@ -3112,20 +3321,31 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     save.chartEditorZoomLevel.value = zoomLevelIndex;
     save.chartEditorLiveInputStyle.value = currentLiveInputStyle;
     save.chartEditorWaveformPos.value = currentWaveformPos;
+    save.chartEditorShowInstrumentalWaveform.value = showInstrumentalWaveform;
+    save.chartEditorWaveformFilter.value = waveformFilter;
+    save.chartEditorWaveformFilterStrength.value = waveformFilterStrength;
     save.chartEditorDownscroll.value = isViewDownscroll;
     save.chartEditorShowNoteKinds.value = showNoteKindIndicators;
+    save.chartEditorShowBeatLines.value = showBeatLines;
+    save.chartEditorShowCursorLine.value = showCursorLine;
+    save.chartEditorGridBackingAlpha.value = gridBackingAlpha;
     save.chartEditorPlaytestStartTime.value = playtestStartTime;
     save.chartEditorPlaytestAudioSettings.value = playtestAudioSettings;
     save.chartEditorPlaytestResultsSettings.value = playtestShowResults;
+    save.chartEditorPlaytestPracticeMode.value = playtestPracticeMode;
+    save.chartEditorPlaytestBotPlayMode.value = playtestBotPlayMode;
+    save.chartEditorPlaytestSongScripts.value = playtestSongScripts;
+    save.chartEditorStackedNoteThreshold.value = stackedNoteThreshold;
+    save.chartEditorShowSubtitles.value = showSubtitles;
     save.chartEditorTheme.value = currentTheme;
     save.chartEditorMetronomeVolume.value = metronomeVolume;
     save.chartEditorHitsoundVolumePlayer.value = hitsoundVolumePlayer;
     save.chartEditorHitsoundVolumeOpponent.value = hitsoundVolumeOpponent;
     save.chartEditorThemeMusic.value = shouldPlayWelcomeMusic;
 
-    save.chartEditorInstVolume.value = menubarItemVolumeInstrumental.value / 100.0;
-    save.chartEditorPlayerVoiceVolume.value = menubarItemVolumeVocalsPlayer.value / 100.0;
-    save.chartEditorOpponentVoiceVolume.value = menubarItemVolumeVocalsOpponent.value / 100.0;
+    save.chartEditorInstVolume.value = preferencesVolumeInstrumental.value / 100.0;
+    save.chartEditorPlayerVoiceVolume.value = preferencesVolumeVocalsPlayer.value / 100.0;
+    save.chartEditorOpponentVoiceVolume.value = preferencesVolumeVocalsOpponent.value / 100.0;
     save.chartEditorPlaybackSpeed.value = menubarItemPlaybackSpeed.value / 100.0;
   }
 
@@ -3421,11 +3641,17 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     bounds.x = notePreview.x;
     bounds.width = notePreview.width;
 
-    // Vertical position depends on scroll position.
-    bounds.y = notePreview.y + (notePreview.height * (scrollPositionInPixels / songLengthInPixels));
+    var viewTopPixels:Float = scrollPositionInPixels - GRID_TOP_PAD;
+    var viewHeightPixels:Float = FlxG.height - MENU_BAR_HEIGHT - PLAYBAR_HEIGHT;
+    bounds.y = notePreview.y + (notePreview.height * (viewTopPixels / songLengthInPixels));
+    bounds.height = notePreview.height * (viewHeightPixels / songLengthInPixels);
 
-    // Height depends on the viewport size.
-    bounds.height = notePreview.height * (FlxG.height / songLengthInPixels);
+    var MIN_HEIGHT:Int = 8;
+    if (bounds.height < MIN_HEIGHT)
+    {
+      bounds.y -= (MIN_HEIGHT - bounds.height) / 2;
+      bounds.height = MIN_HEIGHT;
+    }
 
     // Make sure the viewport doesn't go off the top or bottom of the note preview.
     if (bounds.y < notePreview.y)
@@ -3433,17 +3659,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       bounds.height -= notePreview.y - bounds.y;
       bounds.y = notePreview.y;
     }
-    else if (bounds.y + bounds.height > notePreview.y + notePreview.height)
+    if (bounds.y + bounds.height > notePreview.y + notePreview.height)
     {
       bounds.height -= (bounds.y + bounds.height) - (notePreview.y + notePreview.height);
     }
-
-    var MIN_HEIGHT:Int = 8;
-    if (bounds.height < MIN_HEIGHT)
-    {
-      bounds.y -= MIN_HEIGHT - bounds.height;
-      bounds.height = MIN_HEIGHT;
-    }
+    if (bounds.height < 1) bounds.height = 1;
 
     // trace('Note preview viewport bounds: ' + bounds.toString());
 
@@ -3908,55 +4128,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       if (noteSnapQuantIndex >= SNAP_QUANTS.length) noteSnapQuantIndex = 0;
     };
 
-    final REVERSE_SNAPS = SNAP_QUANTS.reversed();
-    for (snap in REVERSE_SNAPS)
-    {
-      menuBarStackedNoteThreshold.dataSource.add({
-        text: '1/$snap'
-      });
-    }
-
-    menuBarStackedNoteThreshold.onChange = event ->
-    {
-      // NOTE: It needs to be offset by 1 because of the 'Exact' option
-      // -1 value means that it is the one selected
-      var selectedIdx:Int = menuBarStackedNoteThreshold.selectedIndex - 1;
-      stackedNoteThreshold = selectedIdx == -1 ? 0 : BASE_QUANT / REVERSE_SNAPS[selectedIdx];
-      noteDisplayDirty = true;
-      notePreviewDirty = true;
-    }
-
-    menuBarItemInputStyleNone.onClick = function(event:UIEvent)
-    {
-      currentLiveInputStyle = None;
-    };
-    menuBarItemInputStyleNone.selected = currentLiveInputStyle != WASDKeys;
-    menuBarItemInputStyleNumberKeys.onClick = function(event:UIEvent)
-    {
-      currentLiveInputStyle = NumberKeys;
-    };
-    menuBarItemInputStyleNumberKeys.selected = currentLiveInputStyle == NumberKeys;
-    menuBarItemInputStyleWASD.onClick = function(event:UIEvent)
-    {
-      currentLiveInputStyle = WASDKeys;
-    };
-    menuBarItemInputStyleWASD.selected = currentLiveInputStyle == WASDKeys;
+    menubarItemPreferences.onClick = _ -> this.setToolboxState(CHART_EDITOR_TOOLBOX_PREFERENCES_LAYOUT, true);
 
     menubarItemAbout.onClick = _ -> this.openAboutDialog();
     menubarItemWelcomeDialog.onClick = _ -> this.openWelcomeDialog(true);
-
-    menubarItemWaveformPosAdjacent.onClick = function(event:UIEvent)
-    {
-      currentWaveformPos = Adjacent;
-      waveformsDirty = true;
-    };
-    menubarItemWaveformPosAdjacent.selected = currentWaveformPos == Adjacent;
-    menubarItemWaveformPosOverlay.onClick = function(event:UIEvent)
-    {
-      currentWaveformPos = Overlay;
-      waveformsDirty = true;
-    };
-    menubarItemWaveformPosOverlay.selected = currentWaveformPos == Overlay;
 
     #if sys
     menubarItemGoToBackupsFolder.onClick = _ -> this.openBackupsFolder();
@@ -3974,30 +4149,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     menubarItemZoomOut.onClick = _ -> zoomLevelIndex--;
     menubarItemZoomReset.onClick = _ -> zoomLevelIndex = BASE_ZOOM_INDEX;
 
-    menubarItemViewIndicators.onClick = event -> showNoteKindIndicators = menubarItemViewIndicators.selected;
-    menubarItemViewIndicators.selected = showNoteKindIndicators;
-
-    menubarItemViewSubtitles.onClick = event -> showSubtitles = menubarItemViewSubtitles.selected;
-    menubarItemViewSubtitles.selected = showSubtitles;
-
     menubarItemViewWaveforms.onClick = event -> audioWaveforms.visible = menubarItemViewWaveforms.selected;
     menubarItemViewWaveforms.selected = audioWaveforms.visible;
 
     menubarItemCommandPalette.onClick = _ -> ChartEditorCommandPalette.openPalette(this, '?');
     menubarItemDifficultyUp.onClick = _ -> incrementDifficulty(1);
     menubarItemDifficultyDown.onClick = _ -> incrementDifficulty(-1);
-
-    menuBarItemThemeLight.onChange = function(event:UIEvent)
-    {
-      if (event.target.value) currentTheme = ChartEditorTheme.Light;
-    };
-    menuBarItemThemeLight.selected = currentTheme == ChartEditorTheme.Light;
-
-    menuBarItemThemeDark.onChange = function(event:UIEvent)
-    {
-      if (event.target.value) currentTheme = ChartEditorTheme.Dark;
-    };
-    menuBarItemThemeDark.selected = currentTheme == ChartEditorTheme.Dark;
 
     menubarItemPlayPause.onClick = _ -> toggleAudioPlayback();
 
@@ -4025,173 +4182,149 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       }
     };
 
-    menubarItemVolumeMetronome.onChange = event ->
+    preferencesVolumeMetronome.onChange = event ->
     {
       var volume:Float = event.value.toFloat() / 100.0;
       metronomeVolume = volume;
-      menubarLabelVolumeMetronome.text = 'Metronome - ${Std.int(event.value)}%';
+      preferencesLabelVolumeMetronome.text = 'Metronome - ${Std.int(event.value)}%';
     };
-    menubarItemVolumeMetronome.onRightClick = _ ->
+    preferencesVolumeMetronome.onRightClick = _ ->
     {
       if (metronomeVolume <= 0.0)
       {
         metronomeVolume = 1.0;
-        menubarItemVolumeMetronome.value = 100.0;
-        menubarLabelVolumeMetronome.text = 'Metronome - 100%';
+        preferencesVolumeMetronome.value = 100.0;
+        preferencesLabelVolumeMetronome.text = 'Metronome - 100%';
       }
       else
       {
         metronomeVolume = 0.0;
-        menubarItemVolumeMetronome.value = 0.0;
-        menubarLabelVolumeMetronome.text = 'Metronome - 0%';
+        preferencesVolumeMetronome.value = 0.0;
+        preferencesLabelVolumeMetronome.text = 'Metronome - 0%';
       }
     }
-    menubarItemVolumeMetronome.value = Std.int(metronomeVolume * 100);
+    preferencesVolumeMetronome.value = Std.int(metronomeVolume * 100);
     previousAudioVolumes[0] = Std.int(metronomeVolume * 100);
 
-    menubarItemThemeMusic.onChange = event ->
-    {
-      shouldPlayWelcomeMusic = event.value;
-      // Don't restart the music when the menu is opened for the first time
-      if (!welcomeMusic.active || !shouldPlayWelcomeMusic)
-      {
-        fadeInWelcomeMusic(WELCOME_MUSIC_FADE_IN_DELAY, WELCOME_MUSIC_FADE_IN_DURATION);
-      }
-    };
-    menubarItemThemeMusic.selected = shouldPlayWelcomeMusic;
-
-    menubarItemVolumeHitsoundPlayer.onChange = event ->
+    preferencesVolumeHitsoundPlayer.onChange = event ->
     {
       var volume:Float = event.value.toFloat() / 100.0;
       hitsoundVolumePlayer = volume;
-      menubarLabelVolumeHitsoundPlayer.text = 'Player - ${Std.int(event.value)}%';
+      preferencesLabelVolumeHitsoundPlayer.text = 'Player - ${Std.int(event.value)}%';
     };
-    menubarItemVolumeHitsoundPlayer.onRightClick = _ ->
+    preferencesVolumeHitsoundPlayer.onRightClick = _ ->
     {
       if (hitsoundVolumePlayer <= 0.0)
       {
         hitsoundVolumePlayer = 1.0;
-        menubarItemVolumeHitsoundPlayer.value = 100.0;
-        menubarLabelVolumeHitsoundPlayer.text = 'Player - 100%';
+        preferencesVolumeHitsoundPlayer.value = 100.0;
+        preferencesLabelVolumeHitsoundPlayer.text = 'Player - 100%';
       }
       else
       {
         hitsoundVolumePlayer = 0.0;
-        menubarItemVolumeHitsoundPlayer.value = 0.0;
-        menubarLabelVolumeHitsoundPlayer.text = 'Player - 0%';
+        preferencesVolumeHitsoundPlayer.value = 0.0;
+        preferencesLabelVolumeHitsoundPlayer.text = 'Player - 0%';
       }
     }
-    menubarItemVolumeHitsoundPlayer.value = Std.int(hitsoundVolumePlayer * 100);
+    preferencesVolumeHitsoundPlayer.value = Std.int(hitsoundVolumePlayer * 100);
     previousAudioVolumes[1] = Std.int(hitsoundVolumePlayer * 100);
 
-    menubarItemVolumeHitsoundOpponent.onChange = event ->
+    preferencesVolumeHitsoundOpponent.onChange = event ->
     {
       var volume:Float = event.value.toFloat() / 100.0;
       hitsoundVolumeOpponent = volume;
-      menubarLabelVolumeHitsoundOpponent.text = 'Opponent - ${Std.int(event.value)}%';
+      preferencesLabelVolumeHitsoundOpponent.text = 'Opponent - ${Std.int(event.value)}%';
     };
-    menubarItemVolumeHitsoundOpponent.onRightClick = _ ->
+    preferencesVolumeHitsoundOpponent.onRightClick = _ ->
     {
       if (hitsoundVolumeOpponent <= 0.0)
       {
         hitsoundVolumeOpponent = 1.0;
-        menubarItemVolumeHitsoundOpponent.value = 100.0;
-        menubarLabelVolumeHitsoundOpponent.text = 'Enemy - 100%';
+        preferencesVolumeHitsoundOpponent.value = 100.0;
+        preferencesLabelVolumeHitsoundOpponent.text = 'Opponent - 100%';
       }
       else
       {
         hitsoundVolumeOpponent = 0.0;
-        menubarItemVolumeHitsoundOpponent.value = 0.0;
-        menubarLabelVolumeHitsoundOpponent.text = 'Enemy - 0%';
+        preferencesVolumeHitsoundOpponent.value = 0.0;
+        preferencesLabelVolumeHitsoundOpponent.text = 'Opponent - 0%';
       }
     }
-    menubarItemVolumeHitsoundOpponent.value = Std.int(hitsoundVolumeOpponent * 100);
+    preferencesVolumeHitsoundOpponent.value = Std.int(hitsoundVolumeOpponent * 100);
     previousAudioVolumes[2] = Std.int(hitsoundVolumeOpponent * 100);
 
-    menubarItemVolumeInstrumental.onChange = event ->
+    preferencesVolumeInstrumental.onChange = event ->
     {
       var volume:Float = event.value.toFloat() / 100.0;
       if (audioInstTrack != null) audioInstTrack.volume = volume;
-      menubarLabelVolumeInstrumental.text = 'Instrumental - ${Std.int(event.value)}%';
+      preferencesLabelVolumeInstrumental.text = 'Instrumental - ${Std.int(event.value)}%';
     };
-    menubarItemVolumeInstrumental.onRightClick = _ ->
+    preferencesVolumeInstrumental.onRightClick = _ ->
     {
-      if (menubarItemVolumeInstrumental.value <= 0.0)
+      if (preferencesVolumeInstrumental.value <= 0.0)
       {
         if (audioInstTrack != null) audioInstTrack.volume = 1.0;
-        menubarItemVolumeInstrumental.value = 100.0;
-        menubarLabelVolumeInstrumental.text = 'Instrumental - 100%';
+        preferencesVolumeInstrumental.value = 100.0;
+        preferencesLabelVolumeInstrumental.text = 'Instrumental - 100%';
       }
       else
       {
         if (audioInstTrack != null) audioInstTrack.volume = 0.0;
-        menubarItemVolumeInstrumental.value = 0.0;
-        menubarLabelVolumeInstrumental.text = 'Instrumental - 0%';
+        preferencesVolumeInstrumental.value = 0.0;
+        preferencesLabelVolumeInstrumental.text = 'Instrumental - 0%';
       }
     }
-    previousAudioVolumes[3] = menubarItemVolumeInstrumental.value;
+    previousAudioVolumes[3] = preferencesVolumeInstrumental.value;
 
-    menubarItemVolumeVocalsPlayer.onChange = event ->
+    preferencesVolumeVocalsPlayer.onChange = event ->
     {
       var volume:Float = event.value.toFloat() / 100.0;
       audioVocalTrackGroup.playerVolume = volume;
-      menubarLabelVolumeVocalsPlayer.text = 'Player - ${Std.int(event.value)}%';
+      preferencesLabelVolumeVocalsPlayer.text = 'Player - ${Std.int(event.value)}%';
     };
-    menubarItemVolumeVocalsPlayer.onRightClick = _ ->
+    preferencesVolumeVocalsPlayer.onRightClick = _ ->
     {
       if (audioVocalTrackGroup.playerVolume <= 0.0)
       {
         audioVocalTrackGroup.playerVolume = 1.0;
-        menubarItemVolumeVocalsPlayer.value = 100.0;
-        menubarLabelVolumeVocalsPlayer.text = 'Player - 100%';
+        preferencesVolumeVocalsPlayer.value = 100.0;
+        preferencesLabelVolumeVocalsPlayer.text = 'Player - 100%';
       }
       else
       {
         audioVocalTrackGroup.playerVolume = 0.0;
-        menubarItemVolumeVocalsPlayer.value = 0.0;
-        menubarLabelVolumeVocalsPlayer.text = 'Player - 0%';
+        preferencesVolumeVocalsPlayer.value = 0.0;
+        preferencesLabelVolumeVocalsPlayer.text = 'Player - 0%';
       }
     }
-    previousAudioVolumes[4] = menubarItemVolumeVocalsPlayer.value;
+    previousAudioVolumes[4] = preferencesVolumeVocalsPlayer.value;
 
-    menubarItemVolumeVocalsOpponent.onChange = event ->
+    preferencesVolumeVocalsOpponent.onChange = event ->
     {
       var volume:Float = event.value.toFloat() / 100.0;
       audioVocalTrackGroup.opponentVolume = volume;
-      menubarLabelVolumeVocalsOpponent.text = 'Opponent - ${Std.int(event.value)}%';
+      preferencesLabelVolumeVocalsOpponent.text = 'Opponent - ${Std.int(event.value)}%';
     };
-    menubarItemVolumeVocalsOpponent.onRightClick = _ ->
+    preferencesVolumeVocalsOpponent.onRightClick = _ ->
     {
       if (audioVocalTrackGroup.opponentVolume <= 0.0)
       {
         audioVocalTrackGroup.opponentVolume = 1.0;
-        menubarItemVolumeVocalsOpponent.value = 100.0;
-        menubarLabelVolumeVocalsOpponent.text = 'Enemy - 100%';
+        preferencesVolumeVocalsOpponent.value = 100.0;
+        preferencesLabelVolumeVocalsOpponent.text = 'Opponent - 100%';
       }
       else
       {
         audioVocalTrackGroup.opponentVolume = 0.0;
-        menubarItemVolumeVocalsOpponent.value = 0.0;
-        menubarLabelVolumeVocalsOpponent.text = 'Enemy - 0%';
+        preferencesVolumeVocalsOpponent.value = 0.0;
+        preferencesLabelVolumeVocalsOpponent.text = 'Opponent - 0%';
       }
     }
-    previousAudioVolumes[5] = menubarItemVolumeVocalsOpponent.value;
+    previousAudioVolumes[5] = preferencesVolumeVocalsOpponent.value;
 
-    menubarItemPlaybackSpeed.onChange = event ->
-    {
-      var pitch:Float = (event.value.toFloat() * 2.0) / 100.0;
-      if (audioInstTrack != null) audioInstTrack.pitch = pitch;
-      audioVocalTrackGroup.pitch = pitch;
-      var pitchDisplay:Float = Std.int(pitch * 100) / 100; // Round to 2 decimal places.
-      menubarLabelPlaybackSpeed.text = 'Playback Speed - ${pitchDisplay}x';
-    }
-    menubarItemPlaybackSpeed.onRightClick = _ ->
-    {
-      if (audioInstTrack != null) audioInstTrack.pitch = 1;
-      audioVocalTrackGroup.pitch = 1;
-      menubarItemPlaybackSpeed.value = 50.0;
-      menubarLabelPlaybackSpeed.text = 'Playback Speed - 1x';
-    }
+    menubarItemPlaybackSpeed.onChange = _ -> applyPlaybackSpeed(menubarItemPlaybackSpeed.pos / 50.0);
+    menubarItemPlaybackSpeed.onRightClick = _ -> setPlaybackSpeed(1.0);
 
     menubarItemToggleToolboxDifficulty.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT, event.value);
     menubarItemToggleToolboxMetadata.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_METADATA_LAYOUT, event.value);
@@ -4199,7 +4332,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     menubarItemToggleToolboxNoteData.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_NOTE_DATA_LAYOUT, event.value);
     menubarItemToggleToolboxEventData.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT, event.value);
     menubarItemToggleToolboxFreeplay.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_FREEPLAY_LAYOUT, event.value);
-    menubarItemToggleToolboxPlaytestProperties.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_PLAYTEST_PROPERTIES_LAYOUT, event.value);
     menubarItemToggleToolboxPlayerPreview.onChange = event ->
     {
       this.setToolboxState(CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT, event.value);
@@ -4399,6 +4531,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // dispatchEvent gets called here.
     super.update(elapsed);
 
+    haxeUIFocusedValid = false;
+
     if (criticalFailure) return;
 
     Preferences.debugDisplay == DebugDisplayMode.Off ? menubar.paddingLeft = null : menubar.paddingLeft = 256;
@@ -4409,6 +4543,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     handleZoom(elapsed);
     handleNoteDisplay();
     handleGridLines();
+    handleStaleTooltip();
+    handleGridTooltips(elapsed);
 
     if (isHaxeUIFocused && !isCursorOverHaxeUI && (FlxG.mouse.justPressedRight || FlxG.mouse.deltaWheel.y != 0))
     {
@@ -4433,6 +4569,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     handleNotePreview();
     handleHealthIcons();
     handleWaveforms();
+    handleWaveformFilter(elapsed);
 
     handleCommandPalette();
 
@@ -4468,6 +4605,102 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       stopAudioPlayback(false);
     }
+
+    // No mouse events arrive while unfocused, so the tooltip would never be told to hide.
+    hideTooltip();
+  }
+
+  /**
+   * Handles the hiding of stale tooltips that are no longer relevant.
+   */
+  function handleStaleTooltip():Void
+  {
+    var manager:ToolTipManager = ToolTipManager.instance;
+    var showing:Bool = manager._toolTip != null && !manager._toolTip.hidden;
+    if (!showing && manager._timer == null) return;
+
+    var mouseX:Float = haxe.ui.backend.flixel.MouseHelper.currentWorldX;
+    var mouseY:Float = haxe.ui.backend.flixel.MouseHelper.currentWorldY;
+
+    var region = manager._currentRegion;
+    if (region != null)
+    {
+      var stillThere:Bool = manager._toolTipRegions.contains(region);
+      var underMouse:Bool = mouseX >= region.left && mouseX < region.left + region.width && mouseY >= region.top && mouseY < region.top + region.height;
+      if (!stillThere || !underMouse || isHaxeUIDialogOpen)
+      {
+        manager._currentRegion = null;
+        hideTooltip();
+      }
+      return;
+    }
+
+    var component = manager._currentComponent;
+    if (component != null && (!component.exists || component.hidden || !component.hitTest(mouseX, mouseY)))
+    {
+      hideTooltip();
+    }
+  }
+
+  function hideTooltip():Void
+  {
+    var manager:ToolTipManager = ToolTipManager.instance;
+    manager.stopCurrent();
+    manager.hideCurrentToolTip();
+    gridTooltipShown = false;
+  }
+
+  // The note or event sprite under the mouse, how long it has been there, and whether its tooltip is showing.
+  var gridTooltipTarget:Null<FlxSprite> = null;
+  var gridTooltipTime:Float = 0;
+  var gridTooltipShown:Bool = false;
+
+  /**
+   * Show tooltips for the notes and events on the grid.
+   */
+  function handleGridTooltips(elapsed:Float):Void
+  {
+    var target:Null<FlxSprite> = null;
+    var options:Null<haxe.ui.tooltips.ToolTipOptions> = null;
+
+    if (gridTiledSprite != null && !isCursorOverHaxeUI && !isHaxeUIDialogOpen && FlxG.mouse.overlaps(gridTiledSprite))
+    {
+      for (eventSprite in renderedEvents.members)
+      {
+        if (eventSprite == null || !eventSprite.alive || !eventSprite.visible || eventSprite.eventData == null) continue;
+        if ((eventSprite.tooltip.tipData?.text ?? '').length == 0 || !FlxG.mouse.overlaps(eventSprite)) continue;
+        target = eventSprite;
+        options = eventSprite.tooltip;
+        break;
+      }
+
+      if (target == null)
+      {
+        for (noteSprite in renderedNotes.members)
+        {
+          if (noteSprite == null || !noteSprite.alive || !noteSprite.visible || noteSprite.noteData == null) continue;
+          if ((noteSprite.tooltip.tipData?.text ?? '').length == 0 || !FlxG.mouse.overlaps(noteSprite)) continue;
+          target = noteSprite;
+          options = noteSprite.tooltip;
+          break;
+        }
+      }
+    }
+
+    if (target != gridTooltipTarget)
+    {
+      if (gridTooltipShown) hideTooltip();
+      gridTooltipTarget = target;
+      gridTooltipTime = 0;
+    }
+
+    if (target == null || options == null || gridTooltipShown) return;
+
+    gridTooltipTime += elapsed;
+    if (gridTooltipTime * 1000 < ToolTipManager.defaultDelay) return;
+
+    ToolTipManager.instance.showToolTipAt(haxe.ui.backend.flixel.MouseHelper.currentWorldX, haxe.ui.backend.flixel.MouseHelper.currentWorldY, options);
+    gridTooltipShown = true;
   }
 
   /**
@@ -4770,6 +5003,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         // If we can reuse a deleted note, do so.
         // If a new note is needed, call buildNoteSprite.
         var noteSprite:ChartEditorNoteSprite = renderedNotes.recycle(() -> new ChartEditorNoteSprite(this));
+        notesNeedSort = true;
         // trace('Creating new Note... (${renderedNotes.members.length})');
         noteSprite.parentState = this;
 
@@ -4842,7 +5076,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         // Setting event data resets position relative to the grid so we fix that.
         eventSprite.x += renderedEvents.x;
         eventSprite.y += renderedEvents.y;
-        eventSprite.updateTooltipPosition();
       }
 
       // Add hold notes that have been made visible (but not their parents)
@@ -5064,7 +5297,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       noteTooltipsDirty = false;
 
       // Sort the notes DESCENDING. This keeps the sustain behind the associated note.
-      renderedNotes.sort(FlxSort.byY, FlxSort.DESCENDING); // TODO: .group.insertionSort()
+      if (notesNeedSort || dragTargetCurrentStep != 0 || dragTargetCurrentColumn != 0)
+      {
+        renderedNotes.sort(FlxSort.byY, FlxSort.DESCENDING);
+        notesNeedSort = false;
+      }
 
       // Sort the events DESCENDING. This keeps the sustain behind the associated note.
       renderedEvents.sort(function(order:Int, obj1:FlxBasic, obj2:FlxBasic):Int
@@ -5793,7 +6030,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     var cursorSnappedMs:Float = Conductor.instance.getStepTimeInMs(cursorSnappedStep);
 
     // A line across the grid at the snap the cursor would place on.
-    if (gridCursorLine != null && overlapsGrid && !isCursorOverHaxeUI)
+    if (showCursorLine && gridCursorLine != null && overlapsGrid && !isCursorOverHaxeUI)
     {
       gridCursorLine.visible = true;
       gridCursorLine.x = gridTiledSprite.x;
@@ -7005,14 +7242,31 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   function handleWaveforms()
   {
+    updateInstrumentalWaveform();
     if (!waveformsDirty) return;
 
     for (waveform in audioWaveforms.members)
     {
       if (waveform == null) continue;
 
-      waveform.width = (currentWaveformPos == Overlay) ? (GRID_SIZE * 4) : (GRID_SIZE * 2);
-      waveform.color = (currentWaveformPos == Overlay) ? ChartEditorThemeHandler.getWaveformOverlayColor(currentTheme) : FlxColor.WHITE;
+      waveform.overlayColor = ChartEditorThemeHandler.getWaveformFilterColor(currentTheme);
+
+      if (waveform.iconId == GF)
+      {
+        waveform.visible = true;
+        waveform.waveformWidth = GRID_SIZE * STRUMLINE_SIZE * 2;
+        waveform.baseColor = ChartEditorThemeHandler.getWaveformOverlayColor(currentTheme);
+        waveform.audioOffsetMs = 0;
+        waveform.x = gridTiledSprite.x;
+        waveform.markDirty();
+        waveform.refresh(gridTiledSprite?.y ?? GRID_INITIAL_Y_POS);
+        continue;
+      }
+
+      waveform.visible = !showInstrumentalWaveform;
+      waveform.waveformWidth = (currentWaveformPos == Overlay) ? (GRID_SIZE * 4) : (GRID_SIZE * 2);
+      // Colors are drawn into the bitmap, so the base and the filtered overlay can differ.
+      waveform.baseColor = (currentWaveformPos == Overlay) ? ChartEditorThemeHandler.getWaveformOverlayColor(currentTheme) : FlxColor.WHITE;
 
       waveform.audioOffsetMs = (waveform.iconId == DAD) ? currentVocalOffsetOpponent : currentVocalOffsetPlayer;
       waveform.markDirty();
@@ -7445,6 +7699,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       // trace('Ignoring keybinds for View menu items because we are in live input mode (${currentLiveInputStyle}).');
     }
 
+    // Ctrl + Plus/Minus = Change the playback speed by 0.1x.
+    if (pressingControl() && !isHaxeUIFocused)
+    {
+      if (FlxG.keys.justPressed.PLUS || FlxG.keys.justPressed.NUMPADPLUS) changePlaybackSpeed(0.1);
+      if (FlxG.keys.justPressed.MINUS || FlxG.keys.justPressed.NUMPADMINUS) changePlaybackSpeed(-0.1);
+    }
+
     // B = New Comment
     if (!pressingControl() && !FlxG.keys.pressed.SHIFT && !FlxG.keys.pressed.ALT && FlxG.keys.justPressed.B && !isHaxeUIDialogOpen && !isHaxeUIFocused)
     {
@@ -7457,6 +7718,34 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       }));
       this.success('New Comment', 'Added a comment at the playhead position.');
     }
+  }
+
+  /**
+   * Step the playback speed, staying on whole tenths between 0.1x and 2x.
+   */
+  function changePlaybackSpeed(amount:Float):Void
+  {
+    // The slider runs from 0 to 100 for 0x to 2x.
+    var currentRate:Float = menubarItemPlaybackSpeed.pos / 50.0;
+    var newRate:Float = Math.round((currentRate + amount) * 10) / 10;
+    setPlaybackSpeed(newRate.clamp(0.1, 2.0));
+  }
+
+  /**
+   * Set the playback speed from code, moving the slider to match.
+   */
+  function setPlaybackSpeed(rate:Float):Void
+  {
+    menubarItemPlaybackSpeed.pos = rate * 50.0;
+    applyPlaybackSpeed(rate);
+  }
+
+  function applyPlaybackSpeed(rate:Float):Void
+  {
+    if (audioInstTrack != null) audioInstTrack.pitch = rate;
+    audioVocalTrackGroup.pitch = rate;
+    var rateDisplay:Float = Std.int(rate * 100) / 100; // Round to 2 decimal places.
+    menubarLabelPlaybackSpeed.text = 'Playback Speed - ${rateDisplay}x';
   }
 
   /**
@@ -7509,70 +7798,95 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       // Changing values of the audio slider directly because it'll update the audio anyway and makes this code much cleaner, though more verbose.
       var oldValue = previousAudioVolumes[0];
-      previousAudioVolumes[0] = menubarItemVolumeMetronome.value;
-      menubarItemVolumeMetronome.value = (menubarItemVolumeMetronome.value == 0) ? (oldValue > menubarItemVolumeMetronome.value) ? oldValue : 100 : 0;
+      previousAudioVolumes[0] = preferencesVolumeMetronome.value;
+      preferencesVolumeMetronome.value = (preferencesVolumeMetronome.value == 0) ? (oldValue > preferencesVolumeMetronome.value) ? oldValue : 100 : 0;
     }
     // Hitsounds volume toggle
     if (!isHaxeUIFocused && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.H)
     {
       var oldBFValue = previousAudioVolumes[1];
-      previousAudioVolumes[1] = menubarItemVolumeHitsoundPlayer.value;
+      previousAudioVolumes[1] = preferencesVolumeHitsoundPlayer.value;
       var oldDadValue = previousAudioVolumes[2];
-      previousAudioVolumes[2] = menubarItemVolumeHitsoundOpponent.value;
-      if (oldBFValue <= menubarItemVolumeHitsoundPlayer.value || oldDadValue <= menubarItemVolumeHitsoundOpponent.value)
+      previousAudioVolumes[2] = preferencesVolumeHitsoundOpponent.value;
+      if (oldBFValue <= preferencesVolumeHitsoundPlayer.value || oldDadValue <= preferencesVolumeHitsoundOpponent.value)
       {
-        if (menubarItemVolumeHitsoundPlayer.value == 0 && menubarItemVolumeHitsoundOpponent.value == 0)
+        if (preferencesVolumeHitsoundPlayer.value == 0 && preferencesVolumeHitsoundOpponent.value == 0)
         {
-          menubarItemVolumeHitsoundPlayer.value = (oldBFValue > menubarItemVolumeHitsoundPlayer.value) ? oldBFValue : 100;
-          menubarItemVolumeHitsoundOpponent.value = (oldDadValue > menubarItemVolumeHitsoundOpponent.value) ? oldDadValue : 100;
+          preferencesVolumeHitsoundPlayer.value = (oldBFValue > preferencesVolumeHitsoundPlayer.value) ? oldBFValue : 100;
+          preferencesVolumeHitsoundOpponent.value = (oldDadValue > preferencesVolumeHitsoundOpponent.value) ? oldDadValue : 100;
         }
         else
         {
-          if (oldBFValue > menubarItemVolumeHitsoundPlayer.value) previousAudioVolumes[1] = oldBFValue;
-          if (oldDadValue > menubarItemVolumeHitsoundOpponent.value) previousAudioVolumes[2] = oldDadValue;
-          menubarItemVolumeHitsoundPlayer.value = 0;
-          menubarItemVolumeHitsoundOpponent.value = 0;
+          if (oldBFValue > preferencesVolumeHitsoundPlayer.value) previousAudioVolumes[1] = oldBFValue;
+          if (oldDadValue > preferencesVolumeHitsoundOpponent.value) previousAudioVolumes[2] = oldDadValue;
+          preferencesVolumeHitsoundPlayer.value = 0;
+          preferencesVolumeHitsoundOpponent.value = 0;
         }
       }
       else
       {
-        menubarItemVolumeHitsoundPlayer.value = (oldBFValue > menubarItemVolumeHitsoundPlayer.value) ? oldBFValue : 100;
-        menubarItemVolumeHitsoundOpponent.value = (oldDadValue > menubarItemVolumeHitsoundOpponent.value) ? oldDadValue : 100;
+        preferencesVolumeHitsoundPlayer.value = (oldBFValue > preferencesVolumeHitsoundPlayer.value) ? oldBFValue : 100;
+        preferencesVolumeHitsoundOpponent.value = (oldDadValue > preferencesVolumeHitsoundOpponent.value) ? oldDadValue : 100;
       }
-      // menubarItemVolumeHitsoundPlayer.value = (menubarItemVolumeHitsoundPlayer.value == 0) ? (oldBFValue > menubarItemVolumeHitsoundPlayer.value) ? oldBFValue : 100 : 0;
-      // menubarItemVolumeHitsoundOpponent.value = (menubarItemVolumeHitsoundOpponent.value == 0) ? (oldDadValue > menubarItemVolumeHitsoundOpponent.value) ? oldDadValue : 100 : 0;
+      // preferencesVolumeHitsoundPlayer.value = (preferencesVolumeHitsoundPlayer.value == 0) ? (oldBFValue > preferencesVolumeHitsoundPlayer.value) ? oldBFValue : 100 : 0;
+      // preferencesVolumeHitsoundOpponent.value = (preferencesVolumeHitsoundOpponent.value == 0) ? (oldDadValue > preferencesVolumeHitsoundOpponent.value) ? oldDadValue : 100 : 0;
     }
     // Instrumental volume toggle
     if (!isHaxeUIFocused && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.I)
     {
       var oldValue = previousAudioVolumes[3];
-      previousAudioVolumes[3] = menubarItemVolumeInstrumental.value;
-      menubarItemVolumeInstrumental.value = (menubarItemVolumeInstrumental.value == 0) ? (oldValue > menubarItemVolumeInstrumental.value) ? oldValue : 100 : 0;
+      previousAudioVolumes[3] = preferencesVolumeInstrumental.value;
+      preferencesVolumeInstrumental.value = (preferencesVolumeInstrumental.value == 0) ? (oldValue > preferencesVolumeInstrumental.value) ? oldValue : 100 : 0;
     }
     // Vocals volume toggle
     if (!isHaxeUIFocused && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.V)
     {
       var oldValue = previousAudioVolumes[4];
-      previousAudioVolumes[4] = menubarItemVolumeVocalsPlayer.value;
-      menubarItemVolumeVocalsPlayer.value = (menubarItemVolumeVocalsPlayer.value == 0) ? (oldValue > menubarItemVolumeVocalsPlayer.value) ? oldValue : 100 : 0;
+      previousAudioVolumes[4] = preferencesVolumeVocalsPlayer.value;
+      preferencesVolumeVocalsPlayer.value = (preferencesVolumeVocalsPlayer.value == 0) ? (oldValue > preferencesVolumeVocalsPlayer.value) ? oldValue : 100 : 0;
       oldValue = previousAudioVolumes[5];
-      previousAudioVolumes[5] = menubarItemVolumeVocalsOpponent.value;
-      menubarItemVolumeVocalsOpponent.value = (menubarItemVolumeVocalsOpponent.value == 0) ? (oldValue > menubarItemVolumeVocalsOpponent.value) ? oldValue : 100 : 0;
+      previousAudioVolumes[5] = preferencesVolumeVocalsOpponent.value;
+      preferencesVolumeVocalsOpponent.value = (preferencesVolumeVocalsOpponent.value == 0) ? (oldValue > preferencesVolumeVocalsOpponent.value) ? oldValue : 100 : 0;
     }
     // Boyfriend vocals volume toggle
     if (!isHaxeUIFocused && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.B)
     {
       var oldValue = previousAudioVolumes[4];
-      previousAudioVolumes[4] = menubarItemVolumeVocalsPlayer.value;
-      menubarItemVolumeVocalsPlayer.value = (menubarItemVolumeVocalsPlayer.value == 0) ? (oldValue > menubarItemVolumeVocalsPlayer.value) ? oldValue : 100 : 0;
+      previousAudioVolumes[4] = preferencesVolumeVocalsPlayer.value;
+      preferencesVolumeVocalsPlayer.value = (preferencesVolumeVocalsPlayer.value == 0) ? (oldValue > preferencesVolumeVocalsPlayer.value) ? oldValue : 100 : 0;
     }
     // Dad vocals volume toggle
     if (!isHaxeUIFocused && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.D)
     {
       var oldValue = previousAudioVolumes[5];
-      previousAudioVolumes[5] = menubarItemVolumeVocalsOpponent.value;
-      menubarItemVolumeVocalsOpponent.value = (menubarItemVolumeVocalsOpponent.value == 0) ? (oldValue > menubarItemVolumeVocalsOpponent.value) ? oldValue : 100 : 0;
+      previousAudioVolumes[5] = preferencesVolumeVocalsOpponent.value;
+      preferencesVolumeVocalsOpponent.value = (preferencesVolumeVocalsOpponent.value == 0) ? (oldValue > preferencesVolumeVocalsOpponent.value) ? oldValue : 100 : 0;
     }
+
+    if (!isHaxeUIFocused && FlxG.keys.pressed.SHIFT && (FlxG.keys.justPressed.M || FlxG.keys.justPressed.H || FlxG.keys.justPressed.I
+      || FlxG.keys.justPressed.V || FlxG.keys.justPressed.B || FlxG.keys.justPressed.D))
+    {
+      applyPreferenceVolumes();
+    }
+  }
+
+  /**
+   * Apply every volume slider in the Preferences toolbox to the audio, and update their labels.
+   */
+  function applyPreferenceVolumes():Void
+  {
+    metronomeVolume = preferencesVolumeMetronome.pos / 100.0;
+    preferencesLabelVolumeMetronome.text = 'Metronome - ${Std.int(preferencesVolumeMetronome.pos)}%';
+    hitsoundVolumePlayer = preferencesVolumeHitsoundPlayer.pos / 100.0;
+    preferencesLabelVolumeHitsoundPlayer.text = 'Player - ${Std.int(preferencesVolumeHitsoundPlayer.pos)}%';
+    hitsoundVolumeOpponent = preferencesVolumeHitsoundOpponent.pos / 100.0;
+    preferencesLabelVolumeHitsoundOpponent.text = 'Opponent - ${Std.int(preferencesVolumeHitsoundOpponent.pos)}%';
+    if (audioInstTrack != null) audioInstTrack.volume = preferencesVolumeInstrumental.pos / 100.0;
+    preferencesLabelVolumeInstrumental.text = 'Instrumental - ${Std.int(preferencesVolumeInstrumental.pos)}%';
+    audioVocalTrackGroup.playerVolume = preferencesVolumeVocalsPlayer.pos / 100.0;
+    preferencesLabelVolumeVocalsPlayer.text = 'Player - ${Std.int(preferencesVolumeVocalsPlayer.pos)}%';
+    audioVocalTrackGroup.opponentVolume = preferencesVolumeVocalsOpponent.pos / 100.0;
+    preferencesLabelVolumeVocalsOpponent.text = 'Opponent - ${Std.int(preferencesVolumeVocalsOpponent.pos)}%';
   }
 
   function handleQuickWatch():Void
@@ -7763,9 +8077,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         final playState = cast(targetState, funkin.play.PlayState);
         if (playtestAudioSettings)
         {
-          playState.instrumentalVolume = (menubarItemVolumeInstrumental.value / 100.0) ?? 1.0;
-          playState.playerVocalsVolume = (menubarItemVolumeVocalsPlayer.value / 100.0) ?? 1.0;
-          playState.opponentVocalsVolume = (menubarItemVolumeVocalsOpponent.value / 100.0) ?? 1.0;
+          playState.instrumentalVolume = (preferencesVolumeInstrumental.value / 100.0) ?? 1.0;
+          playState.playerVocalsVolume = (preferencesVolumeVocalsPlayer.value / 100.0) ?? 1.0;
+          playState.opponentVocalsVolume = (preferencesVolumeVocalsOpponent.value / 100.0) ?? 1.0;
         }
 
         playState.vocals = audioVocalTrackGroup;
@@ -8295,9 +8609,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     Cursor.show();
 
     // Reapply the volume and playback rate.
-    var instTargetVolume:Float = (menubarItemVolumeInstrumental.value / 100.0) ?? 1.0;
-    var vocalPlayerTargetVolume:Float = (menubarItemVolumeVocalsPlayer.value / 100.0) ?? 1.0;
-    var vocalOpponentTargetVolume:Float = (menubarItemVolumeVocalsOpponent.value / 100.0) ?? 1.0;
+    var instTargetVolume:Float = (preferencesVolumeInstrumental.value / 100.0) ?? 1.0;
+    var vocalPlayerTargetVolume:Float = (preferencesVolumeVocalsPlayer.value / 100.0) ?? 1.0;
+    var vocalOpponentTargetVolume:Float = (preferencesVolumeVocalsOpponent.value / 100.0) ?? 1.0;
 
     var playbackRate = ((menubarItemPlaybackSpeed.value / 100.0) ?? 0.5) * 2.0;
     playbackRate = playbackRate.clamp(0.05, 2.0); // Clamp to 5% to 200%
@@ -8628,7 +8942,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   public function postLoadInstrumental():Void
   {
     // Reapply the volume and playback rate.
-    var instTargetVolume:Float = ((menubarItemVolumeInstrumental.value / 100) ?? 1.0);
+    var instTargetVolume:Float = ((preferencesVolumeInstrumental.value / 100) ?? 1.0);
     var playbackRate:Float = ((menubarItemPlaybackSpeed.value / 100.0) ?? 0.5) * 2.0;
     playbackRate = playbackRate.clamp(0.05, 2.0); // Clamp to 5% to 200%
     if (audioInstTrack != null)
@@ -8677,8 +8991,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   public function postLoadVocals():Void
   {
     // Reapply the volume and playback rate.
-    var vocalPlayerTargetVolume:Float = (menubarItemVolumeVocalsPlayer.value / 100.0) ?? 1.0;
-    var vocalOpponentTargetVolume:Float = (menubarItemVolumeVocalsOpponent.value / 100.0) ?? 1.0;
+    var vocalPlayerTargetVolume:Float = (preferencesVolumeVocalsPlayer.value / 100.0) ?? 1.0;
+    var vocalOpponentTargetVolume:Float = (preferencesVolumeVocalsOpponent.value / 100.0) ?? 1.0;
     var playbackRate:Float = ((menubarItemPlaybackSpeed.value / 100.0) ?? 0.5) * 2.0;
     playbackRate = playbackRate.clamp(0.05, 2.0); // Clamp to 5% to 200%
 
@@ -8734,6 +9048,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     trace('Destroying ChartEditorState...');
     ChartEditorCommandPalette.instance?.close();
+    funkin.util.plugins.VolumePlugin.ignoreWithControl = false;
     super.destroy();
 
     performCleanup();
@@ -8950,6 +9265,27 @@ enum abstract ChartEditorLiveInputStyle(String)
 /**
  * Available waveform positions for the chart editor state.
  */
+/**
+ * Filters that can be applied to the chart editor's waveform overlay.
+ */
+enum abstract ChartEditorWaveformFilter(String)
+{
+  /**
+   * No overlay.
+   */
+  public var None;
+
+  /**
+   * Keeps the low end, like kicks and bass.
+   */
+  public var LowPass;
+
+  /**
+   * Keeps the high end, like hats and consonants.
+   */
+  public var HighPass;
+}
+
 enum abstract ChartEditorWaveformPos(String)
 {
   /**

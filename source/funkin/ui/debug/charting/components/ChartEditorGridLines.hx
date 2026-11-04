@@ -56,7 +56,7 @@ class ChartEditorGridLines
   {
     this.chartEditorState = chartEditorState;
     backing.antialiasing = false;
-    backing.alpha = ChartEditorThemeHandler.GRID_BACKING_ALPHA;
+    backing.alpha = chartEditorState.gridBackingAlpha;
     // Backs first, so the text draws over them.
     markers.add(markerBacks);
     markers.add(markerTexts);
@@ -230,6 +230,7 @@ class ChartEditorGridLines
       measureStep = start + (measure - measureStart) * measureSteps;
     }
 
+    if (!chartEditorState.showBeatLines) return;
     if (beatSteps * ChartEditorState.STEP_HEIGHT < ChartEditorThemeHandler.GRID_MIN_BEAT_PIXELS) return;
 
     // Beats are counted from the start of the segment.

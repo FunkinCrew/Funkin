@@ -91,6 +91,7 @@ class ChartEditorAudioHandler
     if (instId == '') instId = 'default';
     if (wipeFirst) wipeInstrumentalData(state);
     state.audioInstTrackData.set(instId, bytes);
+    state.audioWaveformDataCache.remove(ChartEditorState.INSTRUMENTAL_WAVEFORM_CACHE_PREFIX + instId);
     return true;
   }
 
@@ -253,8 +254,7 @@ class ChartEditorAudioHandler
 
         if (waveformData != null)
         {
-          state.audioWaveforms.add(new ChartEditorWaveformSprite(state, waveformData, charType));
-          state.waveformsDirty = true;
+          addWaveformSprite(state, waveformData, charType, firstVocalTrack);
         }
         else
         {
@@ -272,8 +272,7 @@ class ChartEditorAudioHandler
 
         if (waveformData != null)
         {
-          state.audioWaveforms.add(new ChartEditorWaveformSprite(state, waveformData, charType));
-          state.waveformsDirty = true;
+          addWaveformSprite(state, waveformData, charType, firstVocalTrack);
         }
         else
         {
@@ -291,6 +290,15 @@ class ChartEditorAudioHandler
     return false;
   }
 
+  static function addWaveformSprite(state:ChartEditorState, waveformData:WaveformData, charType:CharacterType, track:FunkinSound):Void
+  {
+    var waveformSprite:ChartEditorWaveformSprite = new ChartEditorWaveformSprite(state, waveformData, charType);
+    @:privateAccess waveformSprite.audioBuffer = track._source?.buffer;
+    state.audioWaveforms.add(waveformSprite);
+    state.waveformsDirty = true;
+    state.queueWaveformFilterUpdate();
+  }
+
   /**
    * Parsing waveform data reads every sample of the track, so keep it per track key until the track's audio is replaced.
    */
@@ -300,7 +308,7 @@ class ChartEditorAudioHandler
     if (cached != null) return cached;
 
     // Parse the waveform data for the given track if it hasn't been cached already.
-    var waveformData:Null<WaveformData> = WaveformDataParser.interpretFlxSound(track, 16, true);
+    var waveformData:Null<WaveformData> = WaveformDataParser.interpretFlxSound(track, ChartEditorState.WAVEFORM_SAMPLES_PER_POINT, true);
     if (waveformData == null)
     {
       trace(' WARNING '.warning() + ' Failed to parse waveform data for vocal track.');
@@ -380,6 +388,10 @@ class ChartEditorAudioHandler
   public static function wipeInstrumentalData(state:ChartEditorState):Void
   {
     state.audioInstTrackData.clear();
+    for (key in [for (k in state.audioWaveformDataCache.keys()) k])
+    {
+      if (key.startsWith(ChartEditorState.INSTRUMENTAL_WAVEFORM_CACHE_PREFIX)) state.audioWaveformDataCache.remove(key);
+    }
     stopExistingInstrumental(state);
   }
 

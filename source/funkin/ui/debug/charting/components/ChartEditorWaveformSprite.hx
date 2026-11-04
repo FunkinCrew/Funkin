@@ -1,10 +1,13 @@
 package funkin.ui.debug.charting.components;
 
 #if FEATURE_CHART_EDITOR
+import flixel.FlxSprite;
+import flixel.graphics.FlxGraphic;
 import flixel.util.FlxColor;
 import funkin.audio.waveform.WaveformData;
-import funkin.graphics.rendering.MeshRender;
 import funkin.play.character.BaseCharacter.CharacterType;
+import openfl.display.BitmapData;
+import openfl.geom.Rectangle;
 
 /**
  * An optimized waveform sprite that renders efficiently in the chart editor.
@@ -12,13 +15,8 @@ import funkin.play.character.BaseCharacter.CharacterType;
 @:nullSafety
 @:access(funkin.Conductor)
 @:access(funkin.ui.debug.charting.ChartEditorState)
-class ChartEditorWaveformSprite extends MeshRender
+class ChartEditorWaveformSprite extends FlxSprite
 {
-  /**
-   * Vertical distance between two rows of vertices, in pixels.
-   */
-  static final ROW_PIXELS:Float = 1;
-
   public var waveformData(default, set):Null<WaveformData> = null;
 
   function set_waveformData(value:Null<WaveformData>):Null<WaveformData>
@@ -40,35 +38,77 @@ class ChartEditorWaveformSprite extends MeshRender
     return audioOffsetMs = value;
   }
 
+  /**
+   * How wide the waveform is drawn, in pixels. Separate from `width` because loading the bitmap sets that.
+   */
+  public var waveformWidth(default, set):Int = ChartEditorState.GRID_SIZE * 4;
+
+  function set_waveformWidth(value:Int):Int
+  {
+    if (waveformWidth != value) markDirty();
+    return waveformWidth = value;
+  }
+
+  /**
+   * A filtered copy of the waveform, drawn on top in `overlayColor`. `null` for no overlay.
+   */
+  public var overlayData(default, set):Null<WaveformData> = null;
+
+  function set_overlayData(value:Null<WaveformData>):Null<WaveformData>
+  {
+    if (overlayData != value) markDirty();
+    return overlayData = value;
+  }
+
+  public var baseColor(default, set):FlxColor = FlxColor.WHITE;
+
+  function set_baseColor(value:FlxColor):FlxColor
+  {
+    if (baseColor != value) markDirty();
+    return baseColor = value;
+  }
+
+  public var overlayColor(default, set):FlxColor = FlxColor.WHITE;
+
+  function set_overlayColor(value:FlxColor):FlxColor
+  {
+    if (overlayColor != value) markDirty();
+    return overlayColor = value;
+  }
+
+  /**
+   * The decoded audio this waveform came from, kept so filtered overlays can be made from it.
+   */
+  public var audioBuffer:Null<lime.media.AudioBuffer> = null;
+
   var chartEditorState:ChartEditorState;
 
-  // The range of the current mesh in grid-local pixels.
+  var chunkBitmap:Null<BitmapData> = null;
+  var rowRect:Rectangle = new Rectangle();
+
+  // The range of the current bitmap in grid-local pixels.
   var chunkTop:Float = 0;
   var chunkBottom:Float = -1;
 
-  // The index of the current segment being processed in the mesh.
+  // The index of the current segment being processed.
   var segmentIndex:Int = 0;
 
   public function new(chartEditorState:ChartEditorState, waveformData:WaveformData, iconId:CharacterType)
   {
-    super(0, 0, FlxColor.WHITE);
+    super(0, 0);
     this.chartEditorState = chartEditorState;
     this.iconId = iconId;
+    makeGraphic(1, 1, 0);
     this.waveformData = waveformData;
+    antialiasing = false;
   }
 
   /**
-   * Rebuild the mesh on the next refresh.
+   * Redraw the bitmap on the next refresh.
    */
   public function markDirty():Void
   {
     chunkBottom = chunkTop - 1;
-  }
-
-  override function set_width(value:Float):Float
-  {
-    if (width != value) markDirty();
-    return super.set_width(value);
   }
 
   override function set_visible(value:Bool):Bool
@@ -78,103 +118,121 @@ class ChartEditorWaveformSprite extends MeshRender
   }
 
   /**
-   * Follow the grid, and rebuild the mesh if the view left the built chunk.
+   * Follow the grid, and redraw the bitmap if the view left the built chunk.
    * @param gridY The current screen position of the top of the grid.
    */
   public function refresh(gridY:Float):Void
   {
-    this.y = gridY;
     if (!visible) return;
 
     var viewTop:Float = ChartEditorState.MENU_BAR_HEIGHT - gridY;
     var viewBottom:Float = FlxG.height - ChartEditorState.PLAYBAR_HEIGHT - gridY;
-    if (viewTop >= chunkTop && viewBottom <= chunkBottom) return;
+    if (viewTop < chunkTop || viewBottom > chunkBottom)
+    {
+      // Half a view of margin on each side keeps the vertex count down while scrolling still rarely rebuilds.
+      var margin:Float = (viewBottom - viewTop) * 0.5;
+      buildChunk(Math.ffloor(viewTop - margin), Math.fceil(viewBottom + margin));
+    }
 
-    // Half a view of margin on each side keeps the vertex count down while scrolling still rarely rebuilds.
-    var margin:Float = (viewBottom - viewTop) * 0.5;
-    buildChunk(viewTop - margin, viewBottom + margin);
+    this.y = gridY + chunkTop;
   }
 
   function buildChunk(top:Float, bottom:Float):Void
   {
     chunkTop = top;
     chunkBottom = bottom;
-    vertex_count = 0;
-    index_count = 0;
     segmentIndex = 0;
 
-    var data:Null<WaveformData> = waveformData;
+    var bitmapWidth:Int = Std.int(Math.max(1, waveformWidth));
+    var bitmapHeight:Int = Std.int(Math.max(1, bottom - top));
 
-    var from:Float = Math.ffloor(Math.max(0, top));
-    var to:Float = Math.min(bottom, chartEditorState.songLengthInPixels);
-
-    if (data != null && to > from)
+    var bitmap:Null<BitmapData> = chunkBitmap;
+    if (bitmap == null || bitmap.width != bitmapWidth || bitmap.height != bitmapHeight)
     {
-      var stepHeight:Float = ChartEditorState.STEP_HEIGHT;
-      var halfWidth:Float = width / 2;
-      var maxValue:Int = data.maxSampleValue();
-      var pointsPerMs:Float = data.pointsPerSecond() / Constants.MS_PER_SEC;
-      var levelCount:Int = data.mipLevelCount();
-      var timeOffset:Float = Conductor.instance.instrumentalOffset + audioOffsetMs;
-
-      var rowY:Float = from;
-      var startIndex:Float = (stepToMs(rowY / stepHeight) - timeOffset) * pointsPerMs;
-
-      while (rowY < to)
-      {
-        var nextY:Float = Math.min(rowY + ROW_PIXELS, to);
-        var endIndex:Float = (stepToMs(nextY / stepHeight) - timeOffset) * pointsPerMs;
-
-        // Pick the level where this row covers at most two points.
-        var level:Int = 0;
-        var count:Float = endIndex - startIndex;
-        while (count >= 2 && level < levelCount - 1)
-        {
-          count *= 0.5;
-          level++;
-        }
-
-        var mip = data.getMipLevel(level);
-        var mipLength:Int = mip.length >> 1;
-        var low:Int = Math.floor(startIndex) >> level;
-        var high:Int = Math.floor(endIndex) >> level;
-
-        var min:Int = 0;
-        var max:Int = 0;
-        if (high >= 0 && low < mipLength)
-        {
-          if (low < 0) low = 0;
-          if (high >= mipLength) high = mipLength - 1;
-          min = maxValue;
-          max = -maxValue;
-          for (i in low...high + 1)
-          {
-            if (mip[i * 2] < min) min = mip[i * 2];
-            if (mip[i * 2 + 1] > max) max = mip[i * 2 + 1];
-          }
-        }
-
-        // Mirrored around the center using the peak size, so both edges match.
-        var peak:Float = Math.min(Math.max(max, -min) / maxValue, 1.0) * halfWidth;
-        if (peak < 0.5) peak = 0.5;
-        var left:Float = halfWidth - peak;
-        var right:Float = halfWidth + peak;
-
-        // Every row is its own rectangle, so peaks stay sharp instead of blending into the next row.
-        var topLeft:Int = build_vertex(left, rowY);
-        var topRight:Int = build_vertex(right, rowY);
-        var bottomRight:Int = build_vertex(right, nextY);
-        var bottomLeft:Int = build_vertex(left, nextY);
-        add_quad(topLeft, topRight, bottomRight, bottomLeft);
-
-        rowY = nextY;
-        startIndex = endIndex;
-      }
+      bitmap = new BitmapData(bitmapWidth, bitmapHeight, true, 0);
+      chunkBitmap = bitmap;
+      loadGraphic(FlxGraphic.fromBitmapData(bitmap, false, null, false));
+    }
+    else
+    {
+      bitmap.fillRect(bitmap.rect, 0);
     }
 
-    vertices.length = vertex_count * 2;
-    uvtData.length = vertex_count * 2;
-    indices.length = index_count;
+    var from:Float = Math.max(0, top);
+    var to:Float = Math.min(bottom, chartEditorState.songLengthInPixels);
+    if (to <= from) return;
+
+    bitmap.lock();
+    var base:Null<WaveformData> = waveformData;
+    if (base != null) drawLayer(bitmap, base, baseColor, from, to);
+
+    var overlay:Null<WaveformData> = overlayData;
+    if (overlay != null) drawLayer(bitmap, overlay, overlayColor, from, to);
+    bitmap.unlock();
+  }
+
+  /**
+   * Draw one waveform into the chunk bitmap, one pixel row at a time.
+   */
+  function drawLayer(bitmap:BitmapData, data:WaveformData, color:FlxColor, from:Float, to:Float):Void
+  {
+    segmentIndex = 0;
+
+    var stepHeight:Float = ChartEditorState.STEP_HEIGHT;
+    var halfWidth:Float = bitmap.width / 2;
+    var maxValue:Int = data.maxSampleValue();
+    var pointsPerMs:Float = data.pointsPerSecond() / Constants.MS_PER_SEC;
+    var levelCount:Int = data.mipLevelCount();
+    var timeOffset:Float = Conductor.instance.instrumentalOffset + audioOffsetMs;
+
+    var rowY:Float = from;
+    var startIndex:Float = (stepToMs(rowY / stepHeight) - timeOffset) * pointsPerMs;
+
+    while (rowY < to)
+    {
+      var nextY:Float = Math.min(rowY + 1, to);
+      var endIndex:Float = (stepToMs(nextY / stepHeight) - timeOffset) * pointsPerMs;
+
+      // Pick the level where this row covers at most two points.
+      var level:Int = 0;
+      var count:Float = endIndex - startIndex;
+      while (count >= 2 && level < levelCount - 1)
+      {
+        count *= 0.5;
+        level++;
+      }
+
+      var mip = data.getMipLevel(level);
+      var mipLength:Int = mip.length >> 1;
+      var low:Int = Math.floor(startIndex) >> level;
+      var high:Int = Math.floor(endIndex) >> level;
+
+      var min:Int = 0;
+      var max:Int = 0;
+      if (high >= 0 && low < mipLength)
+      {
+        if (low < 0) low = 0;
+        if (high >= mipLength) high = mipLength - 1;
+        min = maxValue;
+        max = -maxValue;
+        for (i in low...high + 1)
+        {
+          if (mip[i * 2] < min) min = mip[i * 2];
+          if (mip[i * 2 + 1] > max) max = mip[i * 2 + 1];
+        }
+      }
+
+      // Mirrored around the center using the peak size, so both edges match.
+      var peak:Float = Math.min(Math.max(max, -min) / maxValue, 1.0) * halfWidth;
+      var left:Int = Std.int(halfWidth - Math.max(peak, 0.5));
+      var right:Int = Std.int(Math.fceil(halfWidth + Math.max(peak, 0.5)));
+
+      rowRect.setTo(left, rowY - chunkTop, right - left, 1);
+      bitmap.fillRect(rowRect, color);
+
+      rowY = nextY;
+      startIndex = endIndex;
+    }
   }
 
   /**
