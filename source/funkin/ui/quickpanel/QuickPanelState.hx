@@ -384,7 +384,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     panel.pullTabVisual.release(curState);
 
     changeSelection();
-
+    panel.active = true;
     fadeScreen(false);
   }
 
@@ -451,7 +451,11 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     FlxTween.tween(descriptionText, {
       y: descriptionTextY + offset
     }, 0.4, {
-      ease: FlxEase.expoOut
+      ease: FlxEase.expoOut,
+      onComplete: (_) ->
+      {
+        if (out) panel.active = false;
+      }
     });
   }
 
@@ -955,7 +959,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     if (topState == null) return;
 
     blocker = new PanelBlockerSubState();
-    topState.openSubState(blocker);
+    topState.openSubState(blocker); // TODO: Probably use transition?
   }
 
   function closeBlocker():Void

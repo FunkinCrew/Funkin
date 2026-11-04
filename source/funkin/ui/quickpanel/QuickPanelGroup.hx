@@ -493,6 +493,12 @@ class QuickPanelGroup extends FunkinSpriteGroup
     paColor.playAnimation('breathe');
   }
 
+  override function set_active(v:Bool):Bool
+  {
+    grpButtons.active = v;
+    return super.set_active(v);
+  }
+
   /// Helpers
 
   inline function get_closedX():Float return left ? 0 : FlxG.width;
