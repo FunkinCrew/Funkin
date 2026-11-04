@@ -692,7 +692,6 @@ class Project extends HXProject
       'hxvlc',
       'hxdiscord_rpc',
       'hxdiscord_social_sdk',
-      'grig.audio.cpp',
       'extension',
       'funkin.api.discord',
       'funkin.external',
@@ -1597,7 +1596,6 @@ class Project extends HXProject
     if (FEATURE_FUNKVIS.isEnabled(this))
     {
       addHaxelib('funkin.vis'); // Audio visualization
-      addHaxelib('grig.audio'); // Audio data utilities
     }
 
     if (FEATURE_PARTIAL_SOUNDS.isEnabled(this))

@@ -18,7 +18,6 @@ import funkin.modding.IScriptedClass.ICharacterSelectScriptedClass;
 import funkin.modding.events.ScriptEvent;
 import funkin.ui.charSelect.CharacterSelectState;
 import funkin.util.assets.FlxAnimationUtil;
-import funkin.vis.dsp.SpectralAnalyzer;
 
 /**
  * The animations that a character can have in the Character Select screen.
@@ -113,10 +112,7 @@ class CharSelectCharacter extends FunkinSprite implements IBPMSyncedScriptedClas
 
     this.playerId = playerId;
     this.characterType = characterType;
-
     this.playerData = data;
-
-    this.enableVisualizer = visualizer;
     this.globalOffsets = data?.offsets ?? [0, 0];
 
     loadGraphics();
@@ -536,22 +532,6 @@ class CharSelectCharacter extends FunkinSprite implements IBPMSyncedScriptedClas
 
   public function onCreate(event:ScriptEvent):Void
   {
-    if (enableVisualizer && !initializedVisualizer && FlxG.sound.music != null)
-    {
-      @:privateAccess
-      analyzer = new SpectralAnalyzer(FlxG.sound.music._source, 7, 0.1);
-      #if sys
-      // On native it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
-      // So we want to manually change it!
-      @:privateAccess
-      // I don't know WHAT null-safety is complaining about here
-      // - Abnormal
-      @:nullSafety(Off)
-      analyzer.fftN = 512;
-      #end
-
-      initializedVisualizer = true;
-    }
   }
 
   public function onDestroy(event:ScriptEvent):Void
@@ -583,53 +563,13 @@ class CharSelectCharacter extends FunkinSprite implements IBPMSyncedScriptedClas
     super.destroy();
   }
 
-  /**
-   * DEPRECATED VISUALIZER CODE: WILL BE REMOVED IN A FUTURE UPDATE
-   * ONLY HERE FOR BACKWARDS COMPATIBILITY
-   */
-  var analyzer:Null<SpectralAnalyzer>;
-
-  var analyzerLevelsCache:Array<Bar> = new Array<Bar>();
-  var initializedVisualizer:Bool = false;
-  var enableVisualizer:Bool = false;
-
   override public function draw():Void
   {
-    // Skip drawing if the asset path is blank
-    // Prevents the HaxeFlixel logo from showing up at the top left
     if (currentPath.isBlank()) return;
 
     this.alpha *= _transitionAlpha;
 
-    if (analyzer != null) drawFFT();
-
     super.draw();
-  }
-
-  function drawFFT():Void
-  {
-    if (analyzer != null)
-    {
-      analyzerLevelsCache = analyzer.getLevels(analyzerLevelsCache);
-      var frame:Null<animate.internal.Frame> = this.timeline.getLayer('VIZ_bars')?.getFrameAtIndex(animation.curAnim.curFrame) ?? null;
-      var elements:Array<animate.internal.elements.Element> = frame?.elements ?? [];
-      var len:Int = cast Math.min(elements.length, 7);
-
-      for (i in 0...len)
-      {
-        var animFrame:Int = (FlxG.sound.volume == 0 || FlxG.sound.muted) ? 0 : Math.round(analyzerLevelsCache[i].value * 12);
-
-        animFrame = Math.floor(Math.min(12, animFrame));
-        animFrame = Math.floor(Math.max(0, animFrame));
-
-        animFrame = Std.int(Math.abs(animFrame - 12));
-
-        var convertedSymbol = elements[i].toSymbolInstance();
-        convertedSymbol.firstFrame = animFrame;
-
-        elements[i] = convertedSymbol;
-      }
-    }
   }
 }
 

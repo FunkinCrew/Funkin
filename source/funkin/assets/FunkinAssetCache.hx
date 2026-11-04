@@ -1241,7 +1241,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     final buffer:Null<LimeAudioBuffer> = @:privateAccess sound.__buffer;
     if (buffer == null) return;
 
-    final howl:Null<Howl> = cast buffer.src;
+    final howl:Null<Howl> = @:privateAccess buffer.__srcHowl;
     if (howl == null || howl.state() != 'unloaded') return;
 
     howl.load();

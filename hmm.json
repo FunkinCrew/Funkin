@@ -89,14 +89,8 @@
     {
       "name": "funkin.vis",
       "type": "git",
-      "ref": "9b22f76445eb4dc67fae411841c1644f7b4af044",
+      "ref": "f4bef9819cf21c883d1633c46559728086fabf8e",
       "url": "https://github.com/FunkinCrew/funkVis"
-    },
-    {
-      "name": "grig.audio",
-      "type": "git",
-      "ref": "6409f3c6d1b4c52176813d3ede86c0d34e8af2c1",
-      "url": "https://github.com/FunkinCrew/grig.audio"
     },
     {
       "name": "tink_core",
@@ -187,7 +181,7 @@
     {
       "name": "lime",
       "type": "git",
-      "ref": "1a850852071edc3ba4c6044e601495ee1f47057c",
+      "ref": "8d77f6538d8072e7a8fd172fa40bddb62b9a991f",
       "url": "https://github.com/FunkinCrew/lime"
     },
     {
@@ -199,7 +193,7 @@
     {
       "name": "openfl",
       "type": "git",
-      "ref": "1020acd48899d2c70ad3ba2ff883c2b8a17baa08",
+      "ref": "43868e361c6b8dab4efc7326256f59f133e7b4b0",
       "url": "https://github.com/FunkinCrew/openfl"
     },
     {
