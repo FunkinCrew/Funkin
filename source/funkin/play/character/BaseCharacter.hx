@@ -194,14 +194,52 @@ class BaseCharacter extends Bopper implements IRegistryEntry<CharacterData>
    *
    * @param type The type of asset to query
    * @param id The character ID to query.
+   * @param params Optional. Char entry params.
    * @return An array of asset paths, or empty if no assets of that type are required.
    */
   public static function queryAssets(type:AssetType, entryId:String, ?params:CharacterEntryParams):Array<AssetPath>
   {
-    // Specific implementations handle figuring out which assets to load.
+    var results:Array<AssetPath> = queryBaseAssets(type, entryId, params);
 
     var _data:Null<CharacterData> = CharacterRegistry.instance.fetchCharacterData(entryId);
-    if (_data == null) return []; // No assets if data couldn't be parsed.
+    if (_data != null)
+    {
+      switch (_data.renderType)
+      {
+        case CharacterRenderType.AnimateAtlas:
+          results = AnimateAtlasCharacter.queryAssets(type, entryId, params);
+        case CharacterRenderType.MultiAnimateAtlas:
+          results = MultiAnimateAtlasCharacter.queryAssets(type, entryId, params);
+        case CharacterRenderType.Sparrow:
+          results = SparrowCharacter.queryAssets(type, entryId, params);
+        case CharacterRenderType.MultiSparrow:
+          results = MultiSparrowCharacter.queryAssets(type, entryId, params);
+        case CharacterRenderType.Packer:
+          results = PackerCharacter.queryAssets(type, entryId, params);
+        default:
+      }
+    }
+
+    return results;
+  }
+
+  /**
+   * Assets common to every character (like the health icon). Character subclasses `queryAssets` functions should call this,
+   * NOT `BaseCharacter.queryAssets`, to avoid infinite looping (the rooms).
+   *
+   * @param type The type of asset to query
+   * @param id The character ID to query.
+   * @param params Optional. Char entry params.
+   * @return An array of asset paths, or empty if no assets of that type are required.
+   */
+  public static function queryBaseAssets(type:AssetType, entryId:String, ?params:CharacterEntryParams):Array<AssetPath>
+  {
+    // Specific implementations handle figuring out which assets to load.
+
+    var results:Array<funkin.assets.Paths.AssetPath> = [];
+
+    var _data:Null<CharacterData> = CharacterRegistry.instance.fetchCharacterData(entryId);
+    if (_data == null) return results;
 
     // Get the character's health icon path.
     var healthIconId:String = _data?.healthIcon?.id ?? Constants.DEFAULT_HEALTH_ICON;
@@ -236,13 +274,15 @@ class BaseCharacter extends Bopper implements IRegistryEntry<CharacterData>
     ignoreExclusionPref = ['sing'];
 
     _data = CharacterRegistry.instance.fetchCharacterData(this.id);
+
+    var expectedRenderType:CharacterRenderType = params?.renderType ?? _data.renderType;
     if (_data == null)
     {
       throw 'Could not find character data for characterId: $id';
     }
-    else if (_data.renderType != (params?.renderType ?? _data.renderType))
+    else if (_data.renderType != expectedRenderType)
     {
-      throw 'Render type mismatch for character ($id): expected ${renderType}, got ${_data.renderType}';
+      throw 'Render type mismatch for character ($id): expected ${expectedRenderType}, got ${_data.renderType}';
     }
     else
     {
@@ -252,7 +292,7 @@ class BaseCharacter extends Bopper implements IRegistryEntry<CharacterData>
       this.singTimeSteps = _data.singTime;
       this.globalOffsets = _data.offsets;
       this.flipX = _data.flipX;
-      this.renderType = params?.renderType ?? _data.renderType;
+      this.renderType = expectedRenderType;
     }
 
     if (PlayState.instance != null) currentStage = PlayState.instance.currentStage;

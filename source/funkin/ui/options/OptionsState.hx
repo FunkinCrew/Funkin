@@ -32,6 +32,7 @@ import funkin.mobile.util.InAppPurchasesUtil;
 import flixel.util.FlxColor;
 import funkin.assets.Assets;
 import funkin.assets.Paths;
+import funkin.ui.transition.Transition;
 
 /**
  * The main options menu
@@ -450,7 +451,10 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     {
       // Clear the save data.
       funkin.save.Save.clearData();
-      FlxG.switchState(() -> new funkin.InitState());
+      Transition.switchState(() -> new InitState(), {
+        assetQuery: Transition.NO_ASSETS,
+        transition: None
+      });
     };
     prompt.onNo = function()
     {

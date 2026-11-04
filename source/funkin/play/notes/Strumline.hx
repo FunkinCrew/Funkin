@@ -663,7 +663,7 @@ class Strumline extends FlxSpriteGroup
 
       // If the note is miss
       var isOffscreen:Bool = isDownscroll ? note.y > FlxG.height : note.y < -note.height;
-      if (note.handledMiss && isOffscreen)
+      if (isOffscreen && (note.handledMiss || note.hasBeenHit))
       {
         killNote(note);
       }

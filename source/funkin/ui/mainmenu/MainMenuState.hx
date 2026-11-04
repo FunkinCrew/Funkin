@@ -34,6 +34,7 @@ import funkin.util.MathUtil;
 import funkin.util.SwipeUtil;
 import funkin.util.TouchUtil;
 import funkin.util.WindowUtil;
+import funkin.ui.transition.Transition;
 #if FEATURE_DEBUG_MENU
 import funkin.ui.debug.DebugMenuSubState;
 #end
@@ -206,8 +207,8 @@ class MainMenuState extends MusicBeatState
         character: targetCharacter
       };
 
-      funkin.ui.transition.Transition.openSubState(() -> new FreeplayState(params), {
-        assetQuery: FreeplayState.queryAssets.bind(_, params, targetCharacter),
+      Transition.openSubState(() -> new FreeplayState(params), {
+        assetQuery: FreeplayState.queryAssets.bind(_, params, params.character),
         transition: Throbber,
         shouldPurgeCache: false
       });
@@ -580,9 +581,9 @@ class MainMenuState extends MusicBeatState
     if (InputUtil.allPressedWithDebounce([CONTROL, ALT, SHIFT, P]))
     {
       var charID = 'pico';
-      funkin.ui.transition.Transition.switchState(() -> new funkin.ui.charSelect.CharacterUnlockState(charID), {
+      Transition.switchState(() -> new funkin.ui.charSelect.CharacterUnlockState(charID), {
         assetQuery: funkin.ui.charSelect.CharacterUnlockState.queryAssets.bind(_, charID),
-        transition: BlackScreen(Fade(North), None),
+        transition: None,
       });
     }
 

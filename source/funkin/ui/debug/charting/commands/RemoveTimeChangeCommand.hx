@@ -52,6 +52,7 @@ class RemoveTimeChangeCommand implements ChartEditorCommand
 
     state.updateSongTime();
     state.updateGridHeight();
+    state.moveScrollPositionToSong();
     state.updateTimeSignature();
   }
 
@@ -81,6 +82,7 @@ class RemoveTimeChangeCommand implements ChartEditorCommand
 
     state.updateSongTime();
     state.updateGridHeight();
+    state.moveScrollPositionToSong();
     state.updateTimeSignature();
   }
 

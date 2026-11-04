@@ -14,7 +14,10 @@ typedef EventMoveDelta =
   oldDuration:Float,
   newDuration:Float,
   oldLayerName:String,
-  newLayerName:String
+  newLayerName:String,
+  ?easeChanged:Bool,
+  ?oldEase:String,
+  ?newEase:String
 };
 
 class TimelineEvent extends UIEvent

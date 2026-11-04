@@ -1,7 +1,6 @@
 package funkin.ui.debug.cameraeditor.commands;
 
 #if FEATURE_CAMERA_EDITOR
-import funkin.audio.FunkinSound;
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongEventDataRaw;
 import funkin.ui.haxeui.components.editors.timeline.TimelineUtil;
@@ -19,9 +18,16 @@ class MoveResizeEventCommand implements CameraEditorCommand
   var newTime:Float;
   var newDuration:Float;
   var newLayerName:String;
+  var easeChanged:Bool;
+  var oldEase:Null<String>;
+  var newEase:Null<String>;
 
-  public function new(event:SongEventData, oldTime:Float, oldDuration:Float, oldLayerName:String, newTime:Float, newDuration:Float, newLayerName:String)
+  public function new(event:SongEventData, oldTime:Float, oldDuration:Float, oldLayerName:String, newTime:Float, newDuration:Float, newLayerName:String,
+      easeChanged:Bool = false, ?oldEase:String, ?newEase:String)
   {
+    this.easeChanged = easeChanged;
+    this.oldEase = oldEase;
+    this.newEase = newEase;
     this.event = event;
     this.oldTime = oldTime;
     this.oldDuration = oldDuration;
@@ -40,10 +46,11 @@ class MoveResizeEventCommand implements CameraEditorCommand
   {
     event.time = newTime;
     TimelineUtil.setEventDurationSteps(event, newDuration);
+    if (easeChanged) TimelineUtil.setEventField(event, 'ease', newEase);
     var raw:SongEventDataRaw = event;
     raw.editorLayer = newLayerName == 'Default' ? null : newLayerName;
 
-    FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/note-place'));
+    state.playEditSound('ui/editors/chart-editor/charting-sounds/note-place');
 
     if (oldLayerName != newLayerName)
     {
@@ -64,6 +71,7 @@ class MoveResizeEventCommand implements CameraEditorCommand
   {
     event.time = oldTime;
     TimelineUtil.setEventDurationSteps(event, oldDuration);
+    if (easeChanged) TimelineUtil.setEventField(event, 'ease', oldEase);
     var raw:SongEventDataRaw = event;
     raw.editorLayer = oldLayerName == 'Default' ? null : oldLayerName;
 
@@ -73,7 +81,7 @@ class MoveResizeEventCommand implements CameraEditorCommand
       if (block != null) state.timeline.viewport.syncEventBlockLayer(block, oldLayerName);
     }
 
-    FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/undo'));
+    state.playEditSound('ui/editors/chart-editor/charting-sounds/undo');
 
     state.timeline.viewport.refreshLayout();
     state.cachedEventIndex = 0;
@@ -91,7 +99,7 @@ class MoveResizeEventCommand implements CameraEditorCommand
    */
   public function shouldAddToHistory(state:CameraEditorState):Bool
   {
-    return oldTime != newTime || oldDuration != newDuration || oldLayerName != newLayerName;
+    return oldTime != newTime || oldDuration != newDuration || oldLayerName != newLayerName || easeChanged;
   }
 
   public function toString():String

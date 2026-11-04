@@ -529,7 +529,8 @@ class FreeplayState extends MusicBeatSubState
       @:privateAccess
       this._parentState._constructor = () ->
       {
-        return FreeplayState.build(null);
+        return FreeplayState.build({
+        });
       }
     }
 
@@ -1924,7 +1925,7 @@ class FreeplayState extends MusicBeatSubState
 
   override public function draw():Void
   {
-    if (criticalFailure) return;
+    if (criticalFailure && subState == null) return;
 
     super.draw();
   }
@@ -1959,11 +1960,15 @@ class FreeplayState extends MusicBeatSubState
     #if FEATURE_DEBUG_FUNCTIONS
     if (FlxG.keys.justPressed.P)
     {
-      FlxG.switchState(() -> FreeplayState.build({
-        {
-          character: currentCharacterId == 'pico' ? Constants.DEFAULT_CHARACTER : 'pico',
-        }
-      }));
+      var params:FreeplayStateParams = {
+        character: currentCharacterId == 'pico' ? Constants.DEFAULT_CHARACTER : 'pico'
+      };
+
+      funkin.ui.transition.Transition.openSubState(() -> new FreeplayState(params), {
+        assetQuery: FreeplayState.queryAssets.bind(_, params, params.character),
+        transition: Throbber,
+        shouldPurgeCache: false
+      });
     }
 
     if (FlxG.keys.justPressed.T)
@@ -2215,11 +2220,15 @@ class FreeplayState extends MusicBeatSubState
       dj?.onConfirm();
       new FlxTimer().start(styleData?.getStartDelay(), function(tmr:FlxTimer)
       {
-        FlxG.switchState(() -> new ChartEditorState({
+        var chartEditorParams = {
           loadFromTemplate: targetSongID,
           targetSongDifficulty: currentDifficulty,
           targetSongVariation: currentVariation,
-        }));
+        };
+        Transition.switchState(() -> new ChartEditorState(chartEditorParams), {
+          assetQuery: ChartEditorState.queryAssets.bind(_, chartEditorParams),
+          transition: BlackScreen(None, Fade(South))
+        });
       });
       return;
     }
@@ -2264,11 +2273,15 @@ class FreeplayState extends MusicBeatSubState
       dj?.onConfirm();
       new FlxTimer().start(styleData?.getStartDelay(), function(tmr:FlxTimer)
       {
-        FlxG.switchState(() -> new CameraEditorState({
+        var cameraEditorParams = {
           loadFromTemplate: targetSongID,
           targetSongDifficulty: currentDifficulty,
           targetSongVariation: currentVariation,
-        }));
+        };
+        Transition.switchState(() -> new CameraEditorState(cameraEditorParams), {
+          assetQuery: Transition.NO_ASSETS, // CameraEditorState.queryAssets.bind(_, cameraEditorParams),
+          transition: BlackScreen(None, Fade(South))
+        });
       });
       return;
     }
@@ -2326,12 +2339,17 @@ class FreeplayState extends MusicBeatSubState
         return;
       }
 
-      FlxG.switchState(() -> new StageEditorState({
+      var stageEditorParams = {
         targetStageId: targetDifficulty.stage,
         targetBfChar: targetDifficulty.characters.player,
         targetGfChar: targetDifficulty.characters.girlfriend,
         targetDadChar: targetDifficulty.characters.opponent
-      }));
+      };
+
+      Transition.switchState(() -> new StageEditorState(stageEditorParams), {
+        assetQuery: Transition.NO_ASSETS, // StageEditorState.queryAssets.bind(_, stageEditorParams),
+        transition: BlackScreen(None, Fade(South))
+      });
       return;
     }
     #end
@@ -3220,7 +3238,7 @@ class FreeplayState extends MusicBeatSubState
       });
     }
 
-    new FlxTimer().start(styleData?.getStartDelay(), function(tmr:FlxTimer)
+    new FlxTimer().start(styleData?.getStartDelay(), (tmr:FlxTimer) ->
     {
       FunkinSound.emptyPartialQueue();
 
@@ -3235,7 +3253,7 @@ class FreeplayState extends MusicBeatSubState
         });
       }
       #end
-      funnyCam.fade(FlxColor.BLACK, 0.2, false, function()
+      funnyCam.fade(FlxColor.BLACK, 0.2, false, () ->
       {
         criticalFailure = true;
 
@@ -3260,9 +3278,8 @@ class FreeplayState extends MusicBeatSubState
           // playbackRate: 0.5,
           // botPlayMode: true,
         }, {
-          transition: LoadingScreen(Fade(North), Fade(South)),
-          shouldStopMusic: true,
-          shouldPurgeCache: true,
+          transition: LoadingScreen(None, Fade(South)),
+          shouldStopMusic: true
         }, false);
       });
     });
@@ -3506,18 +3523,34 @@ class FreeplayState extends MusicBeatSubState
 
   /**
    * Build an instance of `FreeplayState` that is above the `MainMenuState`.
+   * @param params FreeplayState params.
    * @return The MainMenuState with the FreeplayState as a substate.
    */
   public static function build(?params:FreeplayStateParams):MusicBeatState
   {
-    // Since CUTOUT_WIDTH is static it might retain some old incorrect values so we update it before loading freeplay
     CUTOUT_WIDTH = FullScreenScaleMode.gameCutoutSize.x / 1.5;
-    var result:MainMenuState;
-    result = new MainMenuState(true);
+    var result:MainMenuState = new MainMenuState();
+
+    // Assets were already loaded by whoever called Transition.switchState (see buildAssetQuery).
     result.openSubState(new FreeplayState(params));
+
     result.persistentUpdate = false;
     result.persistentDraw = true;
     return result;
+  }
+
+  /**
+   * Helper asset query covering everything needed to open Freeplay over the MainMenuState.
+   * @param type Asset Type
+   * @param params FreeplayState params.
+   * @return The list of assets to query.
+   */
+  public static function buildAssetQuery(type:AssetType, params:FreeplayStateParams):Array<AssetPath>
+  {
+    var results:Array<AssetPath> = [];
+    results.appendUnique(MainMenuState.queryAssets(type));
+    results.appendUnique(FreeplayState.queryAssets(type, params, params.character));
+    return results;
   }
 
   function favoriteSong():Void

@@ -42,40 +42,40 @@ class MultiSparrowCharacter extends BaseCharacter
    * @param charId The character ID, used to look up the specific assets.
    * @return An array of asset paths, or empty if no assets of that type are required.
    */
-  public static function queryAssets(type:AssetType, charId:String):Array<AssetPath>
+  public static function queryAssets(type:AssetType, entryId:String, ?params:CharacterEntryParams):Array<AssetPath>
   {
     // trace('ASSETS: Querying assets for MultiSparrow character "${charId}"')
     // Specific implementations handle figuring out which assets to load.
-    var result:Array<AssetPath> = BaseCharacter.queryAssets(type, charId);
+    var results:Array<AssetPath> = BaseCharacter.queryBaseAssets(type, entryId, params);
 
-    var _data:Null<CharacterData> = CharacterRegistry.instance.fetchCharacterData(charId);
-    if (_data == null) return result; // No assets if data couldn't be parsed.
+    var _data:Null<CharacterData> = CharacterRegistry.instance.fetchCharacterData(entryId);
+    if (_data == null) return results;
 
     switch (type)
     {
       case IMAGE:
-        result.pushUnique(Paths.image(_data.assetPath));
+        results.pushUnique(Paths.image(_data.assetPath));
 
         for (animation in _data.animations)
         {
           if (animation.assetPath == null) continue;
-          result.pushUnique(Paths.image(animation.assetPath));
+          results.pushUnique(Paths.image(animation.assetPath));
         }
 
       case XML:
-        result.pushUnique(Paths.xml(_data.assetPath));
+        results.pushUnique(Paths.xml(_data.assetPath));
 
         for (animation in _data.animations)
         {
           if (animation.assetPath == null) continue;
-          result.pushUnique(Paths.xml(animation.assetPath));
+          results.pushUnique(Paths.xml(animation.assetPath));
         }
 
       default:
         // Nothing
     }
 
-    return result;
+    return results;
   }
 
   public function new(id:String)

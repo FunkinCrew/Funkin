@@ -22,6 +22,8 @@ import funkin.input.Controls;
 import funkin.ui.quickpanel.QuickPanelState;
 import funkin.ui.quickpanel.QuickPanelPullTab;
 import flixel.FlxSubState;
+import funkin.ui.options.OptionsState;
+import funkin.ui.transition.Transition;
 //
 // ~PATHS~
 //
@@ -178,7 +180,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
       callback: () ->
       {
         stopMusic();
-        funkin.ui.transition.Transition.switchState(() -> new funkin.ui.title.TitleState(), {
+        Transition.switchState(() -> new funkin.ui.title.TitleState(), {
           assetQuery: funkin.ui.title.TitleState.queryAssets,
           transition: BlackScreen(Fade(North), Fade(South))
         });
@@ -192,7 +194,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
       callback: () ->
       {
         stopMusic();
-        funkin.ui.transition.Transition.switchState(() -> new funkin.ui.modmenu.ModMenuState(), {
+        Transition.switchState(() -> new funkin.ui.modmenu.ModMenuState(), {
           assetQuery: funkin.ui.modmenu.ModMenuState.queryAssets,
           transition: BlackScreen(Fade(North), Fade(South))
         });
@@ -208,7 +210,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
         var freeplayParams = {
           fromCharSelect: true
         };
-        funkin.ui.transition.Transition.switchState(() -> funkin.ui.freeplay.FreeplayState.build(freeplayParams), {
+        Transition.switchState(() -> funkin.ui.freeplay.FreeplayState.build(freeplayParams), {
           assetQuery: funkin.ui.freeplay.FreeplayState.queryAssets.bind(_, freeplayParams),
           transition: BlackScreen(None, Fade(South))
         });
@@ -236,9 +238,10 @@ class QuickPanelGroup extends FunkinSpriteGroup
         @:privateAccess
         var path:String = s._asc?.fullyQualifiedName ?? Type.getClassName(Type.getClass(FlxG.state));
         funkin.ui.options.OptionsState.backState = path;
-        funkin.ui.transition.Transition.switchState(() -> new funkin.ui.options.OptionsState(), {
-          assetQuery: funkin.ui.options.OptionsState.queryAssets,
-          transition: BlackScreen(Fade(North), Fade(South))
+        Transition.switchState(() -> new OptionsState(), {
+          assetQuery: OptionsState.queryAssets,
+          transition: None,
+          shouldPurgeCache: false
         });
       },
       icon: 'options',

@@ -11,6 +11,7 @@ import funkin.ui.credits.CreditsData.CreditsDataRole;
 import funkin.ui.credits.CreditsData.CreditsDataMember;
 import funkin.assets.Paths;
 import funkin.assets.Assets;
+import funkin.ui.transition.Transition;
 
 /**
  * The state used to display the credits scroll.
@@ -281,7 +282,7 @@ class CreditsState extends MusicBeatState
   function exit():Void
   {
     FlxG.keys.enabled = false;
-    funkin.ui.transition.Transition.switchState(() -> new MainMenuState(), {
+    Transition.switchState(() -> new MainMenuState(), {
       assetQuery: MainMenuState.queryAssets,
       transition: BlackScreen(None, None)
     });

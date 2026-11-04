@@ -87,7 +87,7 @@ class FlattenLayerCommand implements CameraEditorCommand
     viewport.remapForInsert(idx);
     layers.insert(idx, layer);
 
-    FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/undo'));
+    state.playEditSound('ui/editors/chart-editor/charting-sounds/undo');
 
     for (entry in flattenedEvents)
     {

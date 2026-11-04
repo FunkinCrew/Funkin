@@ -82,9 +82,7 @@ class AdMobUtil
    * Ad unit ID for displaying rewarded ads.
    */
   #if NO_TESTING_ADS
-  @:envField({
-    mandatoryIfDefined: "FEATURE_MOBILE_ADVERTISEMENTS"
-  })
+  @:envField
   static final ADMOB_REWARDED_AD_UNIT_ID:Null<String>;
   #else
   static final ADMOB_REWARDED_AD_UNIT_ID:Null<String> = #if android "5224354917" #elseif ios "6978759866" #else null #end;
@@ -245,7 +243,7 @@ class AdMobUtil
    * @param onAdDismissed Callback function to be called when the ad is dismissed. This can get called if the ad failed to load, so check if the `onRewardEarned` callback was dispatched before continuing.
    */
   public static function loadRewarded(onRewardedEarned:Null<String>->Null<Int>->Void,
-    onAdDismissed:Null<String>->Null<Int>->Void):Void
+    onAdDismissed:Void->Void):Void
   {
     if (AdMobUtil.ADMOB_PUBLISHER != null && AdMobUtil.ADMOB_REWARDED_AD_UNIT_ID != null)
     {

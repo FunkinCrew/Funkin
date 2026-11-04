@@ -20,6 +20,7 @@ import funkin.ui.transition.loading.LoadingState;
 import funkin.ui.transition.loading.StickerLoadingState;
 import funkin.ui.transition.StickerTransition;
 import funkin.ui.transition.loading.ThrobberLoadingState;
+import funkin.ui.transition.progress.FunkinProgressBar;
 import funkin.util.FlxStateUtil;
 import funkin.util.tasks.TaskHandler;
 import funkin.assets.Assets;
@@ -137,8 +138,17 @@ class Transition
     // We keep all the assets for all loading screens cached,
     // because we don't want to have a loading screen for a loading screen.
     results.append(LoadingState.queryAssets(type));
-    results.append(FunkayLoadingState.queryAssets(type));
+    results.append(FunkinProgressBar.queryAssets(type));
     results.append(ThrobberLoadingState.queryAssets(type));
+
+    // Scripted loading screens must keep their assets cached before a transition starts.
+    for (scriptedClass in LoadingState.listScriptClasses())
+    {
+      if (!LoadingState.scriptStaticHas(scriptedClass, 'queryAssets')) continue;
+
+      var scriptedAssets:Array<AssetPath> = LoadingState.scriptStaticCall(scriptedClass, 'queryAssets', [type]);
+      if (scriptedAssets != null) results.appendUnique(scriptedAssets);
+    }
 
     switch (type)
     {
@@ -230,7 +240,10 @@ class Transition
       case TransitionType.BlackWithThrobber(fadeIn, fadeOut):
         var onTransOutDone:Void->Void = () ->
         {
-          FlxStateUtil.openSubStateAtTop(new ThrobberLoadingState(State(builder), params, false));
+          FlxStateUtil.openSubStateAtTop(new ThrobberLoadingState(State(builder), params, {
+            transparent: false,
+            delay: 0.0,
+          }));
         };
 
         prepareFadeOut(fadeOut);
@@ -239,7 +252,10 @@ class Transition
       case TransitionType.Throbber:
         var onTransOutDone:Void->Void = () ->
         {
-          FlxStateUtil.openSubStateAtTop(new ThrobberLoadingState(State(builder), params, true));
+          FlxStateUtil.openSubStateAtTop(new ThrobberLoadingState(State(builder), params, {
+            transparent: true,
+            delay: 1.0,
+          }));
         };
 
         // Make sure to reset the fade to None,
@@ -255,6 +271,16 @@ class Transition
 
         prepareStickerOut(stickerLoadingState);
         prepareStickerIn(stickerLoadingState);
+
+      case TransitionType.Custom(name, fadeIn, fadeOut):
+        var onTransOutDone:Void->Void = () ->
+        {
+          var loadingState:LoadingState = createCustomLoadingState(name, State(builder), params);
+          FlxStateUtil.openSubStateAtTop(loadingState);
+        };
+
+        prepareFadeOut(fadeOut);
+        prepareFadeIn(fadeIn, onTransOutDone);
     }
   }
 
@@ -329,7 +355,10 @@ class Transition
       case TransitionType.BlackWithThrobber(fadeIn, fadeOut):
         var onTransOutDone:Void->Void = () ->
         {
-          FlxStateUtil.openSubStateAtTop(new ThrobberLoadingState(SubState(builder), params, false));
+          FlxStateUtil.openSubStateAtTop(new ThrobberLoadingState(SubState(builder), params, {
+            transparent: false,
+            delay: 0.0
+          }));
         };
 
         prepareFadeOut(fadeOut);
@@ -338,7 +367,10 @@ class Transition
       case TransitionType.Throbber:
         var onTransOutDone:Void->Void = () ->
         {
-          FlxStateUtil.openSubStateAtTop(new ThrobberLoadingState(SubState(builder), params, true));
+          FlxStateUtil.openSubStateAtTop(new ThrobberLoadingState(SubState(builder), params, {
+            transparent: true,
+            delay: 1.0
+          }));
         };
 
         // Make sure to reset the fade to None,
@@ -353,6 +385,16 @@ class Transition
         });
         prepareStickerOut(stickerLoadingState);
         prepareStickerIn(stickerLoadingState);
+
+      case TransitionType.Custom(name, fadeIn, fadeOut):
+        var onTransOutDone:Void->Void = () ->
+        {
+          var loadingState:LoadingState = createCustomLoadingState(name, SubState(builder), params);
+          FlxStateUtil.openSubStateAtTop(loadingState);
+        };
+
+        prepareFadeOut(fadeOut);
+        prepareFadeIn(fadeIn, onTransOutDone);
     }
   }
 
@@ -442,6 +484,15 @@ class Transition
       };
       Transition.switchState(targetState, buildTransitionParams(assetQuery, priorityAssetQuery, transitionParams));
     }
+  }
+
+  static function createCustomLoadingState(className:String, target:TransitionTarget, params:TransitionParams):LoadingState
+  {
+    var loadingState:Null<LoadingState> = LoadingState.scriptInit(className, target, params);
+    if (loadingState != null) return loadingState;
+
+    trace('[TRANSITION] Failed to create scripted loading state "${className}". Falling back to the default loading screen.');
+    return new LoadingState(FlxColor.BLACK, target, params);
   }
 
   static function prepareFadeIn(fadeType:FadeType, onTransOutDone:() -> Void):Void
@@ -735,8 +786,9 @@ enum TransitionType
 
   /**
    * Display no transition, but display a throbber in the bottom right.
-   * Suitable for when you need a loading screen but don't want to switch to another screen,
-   * such as Freeplay.
+   * Since the background is transparent and the throbber only appears after a delay,
+   * this essentially acts like None, but with a guard to show a throbber only if loading takes longer than expected.
+   * Suitable for when you need a loading screen but don't want to switch to another screen.
    */
   Throbber;
 
@@ -745,6 +797,16 @@ enum TransitionType
    * fadeIn and fadeOut are both custom here.
    */
   Sticker(stickerPack:String);
+
+  /**
+   * Use a scripted LoadingState class to display the loading screen.
+   * The class must extend LoadingState and provide a constructor accepting
+   * (target:TransitionTarget, params:TransitionParams).
+   * @param name The fully-qualified name of the scripted LoadingState class.
+   * @param fadeIn Define how to transition to the loading screen.
+   * @param fadeOut Define how to transition from the loading screen.
+   */
+  Custom(name:String, fadeIn:FadeType, fadeOut:FadeType);
 }
 
 /**

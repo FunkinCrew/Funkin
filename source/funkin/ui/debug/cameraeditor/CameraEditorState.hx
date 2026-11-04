@@ -76,6 +76,7 @@ import funkin.ui.haxeui.components.editors.timeline.TimelineEvent;
 import funkin.ui.haxeui.components.editors.timeline.TimelineLayerData;
 import funkin.ui.haxeui.components.editors.timeline.TimelineUtil;
 import funkin.ui.mainmenu.MainMenuState;
+import funkin.ui.transition.Transition;
 import funkin.ui.transition.preload.hotreload.HotReloadState.HotReloadStateParams;
 import funkin.util.FileUtil;
 import funkin.util.InputUtil;
@@ -235,6 +236,19 @@ class CameraEditorState extends UIState implements ConsoleClass
   public function invalidateCameraReplay():Void
   {
     replayPosition = -1;
+  }
+
+  /**
+   * Whether a full camera replay is waiting for the next frame.
+   */
+  var cameraReplayPending:Bool = false;
+
+  /**
+   * Asks for a full camera replay on the next frame.
+   */
+  public function requestCameraReplay():Void
+  {
+    cameraReplayPending = true;
   }
 
   function trackPlayAnimationEvent(eventData:SongEventData):Void
@@ -501,7 +515,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   function get_isHaxeUIFocused():Bool
   {
-    return FocusManager.instance.focus != null;
+    return funkin.util.HaxeUIFocusUtil.isFocused();
   }
 
   /**
@@ -575,6 +589,32 @@ class CameraEditorState extends UIState implements ConsoleClass
    * A timer used to auto-save the chart after a period of inactivity.
    */
   var autoSaveTimer:Null<FlxTimer> = null;
+
+  /*
+   * Toasty for notifications.
+   */
+  var toastText:Null<FlxText> = null;
+
+  /**
+   * The tween that fades out the toast text.
+   */
+  var toastTween:Null<FlxTween> = null;
+
+  /**
+   * Whether an edit sound already played this frame.
+   */
+  var editSoundPlayed:Bool = false;
+
+  /**
+   * Plays an editing sound, at most once per frame.
+   * @param path The sound path, as passed to `Paths.sound`.
+   */
+  public function playEditSound(path:String):Void
+  {
+    if (editSoundPlayed) return;
+    editSoundPlayed = true;
+    FunkinSound.playOnce(Paths.sound(path));
+  }
 
   // History
 
@@ -651,6 +691,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     WindowManager.instance.reset();
     instance = this;
+    TimelineUtil.clearSchemaCache();
 
     chart.savedChanged.add(onChartSavedChanged);
     chart.workingFileChanged.add(onChartWorkingFileChanged);
@@ -722,6 +763,14 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     add(cameraRect);
     cameraRect.cameras = [camGame];
+
+    toastText = new FlxText(0, 0, 0, '', 16);
+    toastText.setBorderStyle(OUTLINE, FlxColor.BLACK, 1);
+    toastText.scrollFactor.set();
+    toastText.cameras = [camHUD];
+    toastText.alpha = 0;
+    toastText.zIndex = 100000;
+    add(toastText);
     // add(vCamDebug);
     vCamDebug.zIndex = cameraRect.zIndex + 1;
 
@@ -1066,6 +1115,13 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   override public function update(elapsed:Float):Void
   {
+    editSoundPlayed = false;
+
+    if (cameraReplayPending)
+    {
+      cameraReplayPending = false;
+      replayCameraTimeline(conductorInUse.songPosition, true);
+    }
     if (criticalFailure) return;
 
     Preferences.debugDisplay == DebugDisplayMode.Off ? menubar.paddingLeft = null : menubar.paddingLeft = 256;
@@ -1114,7 +1170,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       timeline.viewport.tick(elapsed);
       timeline.viewport.handleTrackpadScroll();
     }
-    if (mainView != null && !isCursorOverHaxeUI) mainView.handleTrackpadScroll();
+    if (mainView != null && (FlxG.mouse.deltaWheel.x != 0 || FlxG.mouse.deltaWheel.y != 0) && !isCursorOverHaxeUI) mainView.handleTrackpadScroll();
 
     super.update(elapsed);
 
@@ -1730,25 +1786,18 @@ class CameraEditorState extends UIState implements ConsoleClass
     {
       var children:Array<CameraEditorCommand> = [];
       var finalSelection:Array<SongEventData> = [];
+      var resized:Bool = false;
       for (d in e.moveDeltas)
       {
-        children.push(new MoveResizeEventCommand(d.event, d.oldTime, d.oldDuration, d.oldLayerName, d.newTime, d.newDuration, d.newLayerName));
+        children.push(new MoveResizeEventCommand(d.event, d.oldTime, d.oldDuration, d.oldLayerName, d.newTime, d.newDuration, d.newLayerName,
+          d.easeChanged ?? false, d.oldEase, d.newEase));
         finalSelection.push(d.event);
+        if (d.oldDuration != d.newDuration || d.easeChanged == true) resized = true;
       }
 
-      this.performCommand(new CompoundCommand(children, 'Move ${children.length} Events', finalSelection));
-
-      songEvents.sort(SortUtil.eventDataByTime.bind(FlxSort.ASCENDING));
-      cachedEventIndex = 0;
-      completedEvents = [];
-    });
-
-    timeline.viewport.registerEvent(TimelineEvent.EVENT_RESIZED, function(e:TimelineEvent)
-    {
+      var verb:String = resized ? 'Resize' : 'Move';
+      this.performCommand(new CompoundCommand(children, '$verb ${children.length} Events', finalSelection));
       this.loadSelectedSongEvent();
-      var layerName:String = e.eventData.editorLayer ?? 'Default';
-      var cmd = new MoveResizeEventCommand(e.eventData, e.oldTime, e.oldDuration, layerName, e.newTime, e.newDuration, layerName);
-      this.performCommand(cmd);
 
       songEvents.sort(SortUtil.eventDataByTime.bind(FlxSort.ASCENDING));
       cachedEventIndex = 0;
@@ -2349,7 +2398,7 @@ class CameraEditorState extends UIState implements ConsoleClass
               // Write a backup, and remember we have one for next time.
               saveBackup();
 
-              funkin.ui.transition.Transition.switchState(() -> new MainMenuState(), {
+              Transition.switchState(() -> new MainMenuState(), {
                 assetQuery: MainMenuState.queryAssets,
                 transition: BlackScreen(None, None)
               });
@@ -2363,7 +2412,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     else
     {
       // No need to show confirmation, just exit immediately.
-      funkin.ui.transition.Transition.switchState(() -> new MainMenuState(), {
+      Transition.switchState(() -> new MainMenuState(), {
         assetQuery: MainMenuState.queryAssets,
         transition: BlackScreen(None, None)
       });
@@ -2410,11 +2459,8 @@ class CameraEditorState extends UIState implements ConsoleClass
       currentStage.kill();
       currentStage = null;
     }
-    FunkinAssetCache.instance.preparePurgeCache();
 
     destroyHaxeUIComponents();
-
-    FunkinAssetCache.instance.purgeCache(true);
 
     writePreferences(!saved);
     resetWindowTitle();
@@ -2529,7 +2575,7 @@ class CameraEditorState extends UIState implements ConsoleClass
         hasClipboardEvent = true;
 
         var plural = selectedSongEvents.length != 1 ? 'events' : 'event';
-        this.success('Copy Successful', 'Copied ${selectedSongEvents.length} $plural to clipboard.');
+        showToast('Copied ${selectedSongEvents.length} $plural');
       case [FlxKey.X, true, false, false, true]: // ctrl + x -> cut
         SongDataUtils.writeItemsToClipboard({
           notes: [],
@@ -2606,6 +2652,21 @@ class CameraEditorState extends UIState implements ConsoleClass
     if (pasteMs > timeline.viewport.songLengthMs) pasteMs = timeline.viewport.songLengthMs;
 
     return pasteMs;
+  }
+
+  /**
+   * Shows a toasty notification above the timeline.
+   * @param message The text to show.
+   */
+  public function showToast(message:String):Void
+  {
+    if (toastText == null) return;
+    toastTween?.cancel();
+    toastText.text = message;
+    toastText.x = FlxG.width - toastText.width - 10;
+    toastText.y = timeline.screenTop - toastText.height - 4;
+    toastText.alpha = 1;
+    toastTween = FlxTween.tween(toastText, {alpha: 0}, 0.4, {startDelay: 1.2});
   }
 
   /**
@@ -2867,12 +2928,17 @@ class CameraEditorState extends UIState implements ConsoleClass
         if (f != null) f.focus = false;
       }
 
-      FlxG.switchState(() -> new ChartEditorState({
+      var chartEditorParams = {
         loadFromPath: this.currentWorkingFilePath,
         targetSongDifficulty: this.currentDifficulty,
         targetSongVariation: this.currentVariation,
         targetSongPosition: startTimestamp,
-      }));
+      };
+
+      Transition.switchState(() -> new ChartEditorState(chartEditorParams), {
+        assetQuery: ChartEditorState.queryAssets.bind(_, chartEditorParams),
+        transition: BlackScreen(None, Fade(South))
+      });
     }
   }
 

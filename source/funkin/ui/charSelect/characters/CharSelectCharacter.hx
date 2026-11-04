@@ -4,7 +4,10 @@ import flixel.FlxCamera;
 import flixel.graphics.frames.FlxFramesCollection;
 import flixel.math.FlxPoint;
 import funkin.data.animation.AnimationData;
+import funkin.assets.Assets.AssetType;
+import funkin.assets.Paths.AssetPath;
 import funkin.data.freeplay.player.PlayerData;
+import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
 import funkin.modding.IScriptedClass.IBPMSyncedScriptedClass;
@@ -101,6 +104,134 @@ class CharSelectCharacter extends FunkinSprite implements IBPMSyncedScriptedClas
     playAnimation(IDLE, true);
 
     animation.onFinish.add(onAnimationFinish);
+  }
+
+  /**
+   * Resolve the data used to create a given character on the Character Select screen.
+   * so we can always agree on which asset path, render type and animations a character ends up with.
+   *
+   * @param playerId The ID of the playable character. Ignored for LOCKED_PLAYER.
+   * @param characterType Which character to resolve.
+   * @return data for the character, or null if the playable character doesn't have any (like no GF).
+   */
+  public static function getCharacterData(playerId:String,
+    characterType:CharacterSelectType):Null<PlayerCharSelectCharacterData>
+  {
+    if (characterType == LOCKED_PLAYER)
+    {
+      return {
+        assetPath: 'ui/character-select/characters/locked',
+        animations: PlayerCharSelectData.getDefaultAnimations(LOCKED_PLAYER),
+        atlasSettings: {
+          cacheOnLoad: true,
+          filterQuality: 2, // LOW
+        }
+      };
+    }
+
+    var playerCSData:Null<PlayerCharSelectData> = PlayerRegistry.instance.fetchEntry(playerId)?.getCharSelectData();
+    if (playerCSData == null) return null;
+
+    if (characterType == GF)
+    {
+      var girlfriendCSData:Null<PlayerCharSelectGFData> = playerCSData.gf;
+      if (girlfriendCSData == null) return null;
+
+      return {
+        assetPath: girlfriendCSData.characterData?.assetPath ?? girlfriendCSData.assetPath,
+        renderType: girlfriendCSData.characterData?.renderType ?? 'animateatlas',
+        scriptClass: girlfriendCSData.characterData?.scriptClass,
+        animations: girlfriendCSData.characterData?.animations,
+        atlasSettings: girlfriendCSData.characterData?.atlasSettings,
+        danceEvery: girlfriendCSData.characterData?.danceEvery,
+        offsets: girlfriendCSData.characterData?.offsets ?? [0, 0]
+      };
+    }
+
+    var playerParams:PlayerCharSelectCharacterData = {
+      assetPath: (playerCSData.characterData?.assetPath ?? playerCSData.assetPath) ?? 'ui/character-select/characters/${playerId}',
+      renderType: playerCSData.characterData?.renderType ?? 'animateatlas',
+      scriptClass: playerCSData.characterData?.scriptClass,
+      animations: playerCSData.characterData?.animations,
+      atlasSettings: playerCSData.characterData?.atlasSettings,
+      danceEvery: playerCSData.characterData?.danceEvery,
+      offsets: playerCSData.characterData?.offsets ?? [0, 0]
+    };
+
+    // Additional check for if the asset path is blank... somehow.
+    if (playerParams.assetPath.isBlank())
+    {
+      playerParams.assetPath = 'ui/character-select/characters/${playerId}';
+    }
+
+    return playerParams;
+  }
+
+  /**
+   * Return a list of all AssetPaths that a Character Select character depends on to load.
+   *
+   * @param type The type of AssetPath to return a list of paths for.
+   * @param playerId The ID of the playable character.
+   * @param characterType Which character to query.
+   * @return The assets that the loading screen should cache.
+   */
+  public static function queryAssets(type:AssetType,
+    playerId:String,
+    characterType:CharacterSelectType):Array<AssetPath>
+  {
+    var results:Array<AssetPath> = [];
+
+    var data:Null<PlayerCharSelectCharacterData> = getCharacterData(playerId, characterType);
+    var assetPath:Null<String> = data?.assetPath;
+    if (data == null || assetPath == null || assetPath.isBlank()) return results;
+
+    var startPath:String = 'gameplay/playable-characters/$playerId';
+
+    var renderType:String = data.renderType ?? 'animateatlas';
+    switch (renderType)
+    {
+      case 'animateatlas':
+        var atlasPath:String = funkin.assets.Paths.formatRelative(assetPath, startPath);
+        switch (type)
+        {
+          case IMAGE:
+            results.append(funkin.assets.Paths.animateAtlas(atlasPath).image());
+          case JSON:
+            results.append(funkin.assets.Paths.animateAtlas(atlasPath).json());
+          default:
+            // No assets.
+        }
+
+      case 'sparrow', 'packer', 'multisparrow':
+        var allAssetPaths:Array<String> = [assetPath];
+        if (renderType == 'multisparrow')
+        {
+          for (animation in (data.animations ?? []))
+          {
+            if (animation.assetPath != null && !allAssetPaths.contains(animation.assetPath)) allAssetPaths.push(animation.assetPath);
+          }
+        }
+
+        for (path in allAssetPaths)
+        {
+          var imagePath:String = haxe.io.Path.withoutExtension(funkin.assets.Paths.formatRelative(path, startPath, Constants.EXT_IMAGE));
+          switch (type)
+          {
+            case IMAGE:
+              results.push(funkin.assets.Paths.image(imagePath));
+            case XML if (renderType != 'packer'):
+              results.push(funkin.assets.Paths.xml(imagePath));
+            case TEXT if (renderType == 'packer'):
+              results.push(funkin.assets.Paths.txt(imagePath));
+            default:
+              // No assets.
+          }
+        }
+
+      default:
+    }
+
+    return results;
   }
 
   /**

@@ -3,9 +3,11 @@ package funkin.ui.debug.cameraeditor.handlers;
 #if FEATURE_CAMERA_EDITOR
 import funkin.data.event.SongEventRegistry;
 import funkin.play.event.SongEvent;
+import funkin.ui.debug.cameraeditor.components.BaseEventContainer;
 import funkin.ui.debug.cameraeditor.components.EditorContainer;
 import funkin.ui.debug.cameraeditor.components.FocusCameraContainer;
 import funkin.ui.debug.cameraeditor.components.PlayAnimationContainer;
+import funkin.ui.debug.cameraeditor.components.SharedPropertiesContainer;
 import funkin.ui.debug.cameraeditor.components.ZoomCameraContainer;
 import haxe.ui.containers.VBox;
 import haxe.ui.core.Component;
@@ -51,6 +53,11 @@ class CameraEditorPropertiesPanelHandler
   static final containers:Map<String, Class<EditorContainer>> = new Map();
 
   /**
+   * The panel used when the selected events are of different kinds.
+   */
+  static inline var SHARED_KIND:String = '__shared__';
+
+  /**
    * Bootstrap the registry. Called once from `CameraEditorState.create()`.
    */
   public static function initialize():Void
@@ -58,6 +65,7 @@ class CameraEditorPropertiesPanelHandler
     registerContainer('FocusCamera', FocusCameraContainer);
     registerContainer('ZoomCamera', ZoomCameraContainer);
     registerContainer('PlayAnimation', PlayAnimationContainer);
+    registerContainer(SHARED_KIND, SharedPropertiesContainer);
   }
 
   /**
@@ -66,7 +74,8 @@ class CameraEditorPropertiesPanelHandler
    * @param eventKind The event kind to register.
    * @param containerClass The container class to register.
    */
-  public static function registerContainer(eventKind:String, containerClass:Class<EditorContainer>):Void
+  public static function registerContainer(eventKind:String,
+    containerClass:Class<EditorContainer>):Void
   {
     containers.set(eventKind, containerClass);
   }
@@ -86,7 +95,46 @@ class CameraEditorPropertiesPanelHandler
       }
     }
 
+    for (eventKind in containers.keys()) getContainer(state, eventKind);
+
     hidePropertiesPanel(state);
+  }
+
+  /**
+   * The panels built for the current editor.
+   */
+  static var builtContainers:Map<String, Component> = [];
+
+  static var builtFor:Null<CameraEditorState> = null;
+
+  static function getContainer(state:CameraEditorState, eventKind:String):Null<Component>
+  {
+    if (builtFor != state)
+    {
+      builtContainers = [];
+      builtFor = state;
+    }
+
+    var container:Null<Component> = builtContainers.get(eventKind);
+    if (container != null) return container;
+
+    var containerClass:Null<Class<EditorContainer>> = containers.get(eventKind);
+    if (containerClass == null) return null;
+
+    container = cast Type.createInstance(containerClass, [state]);
+    setContainerShown(container, false);
+    state.propertiesPanel.addComponent(container);
+    builtContainers.set(eventKind, container);
+    return container;
+  }
+
+  /**
+   * Hidden panels are also switched off, so they skip their per-frame update.
+   */
+  static function setContainerShown(container:Component, shown:Bool):Void
+  {
+    if (container.hidden == shown) container.hidden = !shown;
+    if (container.active != shown) container.active = shown;
   }
 
   /**
@@ -104,7 +152,10 @@ class CameraEditorPropertiesPanelHandler
    */
   public static function hidePropertiesPanel(state:CameraEditorState):Void
   {
-    state.removePropertiesContainer();
+    if (builtFor == state)
+    {
+      for (container in builtContainers) setContainerShown(container, false);
+    }
     state.propertiesPanel.hidden = true;
   }
 
@@ -151,11 +202,22 @@ class CameraEditorPropertiesPanelHandler
    */
   public static function loadSelectedSongEvent(state:CameraEditorState):Void
   {
-    var selected:Null<funkin.data.song.SongData.SongEventData> = state.selectedSongEvent;
-    if (selected == null)
+    var events:Array<funkin.data.song.SongData.SongEventData> = state.selectedSongEvents;
+    if (events.length == 0)
     {
       hidePropertiesPanel(state);
       return;
+    }
+
+    var selected:funkin.data.song.SongData.SongEventData = events[0];
+    for (event in events)
+    {
+      if (event.eventKind != selected.eventKind)
+      {
+        // Different kinds of events share a panel with the fields they all have.
+        useContainer(state, SharedPropertiesContainer, SHARED_KIND, events.length);
+        return;
+      }
     }
 
     var containerClass:Null<Class<EditorContainer>> = containers.get(selected.eventKind);
@@ -165,23 +227,43 @@ class CameraEditorPropertiesPanelHandler
       return;
     }
 
-    useContainer(state, containerClass, selected.eventKind);
+    useContainer(state, containerClass, selected.eventKind, events.length);
   }
 
   /**
    * Mount a properties container into the panel.
    */
-  static function useContainer(state:CameraEditorState, containerClass:Class<EditorContainer>, eventKind:String):Void
+  static function useContainer(state:CameraEditorState,
+    containerClass:Class<EditorContainer>,
+    eventKind:String,
+    count:Int = 1):Void
   {
     state.propertiesPanel.hidden = false;
-    state.removePropertiesContainer();
 
-    var container:EditorContainer = Type.createInstance(containerClass, [state]);
-    state.propertiesPanel.addComponent(cast(container, Component));
+    var title:String = eventKind == SHARED_KIND ? '$count events' : resolveTitle(eventKind);
+    if (eventKind != SHARED_KIND && count > 1) title = '$title ($count events)';
 
-    container.loadCurrentEventData();
+    var target:Null<Component> = getContainer(state, eventKind);
+    if (target == null) return;
 
-    state.setPropertiesContainerTitle(resolveTitle(eventKind));
+    for (container in builtContainers)
+    {
+      if (container != target) setContainerShown(container, false);
+    }
+    setContainerShown(target, true);
+
+    if (Std.isOfType(target, BaseEventContainer))
+    {
+      var panel:BaseEventContainer = cast target;
+      panel.reload();
+    }
+    else
+    {
+      var panel:EditorContainer = cast target;
+      panel.loadCurrentEventData();
+    }
+
+    state.setPropertiesContainerTitle(title);
   }
 
   /**

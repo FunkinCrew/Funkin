@@ -571,6 +571,19 @@ class PolymodHandler
     Polymod.blacklistStaticFields(haxe.Unserializer, ['run']);
     Polymod.blacklistInstanceFields(haxe.Unserializer, ['unserialize']);
 
+    // `haxe.ui`
+    // `UIRTTITools.resolveEventClass` allows you to be able to resolve clases from fallback, `bindEvent` uses this.
+    Polymod.blacklistImport("haxe.ui.backend.flixel.UIRTTITools");
+
+    // `FileSettingsPersister` can be used to load JSON files from outside of the game.
+    Polymod.blacklistImport("haxe.ui.core.FileSettingsPersister");
+
+    // `SettingsManager` can be used to access the serializer & unseralizer, both of which are blacklisted.
+    Polymod.blacklistImport("haxe.ui.core.SettingsManager");
+
+    // `FileResourceResolver` allows you to access the content of outside game files.
+    Polymod.blacklistImport("haxe.ui.parsers.ui.resolvers.FileResourceResolver");
+
     // `funkin.save.Save`
     // Direct access to save data is important for scripts (like checking unlocks),
     // but we don't want scripts to be able to perform operations like writing scores.

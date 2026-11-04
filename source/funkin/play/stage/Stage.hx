@@ -78,7 +78,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
   {
     var results:Array<funkin.assets.Paths.AssetPath> = [];
 
-    var _data:Null<StageData> = Stage._fetchData(entryId);
+    var _data:Null<StageData> = StageRegistry.instance.fetchEntry(entryId)._data;
     if (_data == null) return results;
 
     inline function appendExisting(asset:Null<AssetPath>):Void

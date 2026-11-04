@@ -17,6 +17,12 @@ import funkin.assets.Paths.AnimateAtlasAssetPathBuilder;
 import funkin.assets.Paths.AssetPath;
 import funkin.assets.Paths.MusicAssetPathBuilder;
 import funkin.assets.ValidatedPaths as Paths;
+import funkin.ui.transition.Transition.TransitionParams;
+import funkin.ui.transition.Transition.TransitionTarget;
+import funkin.util.MemoryUtil;
+import lime.app.Future;
+import lime.app.Promises;
+import openfl.media.Sound;
 
 /**
  * Handles the main logic of loading requested assets asynchronously.
@@ -32,7 +38,7 @@ class LoadingState extends MusicBeatSubState
   var target:TransitionTarget;
   var params:TransitionParams;
   var loadingStagesDone:Int = 0;
-  var currentProgress:Float = 0.0; // [0.0, 1.0]
+  public var currentProgress(default, null):Float = 0.0; // [0.0, 1.0]
   var completionStarted:Bool = false;
   var transitionCancelled:Bool = false;
   var previousPersistentUpdate:Bool = true;
@@ -49,7 +55,7 @@ class LoadingState extends MusicBeatSubState
     }
   }
 
-  function new(?color:FlxColor, target:TransitionTarget, params:TransitionParams)
+  public function new(?color:FlxColor, target:TransitionTarget, params:TransitionParams)
   {
     // #if FEATURE_DEBUG_FUNCTIONS
     // super(color ?? LIME);
@@ -110,6 +116,8 @@ class LoadingState extends MusicBeatSubState
       FlxG.signals.postStateSwitch.remove(pendingPostStatePurge);
       pendingPostStatePurge = null;
     }
+
+    FunkinAssetCache.instance.cancelPurgeCycle();
 
     FlxG.state.persistentUpdate = previousPersistentUpdate;
     FlxG.state.persistentDraw = previousPersistentDraw;
@@ -503,6 +511,9 @@ class LoadingState extends MusicBeatSubState
     switch (target)
     {
       case State(nextState):
+        #if cpp
+        MemoryUtil.collect(true);
+        #end
         schedulePostStatePurge();
         FlxG.switchState(nextState);
 
@@ -511,6 +522,8 @@ class LoadingState extends MusicBeatSubState
         {
           trace('[LOADING] Skipping global cache purge for SubState transition; parent state remains alive.');
         }
+        FlxG.state.persistentUpdate = previousPersistentUpdate;
+        FlxG.state.persistentDraw = previousPersistentDraw;
         this.switchSubState(targetSubState.createInstance());
 
       default:

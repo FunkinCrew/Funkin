@@ -1,6 +1,8 @@
 package funkin.modding;
 
+import funkin.ui.mainmenu.MainMenuState;
 import haxe.CallStack;
+import funkin.ui.transition.Transition;
 
 /**
  * Guards the game against errors thrown by scripts, so scripts can be stopped without crashing the game.
@@ -276,7 +278,10 @@ class ScriptGuard
       + lastStack;
 
     polymod.Polymod.error(SCRIPT_RUNTIME_EXCEPTION, message, SCRIPT_RUNTIME);
-    flixel.FlxG.switchState(() -> new funkin.ui.mainmenu.MainMenuState());
+    Transition.switchState(() -> new MainMenuState(), {
+      assetQuery: MainMenuState.queryAssets,
+      transition: BlackScreen(None, None)
+    });
     funkin.util.WindowUtil.setWindowTitle('Friday Night Funkin\'');
   }
 

@@ -18,7 +18,7 @@ Check [COMPILING.md](./COMPILING.md) if you haven’t done that yet.
    ```bash
    sdkmanager --install "build-tools;35.0.0" "ndk;29.0.13113456" "platforms;android-29" "platforms;android-35"
    ```
-   - The latest NDK is not compatible with Lime you have to use the old one.
+   - The latest NDK is not compatible with Lime, so you must use NDK 29.0.13113456.
 7. Download and install [JDK 17 (MSI)](https://adoptium.net/temurin/releases/?version=17&os=windows).
 8. Run:
    ```bash

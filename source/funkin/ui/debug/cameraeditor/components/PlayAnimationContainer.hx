@@ -38,7 +38,7 @@ class PlayAnimationContainer extends BaseEventContainer
    */
   public function loadCurrentEventData():Void
   {
-    final selected = cameraEditorState.selectedSongEvent;
+    final selected = primaryEvent;
     if (selected == null) return;
 
     final currentTarget:String = selected.getString('target') ?? PlayAnimationSongEvent.DEFAULT_TARGET;
@@ -52,6 +52,11 @@ class PlayAnimationContainer extends BaseEventContainer
 
     populateAnimDropdown(currentTarget, currentAnim);
     selectStringItem(playAnimationAnim, currentAnim);
+
+    final targetShared:Bool = allMatch('target', PlayAnimationSongEvent.DEFAULT_TARGET);
+    markShared(playAnimationTarget, targetShared);
+
+    markShared(playAnimationAnim, targetShared && allMatch('anim', PlayAnimationSongEvent.DEFAULT_ANIM));
 
     loadBoolField(playAnimationForce, 'force', PlayAnimationSongEvent.DEFAULT_FORCE);
 
@@ -69,12 +74,12 @@ class PlayAnimationContainer extends BaseEventContainer
   @:bind(playAnimationTarget, UIEvent.CHANGE)
   function onChange_playAnimationTarget(_:UIEvent):Void
   {
-    final selected = cameraEditorState.selectedSongEvent;
-    if (selected == null) return;
+    final selected = primaryEvent;
+    if (selected == null || playAnimationTarget.disabled) return;
     if (playAnimationTarget.selectedItem == null) return;
 
     final newTarget:String = Std.string(playAnimationTarget.selectedItem.id);
-    selected.set('target', newTarget);
+    setOnAll('target', newTarget);
 
     final currentAnim:String = selected.getString('anim') ?? PlayAnimationSongEvent.DEFAULT_ANIM;
 
@@ -86,7 +91,7 @@ class PlayAnimationContainer extends BaseEventContainer
     if (animList.length > 0 && !animList.contains(currentAnim))
     {
       animToUse = PlayAnimationSongEvent.DEFAULT_ANIM;
-      selected.set('anim', animToUse);
+      setOnAll('anim', animToUse);
     }
 
     playAnimationAnim.pauseEvent(UIEvent.CHANGE, true);
@@ -103,12 +108,12 @@ class PlayAnimationContainer extends BaseEventContainer
   @:bind(playAnimationAnim, UIEvent.CHANGE)
   function onChange_playAnimationAnim(_:UIEvent):Void
   {
-    final selected = cameraEditorState.selectedSongEvent;
-    if (selected == null) return;
+    final selected = primaryEvent;
+    if (selected == null || playAnimationAnim.disabled) return;
     if (playAnimationAnim.selectedItem == null) return;
 
     final newAnim:String = Std.string(playAnimationAnim.selectedItem.id);
-    selected.set('anim', newAnim);
+    setOnAll('anim', newAnim);
 
     updateCameraPreview();
   }

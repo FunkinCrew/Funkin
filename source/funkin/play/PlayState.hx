@@ -58,6 +58,7 @@ import funkin.save.Save;
 import funkin.ui.FullScreenScaleMode;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.mainmenu.MainMenuState;
+import funkin.ui.transition.Transition;
 import funkin.ui.transition.preload.hotreload.HotReloadState.HotReloadStateParams;
 import funkin.util.GRhythmUtil;
 import funkin.util.HapticUtil;
@@ -1104,6 +1105,12 @@ class PlayState extends MusicBeatSubState
     // Do this last to prevent beatHit from being called before create() is done.
     super.create();
 
+    // Dispatch a create event just for notekinds and song events.
+    var event:ScriptEvent = ScriptEvent.get(CREATE);
+    if (songEvents != null && songEvents.length > 0) SongEventRegistry.callEvent(event);
+    NoteKindManager.callEvent(event);
+    event.finish();
+
     leftWatermarkText.cameras = [camHUD];
     rightWatermarkText.cameras = [camHUD];
 
@@ -1168,7 +1175,7 @@ class PlayState extends MusicBeatSubState
       else
       {
         if (currentStage != null) this.remove(currentStage);
-        funkin.ui.transition.Transition.switchState(() -> new MainMenuState(), {
+        Transition.switchState(() -> new MainMenuState(), {
           assetQuery: MainMenuState.queryAssets,
           transition: Sticker(Constants.DEFAULT_STICKER_PACK),
           shouldStopMusic: true
@@ -1264,10 +1271,14 @@ class PlayState extends MusicBeatSubState
       // Delete all notes and reset the arrays.
       regenNoteData(startTimestamp);
 
+      // Make sure ScrollSpeed tweens don't persist between restarts.
+      cancelScrollSpeedTweens();
+
       // Reset camera zooming
       cameraBopIntensity = Constants.DEFAULT_BOP_INTENSITY;
       hudCameraZoomIntensity = (cameraBopIntensity - 1.0) * 2.0;
       cameraZoomRate = Constants.DEFAULT_ZOOM_RATE;
+      cameraZoomRateOffset = Constants.DEFAULT_ZOOM_OFFSET;
 
       health = Constants.HEALTH_STARTING;
       songScore = 0.0;
@@ -1348,6 +1359,11 @@ class PlayState extends MusicBeatSubState
           Conductor.instance.update();
         }
       }
+    }
+
+    if (!startingSong && vocals != null && FlxG.sound.music != null)
+    {
+      vocals.updatePending(FlxG.sound.music.time, FlxG.sound.music.playing);
     }
 
     var pauseButtonCheck:Bool = false;
@@ -1569,7 +1585,11 @@ class PlayState extends MusicBeatSubState
           if (!isSubState && event.gitaroo)
           {
             if (currentStage != null) this.remove(currentStage);
-            FlxG.switchState(() -> new GitarooPause(lastParams));
+            Transition.switchState(() -> new GitarooPause(lastParams), {
+              assetQuery: GitarooPause.queryAssets,
+              transition: None,
+              shouldPurgeCache: false,
+            });
           }
           else
           {
@@ -1983,7 +2003,7 @@ class PlayState extends MusicBeatSubState
             variation: currentVariation
           });
           funkin.ui.transition.Transition.openPlayState(lastParams, {
-            transition: LoadingScreen(None, None),
+            transition: BlackScreen(None, Fade(South)),
             shouldStopMusic: true,
           });
         }
@@ -3484,12 +3504,17 @@ class PlayState extends MusicBeatSubState
       var bf:String = currentStage?.getBoyfriend()?.characterId ?? '';
       var gf:String = currentStage?.getGirlfriend()?.characterId ?? '';
       var dad:String = currentStage?.getDad()?.characterId ?? '';
-      FlxG.switchState(() -> new StageEditorState({
+
+      var stageEditorParams = {
         targetStageId: currentStageId,
         targetBfChar: bf,
         targetGfChar: gf,
         targetDadChar: dad
-      }));
+      };
+      Transition.switchState(() -> new StageEditorState(stageEditorParams), {
+        assetQuery: Transition.NO_ASSETS, // StageEditorState.queryAssets.bind(_, stageEditorParams),
+        transition: BlackScreen(None, Fade(South))
+      });
     }
     #end
 
@@ -3508,12 +3533,17 @@ class PlayState extends MusicBeatSubState
       else
       {
         if (currentStage != null) this.remove(currentStage);
-        FlxG.switchState(() -> new ChartEditorState({
+        var chartEditorParams = {
           loadFromTemplate: currentSong.id,
           targetSongDifficulty: currentDifficulty,
           targetSongVariation: currentVariation,
           targetSongPosition: Conductor.instance.songPosition
-        }));
+        };
+
+        Transition.switchState(() -> new ChartEditorState(chartEditorParams), {
+          assetQuery: ChartEditorState.queryAssets.bind(_, chartEditorParams),
+          transition: BlackScreen(None, Fade(South))
+        });
       }
     }
     #end
@@ -3535,12 +3565,17 @@ class PlayState extends MusicBeatSubState
       else
       {
         if (currentStage != null) this.remove(currentStage);
-        FlxG.switchState(() -> new CameraEditorState({
+        var cameraEditorParams = {
           loadFromTemplate: currentSong.id,
           targetSongDifficulty: currentDifficulty,
           targetSongVariation: currentVariation,
           targetSongPosition: Conductor.instance.songPosition
-        }));
+        };
+
+        Transition.switchState(() -> new CameraEditorState(cameraEditorParams), {
+          assetQuery: Transition.NO_ASSETS, // CameraEditorState.queryAssets.bind(_, params),
+          transition: BlackScreen(None, Fade(South))
+        });
       }
     }
     #end
@@ -3918,6 +3953,7 @@ class PlayState extends MusicBeatSubState
               targetSong: targetSong,
               targetDifficulty: PlayStatePlaylist.campaignDifficulty,
               targetVariation: targetVariation,
+              practiceMode: isPracticeMode,
               cameraFollowPoint: cameraFollowPoint.getPosition(),
             }, {
               transition: LoadingScreen(None, None),
@@ -3940,6 +3976,7 @@ class PlayState extends MusicBeatSubState
             targetSong: targetSong,
             targetDifficulty: PlayStatePlaylist.campaignDifficulty,
             targetVariation: targetVariation,
+            practiceMode: isPracticeMode,
             cameraFollowPoint: cameraFollowPoint.getPosition(),
           }, {
             transition: LoadingScreen(None, None),
@@ -4038,8 +4075,15 @@ class PlayState extends MusicBeatSubState
     FlxTween.globalManager.clear();
     FlxTimer.globalManager.clear();
 
+    // Remove listeners.
     PreciseInputManager.instance.onInputPressed.remove(onKeyPress);
     PreciseInputManager.instance.onInputReleased.remove(onKeyRelease);
+
+    #if FEATURE_TOUCH_CONTROLS
+    VideoCutscene.onVideoEnded.remove(tweenPauseButtonIn);
+    VideoCutscene.onVideoResumed.remove(tweenPauseButtonIn);
+    VideoCutscene.onVideoRestarted.remove(tweenPauseButtonIn);
+    #end
 
     // Remove reference to stage and remove sprites from it to save memory.
     if (currentStage != null)
@@ -4178,7 +4222,7 @@ class PlayState extends MusicBeatSubState
       isBotPlayMode: isBotPlayMode,
     };
     this.persistentDraw = false;
-    funkin.ui.transition.Transition.openSubState(() -> new ResultState(params), {
+    Transition.openSubState(() -> new ResultState(params), {
       transition: BlackScreen(None, None),
       assetQuery: ResultState.queryAssets.bind(_, params)
     });

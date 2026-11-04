@@ -19,6 +19,7 @@ import funkin.ui.FullScreenScaleMode;
 import funkin.ui.MusicBeatState;
 import funkin.ui.UIStateMachine;
 import funkin.ui.mainmenu.MainMenuState;
+import funkin.ui.transition.Transition;
 import funkin.ui.transition.preload.hotreload.HotReloadState;
 import funkin.util.FileUtil;
 import funkin.util.PropertyAnimator;
@@ -195,80 +196,6 @@ class ModMenuState extends MusicBeatState
   var doneButtonAnimator:PropertyAnimator;
   var lastSelectDir:Null<FlxDirection> = null;
   var menuBG:FunkinSprite;
-
-  public static function queryAssets(type:funkin.assets.Assets.AssetType):Array<funkin.assets.Paths.AssetPath>
-  {
-    var results:Array<funkin.assets.Paths.AssetPath> = [];
-
-    results.appendUnique(ModMenuButton.queryAssets(type, 'done'));
-    results.appendUnique(ModMenuButton.queryAssets(type, 'open-folder'));
-    results.appendUnique(ModMenuButton.queryAssets(type, 'import-folder'));
-
-    switch (type)
-    {
-      case JSON:
-        results.appendUnique([funkin.assets.Paths.music('ui/mods/mod-menu-ambience').metadata()]);
-
-        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/smoke-cloud').json());
-        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/back-arrow').json());
-        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/foreground-wires').json());
-        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/sparks').json());
-        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/characters/bf').json());
-        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/characters/gf').json());
-        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/characters/empty-chair').json());
-        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/characters/pinhead').json());
-
-        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/foreground-wires-bottom').json());
-        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/foreground-wires-top').json());
-
-        results.appendUnique(funkin.assets.Assets.listInPath('ui/mods/characters', JSON));
-
-      case IMAGE:
-        results.appendUnique([
-          funkin.assets.Paths.image('ui/mods/smoke'),
-          funkin.assets.Paths.image('ui/mods/bg'),
-          funkin.assets.Paths.image('ui/mods/top-text'),
-          funkin.assets.Paths.image('ui/mods/carbattery'),
-          funkin.assets.Paths.image('ui/mods/gfwire'),
-          funkin.assets.Paths.image('ui/mods/box'),
-          funkin.assets.Paths.image('ui/mods/base-icon'),
-          funkin.assets.Paths.image('ui/mods/fallback-icon'),
-          funkin.assets.Paths.image('ui/mods/bgwires'),
-          funkin.assets.Paths.image('ui/mods/drop-hover')
-        ]);
-        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/smoke-cloud').image());
-        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/back-arrow').image());
-        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/foreground-wires').image());
-        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/sparks').image());
-        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/characters/bf').image());
-        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/characters/gf').image());
-        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/characters/empty-chair').image());
-        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/characters/pinhead').image());
-
-        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/foreground-wires-bottom').image());
-        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/foreground-wires-top').image());
-
-      case XML:
-        results.appendUnique([
-          funkin.assets.Paths.xml('ui/mods/smoke'),
-          funkin.assets.Paths.xml('ui/mods/carbattery'),
-          funkin.assets.Paths.xml('ui/mods/gfwire')
-        ]);
-
-      case SOUND:
-        results.appendUnique([funkin.assets.Paths.music('ui/mods/mod-menu-ambience').audio()]);
-        results.appendUnique(funkin.assets.Assets.listInPath('ui/mods/sounds', SOUND));
-
-      case FONT:
-        results.appendUnique([funkin.assets.Paths.file('ui/fonts/FunkinLingLong', 'otf')]);
-
-      case SHADER:
-        results.appendUnique([funkin.assets.Paths.frag('ui/shaders/replace-color')]);
-
-      default:
-    }
-    return results;
-  }
 
   public function new()
   {
@@ -1541,7 +1468,12 @@ class ModMenuState extends MusicBeatState
     refresh();
 
     FlxTransitionableState.skipNextTransIn = true;
-    FlxG.switchState(() -> new HotReloadState());
+
+    // Directly switch to HotReloadState; we don't need Transition since HotReloadState handles asset loading.
+    Transition.switchState(() -> new HotReloadState(), {
+      transition: None,
+      shouldPurgeCache: false
+    });
   }
 
   // HELPERS //
@@ -1573,6 +1505,79 @@ class ModMenuState extends MusicBeatState
   }
 
   /**
+   * FUCK.
+   */
+  public static function queryAssets(type:funkin.assets.Assets.AssetType):Array<funkin.assets.Paths.AssetPath>
+  {
+    var results:Array<funkin.assets.Paths.AssetPath> = [];
+
+    results.appendUnique(ModMenuButton.queryAssets(type, 'done'));
+    results.appendUnique(ModMenuButton.queryAssets(type, 'open-folder'));
+    results.appendUnique(ModMenuButton.queryAssets(type, 'import-folder'));
+
+    switch (type)
+    {
+      case JSON:
+        results.appendUnique([funkin.assets.Paths.music('ui/mods/mod-menu-ambience').metadata()]);
+
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/smoke-cloud').json());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/back-arrow').json());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/foreground-wires-bottom').json());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/foreground-wires-top').json());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/sparks').json());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/characters/bf').json());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/characters/gf').json());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/characters/empty-chair').json());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/characters/pinhead').json());
+
+        results.appendUnique(funkin.assets.Assets.listInPath('ui/mods/characters/', JSON));
+
+      case IMAGE:
+        results.appendUnique([
+          funkin.assets.Paths.image('ui/mods/smoke'),
+          funkin.assets.Paths.image('ui/mods/bg'),
+          funkin.assets.Paths.image('ui/mods/top-text'),
+          funkin.assets.Paths.image('ui/mods/carbattery'),
+          funkin.assets.Paths.image('ui/mods/gfwire'),
+          funkin.assets.Paths.image('ui/mods/box'),
+          funkin.assets.Paths.image('ui/mods/base-icon'),
+          funkin.assets.Paths.image('ui/mods/fallback-icon'),
+          funkin.assets.Paths.image('ui/mods/bgwires'),
+          funkin.assets.Paths.image('ui/mods/drop-hover')
+        ]);
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/smoke-cloud').image());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/back-arrow').image());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/foreground-wires-bottom').image());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/foreground-wires-top').image());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/sparks').image());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/characters/bf').image());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/characters/gf').image());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/characters/empty-chair').image());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/characters/pinhead').image());
+
+      case XML:
+        results.appendUnique([
+          funkin.assets.Paths.xml('ui/mods/smoke'),
+          funkin.assets.Paths.xml('ui/mods/carbattery'),
+          funkin.assets.Paths.xml('ui/mods/gfwire')
+        ]);
+
+      case SOUND:
+        results.appendUnique([funkin.assets.Paths.music('ui/mods/mod-menu-ambience').audio()]);
+        results.appendUnique(funkin.assets.Assets.listInPath('ui/mods/sounds/', SOUND));
+
+      case FONT:
+        results.appendUnique([funkin.assets.Paths.file('ui/fonts/FunkinLingLong', 'otf')]);
+
+      case SHADER:
+        results.appendUnique([funkin.assets.Paths.frag('ui/shaders/replace-color')]);
+
+      default:
+    }
+    return results;
+  }
+
+  /**
    * Return to the main menu.
    */
   function backToMainMenu():Void
@@ -1580,7 +1585,10 @@ class ModMenuState extends MusicBeatState
     uiState.transition(Exiting);
     FlxG.keys.enabled = false;
     Cursor.hide();
-    FlxG.switchState(() -> new MainMenuState());
+    Transition.switchState(() -> new MainMenuState(), {
+      assetQuery: MainMenuState.queryAssets,
+      transition: None
+    });
     FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu').toString());
   }
 }

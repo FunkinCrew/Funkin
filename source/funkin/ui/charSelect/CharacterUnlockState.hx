@@ -16,6 +16,7 @@ import funkin.play.components.HealthIcon;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.ui.mainmenu.MainMenuState;
+import funkin.ui.transition.Transition;
 #if FEATURE_TOUCH_CONTROLS
 import funkin.util.TouchUtil;
 import funkin.util.DeviceUtil;
@@ -174,33 +175,7 @@ class CharacterUnlockState extends MusicBeatState
     // Fade to black, then switch state.
     FlxG.camera.fade(FlxColor.BLACK, 0.75, false, () ->
     {
-      #if ios
-      if (DeviceUtil.iPhoneNumber > 12)
-      {
-        FunkinAssetCache.instance.preparePurgeCache();
-        FlxG.signals.preStateSwitch.addOnce(() ->
-        {
-          FunkinAssetCache.instance.purgeCache(true);
-        });
-      }
-      else
-      {
-        FunkinAssetCache.instance.preparePurgeCache();
-        // TODO: In loading screens, you should be caching BETWEEN these.
-        FlxG.signals.preStateSwitch.addOnce(() ->
-        {
-          FunkinAssetCache.instance.purgeCache();
-        });
-      }
-      #else
-      FunkinAssetCache.instance.preparePurgeCache();
-      // TODO: In loading screens, you should be caching BETWEEN these.
-      FlxG.signals.preStateSwitch.addOnce(() ->
-      {
-        FunkinAssetCache.instance.purgeCache(true);
-      });
-      #end
-      funkin.ui.transition.Transition.switchState(nextState, {
+      Transition.switchState(nextState, {
         assetQuery: nextQueryAssetsFunc,
         transition: BlackScreen(None, Fade(South)),
       });

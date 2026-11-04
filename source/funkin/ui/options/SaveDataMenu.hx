@@ -4,6 +4,7 @@ package funkin.ui.options;
 import funkin.api.newgrounds.NewgroundsClient;
 #end
 import funkin.save.Save;
+import funkin.ui.transition.Transition;
 
 class SaveDataMenu extends Page<OptionsState.OptionsMenuPageName>
 {
@@ -118,7 +119,10 @@ class SaveDataMenu extends Page<OptionsState.OptionsMenuPageName>
       // Clear the save data.
       Save.clearData();
 
-      FlxG.switchState(() -> new funkin.InitState());
+      Transition.switchState(() -> new InitState(), {
+        assetQuery: Transition.NO_ASSETS,
+        transition: None
+      });
     });
   }
 

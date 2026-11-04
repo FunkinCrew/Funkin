@@ -2,6 +2,7 @@ package funkin.ui.debug.cameraeditor.components;
 
 #if FEATURE_CAMERA_EDITOR
 import funkin.play.event.FocusCameraSongEvent;
+import funkin.play.event.SongEvent;
 import funkin.ui.haxeui.components.editors.camera.EaseGraphPreview;
 import haxe.ui.events.UIEvent;
 
@@ -16,13 +17,16 @@ class FocusCameraContainer extends BaseEventContainer
     super(state);
     focusCameraEaseFrame.easeGraphPreview.defaultEase = FocusCameraSongEvent.DEFAULT_CAMERA_EASE;
     focusCameraEaseFrame.easeGraphPreview.classicEnabled = true;
-    focusCameraEaseFrame.easeGraphPreview.event = cameraEditorState.selectedSongEvent;
+    focusCameraEaseFrame.easeGraphPreview.event = primaryEvent;
 
     bindFloatField(focusCameraXPos, 'x');
     bindFloatField(focusCameraYPos, 'y');
     bindFloatField(focusCameraDuration, 'duration');
 
-    focusCameraEaseFrame.easeGraphPreview.registerEvent(UIEvent.CHANGE, function(_:UIEvent):Void {
+    focusCameraEaseFrame.easeGraphPreview.registerEvent(UIEvent.CHANGE, function(_:UIEvent):Void
+    {
+      copyFromPrimary('ease');
+      copyFromPrimary('easeDir');
       updateCameraPreview();
       updateBlockVisuals();
     });
@@ -38,9 +42,10 @@ class FocusCameraContainer extends BaseEventContainer
    */
   public function loadCurrentEventData():Void
   {
-    if (cameraEditorState.selectedSongEvent == null) return;
+    if (primaryEvent == null) return;
 
-    var eventTarget:Int = cameraEditorState.selectedSongEvent.getInt('char') ?? FocusCameraSongEvent.DEFAULT_TARGET;
+    markShared(focusCameraTarget, allMatch('char', FocusCameraSongEvent.DEFAULT_TARGET));
+    var eventTarget:Int = primaryEvent.getInt('char') ?? FocusCameraSongEvent.DEFAULT_TARGET;
     focusCameraTarget.selectItemBy(function(data):Bool
     {
       var dataId:Int = Std.parseInt(data.id);
@@ -51,7 +56,8 @@ class FocusCameraContainer extends BaseEventContainer
     loadFloatField(focusCameraYPos, 'y', FocusCameraSongEvent.DEFAULT_Y_POSITION);
     loadFloatField(focusCameraDuration, 'duration', FocusCameraSongEvent.DEFAULT_DURATION);
 
-    focusCameraEaseFrame.easeGraphPreview.event = cameraEditorState.selectedSongEvent;
+    markShared(focusCameraEaseFrame, allMatch('ease', FocusCameraSongEvent.DEFAULT_CAMERA_EASE) && allMatch('easeDir', SongEvent.DEFAULT_EASE_DIR));
+    focusCameraEaseFrame.easeGraphPreview.event = primaryEvent;
     updateCameraPreview();
     updateBlockVisuals();
   }
@@ -62,17 +68,13 @@ class FocusCameraContainer extends BaseEventContainer
   @:bind(focusCameraTarget, UIEvent.CHANGE)
   function onChange_focusCameraTarget(_):Void
   {
-    if (focusCameraTarget.selectedItem == null)
-    {
-      cameraEditorState.selectedSongEvent.set('char', FocusCameraSongEvent.DEFAULT_TARGET);
-      return;
-    }
+    if (primaryEvent == null || focusCameraTarget.disabled) return;
+    if (focusCameraTarget.selectedItem == null) return;
 
     var value:Int = Std.parseInt(focusCameraTarget.selectedItem.id);
 
-    cameraEditorState.selectedSongEvent.set('char', value);
+    setOnAll('char', value);
     updateCameraPreview();
   }
-
 }
 #end

@@ -1,5 +1,6 @@
 package funkin.play;
 
+import funkin.ui.transition.Transition;
 import flixel.FlxSprite;
 import flixel.addons.transition.FlxTransitionableState;
 import funkin.play.PlayState.PlayStateParams;
@@ -136,20 +137,21 @@ class GitarooPause extends MusicBeatState
   }
   #end
 
-  function selectThing()
+  function selectThing():Void
   {
     lock = true;
 
     if (replaySelect)
     {
       if (funkin.ui.FullScreenScaleMode.instance != null) funkin.ui.FullScreenScaleMode.instance.onMeasurePostAwait();
+
       funkin.ui.transition.Transition.openPlayState(previousParams, {
-        transition: BlackScreen(Fade(North), Fade(South)),
+        transition: None
       }, false);
     }
     else
     {
-      funkin.ui.transition.Transition.switchState(() -> new MainMenuState(), {
+      Transition.switchState(() -> new MainMenuState(), {
         assetQuery: MainMenuState.queryAssets,
         transition: BlackScreen(None, None)
       });

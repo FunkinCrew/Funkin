@@ -49,7 +49,7 @@ class PasteItemsCommand implements ChartEditorCommand
       return;
     }
 
-    var stepEndOfSong:Float = Conductor.instance.getTimeInSteps(state.songLengthInMs);
+    var stepEndOfSong:Float = state.gridLengthInSteps;
     var stepCutoff:Float = stepEndOfSong - 1.0;
     var msCutoff:Float = Conductor.instance.getStepTimeInMs(stepCutoff);
 

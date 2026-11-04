@@ -56,6 +56,7 @@ import funkin.graphics.shaders.Grayscale;
 import funkin.data.stage.StageRegistry;
 import funkin.graphics.FunkinCamera;
 import haxe.io.Bytes;
+import funkin.ui.transition.Transition;
 
 /**
  * Da Stage Editor woo!!
@@ -1485,7 +1486,7 @@ class StageEditorState extends UIState
         CrashHandler.criticalErrorSignal.remove(autosavePerCrash);
 
         Cursor.hide();
-        funkin.ui.transition.Transition.switchState(() -> new MainMenuState(), {
+        Transition.switchState(() -> new MainMenuState(), {
           assetQuery: MainMenuState.queryAssets,
           transition: BlackScreen(None, None)
         });

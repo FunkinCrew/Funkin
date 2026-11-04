@@ -70,7 +70,8 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
   override function finishTransIn()
   {
-    super.finishTransIn();
+    if (FlxStateUtil.hasSubState(this)) FlxStateUtil.closeTransitionAtTop(this);
+    else super.finishTransIn();
 
     default_trans_isTransitioning = false;
   }
@@ -378,28 +379,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
     // Make sure that the game opens substates at the top of the stack.
     // Events will be dispatched by the substate.
-    var hasSubState:Bool = this._requestedSubState != null || (this.subState != null && !this._requestSubStateReset);
-    if (hasSubState)
-    {
-      FlxStateUtil.openSubStateAtTop(targetSubState, this);
-      event.finish();
-      return;
-    }
-
-    // Make sure that the game opens substates at the top of the stack.
-    // Events will be dispatched by the substate.
-    var hasSubState:Bool = this._requestedSubState != null || (this.subState != null && !this._requestSubStateReset);
-    if (hasSubState)
-    {
-      FlxStateUtil.openSubStateAtTop(targetSubState, this);
-      event.finish();
-      return;
-    }
-
-    // Make sure that the game opens substates at the top of the stack.
-    // Events will be dispatched by the substate.
-    var hasSubState:Bool = this._requestedSubState != null || (this.subState != null && !this._requestSubStateReset);
-    if (hasSubState)
+    if (FlxStateUtil.hasSubState(this, true))
     {
       FlxStateUtil.openSubStateAtTop(targetSubState, this);
       event.finish();

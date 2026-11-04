@@ -18,6 +18,9 @@ import lime.graphics.Image as LimeImage;
 import flixel.graphics.frames.FlxFrame;
 import flixel.graphics.frames.FlxFramesCollection;
 import lime.media.AudioBuffer as LimeAudioBuffer;
+#if (js && html5 && lime_howlerjs)
+import lime.media.howlerjs.Howl;
+#end
 import lime.utils.AssetCache as LimeAssetCache;
 import lime.utils.AssetType as LimeAssetType;
 import lime.utils.Assets as LimeAssets;
@@ -105,6 +108,11 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public var enabled(get, set):Bool;
 
+  /**
+   * Will be true if we prepare to purge, until we either finish purging or if the cycle gets "cancelled", i.e while a state transition.
+   */
+  public var isPurgeCycleActive(default, null):Bool = false;
+
   static function get_instance():FunkinAssetCache
   {
     if (FunkinAssetCache._instance == null) _instance = new FunkinAssetCache();
@@ -176,7 +184,16 @@ class FunkinAssetCache implements OpenFLIAssetCache
       #if VERBOSE_ASSET_CACHE
       trace(' ASSETS '.bold().bg_lime() + ' Force clearing asset cache...');
       #end
-      for (cache in stagedCaches) cache.clearCache();
+      for (cache in stagedCaches)
+      {
+        if (cache == stagedSound) continue;
+        cache.clearCache();
+      }
+      for (key in stagedSound.keys())
+      {
+        final sound:Null<Sound> = stagedSound.get(key, false);
+        if (sound != null && !isSoundBufferInUse(sound)) stagedSound.remove(key);
+      }
       FunkinBitmapFrontend.instance.reset();
       assetListCaches = [];
       assetListBaseCache = null;
@@ -186,7 +203,17 @@ class FunkinAssetCache implements OpenFLIAssetCache
       #if FEATURE_DEBUG_TRACY
       cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.clear($prefix)');
       #end
-      for (cache in stagedCaches) cache.clearCacheByPrefix(prefix);
+      for (cache in stagedCaches)
+      {
+        if (cache == stagedSound) continue;
+        cache.clearCacheByPrefix(prefix);
+      }
+      for (key in stagedSound.keys())
+      {
+        if (!StringTools.startsWith(key, prefix)) continue;
+        final sound:Null<Sound> = stagedSound.get(key, false);
+        if (sound != null && !isSoundBufferInUse(sound)) stagedSound.remove(key);
+      }
       FunkinBitmapFrontend.instance.resetByPrefix(prefix);
     }
   }
@@ -268,36 +295,98 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function preparePurgeCache():Void
   {
+    isPurgeCycleActive = true;
+
     for (cache in stagedCaches) cache.preparePurgeCache();
     FunkinBitmapFrontend.instance.stagedFlxGraphic.preparePurgeCache();
   }
 
   /**
+   * End a purge cycle without purging, e.g. because the transition was cancelled and the old state stays alive.
+   * Anything the old state still uses is picked up by the next purge, which keeps whatever a live object holds.
+   */
+  public function cancelPurgeCycle():Void
+  {
+    isPurgeCycleActive = false;
+  }
+
+  /**
    * Purge any assets that were previously cached, but weren't requested again since `preparePurgeCache()` was called.
-   *
    * @param garbageCollect Whether to forcibly invoke the system's garbage collector after purging assets.
    */
   public function purgeCache(garbageCollect:Bool = false):Void
   {
-    // TODO: Cleanup purging to work with Freeplay?
     // IMPORTANT: purgeCache() must only be called after the outgoing state has been destroyed. LoadingState defers this until postStateSwitch so that
     // FlxSprite/FlxFrame/animation objects from the old state cannot reference disposed FlxGraphics or BitmapData.
-    for (cache in stagedCaches) cache.purgeCache();
+
+    isPurgeCycleActive = false;
+
+    for (cache in stagedCaches)
+    {
+      if (cache == stagedSound) continue;
+      cache.purgeCache();
+    }
+    stagedSound.purgeCacheByPredicate((key:String, sound:Sound) -> !isSoundBufferInUse(sound));
 
     #if FEATURE_HAXEUI
     purgeHaxeUIAssets();
     #end
 
-    // Clear everything except:
-    // - Stickers, so that graphics don't get lost during sticker transition (TODO: Fix this in LoadingState?)
-    // - `bg_graphic_` is used to render the background color on substates, it's 1x1 pixel so probably not a problem to just keep it.
-    FunkinBitmapFrontend.instance.clearExcept(['stickers/', 'bg_graphic_']);
-    // ^ Clear everything but freeplay as that has its own process, may or may not still be here depending on the future loading changes.
+    // Purge FlxGraphics the new state does not own.
+
+    // NOTE: preparePurgeCache() moved every graphic to `previous`, and loading plus the new state's create() moved everything the
+    // target wants back to `current`. So whatever is still in `previous` right now was NOT requested by the target state.
+    // (remove(), group.clear(), ...) pins its graphic forever. Instead we ask "does a live object in the current state tree use it?".
+    final stagedGraphics:StagedCache<FlxGraphic> = FunkinBitmapFrontend.instance.stagedFlxGraphic;
+    final live = FunkinBitmapFrontend.instance.collectLiveGraphics();
+
+    // Animate atlases use several graphics (spritemap1, spritemap2...) but the sprite may only expose some of them,
+    // so treat every spritemap in the same folder as a live graphic as live too.
+    final liveAtlasDirs:Map<String, Bool> = [];
+    for (graphic in live.keys())
+    {
+      final atlasDir:Null<String> = getAtlasDir(graphic.key);
+      if (atlasDir != null) liveAtlasDirs.set(atlasDir, true);
+    }
+
+    // Rescue graphics that a live object holds but nobody re-requested through the cache, by moving them back to `current`.
+    final rescue:Array<String> = [];
+    for (key => graphic in stagedGraphics.previous)
+    {
+      if (graphic == null) continue;
+      final atlasDir:Null<String> = getAtlasDir(key);
+      if (live.exists(graphic) || (atlasDir != null && liveAtlasDirs.exists(atlasDir))) rescue.push(key);
+    }
+    for (key in rescue)
+    {
+      stagedGraphics.get(key); // Reuses it
+    }
+
+    stagedGraphics.purgeCacheByPredicate((key, graphic) ->
+    {
+      // Prevent background graphics from getting purged (this screws up loading screens!)
+      // Prevent stickers from getting purged while they are in use.
+      if (key.startsWith('bg_graphic_') || key.contains('stickers')) return false;
+
+      return true;
+    });
 
     // Perform garbage collection here, after we deleted a bunch of stuff, to free the memory we're no longer using.
     #if (cpp || neko || js)
     if (garbageCollect) funkin.util.MemoryUtil.collect(true);
     #end
+  }
+
+  /**
+   * Gets the folder of an atlas spritemap.
+   * @param key The folder path to look for.
+   * @return The folder of an Animate atlas spritemap.
+   */
+  static function getAtlasDir(key:String):Null<String>
+  {
+    final slash:Int = key.lastIndexOf('/');
+    if (slash < 0) return null;
+    return key.substr(slash + 1).startsWith('spritemap') ? key.substr(0, slash) : null;
   }
 
   /**
@@ -561,6 +650,8 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function removeSound(id:String):Bool
   {
+    var sound:Null<Sound> = stagedSound.get(id, false);
+    if (sound != null && isSoundBufferInUse(sound)) return false;
     return stagedSound.remove(id);
   }
 
@@ -1137,6 +1228,26 @@ class FunkinAssetCache implements OpenFLIAssetCache
     return promise.future;
   }
 
+  #if (js && html5 && lime_howlerjs)
+  /**
+   * This is needed on HTML5 because loading the Lime AudioBuffer does not necessarily
+   * start the Howler request until the sound is explicitly loaded.
+   * @param sound
+   */
+  function preloadAudioAsset(sound:Sound):Void
+  {
+    if (sound == null) return;
+
+    final buffer:Null<LimeAudioBuffer> = @:privateAccess sound.__buffer;
+    if (buffer == null) return;
+
+    final howl:Null<Howl> = cast buffer.src;
+    if (howl == null || howl.state() != 'unloaded') return;
+
+    howl.load();
+  }
+  #end
+
   /**
    * Cache a Sound asynchronously.
    * If it's previously cached, it will be returned immediately.
@@ -1157,8 +1268,13 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
     fetchSound(assetPath).then((sound:Sound) ->
     {
-      // On success, resolve the promise with true
+      if (sound == null)
+      {
+        promise.complete(false);
+        return Future.withValue(sound);
+      }
 
+      // On success, resolve the promise with true
       if (permanent)
       {
         #if VERBOSE_ASSET_CACHE
@@ -1167,7 +1283,20 @@ class FunkinAssetCache implements OpenFLIAssetCache
         stagedSound.cachePermanent(assetPath.toString(), sound);
       }
 
-      promise.complete(sound != null);
+      #if (js && html5 && lime_howlerjs)
+      try
+      {
+        preloadAudioAsset(sound);
+      }
+      catch (err:Dynamic)
+      {
+        #if VERBOSE_ASSET_CACHE
+        trace(' ASSETS '.bold().bg_lime() + ' WARNING '.warning() + ' Could not preload Sound (${assetPath}): ${err}');
+        #end
+      }
+      #end
+
+      promise.complete(true);
       return Future.withValue(sound);
     }).onError((err) ->
       {

@@ -5,9 +5,12 @@ import funkin.play.character.BaseCharacter.CharacterType;
 import haxe.ui.RuntimeComponentBuilder;
 import funkin.ui.haxeui.components.CharacterPlayer;
 import haxe.ui.components.CheckBox;
+import haxe.ui.containers.menus.Menu;
 import haxe.ui.containers.dialogs.CollapsibleDialog;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialog.DialogEvent;
+import haxe.ui.core.Screen;
+import haxe.ui.events.DragEvent;
 import haxe.ui.focus.FocusManager;
 import funkin.ui.debug.charting.toolboxes.ChartEditorBaseToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorMetadataToolbox;
@@ -47,13 +50,24 @@ class ChartEditorToolboxHandler
   public static function showToolbox(state:ChartEditorState, id:String):Void
   {
     var toolbox:Null<CollapsibleDialog> = state.activeToolboxes.get(id);
+    var hasOpened:Bool = toolbox != null;
 
     if (toolbox == null) toolbox = initToolbox(state, id);
 
     if (toolbox != null)
     {
+      if (hasOpened)
+      {
+        toolbox.left = toolbox.left;
+        toolbox.top = toolbox.top;
+      }
       toolbox.showDialog(false);
       clearHaxeUIFocus();
+
+      for (component in Screen.instance.rootComponents)
+      {
+        if (Std.isOfType(component, Menu)) Screen.instance.moveComponentToFront(component);
+      }
 
       state.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/window-open'));
 
@@ -206,6 +220,13 @@ class ChartEditorToolboxHandler
     // Make sure we can reuse the toolbox later.
     toolbox.destroyOnClose = false;
     state.activeToolboxes.set(id, toolbox);
+
+    // Set the component above everything else when dragging.
+    toolbox.registerEvent(DragEvent.DRAG_START, function(_)
+    {
+      var roots = Screen.instance.rootComponents;
+      if (roots[roots.length - 1] != toolbox) Screen.instance.moveComponentToFront(toolbox);
+    });
 
     return toolbox;
   }
@@ -385,9 +406,8 @@ class ChartEditorToolboxHandler
 
     if (toolbox == null) return null;
 
-    // Starting position.
-    toolbox.x = 700;
-    toolbox.y = 150;
+    toolbox.draggable = false;
+    toolbox.dragInitiator = toolbox;
 
     toolbox.onDialogClosed = function(event:DialogEvent)
     {
@@ -419,9 +439,8 @@ class ChartEditorToolboxHandler
 
     if (toolbox == null) return null;
 
-    // Starting position.
-    toolbox.x = 200;
-    toolbox.y = 150;
+    toolbox.draggable = false;
+    toolbox.dragInitiator = toolbox;
 
     toolbox.onDialogClosed = (event:DialogEvent) ->
     {
