@@ -108,7 +108,7 @@ class ChartEditorHoldNoteSprite extends SustainTrail
     graphicWidth = graphic.width / 8 * zoom; // amount of notes * 2
     graphicHeight = sustainLength * 0.45; // sustainHeight
 
-    flipY = false;
+    flipY = parentState?.isViewDownscroll ?? false;
 
     alpha = 1.0;
 
@@ -279,6 +279,12 @@ class ChartEditorHoldNoteSprite extends SustainTrail
     {
       this.x += origin.x;
       this.y += origin.y;
+      this.y = parentState.transformChartY(this.y, this.height);
+    }
+    if (this.flipY != parentState.isViewDownscroll)
+    {
+      this.flipY = parentState.isViewDownscroll;
+      updateClipping();
     }
 
     // Account for expanded clickable hitbox.

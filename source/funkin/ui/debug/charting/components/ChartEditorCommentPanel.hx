@@ -134,7 +134,7 @@ class ChartEditorCommentPanel extends Panel
     var relativeSongPixels:Float = chartEditorState.renderedNotes.y;
 
     this.x = 900;
-    this.y = songTimePixels + relativeSongPixels;
+    this.y = chartEditorState.transformChartY(songTimePixels + relativeSongPixels, this.height);
   }
 
   /**

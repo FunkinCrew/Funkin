@@ -80,7 +80,7 @@ class ChartEditorCharacterIconSelectorMenu extends ChartEditorBaseMenu
       var healthIconBottomCenter:FlxPoint = FlxPoint.weak(targetHealthIcon.x + targetHealthIcon.width / 2, targetHealthIcon.y + targetHealthIcon.height);
 
       this.x = healthIconBottomCenter.x - this.width / 2;
-      this.y = healthIconBottomCenter.y;
+      this.y = chartEditorState.isViewDownscroll ? Math.max(ChartEditorState.MENU_BAR_HEIGHT, targetHealthIcon.y - this.height) : healthIconBottomCenter.y;
     }
     else
     {
