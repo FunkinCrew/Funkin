@@ -1823,7 +1823,12 @@ class FreeplayState extends MusicBeatSubState
     fadeShader.fade(1.0, 0.0, 0.8, {
       ease: FlxEase.quadIn
     });
+
+    // If there is music currently playing, fade it out.
     FlxG.sound.music?.fadeOut(0.9, 0);
+
+    // Cancel any song previews that are in the process of loading.
+    FunkinSound.emptyPartialQueue();
 
     // Passing the currrent Freeplay character to the CharSelect so we can start it with that character selected
     new FlxTimer().start(0.9, _ ->
@@ -2166,8 +2171,7 @@ class FreeplayState extends MusicBeatSubState
       generateSongList(currentFilter, true, false);
       if (!prepForNewRank && currentCapsule?.freeplayData?.data.id != previousSongId)
       {
-        FlxG.sound.music?.pause();
-        FlxTimer.wait(FADE_IN_DELAY, playCurSongPreview.bind(currentCapsule));
+        queueSongPreview();
       }
     }
     else if (rightPressed)
@@ -2178,8 +2182,7 @@ class FreeplayState extends MusicBeatSubState
       generateSongList(currentFilter, true, false);
       if (!prepForNewRank && currentCapsule?.freeplayData?.data.id != previousSongId)
       {
-        FlxG.sound.music?.pause();
-        FlxTimer.wait(FADE_IN_DELAY, playCurSongPreview.bind(currentCapsule));
+        queueSongPreview();
       }
     }
   }
@@ -2641,6 +2644,9 @@ class FreeplayState extends MusicBeatSubState
     }
     #end
     uiStateMachine.transition(Exiting);
+
+    FunkinSound.emptyPartialQueue();
+
     FlxTween.globalManager.clear();
     FlxTimer.globalManager.clear();
     dj?.onIntroDone.removeAll();
@@ -3227,6 +3233,8 @@ class FreeplayState extends MusicBeatSubState
     backingCard.confirm();
     fadeDots(false);
 
+    FunkinSound.emptyPartialQueue();
+
     // Start vibration after half of second.
     if (HapticUtil.hapticsAvailable)
     {
@@ -3251,8 +3259,6 @@ class FreeplayState extends MusicBeatSubState
 
     new FlxTimer().start(styleData?.getStartDelay(), (tmr:FlxTimer) ->
     {
-      FunkinSound.emptyPartialQueue();
-
       #if FEATURE_TOUCH_CONTROLS
       if (backButton != null)
       {
@@ -3423,11 +3429,9 @@ class FreeplayState extends MusicBeatSubState
 
     if (grpCapsules.countLiving() > 0 && !prepForNewRank && uiStateMachine.canInteract())
     {
-      FlxG.sound.music?.pause();
-      FlxTimer.wait(FADE_IN_DELAY, playCurSongPreview.bind(currentCapsule));
       currentCapsule.selected = true;
-
-      // switchBackingImage(currentCapsule.freeplayData);
+      FlxG.sound.music?.pause();
+      if (Math.abs(_moveLength) <= 2.5) queueSongPreview();
     }
 
     // Small vibrations every selection change.
@@ -3435,6 +3439,13 @@ class FreeplayState extends MusicBeatSubState
 
     var event:CapsuleScriptEvent = CapsuleScriptEvent.get(CAPSULE_SELECTED, currentCapsule, currentDifficulty, currentVariation);
     dispatchEvent(event);
+  }
+
+  function queueSongPreview():Void
+  {
+    if (FlxG.sound.music != null) FlxG.sound.music.pause();
+    FunkinSound.emptyPartialQueue();
+    FlxTimer.wait(FADE_IN_DELAY, playCurSongPreview.bind(currentCapsule));
   }
 
   public function playCurSongPreview(?daSongCapsule:SongMenuItem):Void
@@ -3487,6 +3498,7 @@ class FreeplayState extends MusicBeatSubState
         looped: true,
         persist: false,
         autoPlay: true,
+        autoDestroy: false,
         volume: 0.0, // Start at zero volume before fading in.
 
         start: daSongCapsule?.freeplayData?.previewStartTime,
