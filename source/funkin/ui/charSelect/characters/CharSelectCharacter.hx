@@ -3,12 +3,15 @@ package funkin.ui.charSelect.characters;
 import flixel.FlxCamera;
 import flixel.graphics.frames.FlxFramesCollection;
 import flixel.math.FlxPoint;
-import funkin.data.animation.AnimationData;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import funkin.assets.Assets.AssetType;
 import funkin.assets.Paths.AssetPath;
-import funkin.data.freeplay.player.PlayerData;
+import funkin.data.animation.AnimationData;
+import funkin.data.freeplay.player.PlayerData.PlayerCharSelectCharacterData;
+import funkin.data.freeplay.player.PlayerData.PlayerCharSelectData;
+import funkin.data.freeplay.player.PlayerData.PlayerCharSelectGFData;
 import funkin.data.freeplay.player.PlayerRegistry;
-import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
 import funkin.modding.IScriptedClass.IBPMSyncedScriptedClass;
 import funkin.modding.IScriptedClass.ICharacterSelectScriptedClass;
@@ -17,6 +20,9 @@ import funkin.ui.charSelect.CharacterSelectState;
 import funkin.util.assets.FlxAnimationUtil;
 import funkin.vis.dsp.SpectralAnalyzer;
 
+/**
+ * The animations that a character can have in the Character Select screen.
+ */
 enum abstract CharacterAnimation(String) to String
 {
   public var IDLE = 'idle';
@@ -73,6 +79,21 @@ class CharSelectCharacter extends FunkinSprite implements IBPMSyncedScriptedClas
    * TODO: Move animation offsets to `FunkinSprite`
    */
   var currentAnimationOffset:Array<Float> = [0, 0];
+
+  /**
+   * The tween for transitioning the character in/out.
+   */
+  var transitionTween:Null<FlxTween> = null;
+
+  /**
+   * Additional offset for the character when transitioning in/out.
+   */
+  var _transitionOffsets:FlxPoint = FlxPoint.get(0, 0);
+
+  /**
+   * Alpha offset for the character when transitioning in/out.
+   */
+  var _transitionAlpha:Float = 1;
 
   /**
    * Alias for `currentPath`.
@@ -263,6 +284,99 @@ class CharSelectCharacter extends FunkinSprite implements IBPMSyncedScriptedClas
   }
 
   /**
+   * Transitions in this character.
+   */
+  public function transitionIn():Void
+  {
+    if (characterType != CharacterSelectType.GF) return;
+    if (transitionTween != null)
+    {
+      transitionTween.cancel();
+      transitionTween = null;
+    }
+
+    this._transitionAlpha = 0;
+    this._transitionOffsets.set(-this.width, 0);
+
+    this.revive();
+    this.playAnimation(IDLE);
+
+    transitionTween = FlxTween.tween(this, {
+      _transitionAlpha: 1,
+      '_transitionOffsets.x': 0
+    }, 0.28, {
+      ease: FlxEase.cubeOut,
+      // 48 instead of 24 to reduce choppiness
+      framerate: 48,
+      onComplete: (twn:FlxTween) ->
+      {
+        if (transitionTween != null)
+        {
+          transitionTween.cancel();
+          transitionTween = null;
+        }
+      }
+    });
+  }
+
+  /**
+   * Transitions out this character.
+   * @param setVisible Whether to set visible instead of calling `kill()`.
+   */
+  public function transitionOut(setVisible:Bool = false):Void
+  {
+    if (characterType != CharacterSelectType.GF) return;
+
+    this._transitionAlpha = 1;
+    this._transitionOffsets.set(0, 0);
+
+    this.playAnimation(IDLE);
+
+    if (transitionTween != null)
+    {
+      transitionTween.cancel();
+      transitionTween = null;
+
+      if (setVisible)
+      {
+        this.localVisible = false;
+      }
+      else
+      {
+        this.kill();
+      }
+
+      return;
+    }
+
+    transitionTween = FlxTween.tween(this, {
+      _transitionAlpha: 0,
+      '_transitionOffsets.y': -this.height
+    }, 0.30, {
+      ease: FlxEase.cubeOut,
+      // 48 instead of 24 to reduce choppiness
+      framerate: 48,
+      onComplete: (twn:FlxTween) ->
+      {
+        if (setVisible)
+        {
+          this.localVisible = false;
+        }
+        else
+        {
+          this.kill();
+        }
+
+        if (transitionTween != null)
+        {
+          transitionTween.cancel();
+          transitionTween = null;
+        }
+      }
+    });
+  }
+
+  /**
    * Get the configuration for the texture atlas.
    *
    * @return The configuration for the texture atlas.
@@ -274,7 +388,7 @@ class CharSelectCharacter extends FunkinSprite implements IBPMSyncedScriptedClas
       cacheOnLoad: playerData?.atlasSettings?.cacheOnLoad ?? false,
       filterQuality: cast playerData?.atlasSettings?.filterQuality ?? animate.FlxAnimateFrames.FilterQuality.MEDIUM,
       applyStageMatrix: playerData?.atlasSettings?.applyStageMatrix ?? true,
-      useRenderTexture: playerData?.atlasSettings?.useRenderTexture ?? false
+      useRenderTexture: playerData?.atlasSettings?.useRenderTexture ?? true
     }
   }
 
@@ -362,6 +476,10 @@ class CharSelectCharacter extends FunkinSprite implements IBPMSyncedScriptedClas
 
     // Small offset for mobile!
     output.x += CharacterSelectState.CUTOUT_SIZE;
+
+    // For transitioning!
+    output.x += _transitionOffsets.x;
+    output.y += _transitionOffsets.y;
 
     return output;
   }
@@ -456,6 +574,15 @@ class CharSelectCharacter extends FunkinSprite implements IBPMSyncedScriptedClas
   {
   }
 
+  override public function destroy():Void
+  {
+    if (transitionTween != null) transitionTween.cancel();
+
+    _transitionOffsets.put();
+
+    super.destroy();
+  }
+
   /**
    * DEPRECATED VISUALIZER CODE: WILL BE REMOVED IN A FUTURE UPDATE
    * ONLY HERE FOR BACKWARDS COMPATIBILITY
@@ -471,6 +598,8 @@ class CharSelectCharacter extends FunkinSprite implements IBPMSyncedScriptedClas
     // Skip drawing if the asset path is blank
     // Prevents the HaxeFlixel logo from showing up at the top left
     if (currentPath.isBlank()) return;
+
+    this.alpha *= _transitionAlpha;
 
     if (analyzer != null) drawFFT();
 

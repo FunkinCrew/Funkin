@@ -3,7 +3,6 @@ package funkin.ui.charSelect.characters;
 import funkin.audio.FunkinSound;
 import funkin.data.freeplay.player.PlayerData.PlayerCharSelectCharacterData;
 import funkin.data.freeplay.player.PlayerData.PlayerCharSelectData;
-import funkin.data.freeplay.player.PlayerData.PlayerCharSelectGFData;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.group.FunkinGroup;
 import funkin.modding.events.ScriptEvent;
@@ -109,6 +108,7 @@ class CharSelectCharacterGroup extends FunkinGroup<CharSelectCharacter>
   /**
    * Dispatches an event to all characters.
    * @param event The event to dispatch.
+   * @param finish Whether to immediately finish the event after dispatching it.
    */
   public function dispatchEvent(event:ScriptEvent):Void
   {
@@ -131,29 +131,21 @@ class CharSelectCharacterGroup extends FunkinGroup<CharSelectCharacter>
 
     if (oldGF != null)
     {
-      if (newId == 'locked')
-      {
-        oldGF.localVisible = false;
-      }
-      else
-      {
-        oldGF.kill();
-      }
+      oldGF.transitionOut(newId == 'locked');
     }
 
     if (oldPlayer != null)
     {
-      oldPlayer.playAnimation(SLIDEOUT, true);
+      oldPlayer.playAnimation(CharacterAnimation.SLIDEOUT, true);
     }
 
     newPlayer?.revive();
-    newPlayer?.playAnimation(SLIDEIN, true);
+    newPlayer?.playAnimation(CharacterAnimation.SLIDEIN, true);
 
     if (newGF != null)
     {
       newGF.localVisible = newId != 'locked';
-      newGF.revive();
-      newGF.playAnimation(IDLE);
+      newGF.transitionIn();
     }
 
     if (newId == 'locked')
