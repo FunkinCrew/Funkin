@@ -76,6 +76,7 @@ class ChartEditorAutoSaveHandler
     #end
 
     // autoSave() gets re-queued when saveDataDirty is set.
+    state.dequeueAutoSave();
   }
 
   public static function queueAutoSave(state:ChartEditorState):Void

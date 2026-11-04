@@ -1230,6 +1230,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   /**
    * A timer used to auto-save the chart after a period of inactivity.
+   * Will be non-`null` if there are local changes waiting to be backed up.
    */
   var autoSaveTimer:Null<FlxTimer> = null;
 

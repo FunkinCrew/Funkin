@@ -57,6 +57,7 @@ class RemoveTimeChangeCommand implements ChartEditorCommand
 
     state.noteDisplayDirty = true;
     state.notePreviewDirty = true;
+    state.saveDataDirty = true;
     state.notePreviewViewportBoundsDirty = true;
 
     var timingToolbox:ChartEditorTimingToolbox = cast state.getToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_TIMING_LAYOUT);
@@ -88,6 +89,7 @@ class RemoveTimeChangeCommand implements ChartEditorCommand
 
     state.noteDisplayDirty = true;
     state.notePreviewDirty = true;
+    state.saveDataDirty = true;
     state.notePreviewViewportBoundsDirty = true;
 
     var timingToolbox:ChartEditorTimingToolbox = cast state.getToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_TIMING_LAYOUT);

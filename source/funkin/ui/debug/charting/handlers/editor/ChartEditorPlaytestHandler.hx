@@ -39,18 +39,18 @@ class ChartEditorPlaytestHandler
    */
   public static function testSongInPlayState(state:ChartEditorState, minimal:Bool = false):Void
   {
-    for (component in Screen.instance.rootComponents.copy())
-    {
-      if (component is Menu)
-      {
-        if (cast(component, Menu).menuBar != null) component.dispatch(new UIEvent(UIEvent.CLOSE));
-        else
-          Screen.instance.removeComponent(component, false);
-      }
-      for (dropDown in component.findComponents(null, DropDown, -1)) dropDown.hideDropDown();
-    }
+    state.forceCloseDropdowns();
 
-    state.autoSave(true);
+    // Auto-save chart only if there's recent changes to back up.
+    if (state.autoSaveTimer != null)
+    {
+      state.autoSave(true);
+    }
+    else
+    {
+      // Auto-save preferences.
+      state.writePreferences(state.saveDataDirty);
+    }
 
     if (!ChartEditorState.wasPlaytesting)
     {
@@ -78,6 +78,7 @@ class ChartEditorPlaytestHandler
     if (chartDataForVariation == null)
     {
       state.error('Could Not Playtest', 'Got an error playtesting the song:\nNo variation found: ${state.selectedVariation}');
+      state.displayAutosavePopup = false; // Unqueue auto-save popup.
       return;
     }
 
@@ -85,6 +86,7 @@ class ChartEditorPlaytestHandler
     if (chartEventErrors.length > 0)
     {
       state.error('Could Not Playtest', 'Got an error playtesting the song:\n${chartEventErrors.join('\n')}');
+      state.displayAutosavePopup = false; // Unqueue auto-save popup.
       return;
     }
 
@@ -108,6 +110,7 @@ class ChartEditorPlaytestHandler
     {
       if (addedUnlisted) listedDifficulties.remove(state.selectedDifficulty);
       state.error('Could Not Playtest', 'Got an error playtesting the song:\n${e}');
+      state.displayAutosavePopup = false; // Unqueue auto-save popup.
       return;
     }
     if (addedUnlisted) listedDifficulties.remove(state.selectedDifficulty);
@@ -171,11 +174,24 @@ class ChartEditorPlaytestHandler
         playState.vocals = state.audioVocalTrackGroup;
       }
     }, true);
+  }
 
-    /*LoadingState.loadPlayState(targetStateParams, false, true, function(targetState)
+  /**
+   * Force close all active dropdowns.
+   */
+  public static function forceCloseDropdowns(state:ChartEditorState):Void
+  {
+    // Close all menus and dropdowns.
+    for (component in Screen.instance.rootComponents.copy())
+    {
+      if (component is Menu)
       {
-
-    });*/
+        if (cast(component, Menu).menuBar != null) component.dispatch(new UIEvent(UIEvent.CLOSE));
+        else
+          Screen.instance.removeComponent(component, false);
+      }
+      for (dropDown in component.findComponents(null, DropDown, -1)) dropDown.hideDropDown();
+    }
   }
 
   /**
@@ -235,8 +251,6 @@ class ChartEditorPlaytestHandler
       // TODO: No auto-save on HTML5?
       #end
     }
-
-    if (state.saveDataDirty) state.queueAutoSave();
 
     state.moveSongToScrollPosition();
 
