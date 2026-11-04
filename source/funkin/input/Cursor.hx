@@ -371,6 +371,8 @@ class Cursor
 
     #if !FLX_NO_MOUSE
     MouseHelper.notify(MouseEvent.MOUSE_MOVE, onMouseMoveSyncCursor, 5);
+    MouseHelper.notify(MouseEvent.MOUSE_DOWN, onMouseButtonSyncCursor, 15);
+    MouseHelper.notify(MouseEvent.MOUSE_UP, onMouseButtonSyncCursor, 15);
     #end
   }
 
@@ -393,6 +395,15 @@ class Cursor
     "progress" => MouseCursor.WAIT_ARROW,
   ];
   static var lastResolvedCursor:Null<String> = null;
+  static var wasDragging:Bool = false;
+
+  static function onMouseButtonSyncCursor(e:MouseEvent):Void
+  {
+    var isDragging:Bool = DragManager.instance.isDragging;
+    if (isDragging == wasDragging) return;
+    wasDragging = isDragging;
+    onMouseMoveSyncCursor(e);
+  }
 
   static function onMouseMoveSyncCursor(_:MouseEvent):Void
   {
