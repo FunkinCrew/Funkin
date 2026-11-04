@@ -24,6 +24,7 @@ import funkin.ui.quickpanel.QuickPanelTypes;
 import funkin.ui.transition.Transition;
 import funkin.util.MathUtil;
 import funkin.util.PropertyAnimator;
+import funkin.graphics.shaders.BoilShader;
 import funkin.util.StateUtil;
 import funkin.util.TouchUtil;
 
@@ -175,7 +176,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
   var descriptionText:FlxText;
   var descriptionPanelY:Float = 0;
   var descriptionTextY:Float = 0;
-  var circleWipe:CircleWipeShader;
+  var circleWipe:BoilShader;
   var tickSound:FunkinSound;
   var moveTween:Null<FlxTween> = null;
   var transitionTimers:Array<FlxTimer> = [];
@@ -285,7 +286,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     wipeSprite.visible = false;
     add(wipeSprite);
 
-    circleWipe = new CircleWipeShader();
+    circleWipe = new BoilShader(true);
     wipeSprite.shader = circleWipe;
 
     selectedIcon = new FunkinSprite(0, 0);
