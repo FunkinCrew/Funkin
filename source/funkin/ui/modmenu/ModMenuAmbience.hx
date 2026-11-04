@@ -38,7 +38,7 @@ class ModMenuAmbience extends FunkinSoundscape
     if (_currentSFX != null)
     {
       @:privateAccess
-      var index:Int = Std.int(soundList.indexOf(_currentSFX.label));
+      var index:Int = Std.int(soundList.indexOf(_currentSFX._label));
       var usedWeight:Float = weights[index];
 
       if (usedWeight <= 1)

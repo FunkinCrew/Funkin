@@ -323,11 +323,6 @@ class Paths implements ConsoleClass
     return new MusicAssetPathBuilder(key, suffix);
   }
 
-  public static function musicFile(key:String, ?suffix:String, validate:Bool = true):MusicAssetPathBuilder
-  {
-    return new MusicAssetPathBuilder(key, suffix, false);
-  }
-
   /**
    * Construct an asset path for a video file.
    *
@@ -342,7 +337,8 @@ class Paths implements ConsoleClass
   }
 
   /**
-   * Constructs an asset path for a vocal track in the `songs` folder.
+   * Gets the path to a vocal track sound file from a song ID and character suffix.
+   *
    * @param song The song ID for the vocal track
    * @param suffix The suffix to add to the vocal track (e.g. "-erect" for alternate versions)
    * @param validate Whether to validate that the file exists before returning
@@ -356,7 +352,8 @@ class Paths implements ConsoleClass
   }
 
   /**
-   * Gets the path to an `Inst.mp3/ogg` song instrumental from songs:assets/songs/`song`/
+   * Gets the path to the instrumental sound file from a song ID and variation suffix.
+   *
    * @param song name of the song to get instrumental for
    * @param suffix any suffix to add to end of song name, used for `-erect` variants usually
    * @param withExtension if it should return with the audio file extension `.mp3` or `.ogg`.

@@ -85,7 +85,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   /**
    * Identifies this audio for the purposes of debugging.
    */
-  var label:String = 'unknown';
+  var _label:String = 'unknown';
 
   public function new()
   {
@@ -127,7 +127,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     funkin.assets.FunkinAssetCache.FunkinAssetCache.instance.releaseSoundIfUnused(sound);
 
     FlxTween.cancelTweensOf(this);
-    this.label = 'unknown';
+    this._label = 'unknown';
     this._waveformData = null;
   }
 
@@ -136,7 +136,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    */
   override public function toString():String
   {
-    return 'FunkinSound(${this.label})';
+    return 'FunkinSound(${this._label})';
   }
 
   /**
@@ -162,9 +162,8 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     // Sets `exists = true` as a side effect.
     sound.loadEmbedded(funkin.assets.Assets.getSound(assetPath), looped, autoDestroy, params?.onComplete);
 
-    sound.label = '${assetPath.toString()}';
+    sound._label = '${assetPath.toString()}';
 
-    if (params?.autoPlay ?? false) sound.play();
     sound.volume = volume;
     sound.persist = persist;
 
@@ -176,7 +175,10 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     FlxG.sound.defaultSoundGroup.add(sound);
 
     // Call onLoad() because the sound loaded.
-    if (params != null && params.onLoad != null && sound._sound != null) params.onLoad();
+    if (params != null && params.onLoad != null && sound._sound != null) params.onLoad(sound);
+
+    // Call this LAST so volume etc. get set properly.
+    if (params?.autoPlay ?? false) sound.play();
 
     return sound;
   }
@@ -188,10 +190,17 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   public static var suppressOneShots:Bool = false;
 
   /**
-   * Play a sound once, destroying it when it's finished.
+   * Load an audio file and prepare it for playback.
    * DEPRECATED: Use `loadSound(AssetPath)`
    *
-   * @param assetKey The asset path to the audio to play.
+   * @param embeddedSound The sound to play.
+   * @param volume The starting volume for the sound.
+   * @param looped Whether the sound should loop.
+   * @param autoDestroy Whether the sound object should be destroyed when playback is finished.
+   * @param autoPlay Whether the sound should start playing immediately, or wait until sound.play().
+   * @param persist Whether the sound should persist between states.
+   * @param onComplete A function to call when the sound is complete.
+   * @param onLoad A function to call when the sound is loaded.
    * @return The constructed `FunkinSound` object, or `null` if the sound failed to be loaded.
    */
   public static function load(embeddedSound:FlxSoundAsset,
@@ -205,14 +214,14 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   {
     if (Std.isOfType(embeddedSound, String))
     {
-      return FunkinSound.loadSound(Paths.raw(embeddedSound), {
+      return FunkinSound.loadSound(Paths.sound(embeddedSound), {
         volume: volume,
         looped: looped,
         autoDestroy: autoDestroy,
         autoPlay: autoPlay,
         persist: persist,
         onComplete: onComplete,
-        onLoad: onLoad,
+        onLoad: (_) -> if (onLoad != null) onLoad(),
       });
     }
     else
@@ -234,7 +243,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    * @param params (optional) Additional options for loading the sound.
    * @return The constructed `FunkinSound` object, or `null` if the sound failed to be loaded.
    */
-  public static inline function playSoundOnce(assetPath:AssetPath, ?params:FunkinSoundParams):Null<FunkinSound>
+  public static function playSoundOnce(assetPath:AssetPath, ?params:FunkinSoundParams):Null<FunkinSound>
   {
     // We're basically just calling loadSound() with different default parameters.
     return loadSound(assetPath, {
@@ -243,7 +252,6 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
       autoPlay: params?.autoPlay ?? true,
       looped: params?.looped ?? false,
       persist: params?.persist ?? false,
-      important: params?.important ?? false,
 
       volume: params?.volume ?? MAX_VOLUME,
       onComplete: params?.onComplete,
@@ -256,14 +264,17 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    * DEPRECATED: Use `playSoundOnce(AssetPath)`
    *
    * @param assetKey The asset path to the audio to play.
+   * @param volume The starting volume.
+   * @param onComplete A function to call when the sound is finished playing.
+   * @param onLoad A function to call when the sound is finished loading.
    * @return The constructed `FunkinSound` object, or `null` if the sound failed to be loaded.
    */
-  public static inline function playOnce(assetKey:String, volume:Float = 1.0, ?onComplete:Void->Void, ?onLoad:Void->Void):Null<FunkinSound>
+  public static function playOnce(assetKey:String, volume:Float = 1.0, ?onComplete:Void->Void, ?onLoad:Void->Void):Null<FunkinSound>
   {
-    return FunkinSound.playSoundOnce(Paths.raw(assetKey), {
+    return FunkinSound.playSoundOnce(Paths.sound(assetKey), {
       volume: volume,
       onComplete: onComplete,
-      onLoad: onLoad
+      onLoad: (_) -> if (onLoad != null) onLoad(),
     });
   }
 
@@ -277,27 +288,28 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   public static function playMusicTrack(musicAssetPath:MusicAssetPathBuilder,
     ?params:FunkinMusicParams):Bool
   {
+    var overrideExisting:Bool = params?.overrideExisting ?? true;
     var forceRestart:Bool = params?.forceRestart ?? false;
     var mapTimeChanges:Bool = params?.mapTimeChanges ?? true;
 
     var isMusicTrackPlaying:Bool = FlxG.sound.music?.playing ?? false;
 
-    if (isMusicTrackPlaying && !forceRestart)
+    if (isMusicTrackPlaying)
     {
       if (FlxG.sound.music != null && Std.isOfType(FlxG.sound.music, FunkinSound))
       {
         var existingSound:FunkinSound = cast FlxG.sound.music;
         var pathToUse:String = '${musicAssetPath.audio().toString()}';
 
-        // Stop here if we would restart a matching music track.
-        if (existingSound.label == pathToUse) return false;
+        // If the track is the same and forceRestart is false, cancel playback.
+        if (existingSound._label == pathToUse && !forceRestart) return false;
+        // If the track is different and overrideExisting is false, cancel playback.
+        if (existingSound._label != pathToUse && !overrideExisting) return false;
       }
     }
 
     if (mapTimeChanges)
     {
-      // TODO: This should probably utilize `musicAssetPath.metadata()`...
-
       var songMusicData:Null<SongMusicData> = SongRegistry.instance.parseMusicMetadata(musicAssetPath);
 
       // Will fall back and return null if the metadata doesn't exist or can't be parsed.
@@ -307,6 +319,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 
         if (params != null && params.looped == null)
         {
+          // Override params.looped only if not specified by the caller.
           if (songMusicData.looped != null) params.looped = songMusicData.looped;
         }
       }
@@ -321,13 +334,11 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     // Play the new music.
     emptyPartialQueue();
     var music:Null<FunkinSound> = loadSound(musicAssetPath.audio(), {
-      // Default to looping the audio and persisting between states.
-      looped: params?.looped ?? false,
+      looped: params?.looped ?? true,
       persist: params?.persist ?? true,
-      important: params?.important ?? true,
 
       autoDestroy: params?.autoDestroy ?? false,
-      autoPlay: params?.autoPlay ?? false,
+      autoPlay: params?.autoPlay ?? true,
       volume: params?.volume ?? MAX_VOLUME,
       onComplete: params?.onComplete,
       onLoad: params?.onLoad,
@@ -346,28 +357,37 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   }
 
   /**
-   * Play a sound once, destroying it when it's finished.
+   * Load a music track and starts playback.
    * DEPRECATED: Use `playMusicTrack(MusicAssetPathBuilder)`
    *
    * @param assetKey The asset path to the audio to play.
-   * @return The constructed `FunkinSound` object, or `null` if the sound failed to be loaded.
+   * @param params A set of parameters for playback.
+   * @return Whether the sound successfully played.
    */
-  public static inline function playMusic(assetKey:String, ?params:FunkinMusicCompatParams):Bool
+  public static function playMusic(assetKey:String, ?params:FunkinMusicCompatParams):Bool
   {
     var usePartial:Bool = params?.partialParams?.loadPartial ?? false;
 
+    // Convert the music path for compatibility.
+    var baseMusicPath = assetKey;
+    if (params?.pathsFunction == INST) baseMusicPath = Paths.inst(assetKey, params?.suffix ?? '').toString();
+    @:privateAccess
+    var musicPath:MusicAssetPathBuilder = new MusicAssetPathBuilder(baseMusicPath, false);
+
     if (usePartial)
     {
-      FunkinSound.playPartialMusicTrack(Paths.music(assetKey), {
+      FunkinSound.playPartialMusicTrack(musicPath, {
         forceRestart: params?.restartTrack,
         looped: params?.loop,
         mapTimeChanges: params?.mapTimeChanges,
         onComplete: params?.onComplete,
-        onLoad: params?.onLoad,
+        onLoad: (_) -> if (params != null && params.onLoad != null) params.onLoad(),
         persist: params?.persist,
         volume: params?.startingVolume,
 
-        // Leave overrideExisting always true
+        autoPlay: true,
+
+        // overrideExisting is ignored now.
 
         start: params?.partialParams?.start,
         end: params?.partialParams?.end
@@ -377,16 +397,18 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     }
     else
     {
-      return FunkinSound.playMusicTrack(Paths.music(assetKey), {
+      return FunkinSound.playMusicTrack(musicPath, {
         forceRestart: params?.restartTrack,
         looped: params?.loop,
         mapTimeChanges: params?.mapTimeChanges,
         onComplete: params?.onComplete,
-        onLoad: params?.onLoad,
+        onLoad: (_) -> if (params != null && params.onLoad != null) params.onLoad(),
         persist: params?.persist,
         volume: params?.startingVolume,
 
-        // Leave overrideExisting always true
+        autoPlay: true,
+
+        // overrideExisting is now ignored.
       });
     }
   }
@@ -424,9 +446,8 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
       // Sets `exists = true` as a side effect.
       sound.loadEmbedded(partialSound, looped, autoDestroy, params?.onComplete);
 
-      sound.label = '${assetPath.toString()}';
+      sound._label = '${assetPath.toString()}';
 
-      if (autoPlay) sound.play();
       sound.volume = volume;
       sound.persist = persist;
 
@@ -438,7 +459,10 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
       FlxG.sound.defaultSoundGroup.add(sound);
 
       // Call onLoad() because the sound loaded.
-      if (params != null && params.onLoad != null && sound._sound != null) params.onLoad();
+      if (params != null && params.onLoad != null && sound._sound != null) params.onLoad(sound);
+
+      // Call this LAST so volume etc. get set properly.
+      if (autoPlay) sound.play();
 
       result.complete(sound);
     });
@@ -475,7 +499,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
         var pathToUse:String = '${musicAssetPath.audio().toString()}';
 
         // Stop here if we would restart a matching music track.
-        if (existingSound.label == pathToUse) return Future.withValue(false);
+        if (existingSound._label == pathToUse) return Future.withValue(false);
       }
     }
 
@@ -490,6 +514,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 
         if (params != null && params.looped == null)
         {
+          // Override params.looped only if not specified by the caller.
           if (songMusicData.looped != null) params.looped = songMusicData.looped;
         }
       }
@@ -510,26 +535,23 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
       start: params?.start,
       end: params?.end,
 
-      // Default to looping the audio and persisting between states.
-      looped: params?.looped ?? false,
+      looped: params?.looped ?? true,
       persist: params?.persist ?? true,
-      important: params?.important ?? true,
 
       autoDestroy: params?.autoDestroy ?? false,
-      autoPlay: params?.autoPlay ?? false,
+      autoPlay: params?.autoPlay ?? true,
       volume: params?.volume ?? MAX_VOLUME,
       onComplete: params?.onComplete,
-      onLoad: params?.onLoad,
+
+      // Call onLoad after setMusic().
     });
 
     music.onComplete((music:FunkinSound) ->
     {
       // Called when the music finishes loading.
       setMusic(music);
-      if (FlxG.sound.music != null)
-      {
-        if (params != null && params.onLoad != null) params.onLoad();
-      }
+
+      if (params != null && params.onLoad != null && music._sound != null) params.onLoad(music);
 
       promise.complete(true);
     });
@@ -631,7 +653,7 @@ typedef FunkinSoundParams =
    * Whether this sound should be looped, restarting it when it ends.
    * NOTE: Called `looped` not `loop` for consistency with Flixel. Get it right!
    *
-   * @default `false`
+   * @default `false` for `loadSound()`, `true` for `playMusicTrack()`
    */
   @:optional
   var looped:Bool;
@@ -640,7 +662,7 @@ typedef FunkinSoundParams =
    * Whether to automatically destroy the sound when it finishes playing,
    * preventing that instance from being replayed, but saving memory.
    *
-   * @default `false`
+   * @default `true` for `loadSound()`, `false` for `playMusicTrack()`
    */
   @:optional
   var autoDestroy:Bool;
@@ -649,7 +671,7 @@ typedef FunkinSoundParams =
    * Whether to automatically start playing the sound immediately.
    * If `false`, you have to call `play()` later to start it.
    *
-   * @default `false`
+   * @default `false` for `loadSound()`, `true` for `playMusicTrack()`
    */
   @:optional
   var autoPlay:Bool;
@@ -664,26 +686,16 @@ typedef FunkinSoundParams =
   var persist:Bool;
 
   /**
-   * Whether this audio is important.
-   * If `true`, the game will force it to play, which may require cancelling another sound
-   * if too many sounds are playing at once.
-   *
-   * @default `false`
+   * An optional callback to run when the sound finishes loading.
    */
   @:optional
-  var important:Bool;
+  var onLoad:FunkinSound->Void;
 
   /**
    * An optional callback to run when the sound finishes playing.
    */
   @:optional
   var onComplete:Void->Void;
-
-  /**
-   * An optional callback to run when the sound finishes loading.
-   */
-  @:optional
-  var onLoad:Void->Void;
 };
 
 /**
@@ -702,6 +714,15 @@ typedef FunkinMusicParams =
    */
   @:optional
   var forceRestart:Bool;
+
+  /**
+   * If `false`, and there is already a different music track playing, `playMusic()` will be ignored.
+   * If `true`, the music will always be replaced.
+   *
+   * @default `true`
+   */
+  @:optional
+  var overrideExisting:Bool;
 
   /**
    * If `true`, load this music's metadata and load it into the Conductor.
