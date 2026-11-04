@@ -2,7 +2,7 @@ package funkin.ui.debug.charting.commands;
 
 #if FEATURE_CHART_EDITOR
 import funkin.data.song.SongData.SongTimeChange;
-import funkin.ui.debug.charting.toolboxes.ChartEditorMetadataToolbox;
+import funkin.ui.debug.charting.toolboxes.ChartEditorTimingToolbox;
 
 /**
  * Represents a reversible action to modify a time change in a song.
@@ -64,11 +64,11 @@ class ModifyTimeChangeCommand implements ChartEditorCommand
     state.notePreviewDirty = true;
     state.notePreviewViewportBoundsDirty = true;
 
-    var metadataToolbox:ChartEditorMetadataToolbox = cast state.getToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
+    var timingToolbox:ChartEditorTimingToolbox = cast state.getToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_TIMING_LAYOUT);
 
     Conductor.instance.mapTimeChanges(state.currentSongMetadata.timeChanges);
 
-    if (metadataToolbox != null) metadataToolbox.refreshTimeChangeInputs();
+    if (timingToolbox != null) timingToolbox.refreshTimeChangeInputs();
 
     state.updateSongTime();
     state.updateGridHeight();
@@ -102,11 +102,11 @@ class ModifyTimeChangeCommand implements ChartEditorCommand
     state.notePreviewDirty = true;
     state.notePreviewViewportBoundsDirty = true;
 
-    var metadataToolbox:ChartEditorMetadataToolbox = cast state.getToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
+    var timingToolbox:ChartEditorTimingToolbox = cast state.getToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_TIMING_LAYOUT);
 
     Conductor.instance.mapTimeChanges(state.currentSongMetadata.timeChanges);
 
-    if (metadataToolbox != null) metadataToolbox.refreshTimeChangeInputs(true);
+    if (timingToolbox != null) timingToolbox.refreshTimeChangeInputs(true);
 
     state.updateSongTime();
     state.updateGridHeight();

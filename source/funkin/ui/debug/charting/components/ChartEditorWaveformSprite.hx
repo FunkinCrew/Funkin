@@ -68,6 +68,17 @@ class ChartEditorWaveformSprite extends FlxSprite
     return baseColor = value;
   }
 
+  /**
+   * The brighter band in the middle of the base waveform.
+   */
+  public var coreColor(default, set):Null<FlxColor> = null;
+
+  function set_coreColor(value:Null<FlxColor>):Null<FlxColor>
+  {
+    if (coreColor != value) markDirty();
+    return coreColor = value;
+  }
+
   public var overlayColor(default, set):FlxColor = FlxColor.WHITE;
 
   function set_overlayColor(value:FlxColor):FlxColor
@@ -164,34 +175,66 @@ class ChartEditorWaveformSprite extends FlxSprite
 
     bitmap.lock();
     var base:Null<WaveformData> = waveformData;
-    if (base != null) drawLayer(bitmap, base, baseColor, from, to);
-
     var overlay:Null<WaveformData> = overlayData;
-    if (overlay != null) drawLayer(bitmap, overlay, overlayColor, from, to);
+    if (base != null)
+    {
+      var layerBase:FlxColor = baseColor;
+      var layerCore:Null<FlxColor> = coreColor;
+      if (overlay != null)
+      {
+        layerBase.alphaFloat = UNDER_OVERLAY_ALPHA;
+        if (layerCore != null)
+        {
+          var faded:FlxColor = layerCore;
+          faded.alphaFloat = UNDER_OVERLAY_ALPHA;
+          layerCore = faded;
+        }
+      }
+      drawLayer(bitmap, base, layerBase, layerCore, from, to);
+    }
+
+    if (overlay != null) drawLayer(bitmap, overlay, overlayColor, null, from, to);
     bitmap.unlock();
   }
 
   /**
-   * Draw one waveform into the chunk bitmap, one pixel row at a time.
+   * How wide the core is, compared to the full waveform in each row.
    */
-  function drawLayer(bitmap:BitmapData, data:WaveformData, color:FlxColor, from:Float, to:Float):Void
+  static final CORE_WIDTH:Float = 0.4;
+
+  /**
+   * How much of the width the loudest point of the track reaches, leaving a little room at the edges.
+   */
+  static final FIT_WIDTH:Float = 0.9;
+
+  /**
+   * How opaque the original waveform is while a filtered overlay is drawn over it.
+   */
+  static final UNDER_OVERLAY_ALPHA:Float = 0.6;
+
+  /**
+   * Draw one waveform into the chunk bitmap, one pixel row at a time.
+   * @param core If set, a narrower band of this color is drawn in the middle of each row.
+   */
+  function drawLayer(bitmap:BitmapData, data:WaveformData, color:FlxColor, core:Null<FlxColor>, from:Float, to:Float):Void
   {
     segmentIndex = 0;
 
-    var stepHeight:Float = ChartEditorState.STEP_HEIGHT;
+    var stepHeight:Float = ChartEditorTimeScale.STEP_HEIGHT;
     var halfWidth:Float = bitmap.width / 2;
     var maxValue:Int = data.maxSampleValue();
+    var fitValue:Float = data.peakValue();
     var pointsPerMs:Float = data.pointsPerSecond() / Constants.MS_PER_SEC;
     var levelCount:Int = data.mipLevelCount();
     var timeOffset:Float = Conductor.instance.instrumentalOffset + audioOffsetMs;
 
     var rowY:Float = from;
-    var startIndex:Float = (stepToMs(rowY / stepHeight) - timeOffset) * pointsPerMs;
+    var startIndex:Float = (rowToMs(rowY, stepHeight) - timeOffset) * pointsPerMs;
 
     while (rowY < to)
     {
       var nextY:Float = Math.min(rowY + 1, to);
-      var endIndex:Float = (stepToMs(nextY / stepHeight) - timeOffset) * pointsPerMs;
+      var endIndex:Float = (rowToMs(nextY, stepHeight) - timeOffset) * pointsPerMs;
 
       // Pick the level where this row covers at most two points.
       var level:Int = 0;
@@ -223,16 +266,33 @@ class ChartEditorWaveformSprite extends FlxSprite
       }
 
       // Mirrored around the center using the peak size, so both edges match.
-      var peak:Float = Math.min(Math.max(max, -min) / maxValue, 1.0) * halfWidth;
+      var peak:Float = Math.min(Math.max(max, -min) / fitValue, 1.0) * halfWidth * FIT_WIDTH;
       var left:Int = Std.int(halfWidth - Math.max(peak, 0.5));
       var right:Int = Std.int(Math.fceil(halfWidth + Math.max(peak, 0.5)));
 
       rowRect.setTo(left, rowY - chunkTop, right - left, 1);
       bitmap.fillRect(rowRect, color);
 
+      var corePeak:Float = peak * CORE_WIDTH;
+      if (core != null && corePeak >= 1)
+      {
+        var coreLeft:Int = Std.int(halfWidth - corePeak);
+        var coreRight:Int = Std.int(Math.fceil(halfWidth + corePeak));
+        rowRect.setTo(coreLeft, rowY - chunkTop, coreRight - coreLeft, 1);
+        bitmap.fillRect(rowRect, core);
+      }
+
       rowY = nextY;
       startIndex = endIndex;
     }
+  }
+
+  /**
+   * The song time at a grid row.
+   */
+  inline function rowToMs(rowY:Float, stepHeight:Float):Float
+  {
+    return ChartEditorTimeScale.pixelsToMs(rowY);
   }
 
   /**

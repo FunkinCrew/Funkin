@@ -1466,7 +1466,7 @@ class ChartEditorDialogHandler
     var dialogStickerPack:Null<DropDown> = dialog.findComponent('dialogStickerPack', DropDown);
     if (dialogStickerPack == null) throw 'Could not locate dialogStickerPack DropDown in Add Variation dialog';
     var startingValueStickerPack = ChartEditorDropdowns.populateDropdownWithStickerPacks(dialogStickerPack, state.currentSongMetadata.playData.stickerPack);
-    dialogAlbum.value = startingValueStickerPack;
+    dialogStickerPack.value = startingValueStickerPack;
 
     var dialogCharacterPlayer:Null<DropDown> = dialog.findComponent('dialogCharacterPlayer', DropDown);
     if (dialogCharacterPlayer == null) throw 'Could not locate dialogCharacterPlayer DropDown in Add Variation dialog';

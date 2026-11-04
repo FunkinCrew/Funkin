@@ -39,8 +39,8 @@ class ChartEditorThemeHandler
   public static final GRID_MEASURE_DIVIDER_COLOR_LIGHT:FlxColor = 0xFF111111;
   public static final GRID_MEASURE_DIVIDER_COLOR_DARK:FlxColor = 0xFFC4C4C4;
   static final GRID_MEASURE_DIVIDER_WIDTH:Float = ChartEditorState.GRID_SELECTION_BORDER_WIDTH;
-  public static final MEASTURE_TICKS_BACKING_COLOR_LIGHT:FlxColor = 0xFFD4D4DA;
-  public static final MEASTURE_TICKS_BACKING_COLOR_DARK:FlxColor = 0xFF060608;
+  public static final MEASTURE_TICKS_BACKING_COLOR_LIGHT:FlxColor = 0xFFB4B6C0;
+  public static final MEASTURE_TICKS_BACKING_COLOR_DARK:FlxColor = 0xFF24242E;
   // Border on the square highlighting selected notes.
   static final SELECTION_SQUARE_BORDER_COLOR_LIGHT:FlxColor = 0xFF339933;
   static final SELECTION_SQUARE_BORDER_COLOR_DARK:FlxColor = 0xFF339933;
@@ -75,17 +75,22 @@ class ChartEditorThemeHandler
   public static final BACKING_PIXELS:Int = 2;
 
   // Backing behind the notes and waveforms.
-  static final GRID_BACKING_COLOR_LIGHT:FlxColor = 0xFFE4E4E8;
+  static final GRID_BACKING_COLOR_LIGHT:FlxColor = 0xFFA9ABB4;
   static final GRID_BACKING_COLOR_DARK:FlxColor = 0xFF060608;
   public static final GRID_BACKING_ALPHA:Float = 0.92;
 
   // Faint vertical divider between the opponent, player and event columns.
-  static final GRID_SIDE_DIVIDER_COLOR_LIGHT:FlxColor = 0xFFC2C2CA;
-  static final GRID_SIDE_DIVIDER_COLOR_DARK:FlxColor = 0xFF2A2A33;
-  static final GRID_SIDE_DIVIDER_WIDTH:Int = 2;
+  static final GRID_SIDE_DIVIDER_COLOR_LIGHT:FlxColor = 0xFF6E717C;
+  static final GRID_SIDE_DIVIDER_COLOR_DARK:FlxColor = 0xFF3A3A48;
+  public static final GRID_SIDE_DIVIDER_WIDTH:Int = 2;
+
+  public static function getSideDividerColor(theme:ChartEditorTheme):FlxColor
+  {
+    return (theme == Dark) ? GRID_SIDE_DIVIDER_COLOR_DARK : GRID_SIDE_DIVIDER_COLOR_LIGHT;
+  }
 
   // Thin horizontal lines on the grid.
-  static final GRID_LINE_COLOR_LIGHT:FlxColor = 0xFF18181E;
+  static final GRID_LINE_COLOR_LIGHT:FlxColor = 0xFF0E0E14;
   static final GRID_LINE_COLOR_DARK:FlxColor = 0xFFD0D0D8;
 
   public static final GRID_MEASURE_LINE_WIDTH:Int = 2;
@@ -94,8 +99,8 @@ class ChartEditorThemeHandler
   public static final GRID_BEAT_LINE_ALPHA:Float = 0.25;
 
   // Solid waveform drawn across each side's lanes.
-  static final WAVEFORM_OVERLAY_COLOR_LIGHT:FlxColor = 0xFF5C5C66;
-  static final WAVEFORM_OVERLAY_COLOR_DARK:FlxColor = 0xFF4A4A56;
+  static final WAVEFORM_OVERLAY_COLOR_LIGHT:FlxColor = 0xFF2E4F9C;
+  static final WAVEFORM_OVERLAY_COLOR_DARK:FlxColor = 0xFF2F5CC4;
 
   public static function getGridLineColor(theme:ChartEditorTheme):FlxColor
   {
@@ -108,8 +113,22 @@ class ChartEditorThemeHandler
   }
 
   // Filtered waveform overlay color.
-  static final WAVEFORM_FILTER_COLOR_LIGHT:FlxColor = 0xFF2F5FB8;
-  static final WAVEFORM_FILTER_COLOR_DARK:FlxColor = 0xFF7FB0FF;
+  static final WAVEFORM_FILTER_COLOR_LIGHT:FlxColor = 0xFF0A8FC4;
+  static final WAVEFORM_FILTER_COLOR_DARK:FlxColor = 0xFF5CE1FF;
+
+  // Waveform inner color.
+  static final WAVEFORM_CORE_COLOR_LIGHT:FlxColor = 0xFF8DB3FF;
+  static final WAVEFORM_CORE_COLOR_DARK:FlxColor = 0xFF8FB8FF;
+
+  /**
+   * How opaque waveforms drawn over the grid are, filter overlay included.
+   */
+  public static final WAVEFORM_OVERLAY_ALPHA:Float = 0.7;
+
+  public static function getWaveformCoreColor(theme:ChartEditorTheme):FlxColor
+  {
+    return (theme == Dark) ? WAVEFORM_CORE_COLOR_DARK : WAVEFORM_CORE_COLOR_LIGHT;
+  }
 
   public static function getWaveformFilterColor(theme:ChartEditorTheme):FlxColor
   {
@@ -170,15 +189,6 @@ class ChartEditorThemeHandler
     // A thin strip, stretched over the visible part of the grid.
     var gridWidth:Int = ChartEditorState.GRID_SIZE * TOTAL_COLUMN_COUNT;
     state.gridBitmap = new BitmapData(gridWidth, BACKING_PIXELS, true, backingColor);
-
-    for (i in 1...TOTAL_COLUMN_COUNT)
-    {
-      if (i % ChartEditorState.STRUMLINE_SIZE != 0) continue;
-      state.gridBitmap.fillRect(
-        new Rectangle(ChartEditorState.GRID_SIZE * i - GRID_SIDE_DIVIDER_WIDTH / 2, 0, GRID_SIDE_DIVIDER_WIDTH, BACKING_PIXELS),
-        (state.currentTheme == Dark) ? GRID_SIDE_DIVIDER_COLOR_DARK : GRID_SIDE_DIVIDER_COLOR_LIGHT
-      );
-    }
 
     state.gridLines?.updateTheme();
   }

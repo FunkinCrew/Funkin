@@ -125,6 +125,14 @@ class ChartEditorContextMenuHandler
     }
   }
 
+  /**
+   * Show a menu that was built in code, closing any other context menu.
+   */
+  public static function openCustomContextMenu(state:ChartEditorState, targetMenu:Menu)
+  {
+    displayMenu(state, targetMenu);
+  }
+
   static function displayMenu(state:ChartEditorState, targetMenu:Menu)
   {
     // Close the existing menu because it's of a different type

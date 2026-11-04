@@ -7,6 +7,8 @@ import openfl.display.BitmapData;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxFramesCollection;
+import flixel.text.FlxText;
+import flixel.util.FlxColor;
 import funkin.data.song.SongData.SongEventData;
 import haxe.ui.tooltips.ToolTipRegionOptions;
 import funkin.util.HaxeUIUtil;
@@ -173,8 +175,9 @@ class ChartEditorEventSprite extends FlxSprite
 
     this.x = (ChartEditorState.STRUMLINE_SIZE * 2 + 1 - 1) * ChartEditorState.GRID_SIZE;
 
-    var stepTime:Float = (overrideStepTime != null) ? overrideStepTime : eventData.getStepTime();
-    this.y = stepTime * ChartEditorState.STEP_HEIGHT - ChartEditorState.GRID_SIZE / 2;
+    var overrideStep:Null<Float> = overrideStepTime;
+    var posY:Float = (overrideStep != null) ? ChartEditorTimeScale.stepToPixels(overrideStep) : ChartEditorTimeScale.timeToPixels(eventData.time, eventData.getStepTime());
+    this.y = posY - ChartEditorState.GRID_SIZE / 2;
 
     if (origin != null)
     {
@@ -195,27 +198,19 @@ class ChartEditorEventSprite extends FlxSprite
     }
     else
     {
-      tooltipText = '${overlappingEventDatas.length + 1} Event(s)\n\n';
-      tooltipText += this.eventData.buildTooltip();
-
-      static var MAX_EVENT_LIMIT = 3;
-      var eventCount:Int = 1; // Start with 1 to include the base event.
-      for (event in overlappingEventDatas)
+      var chain:Array<SongEventData> = overlappingEventDatas.copy();
+      var self:Null<SongEventData> = this.eventData;
+      if (self != null) chain.unshift(self);
+      tooltipText = 'Event Chain (${chain.length} events)';
+      static var MAX_EVENT_LIMIT = 8;
+      for (i in 0...chain.length)
       {
-        eventCount++;
-
-        tooltipText += '\n\n';
-
-        // Cut off the tooltip when we're showing 3 events.
-        if (eventCount > MAX_EVENT_LIMIT)
+        if (i >= MAX_EVENT_LIMIT)
         {
-          tooltipText += '... (${(overlappingEventDatas.length + 1) - MAX_EVENT_LIMIT} event(s) not showing)';
+          tooltipText += '\n... and ${chain.length - MAX_EVENT_LIMIT} more';
           break;
         }
-        else
-        {
-          tooltipText += event.buildTooltip();
-        }
+        tooltipText += '\n${i + 1}. ${chain[i].buildTooltip().split('\n')[0]}';
       }
     }
     this.tooltip.tipData = {
@@ -228,6 +223,32 @@ class ChartEditorEventSprite extends FlxSprite
     super.kill();
 
     overlappingEventDatas = null;
+  }
+
+  /**
+   * Shows how many events are in a chain, in the corner of the sprite.
+   */
+  var chainCountText:Null<FlxText> = null;
+
+  override public function draw():Void
+  {
+    super.draw();
+
+    var count:Int = (overlappingEventDatas?.length ?? 0) + 1;
+    if (count < 2 || isGhost) return;
+
+    var text:Null<FlxText> = chainCountText;
+    if (text == null)
+    {
+      text = new haxe.ui.backend.flixel.HiResFlxText(0, 0, 0, '', 16);
+      text.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+      chainCountText = text;
+    }
+    text.text = 'x$count';
+    text.cameras = this.cameras;
+    text.x = this.x + this.width - text.width + 4;
+    text.y = this.y + this.height - text.height + 4;
+    text.draw();
   }
 
   /**
@@ -250,7 +271,7 @@ class ChartEditorEventSprite extends FlxSprite
   public static function wouldEventBeVisible(viewAreaBottom:Float, viewAreaTop:Float, eventData:SongEventData, ?origin:FlxObject):Bool
   {
     var noteHeight:Float = ChartEditorState.GRID_SIZE;
-    var notePosY:Float = eventData.getStepTime() * ChartEditorState.STEP_HEIGHT - noteHeight / 2;
+    var notePosY:Float = ChartEditorTimeScale.timeToPixels(eventData.time, eventData.getStepTime()) - noteHeight / 2;
     if (origin != null) notePosY += origin.y;
 
     // True if the note is above the view area.

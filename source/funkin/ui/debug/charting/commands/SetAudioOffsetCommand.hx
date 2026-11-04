@@ -53,8 +53,7 @@ class SetAudioOffsetCommand implements ChartEditorCommand
     // Update the offsets toolbox.
     if (refreshOffsetsToolbox)
     {
-      state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT);
-      state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_FREEPLAY_LAYOUT);
+      state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
     }
   }
 
@@ -86,7 +85,7 @@ class SetAudioOffsetCommand implements ChartEditorCommand
     }
 
     // Update the offsets toolbox.
-    state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT);
+    state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
   }
 
   /**

@@ -82,7 +82,7 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
         {
           // Edit the note data of any selected notes.
           note.kind = chartEditorState.noteKindToPlace;
-          note.params = ChartEditorState.cloneNoteParams(chartEditorState.noteParamsToPlace);
+          note.params = ChartEditorNoteUtil.cloneNoteParams(chartEditorState.noteParamsToPlace);
 
           // update note sprites
           for (noteSprite in chartEditorState.renderedNotes.members)
@@ -189,7 +189,7 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
       {
         if (note.kind == chartEditorState.noteKindToPlace)
         {
-          chartEditorState.noteParamsToPlace = ChartEditorState.cloneNoteParams(note.params);
+          chartEditorState.noteParamsToPlace = ChartEditorNoteUtil.cloneNoteParams(note.params);
           setParamsToPlace = true;
           break;
         }

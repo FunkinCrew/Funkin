@@ -12,4 +12,6 @@ using funkin.ui.debug.charting.handlers.ChartEditorNotificationHandler;
 using funkin.ui.debug.charting.handlers.ChartEditorShortcutHandler;
 using funkin.ui.debug.charting.handlers.ChartEditorThemeHandler;
 using funkin.ui.debug.charting.handlers.ChartEditorToolboxHandler;
+import funkin.ui.debug.charting.util.ChartEditorNoteUtil;
+import funkin.ui.debug.charting.util.ChartEditorTimeScale;
 #end

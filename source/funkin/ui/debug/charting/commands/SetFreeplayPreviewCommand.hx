@@ -31,6 +31,9 @@ class SetFreeplayPreviewCommand implements ChartEditorCommand
 
     if (newStartTime != null) state.currentSongFreeplayPreviewStart = newStartTime;
     if (newEndTime != null) state.currentSongFreeplayPreviewEnd = newEndTime;
+
+    state.saveDataDirty = true;
+    state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
   }
 
   /**
@@ -42,6 +45,9 @@ class SetFreeplayPreviewCommand implements ChartEditorCommand
   {
     state.currentSongFreeplayPreviewStart = previousStartTime;
     state.currentSongFreeplayPreviewEnd = previousEndTime;
+
+    state.saveDataDirty = true;
+    state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
   }
 
   /**

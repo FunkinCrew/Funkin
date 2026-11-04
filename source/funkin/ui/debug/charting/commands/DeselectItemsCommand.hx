@@ -28,6 +28,7 @@ class DeselectItemsCommand implements ChartEditorCommand
    */
   public function execute(state:ChartEditorState):Void
   {
+    this.events = state.withEventChains(this.events);
     state.currentNoteSelection = SongDataUtils.subtractNotes(state.currentNoteSelection, this.notes);
     state.currentEventSelection = SongDataUtils.subtractEvents(state.currentEventSelection, this.events);
 

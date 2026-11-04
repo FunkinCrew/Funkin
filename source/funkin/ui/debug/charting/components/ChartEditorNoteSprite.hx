@@ -74,7 +74,7 @@ class ChartEditorNoteSprite extends FlxSprite
   /**
    * An indicator if the note is a note kind different than Default ("").
    */
-  public var kindIndicator:FlxText = new FlxText(5, 5, 100, '*', 16);
+  public var kindIndicator:FlxText = new haxe.ui.backend.flixel.HiResFlxText(5, 5, 100, '*', 16);
 
   public function new(parent:ChartEditorState, isGhost:Bool = false)
   {
@@ -200,14 +200,16 @@ class ChartEditorNoteSprite extends FlxSprite
 
     var cursorColumn:Int = (overrideData != null) ? overrideData : this.noteData.data;
 
-    cursorColumn = ChartEditorState.noteDataToGridColumn(cursorColumn);
+    cursorColumn = ChartEditorNoteUtil.noteDataToGridColumn(cursorColumn);
 
     this.x = cursorColumn * ChartEditorState.GRID_SIZE;
 
     // Notes far in the song will start far down, but the group they belong to will have a high negative offset.
     // noteData.getStepTime() returns a calculated value which accounts for BPM changes
-    var stepTime:Float = (overrideStepTime != null) ? overrideStepTime : noteData.getStepTime();
-    if (stepTime >= 0) this.y = stepTime * ChartEditorState.STEP_HEIGHT - ChartEditorState.GRID_SIZE / 2;
+    var overrideStep:Null<Float> = overrideStepTime;
+    var stepTime:Float = (overrideStep != null) ? overrideStep : noteData.getStepTime();
+    var posY:Float = (overrideStep != null) ? ChartEditorTimeScale.stepToPixels(overrideStep) : ChartEditorTimeScale.timeToPixels(noteData.time, stepTime);
+    if (stepTime >= 0) this.y = posY - ChartEditorState.GRID_SIZE / 2;
 
     if (origin != null)
     {
@@ -303,7 +305,7 @@ class ChartEditorNoteSprite extends FlxSprite
   {
     var noteHeight:Float = ChartEditorState.GRID_SIZE;
     var stepTime:Float = inline noteData.getStepTime();
-    var notePosY:Float = stepTime * ChartEditorState.STEP_HEIGHT - noteHeight / 2;
+    var notePosY:Float = ChartEditorTimeScale.timeToPixels(noteData.time, stepTime) - noteHeight / 2;
     if (origin != null) notePosY += origin.y;
 
     // True if the note is above the view area.

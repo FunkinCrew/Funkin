@@ -221,9 +221,9 @@ class ChartEditorHoldNoteSprite extends SustainTrail
    */
   public static function wouldHoldNoteBeVisible(viewAreaBottom:Float, viewAreaTop:Float, noteData:SongNoteData, ?origin:FlxObject):Bool
   {
-    var noteHeight:Float = noteData.getStepLength() * ChartEditorState.STEP_HEIGHT;
+    var noteHeight:Float = ChartEditorTimeScale.lengthToPixels(noteData.time, noteData.length, noteData.getStepLength());
     var stepTime:Float = inline noteData.getStepTime();
-    var notePosY:Float = stepTime * ChartEditorState.STEP_HEIGHT;
+    var notePosY:Float = ChartEditorTimeScale.timeToPixels(noteData.time, stepTime);
     if (origin != null) notePosY += origin.y;
 
     // True if the note is above the view area.
@@ -263,13 +263,11 @@ class ChartEditorHoldNoteSprite extends SustainTrail
 
     // Notes far in the song will start far down, but the group they belong to will have a high negative offset.
     // noteData.getStepTime() returns a calculated value which accounts for BPM changes
-    var stepTime:Float = (overrideStepTime != null) ? overrideStepTime :
-    inline this.noteData.getStepTime();
+    var overrideStep:Null<Float> = overrideStepTime;
+    var stepTime:Float = (overrideStep != null) ? overrideStep : inline this.noteData.getStepTime();
     if (stepTime >= 0)
     {
-      // Add epsilon to fix rounding issues?
-      // var roundedStepTime:Float = Math.floor((stepTime + 0.01) / noteSnapRatio) * noteSnapRatio;
-      this.y = stepTime * ChartEditorState.STEP_HEIGHT;
+      this.y = (overrideStep != null) ? ChartEditorTimeScale.stepToPixels(overrideStep) : ChartEditorTimeScale.timeToPixels(this.noteData.time, stepTime);
     }
 
     this.x += ChartEditorState.GRID_SIZE / 2;

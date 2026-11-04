@@ -114,6 +114,16 @@ class WaveformData
     return (mipLevels ?? buildMipLevels()).length;
   }
 
+  /**
+   * The loudest sample in the whole waveform, as a positive value.
+   */
+  public function peakValue():Int
+  {
+    var top = getMipLevel(mipLevelCount() - 1);
+    var peak:Int = Std.int(Math.max(-top[0], top[1]));
+    return (peak > 0) ? peak : 1;
+  }
+
   function buildMipLevels():Array<lime.utils.Int16Array>
   {
     var levels:Array<lime.utils.Int16Array> = [];

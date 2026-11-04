@@ -137,8 +137,7 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
 
       var measureTimeInMs:Float = Conductor.instance.getMeasureTimeInMs(targetMeasure);
 
-      var measureTimeInSteps:Float = Conductor.instance.getTimeInSteps(measureTimeInMs);
-      var measureTimeInPixels:Float = measureTimeInSteps * ChartEditorState.STEP_HEIGHT;
+      var measureTimeInPixels:Float = ChartEditorTimeScale.msToPixels(measureTimeInMs);
 
       // If we've gone past the end of the song, we're done.
       if (measureTimeInPixels > chartEditorState.songLengthInPixels) break;
@@ -176,7 +175,7 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
 
   function makeMeasureNumber():FlxText
   {
-    var measureNumber = new FlxText(0, 0, ChartEditorState.GRID_SIZE, "1");
+    var measureNumber:FlxText = new haxe.ui.backend.flixel.HiResFlxText(0, 0, ChartEditorState.GRID_SIZE, "1");
     measureNumber.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 20, FlxColor.WHITE);
     measureNumber.borderStyle = FlxTextBorderStyle.OUTLINE;
     measureNumber.borderColor = FlxColor.BLACK;

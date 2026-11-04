@@ -210,9 +210,9 @@ class ChartEditorCommandPaletteCommands
     {
       openToolbox(palette, ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
     }),
-    command('Offsets Toolbox', 'Show the audio offsets toolbox.', (palette) ->
+    command('Timing Toolbox', 'Show the BPM and time signature toolbox.', (palette) ->
     {
-      openToolbox(palette, ChartEditorState.CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT);
+      openToolbox(palette, ChartEditorState.CHART_EDITOR_TOOLBOX_TIMING_LAYOUT);
     }),
     command('Note Data Toolbox', 'Show the note data toolbox.', (palette) ->
     {
@@ -221,10 +221,6 @@ class ChartEditorCommandPaletteCommands
     command('Event Data Toolbox', 'Show the event data toolbox.', (palette) ->
     {
       openToolbox(palette, ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT);
-    }),
-    command('Freeplay Toolbox', 'Show the freeplay preview toolbox.', (palette) ->
-    {
-      openToolbox(palette, ChartEditorState.CHART_EDITOR_TOOLBOX_FREEPLAY_LAYOUT);
     }),
     command('Preferences', 'Show the editor preferences, including playtest properties.', (palette) ->
     {
@@ -295,14 +291,12 @@ class ChartEditorCommandPaletteCommands
         state.menubarItemToggleToolboxDifficulty.selected = true;
       case ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT:
         state.menubarItemToggleToolboxMetadata.selected = true;
-      case ChartEditorState.CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT:
-        state.menubarItemToggleToolboxOffsets.selected = true;
+      case ChartEditorState.CHART_EDITOR_TOOLBOX_TIMING_LAYOUT:
+        state.menubarItemToggleToolboxTiming.selected = true;
       case ChartEditorState.CHART_EDITOR_TOOLBOX_NOTE_DATA_LAYOUT:
         state.menubarItemToggleToolboxNoteData.selected = true;
       case ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT:
         state.menubarItemToggleToolboxEventData.selected = true;
-      case ChartEditorState.CHART_EDITOR_TOOLBOX_FREEPLAY_LAYOUT:
-        state.menubarItemToggleToolboxFreeplay.selected = true;
       case ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT:
         state.menubarItemToggleToolboxPlayerPreview.selected = true;
         state.playerPreviewDirty = true;

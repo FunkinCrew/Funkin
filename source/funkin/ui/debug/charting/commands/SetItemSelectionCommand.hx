@@ -33,11 +33,13 @@ class SetItemSelectionCommand implements ChartEditorCommand
     this.previousNoteSelection = state.currentNoteSelection;
     this.previousEventSelection = state.currentEventSelection;
 
+    this.events = state.withEventChains(this.events);
+
     state.currentNoteSelection = notes;
     state.currentEventSelection = events;
 
     // If we just selected one or more events (and no notes), then we should make the event data toolbox display the event data for the selected event.
-    if (this.notes.length == 0 && this.events.length == 1)
+    if (this.notes.length == 0 && state.isOneEventChain(this.events))
     {
       var eventSelected = this.events[0];
 

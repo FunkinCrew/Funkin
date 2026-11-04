@@ -6,8 +6,14 @@ import funkin.ui.debug.charting.ChartEditorState.ChartEditorLiveInputStyle;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorTheme;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorWaveformFilter;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorWaveformPos;
-import haxe.ui.RuntimeComponentBuilder;
+import funkin.ui.debug.charting.toolboxes.ChartEditorBaseToolbox;
+import funkin.ui.debug.charting.toolboxes.ChartEditorDifficultyToolbox;
+import funkin.ui.debug.charting.toolboxes.ChartEditorEventDataToolbox;
+import funkin.ui.debug.charting.toolboxes.ChartEditorMetadataToolbox;
+import funkin.ui.debug.charting.toolboxes.ChartEditorTimingToolbox;
+import funkin.ui.debug.charting.toolboxes.ChartEditorNoteDataToolbox;
 import funkin.ui.haxeui.components.CharacterPlayer;
+import haxe.ui.RuntimeComponentBuilder;
 import haxe.ui.components.CheckBox;
 import haxe.ui.components.DropDown;
 import haxe.ui.components.Label;
@@ -19,13 +25,6 @@ import haxe.ui.containers.dialogs.Dialog.DialogEvent;
 import haxe.ui.core.Screen;
 import haxe.ui.events.DragEvent;
 import haxe.ui.focus.FocusManager;
-import funkin.ui.debug.charting.toolboxes.ChartEditorBaseToolbox;
-import funkin.ui.debug.charting.toolboxes.ChartEditorMetadataToolbox;
-import funkin.ui.debug.charting.toolboxes.ChartEditorOffsetsToolbox;
-import funkin.ui.debug.charting.toolboxes.ChartEditorFreeplayToolbox;
-import funkin.ui.debug.charting.toolboxes.ChartEditorEventDataToolbox;
-import funkin.ui.debug.charting.toolboxes.ChartEditorNoteDataToolbox;
-import funkin.ui.debug.charting.toolboxes.ChartEditorDifficultyToolbox;
 
 /**
  * Static functions which handle building themed UI elements for a provided ChartEditorState.
@@ -104,9 +103,7 @@ class ChartEditorToolboxHandler
           cast(toolbox, ChartEditorBaseToolbox).refresh();
         case ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT:
           cast(toolbox, ChartEditorBaseToolbox).refresh();
-        case ChartEditorState.CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT:
-          cast(toolbox, ChartEditorBaseToolbox).refresh();
-        case ChartEditorState.CHART_EDITOR_TOOLBOX_FREEPLAY_LAYOUT:
+        case ChartEditorState.CHART_EDITOR_TOOLBOX_TIMING_LAYOUT:
           cast(toolbox, ChartEditorBaseToolbox).refresh();
         case ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT:
           onShowToolboxPlayerPreview(state, toolbox);
@@ -159,6 +156,13 @@ class ChartEditorToolboxHandler
 
   public static function refreshToolbox(state:ChartEditorState, id:String):Void
   {
+    if (id == ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT)
+    {
+      refreshToolbox(state, ChartEditorState.CHART_EDITOR_TOOLBOX_TIMING_LAYOUT);
+      var difficultyToolbox:Null<ChartEditorDifficultyToolbox> = cast state.activeToolboxes.get(ChartEditorState.CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
+      if (difficultyToolbox != null) difficultyToolbox.refreshDetails();
+    }
+
     var toolbox:Null<ChartEditorBaseToolbox> = cast state.activeToolboxes.get(id);
 
     if (toolbox == null) return;
@@ -220,10 +224,8 @@ class ChartEditorToolboxHandler
         toolbox = buildToolboxDifficultyLayout(state);
       case ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT:
         toolbox = buildToolboxMetadataLayout(state);
-      case ChartEditorState.CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT:
-        toolbox = buildToolboxOffsetsLayout(state);
-      case ChartEditorState.CHART_EDITOR_TOOLBOX_FREEPLAY_LAYOUT:
-        toolbox = buildToolboxFreeplayLayout(state);
+      case ChartEditorState.CHART_EDITOR_TOOLBOX_TIMING_LAYOUT:
+        toolbox = ChartEditorTimingToolbox.build(state);
       case ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT:
         toolbox = buildToolboxPlayerPreviewLayout(state);
       case ChartEditorState.CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT:
@@ -317,6 +319,32 @@ class ChartEditorToolboxHandler
     if (cursorLine == null) throw 'ChartEditorToolboxHandler.buildToolboxPreferencesLayout() - Could not find preferencesCursorLine component.';
     cursorLine.onClick = _ -> if (state.preferencesListening) state.showCursorLine = cursorLine.selected;
 
+    var constantScroll:Null<CheckBox> = toolbox.findComponent('preferencesConstantScroll', CheckBox);
+    if (constantScroll == null) throw 'ChartEditorToolboxHandler.buildToolboxPreferencesLayout() - Could not find preferencesConstantScroll component.';
+    constantScroll.onClick = _ -> if (state.preferencesListening) state.constantScrollEnabled = constantScroll.selected;
+
+    var constantScrollSpeed:Null<Slider> = toolbox.findComponent('preferencesConstantScrollSpeed', Slider);
+    var constantScrollSpeedLabel:Null<Label> = toolbox.findComponent('preferencesConstantScrollSpeedLabel', Label);
+    if (constantScrollSpeed == null || constantScrollSpeedLabel == null) throw 'ChartEditorToolboxHandler.buildToolboxPreferencesLayout() - Could not find preferencesConstantScrollSpeed components.';
+    constantScrollSpeed.onChange = _ ->
+    {
+      if (!state.preferencesListening) return;
+      var percent:Int = Math.round(constantScrollSpeed.pos);
+      state.constantScrollSpeed = percent / 100.0;
+      constantScrollSpeedLabel.text = 'Constant scroll speed - ${formatScrollSpeed(percent)}x';
+    };
+
+    var uiScale:Null<Slider> = toolbox.findComponent('preferencesUIScale', Slider);
+    var uiScaleLabel:Null<Label> = toolbox.findComponent('preferencesUIScaleLabel', Label);
+    if (uiScale == null || uiScaleLabel == null) throw 'ChartEditorToolboxHandler.buildToolboxPreferencesLayout() - Could not find preferencesUIScale components.';
+    uiScale.onChange = _ ->
+    {
+      if (!state.preferencesListening) return;
+      var percent:Int = Math.round(uiScale.pos);
+      state.uiScale = percent / 100.0;
+      uiScaleLabel.text = 'UI scale - $percent%';
+    };
+
     var backingOpacity:Null<Slider> = toolbox.findComponent('preferencesBackingOpacity', Slider);
     var backingOpacityLabel:Null<Label> = toolbox.findComponent('preferencesBackingOpacityLabel', Label);
     if (backingOpacity == null || backingOpacityLabel == null) throw 'ChartEditorToolboxHandler.buildToolboxPreferencesLayout() - Could not find preferencesBackingOpacity components.';
@@ -325,7 +353,7 @@ class ChartEditorToolboxHandler
       if (!state.preferencesListening) return;
       var percent:Float = backingOpacity.pos;
       state.gridBackingAlpha = percent / 100.0;
-      backingOpacityLabel.text = 'Grid backing opacity - ${Std.int(percent)}%';
+      backingOpacityLabel.text = 'Notefield backing opacity - ${Math.round(percent)}%';
     };
 
     var waveformPosition:Null<DropDown> = toolbox.findComponent('preferencesWaveformPosition', DropDown);
@@ -354,7 +382,7 @@ class ChartEditorToolboxHandler
       if (!state.preferencesListening) return;
       var percent:Float = filterStrength.pos;
       state.waveformFilterStrength = percent / 100.0;
-      filterStrengthLabel.text = 'Filter strength - ${Std.int(percent)}%';
+      filterStrengthLabel.text = 'Filter strength - ${Math.round(percent)}%';
     };
 
     var liveInput:Null<DropDown> = toolbox.findComponent('preferencesLiveInput', DropDown);
@@ -434,6 +462,16 @@ class ChartEditorToolboxHandler
     }
   }
 
+  /**
+   * A percent as a speed with two decimals, so 150 becomes `1.50`.
+   */
+  static function formatScrollSpeed(percent:Int):String
+  {
+    var fraction:String = Std.string(percent % 100);
+    if (fraction.length < 2) fraction = '0' + fraction;
+    return '${Std.int(percent / 100)}.${fraction}';
+  }
+
   static function bindCheckbox(toolbox:CollapsibleDialog, id:String, onChange:Bool->Void):Void
   {
     var checkbox:Null<CheckBox> = toolbox.findComponent(id, CheckBox);
@@ -467,11 +505,23 @@ class ChartEditorToolboxHandler
     var cursorLine:Null<CheckBox> = toolbox.findComponent('preferencesCursorLine', CheckBox);
     if (cursorLine != null) cursorLine.selected = state.showCursorLine;
 
+    setCheckbox(toolbox, 'preferencesConstantScroll', state.constantScrollEnabled);
+    var speedPercent:Int = Math.round(state.constantScrollSpeed * 100);
+    var constantScrollSpeed:Null<Slider> = toolbox.findComponent('preferencesConstantScrollSpeed', Slider);
+    if (constantScrollSpeed != null) constantScrollSpeed.pos = speedPercent;
+    var uiScalePercent:Int = Math.round(state.uiScale * 100);
+    var uiScaleSlider:Null<Slider> = toolbox.findComponent('preferencesUIScale', Slider);
+    if (uiScaleSlider != null) uiScaleSlider.pos = uiScalePercent;
+    var uiScaleLabel:Null<Label> = toolbox.findComponent('preferencesUIScaleLabel', Label);
+    if (uiScaleLabel != null) uiScaleLabel.text = 'UI scale - $uiScalePercent%';
+    var constantScrollSpeedLabel:Null<Label> = toolbox.findComponent('preferencesConstantScrollSpeedLabel', Label);
+    if (constantScrollSpeedLabel != null) constantScrollSpeedLabel.text = 'Constant scroll speed - ${formatScrollSpeed(speedPercent)}x';
+
     var opacity:Int = Std.int(Math.round(state.gridBackingAlpha * 100));
     var backingOpacity:Null<Slider> = toolbox.findComponent('preferencesBackingOpacity', Slider);
     if (backingOpacity != null) backingOpacity.pos = opacity;
     var backingOpacityLabel:Null<Label> = toolbox.findComponent('preferencesBackingOpacityLabel', Label);
-    if (backingOpacityLabel != null) backingOpacityLabel.text = 'Grid backing opacity - ${opacity}%';
+    if (backingOpacityLabel != null) backingOpacityLabel.text = 'Notefield backing opacity - ${opacity}%';
 
     var waveformPosition:Null<DropDown> = toolbox.findComponent('preferencesWaveformPosition', DropDown);
     if (waveformPosition != null) waveformPosition.selectedIndex = (state.currentWaveformPos == ChartEditorWaveformPos.Adjacent) ? 1 : 0;
@@ -536,24 +586,6 @@ class ChartEditorToolboxHandler
   static function buildToolboxMetadataLayout(state:ChartEditorState):Null<ChartEditorBaseToolbox>
   {
     var toolbox:ChartEditorBaseToolbox = ChartEditorMetadataToolbox.build(state);
-
-    if (toolbox == null) return null;
-
-    return toolbox;
-  }
-
-  static function buildToolboxOffsetsLayout(state:ChartEditorState):Null<ChartEditorBaseToolbox>
-  {
-    var toolbox:ChartEditorBaseToolbox = ChartEditorOffsetsToolbox.build(state);
-
-    if (toolbox == null) return null;
-
-    return toolbox;
-  }
-
-  static function buildToolboxFreeplayLayout(state:ChartEditorState):Null<ChartEditorBaseToolbox>
-  {
-    var toolbox:ChartEditorBaseToolbox = ChartEditorFreeplayToolbox.build(state);
 
     if (toolbox == null) return null;
 

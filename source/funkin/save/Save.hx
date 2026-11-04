@@ -218,8 +218,12 @@ class Save implements ConsoleClass implements ISerializable
         stackedNoteThreshold: 0.0,
         downscroll: false,
         showNoteKinds: true,
+        showDifficultyHeatmap: false,
         showBeatLines: true,
         showCursorLine: true,
+        constantScroll: false,
+        constantScrollSpeed: 1.0,
+        uiScale: 1.45,
         gridBackingAlpha: 0.92,
         metronomeVolume: 1.0,
         hitsoundVolumePlayer: 1.0,
@@ -334,10 +338,18 @@ class Save implements ConsoleClass implements ISerializable
   public var chartEditorDownscroll:SaveProperty<Bool>;
   @:saveProperty(data.optionsChartEditor.showNoteKinds, true)
   public var chartEditorShowNoteKinds:SaveProperty<Bool>;
+  @:saveProperty(data.optionsChartEditor.showDifficultyHeatmap, false)
+  public var chartEditorShowDifficultyHeatmap:SaveProperty<Bool>;
   @:saveProperty(data.optionsChartEditor.showBeatLines, true)
   public var chartEditorShowBeatLines:SaveProperty<Bool>;
   @:saveProperty(data.optionsChartEditor.showCursorLine, true)
   public var chartEditorShowCursorLine:SaveProperty<Bool>;
+  @:saveProperty(data.optionsChartEditor.constantScroll, false)
+  public var chartEditorConstantScroll:SaveProperty<Bool>;
+  @:saveProperty(data.optionsChartEditor.constantScrollSpeed, 1.0)
+  public var chartEditorConstantScrollSpeed:SaveProperty<Float>;
+  @:saveProperty(data.optionsChartEditor.uiScale, 1.45)
+  public var chartEditorUIScale:SaveProperty<Float>;
   @:saveProperty(data.optionsChartEditor.gridBackingAlpha, 0.92)
   public var chartEditorGridBackingAlpha:SaveProperty<Float>;
   @:saveProperty(data.optionsChartEditor.showSubtitles, true)
@@ -1791,6 +1803,12 @@ typedef SaveDataChartEditorOptions =
   var ?showNoteKinds:Bool;
 
   /**
+   * Show the difficulty heatmap over the grid in the Chart Editor.
+   * @default `false`
+   */
+  var ?showDifficultyHeatmap:Bool;
+
+  /**
    * Show a line on every beat in the Chart Editor.
    * @default `true`
    */
@@ -1801,6 +1819,24 @@ typedef SaveDataChartEditorOptions =
    * @default `true`
    */
   var ?showCursorLine:Bool;
+
+  /**
+   * Lay out the Chart Editor grid by time, so BPM changes don't change the scroll speed.
+   * @default `false`
+   */
+  var ?constantScroll:Bool;
+
+  /**
+   * How fast the Chart Editor grid scrolls with constant scroll on.
+   * @default `1.0`
+   */
+  var ?constantScrollSpeed:Float;
+
+  /**
+   * How large the Chart Editor is drawn, compared to one game pixel per screen pixel.
+   * @default `1.45`
+   */
+  var ?uiScale:Float;
 
   /**
    * How opaque the grid backing is in the Chart Editor, from 0 to 1.

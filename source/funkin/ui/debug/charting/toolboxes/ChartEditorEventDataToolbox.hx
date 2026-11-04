@@ -11,6 +11,10 @@ import funkin.play.event.SongEventHelper;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
 import funkin.ui.debug.charting.commands.SetItemSelectionCommand;
 import funkin.data.song.SongData.SongEventData;
+import funkin.ui.debug.charting.handlers.ChartEditorContextMenuHandler;
+import haxe.ui.containers.menus.Menu;
+import haxe.ui.containers.menus.MenuItem;
+import haxe.ui.containers.menus.MenuSeparator;
 import haxe.Timer;
 import haxe.ui.backend.ImageData;
 import haxe.ui.components.Button;
@@ -38,18 +42,72 @@ import openfl.geom.Rectangle;
  */
 @:access(funkin.ui.debug.charting.ChartEditorState)
 @:build(haxe.ui.ComponentBuilder.build('assets/exclude/ui/editors/chart-editor/toolboxes/event-data.xml'))
-class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
+class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements ChartEditorListKeyTarget
 {
   var toolboxEventsEventKind:DropDown;
   var toolboxEventsDataBox:VBox;
-  var toolboxEventsCycleBox:HBox;
-  var toolboxEventsCycleLabel:Label;
-  var toolboxEventsCyclePrev:Button;
-  var toolboxEventsCycleNext:Button;
+  var toolboxEventsChainBox:VBox;
+  var toolboxEventsChainTitle:Label;
+  var toolboxEventsChainList:VBox;
+  var toolboxEventsChainScroll:haxe.ui.containers.ScrollView;
+  var toolboxEventsDataScroll:haxe.ui.containers.ScrollView;
 
-  var currentOverlappingEventsAtTime:Array<SongEventData> = [];
-  var currentOverlappingEventIndex:Int = 0;
+  /**
+   * The tallest the chain list and the event data get before they scroll.
+   */
+  static final MAX_CHAIN_LIST_HEIGHT:Float = 96;
 
+  static final MAX_EVENT_DATA_HEIGHT:Float = 380;
+
+  /**
+   * The shortest they get, so a short list or form doesn't leave the panel cramped.
+   */
+  static final MIN_CHAIN_LIST_HEIGHT:Float = 64;
+
+  static final MIN_EVENT_DATA_HEIGHT:Float = 240;
+  var toolboxEventsChainBeat:NumberStepper;
+
+  /**
+   * Where the picked event sits in the chain.
+   */
+  var chainActiveIndex:Int = 0;
+
+  /**
+   * The events the Beat stepper moves.
+   */
+  var movingGroup:Array<SongEventData> = [];
+
+  /**
+   * Set while the Beat stepper's move runs.
+   */
+  var movingByBeat:Bool = false;
+
+  static function sameEvents(a:Array<SongEventData>, b:Array<SongEventData>):Bool
+  {
+    if (a.length != b.length) return false;
+    for (event in a) if (!b.contains(event)) return false;
+    return true;
+  }
+
+  /**
+   * Set while the beat stepper is being filled in, so that doesn't move the events.
+   */
+  var refreshingBeat:Bool = false;
+
+  /**
+   * The events at the selected time, when the selection is one event chain or a single event.
+   */
+  var chainEvents:Array<SongEventData> = [];
+
+  /**
+   * The event in the chain the form edits.
+   */
+  var chainActive:Null<SongEventData> = null;
+
+  static final CHAIN_ROW_STYLE:String = 'padding: 4px; padding-left: 8px; background-opacity: 0;';
+  static final CHAIN_ACTIVE_STYLE:String = 'background-color: #3C8DF0; background-opacity: 0.45;';
+  static final CHAIN_HOVER_STYLE:String = 'background-color: #888888; background-opacity: 0.2;';
+  static final CHAIN_DIM_STYLE:String = 'color: #888888;';
   var easeGraphImage:Image;
   var easeDotImage:Image;
   var _easeGraphSprite:Null<flixel.FlxSprite> = null;
@@ -110,27 +168,29 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
     var startingEventValue = ChartEditorDropdowns.populateDropdownWithSongEvents(toolboxEventsEventKind, chartEditorState.eventKindToPlace);
     toolboxEventsEventKind.value = startingEventValue;
 
-    var lastClickTime:Float = 0;
+    toolboxEventsChainList.registerEvent(haxe.ui.events.MouseEvent.MOUSE_MOVE, function(event:haxe.ui.events.MouseEvent)
+    {
+      updateChainHover(event.screenX, event.screenY);
+    });
+    toolboxEventsChainList.registerEvent(haxe.ui.events.MouseEvent.MOUSE_OUT, function(_)
+    {
+      updateChainHover(null, null);
+    });
 
-    toolboxEventsCyclePrev.onClick = function(e)
+    toolboxEventsChainBeat.onChange = function(event:UIEvent)
     {
-      if (Timer.stamp() - lastClickTime < 0.2) return;
-      lastClickTime = Timer.stamp();
-      if (currentOverlappingEventsAtTime.length > 1)
-      {
-        var prevIndex = (currentOverlappingEventIndex - 1 + currentOverlappingEventsAtTime.length) % currentOverlappingEventsAtTime.length;
-        chartEditorState.performCommand(new SetItemSelectionCommand([], [currentOverlappingEventsAtTime[prevIndex]]));
-      }
-    };
-    toolboxEventsCycleNext.onClick = function(e)
-    {
-      if (Timer.stamp() - lastClickTime < 0.2) return;
-      lastClickTime = Timer.stamp();
-      if (currentOverlappingEventsAtTime.length > 1)
-      {
-        var nextIndex = (currentOverlappingEventIndex + 1) % currentOverlappingEventsAtTime.length;
-        chartEditorState.performCommand(new SetItemSelectionCommand([], [currentOverlappingEventsAtTime[nextIndex]]));
-      }
+      if (refreshingBeat || event.value == null || movingGroup.length == 0) return;
+      var targetMs:Float = Conductor.instance.getBeatTimeInMs(event.value);
+      // Moving puts every moved event on the same time.
+      var allThere:Bool = true;
+      for (moving in movingGroup) if (Math.abs(targetMs - moving.time) >= 0.5) allThere = false;
+      if (allThere) return;
+      movingByBeat = true;
+      chartEditorState.performCommand(new funkin.ui.debug.charting.commands.MoveEventsCommand(movingGroup, targetMs, true));
+      movingByBeat = false;
+      // The command swaps the events for moved copies and selects them.
+      movingGroup = chartEditorState.currentEventSelection.copy();
+      refresh();
     };
 
     shouldTriggerOnEventKindChanged = true;
@@ -169,11 +229,12 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
         'Modified Events',
         'Switching ${chartEditorState.currentEventSelection.length} events to "${chartEditorState.eventKindToPlace}"'
       );
-      for (event in chartEditorState.currentEventSelection)
+      for (event in editTargets())
       {
         event.eventKind = chartEditorState.eventKindToPlace;
         event.value = chartEditorState.eventDataToPlace;
       }
+      refreshChainList();
       chartEditorState.saveDataDirty = true;
       chartEditorState.noteDisplayDirty = true;
       chartEditorState.notePreviewDirty = true;
@@ -184,26 +245,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
   {
     super.refresh();
 
-    if (chartEditorState.currentEventSelection.length == 1)
-    {
-      var selectedEvent = chartEditorState.currentEventSelection[0];
-      var time = selectedEvent.time;
-      currentOverlappingEventsAtTime = chartEditorState.currentSongChartData.events.filter(function(e) return Math.abs(e.time - time) < 1.0);
-      if (currentOverlappingEventsAtTime.length > 1)
-      {
-        toolboxEventsCycleBox.show();
-        currentOverlappingEventIndex = currentOverlappingEventsAtTime.indexOf(selectedEvent);
-        toolboxEventsCycleLabel.text = 'Select Event: ' + (currentOverlappingEventIndex + 1) + '/' + currentOverlappingEventsAtTime.length;
-      }
-      else
-      {
-        toolboxEventsCycleBox.hide();
-      }
-    }
-    else
-    {
-      toolboxEventsCycleBox.hide();
-    }
+    refreshChain();
 
     shouldTriggerOnEventKindChanged = false;
 
@@ -274,9 +316,315 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
 
     shouldTriggerOnEventKindChanged = true;
     updateEasePreview();
+    fitScrollHeights();
   }
 
   var lastEventKind:String = 'unknown';
+
+  /**
+   * The events the form edits: the picked event when looking at a chain.
+   */
+  function editTargets():Array<SongEventData>
+  {
+    var active:Null<SongEventData> = chainActive;
+    if (chainEvents.length > 0 && active != null) return [active];
+    return chartEditorState.currentEventSelection;
+  }
+
+  /**
+   * Work out the chain from the selection, and point the form at the picked event.
+   */
+  function refreshChain():Void
+  {
+    var selection:Array<SongEventData> = chartEditorState.currentEventSelection;
+    if (chartEditorState.currentNoteSelection.length > 0 || !chartEditorState.isOneEventChain(selection))
+    {
+      chainEvents = [];
+      chainActive = null;
+      toolboxEventsChainBox.hidden = true;
+      return;
+    }
+
+    if (movingByBeat) movingGroup = selection.copy();
+    else if (!sameEvents(movingGroup, selection)) movingGroup = chartEditorState.withEventChains(selection);
+
+    chainEvents = chartEditorState.eventChainOf(selection[0]);
+    if (chainActive == null || !chainEvents.contains(chainActive))
+    {
+      chainActive = chainEvents[Std.int(Math.min(chainActiveIndex, chainEvents.length - 1))];
+    }
+    chainActiveIndex = chainEvents.indexOf(chainActive);
+    loadActiveIntoForm();
+    toolboxEventsChainBox.hidden = false;
+    toolboxEventsChainTitle.text = chainEvents.length > 1 ? 'EVENT CHAIN (${chainEvents.length} EVENTS)' : 'EVENT';
+
+    refreshingBeat = true;
+    var beat:Float = Math.round(Conductor.instance.getTimeInSteps(chainEvents[0].time) / Constants.STEPS_PER_BEAT * 1000) / 1000;
+    if (toolboxEventsChainBeat.value != beat) toolboxEventsChainBeat.value = beat;
+    refreshingBeat = false;
+
+    refreshChainList();
+  }
+
+  /**
+   * Set the event kind and data the form shows to the picked event.
+   */
+  function loadActiveIntoForm():Void
+  {
+    var active:Null<SongEventData> = chainActive;
+    if (active == null) return;
+    chartEditorState.eventKindToPlace = active.eventKind;
+    chartEditorState.eventDataToPlace = active.valueAsStruct();
+  }
+
+  function refreshChainList():Void
+  {
+    toolboxEventsChainList.removeAllComponents();
+    chainRows = [];
+    hoveredChainRow = null;
+
+    for (i in 0...chainEvents.length)
+    {
+      var event:SongEventData = chainEvents[i];
+      var row:HBox = makeChainRow();
+
+      var name:Label = new Label();
+      name.text = '${i + 1}. ${eventTitle(event.eventKind)}';
+      name.verticalAlign = 'center';
+      row.addComponent(name);
+
+      var info:Label = new Label();
+      info.text = eventSummary(event);
+      info.styleString = CHAIN_DIM_STYLE;
+      info.percentWidth = 100;
+      info.wordWrap = false;
+      info.verticalAlign = 'center';
+      info.textAlign = 'right';
+      row.addComponent(info);
+
+      row.onClick = _ ->
+      {
+        chartEditorState.listKeyTarget = this;
+        pickChainEvent(event);
+      };
+      row.onRightClick = _ ->
+      {
+        chartEditorState.listKeyTarget = this;
+        pickChainEvent(event);
+        openChainMenu(event);
+      };
+      toolboxEventsChainList.addComponent(row);
+    }
+
+    var add:HBox = makeChainRow();
+    var addLabel:Label = new Label();
+    addLabel.text = '+ Add event at this beat';
+    addLabel.styleString = CHAIN_DIM_STYLE;
+    add.addComponent(addLabel);
+    add.onClick = _ -> { addToChain(); };
+    toolboxEventsChainList.addComponent(add);
+
+    styleChainRows();
+    fitScrollHeights();
+  }
+
+  /**
+   * Size the chain list and event data to what they hold, up to a limit, past which they scroll.
+   */
+  function fitScrollHeights():Void
+  {
+    haxe.ui.Toolkit.callLater(function()
+    {
+      toolboxEventsChainScroll.height = Math.max(MIN_CHAIN_LIST_HEIGHT, Math.min(MAX_CHAIN_LIST_HEIGHT, toolboxEventsChainList.height + 4));
+      toolboxEventsDataScroll.height = Math.max(MIN_EVENT_DATA_HEIGHT, Math.min(MAX_EVENT_DATA_HEIGHT, toolboxEventsDataBox.height + 4));
+    });
+  }
+
+  var chainRows:Array<{row:HBox, event:Null<SongEventData>}> = [];
+  var hoveredChainRow:Null<HBox> = null;
+
+  function makeChainRow():HBox
+  {
+    var row:HBox = new HBox();
+    row.percentWidth = 100;
+    row.styleString = CHAIN_ROW_STYLE;
+    chainRows.push({row: row, event: null});
+    return row;
+  }
+
+  /**
+   * Give each row its highlight: blue for the picked event, grey under the mouse.
+   */
+  function styleChainRows():Void
+  {
+    for (i in 0...chainRows.length)
+    {
+      var entry = chainRows[i];
+      var event:Null<SongEventData> = i < chainEvents.length ? chainEvents[i] : null;
+      var style:String = CHAIN_ROW_STYLE;
+      if (event != null && event == chainActive) style += CHAIN_ACTIVE_STYLE;
+      else if (entry.row == hoveredChainRow) style += CHAIN_HOVER_STYLE;
+      if (entry.row.styleString != style) entry.row.styleString = style;
+    }
+  }
+
+  /**
+   * Highlight the row under the mouse.
+   */
+  function updateChainHover(screenX:Null<Float>, screenY:Null<Float>):Void
+  {
+    var target:Null<HBox> = null;
+    if (screenX != null)
+    {
+      for (entry in chainRows)
+      {
+        if (entry.row.hitTest(screenX, screenY))
+        {
+          target = entry.row;
+          break;
+        }
+      }
+    }
+    if (target == hoveredChainRow) return;
+    hoveredChainRow = target;
+    styleChainRows();
+  }
+
+  function pickChainEvent(event:SongEventData):Void
+  {
+    if (chainActive == event) return;
+    chainActive = event;
+    chainActiveIndex = chainEvents.indexOf(event);
+    loadActiveIntoForm();
+    refresh();
+  }
+
+  function openChainMenu(event:SongEventData):Void
+  {
+    var menu:Menu = new Menu();
+    menu.left = FlxG.mouse.viewX;
+    menu.top = FlxG.mouse.viewY;
+
+    var duplicate:MenuItem = new MenuItem();
+    duplicate.text = 'Duplicate';
+    duplicate.onClick = _ -> { addCopyToChain(event); };
+    menu.addComponent(duplicate);
+
+    menu.addComponent(new MenuSeparator());
+
+    var remove:MenuItem = new MenuItem();
+    remove.text = 'Remove';
+    remove.onClick = _ -> { removeFromChain(event); };
+    menu.addComponent(remove);
+
+    ChartEditorContextMenuHandler.openCustomContextMenu(chartEditorState, menu);
+  }
+
+  /**
+   * A short summary of an event's values, for its row.
+   */
+  static function eventSummary(event:SongEventData):String
+  {
+    var value:Dynamic = event.value;
+    if (value == null || Type.typeof(value) != TObject) return value == null ? '' : '$value';
+    var parts:Array<String> = [];
+    for (field in Reflect.fields(value)) parts.push('$field: ${Reflect.field(value, field)}');
+    var text:String = parts.join(', ');
+    return text.length > SUMMARY_LENGTH ? text.substr(0, SUMMARY_LENGTH - 3) + '...' : text;
+  }
+
+  static final SUMMARY_LENGTH:Int = 22;
+
+  /**
+   * A copy of an event's value, so editing the copy doesn't change the original.
+   */
+  static function copyValue(value:Dynamic):Dynamic
+  {
+    return (value != null && Type.typeof(value) == TObject) ? Reflect.copy(value) : value;
+  }
+
+  /**
+   * The event copied with Ctrl+C.
+   */
+  static var copiedChainEvent:Null<SongEventData> = null;
+
+  public function containsMouse():Bool
+  {
+    return hitTest(FlxG.mouse.viewX, FlxG.mouse.viewY);
+  }
+
+  public function isListShown():Bool
+  {
+    return haxe.ui.core.Screen.instance.rootComponents.contains(this) && !hidden && chainEvents.length > 0;
+  }
+
+  public function copySelection():Void
+  {
+    var active:Null<SongEventData> = chainActive;
+    if (active == null) return;
+    copiedChainEvent = new SongEventData(active.time, active.eventKind, copyValue(active.value));
+    chartEditorState.success('Copied Event', eventTitle(active.eventKind));
+  }
+
+  public function pasteSelection():Void
+  {
+    var copied:Null<SongEventData> = copiedChainEvent;
+    if (copied != null) addCopyToChain(copied);
+  }
+
+  public function deleteSelection():Void
+  {
+    var active:Null<SongEventData> = chainActive;
+    if (active != null) removeFromChain(active);
+  }
+
+  /**
+   * Add a copy of an event to the chain, at the chain's time.
+   */
+  function addCopyToChain(source:SongEventData):Void
+  {
+    if (chainEvents.length == 0) return;
+    var added:SongEventData = new SongEventData(chainEvents[0].time, source.eventKind, copyValue(source.value));
+    chartEditorState.performCommand(new funkin.ui.debug.charting.commands.AddEventsCommand([added], true));
+    chainActive = added;
+    chainActiveIndex = chainEvents.length;
+    loadActiveIntoForm();
+    refresh();
+  }
+
+  /**
+   * The name the event kind dropdown shows for an event kind.
+   */
+  function eventTitle(eventKind:String):String
+  {
+    var entry = ChartEditorDropdowns.findDropdownElement(eventKind, toolboxEventsEventKind);
+    return entry?.text ?? eventKind;
+  }
+
+  /**
+   * Add a new event at the chain's time, using the event kind picked in the form.
+   */
+  function addToChain():Void
+  {
+    if (chainEvents.length == 0) return;
+    var added:SongEventData = new SongEventData(chainEvents[0].time, chartEditorState.eventKindToPlace, {});
+    chartEditorState.performCommand(new funkin.ui.debug.charting.commands.AddEventsCommand([added], true));
+    chainActive = added;
+    chainActiveIndex = chainEvents.length;
+    loadActiveIntoForm();
+    refresh();
+  }
+
+  function removeFromChain(event:SongEventData):Void
+  {
+    var remaining:Array<SongEventData> = [for (other in chainEvents) if (other != event) other];
+    chartEditorState.performCommand(new funkin.ui.debug.charting.commands.RemoveEventsCommand([event]));
+    // Keep the rest of the chain selected so the panel stays on it.
+    chartEditorState.currentEventSelection = remaining;
+    if (chainActive == event) chainActive = remaining.length > 0 ? remaining[0] : null;
+    if (chainActive != null) loadActiveIntoForm();
+    refresh();
+  }
 
   function buildEventDataFormFromSchema(target:Box, schema:SongEventSchema, eventKind:String):Void
   {
@@ -292,6 +640,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
     recursiveChildAdd(target, schema);
 
     _initializing = false;
+    fitScrollHeights();
   }
 
   function recursiveChildAdd(parent:Component, schema:SongEventSchema)
@@ -464,7 +813,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
         if (!_initializing && chartEditorState.currentEventSelection.length > 0)
         {
           // chartEditorState.success('Modified Events', 'Edited ${chartEditorState.currentEventSelection.length} selected events')
-          for (songEvent in chartEditorState.currentEventSelection)
+          for (songEvent in editTargets())
           {
             songEvent.eventKind = chartEditorState.eventKindToPlace;
             songEvent.value = Reflect.copy(chartEditorState.eventDataToPlace);

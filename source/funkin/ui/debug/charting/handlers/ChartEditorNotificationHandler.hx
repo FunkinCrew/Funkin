@@ -48,6 +48,21 @@ class ChartEditorNotificationHandler
 
     return builders;
   }
+  /**
+   * Reposition all notifications to the bottom right corner.
+   * @param state The current state of the chart editor.
+   */
+  public static function repositionNotifications(state:ChartEditorState):Void
+  {
+    var baselineY:Float = Screen.instance.height - 65;
+    var notifications:Array<Notification> = @:privateAccess NotificationManager.instance._currentNotifications;
+    for (notification in notifications)
+    {
+      notification.left = Screen.instance.width - notification.width - @:privateAccess NotificationManager.GUTTER_SIZE;
+      notification.top = baselineY - notification.height;
+      baselineY -= notification.height + @:privateAccess NotificationManager.SPACING;
+    }
+  }
 
   /**
    * Send a notification with a checkmark indicating success.

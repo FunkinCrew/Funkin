@@ -480,6 +480,15 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     return value;
   }
 
+  /**
+   * Calculate the volume of the sound, taking into account whether it is muted.
+   */
+  override function calcTransformVolume():Float
+  {
+    if (muted) return 0.0;
+    return super.calcTransformVolume();
+  }
+
   function get_paused():Bool
   {
     return this._paused;

@@ -1083,6 +1083,15 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
   }
 
   /**
+   * Round a number to 3 decimals for showing.
+   */
+  static function tidyTooltipNumber(value:Dynamic):Dynamic
+  {
+    if (!Std.isOfType(value, Float) || Std.isOfType(value, Int)) return value;
+    return Math.round((value : Float) * 1000) / 1000;
+  }
+
+  /**
    * Build the tooltip string for this particular instance of the song event.
    * @return A tooltip string, containing readable values for the event's data.
    */
@@ -1099,7 +1108,7 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
 
     for (fieldName in eventSchema.listAllFieldNames())
     {
-      var fieldValue:Dynamic = valueStruct.exists(fieldName) ? valueStruct.get(fieldName) : eventSchema.getDefaultFieldValue(fieldName);
+      var fieldValue:Dynamic = tidyTooltipNumber(valueStruct.exists(fieldName) ? valueStruct.get(fieldName) : eventSchema.getDefaultFieldValue(fieldName));
 
       var title:String = eventSchema.getByName(fieldName)?.title ?? 'UnknownField';
       var valueStr:String = eventSchema.stringifyFieldValue(fieldName, fieldValue) ?? 'UnknownValue';
@@ -1110,7 +1119,7 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
     for (pair in valueStruct.keyValueIterator())
     {
       var fieldName:String = pair.key;
-      var fieldValue:Dynamic = pair.value;
+      var fieldValue:Dynamic = tidyTooltipNumber(pair.value);
 
       // Already populated above.
       if (eventSchema.hasField(fieldName)) continue;
