@@ -10,6 +10,7 @@ import funkin.assets.ValidatedPaths as Paths;
 import funkin.graphics.FunkinSprite;
 import funkin.group.FunkinGroup;
 import funkin.ui.quickpanel.QuickPanelTypes;
+import funkin.graphics.shaders.QuickPanelShader;
 import funkin.util.PropertyAnimator;
 
 /**

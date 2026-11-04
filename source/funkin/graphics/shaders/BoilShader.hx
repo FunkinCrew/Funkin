@@ -41,7 +41,7 @@ class BoilShader extends FlxGraphicsShader
     if (circleWipe)
     {
       // Old CircleWipeShader defaults
-      boilAmount = 3;
+      amount = 3;
       circleRadius = 2.9;
       circleColor = 0xFF000000;
       relativeX = 2.6;
