@@ -1571,6 +1571,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function set_saveDataDirty(value:Bool):Bool
   {
+    if (value && autoSaveTimer == null) this.queueAutoSave();
     if (value == saveDataDirty) return value;
 
     if (value)
@@ -1590,7 +1591,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
 
     saveDataDirty = value;
-    applyWindowTitle();
+    this.applyWindowTitle();
     return saveDataDirty;
   }
 
@@ -1617,9 +1618,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     // Called only when the WHOLE LIST is overridden.
     previousWorkingFilePaths = value;
-    applyWindowTitle();
+    this.applyWindowTitle();
     populateOpenRecentMenu();
-    applyCanQuickSave();
+    this.applyCanQuickSave();
     return value;
   }
 
@@ -1666,7 +1667,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
 
     populateOpenRecentMenu();
-    applyWindowTitle();
+    this.applyWindowTitle();
 
     return value;
   }
@@ -3191,29 +3192,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (wasPlaytesting)
     {
       @:privateAccess
-      testSongInPlayState(PlayState.lastParams.minimalMode);
+      this.testSongInPlayState(PlayState.lastParams.minimalMode);
     }
-  }
-
-  /**
-   * Binds the audio volume controls from the Preferences toolbox to the ChartEditorState.
-   */
-  function bindPreferencesAudioControls():Void
-  {
-    var toolbox = ChartEditorToolboxHandler.getToolboxUnCast(this, CHART_EDITOR_TOOLBOX_PREFERENCES_LAYOUT);
-
-    preferencesVolumeMetronome = toolbox.findComponent('preferencesVolumeMetronome', Slider);
-    preferencesLabelVolumeMetronome = toolbox.findComponent('preferencesLabelVolumeMetronome', Label);
-    preferencesVolumeHitsoundPlayer = toolbox.findComponent('preferencesVolumeHitsoundPlayer', Slider);
-    preferencesLabelVolumeHitsoundPlayer = toolbox.findComponent('preferencesLabelVolumeHitsoundPlayer', Label);
-    preferencesVolumeHitsoundOpponent = toolbox.findComponent('preferencesVolumeHitsoundOpponent', Slider);
-    preferencesLabelVolumeHitsoundOpponent = toolbox.findComponent('preferencesLabelVolumeHitsoundOpponent', Label);
-    preferencesVolumeInstrumental = toolbox.findComponent('preferencesVolumeInstrumental', Slider);
-    preferencesLabelVolumeInstrumental = toolbox.findComponent('preferencesLabelVolumeInstrumental', Label);
-    preferencesVolumeVocalsPlayer = toolbox.findComponent('preferencesVolumeVocalsPlayer', Slider);
-    preferencesLabelVolumeVocalsPlayer = toolbox.findComponent('preferencesLabelVolumeVocalsPlayer', Label);
-    preferencesVolumeVocalsOpponent = toolbox.findComponent('preferencesVolumeVocalsOpponent', Slider);
-    preferencesLabelVolumeVocalsOpponent = toolbox.findComponent('preferencesLabelVolumeVocalsOpponent', Label);
   }
 
   override function create():Void
@@ -3234,8 +3214,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     funkin.util.plugins.VolumePlugin.ignoreWithControl = true;
 
-    bindPreferencesAudioControls();
-    loadPreferences();
+    this.bindPreferencesAudioControls();
+    this.loadPreferences();
 
     ChartEditorScaleMode.apply(uiScale);
     uiScaleDirty = false;
@@ -3266,7 +3246,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     setupUIListeners();
     setupTurboKeyHandlers();
 
-    setupAutoSave();
+    this.setupAutoSave();
 
     refresh();
 
@@ -3403,113 +3383,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     currentSongFreeplayPreviewStart = (currentSongMetadata?.playData?.previewStart ?? Constants.DEFAULT_PREVIEW_START_TIME);
     currentSongFreeplayPreviewEnd = (currentSongMetadata?.playData?.previewEnd ?? Constants.DEFAULT_PREVIEW_END_TIME);
-  }
-
-  /**
-   * Load the Chart Editor preferences from the save file.
-   */
-  public function loadPreferences():Void
-  {
-    var save:Save = Save.instance;
-
-    if (previousWorkingFilePaths[0] == null)
-    {
-      previousWorkingFilePaths = [null].concat(save.chartEditorPreviousFiles.value);
-    }
-    else
-    {
-      previousWorkingFilePaths = [currentWorkingFilePath].concat(save.chartEditorPreviousFiles.value);
-    }
-
-    noteSnapQuantIndex = save.chartEditorNoteQuant.value;
-    zoomLevelIndex = save.chartEditorZoomLevel.value;
-    zoomCurrent = ZOOM_LEVELS[zoomLevelIndex];
-    updateGridScale();
-    currentLiveInputStyle = save.chartEditorLiveInputStyle.value;
-    currentWaveformPos = save.chartEditorWaveformPos.value;
-    showInstrumentalWaveform = save.chartEditorShowInstrumentalWaveform.value;
-    waveformFilter = save.chartEditorWaveformFilter.value;
-    waveformFilterStrength = save.chartEditorWaveformFilterStrength.value;
-    isViewDownscroll = save.chartEditorDownscroll.value;
-    showNoteKindIndicators = save.chartEditorShowNoteKinds.value;
-    showDifficultyHeatmap = save.chartEditorShowDifficultyHeatmap.value;
-    showBeatLines = save.chartEditorShowBeatLines.value;
-    showCursorLine = save.chartEditorShowCursorLine.value;
-    constantScrollSpeed = save.chartEditorConstantScrollSpeed.value;
-    uiScale = save.chartEditorUIScale.value;
-    constantScrollEnabled = save.chartEditorConstantScroll.value;
-    gridBackingAlpha = save.chartEditorGridBackingAlpha.value;
-    showSubtitles = save.chartEditorShowSubtitles.value;
-    playtestStartTime = save.chartEditorPlaytestStartTime.value;
-    playtestAudioSettings = save.chartEditorPlaytestAudioSettings.value;
-    playtestShowResults = save.chartEditorPlaytestResultsSettings.value;
-    playtestPracticeMode = save.chartEditorPlaytestPracticeMode.value;
-    playtestBotPlayMode = save.chartEditorPlaytestBotPlayMode.value;
-    playtestSongScripts = save.chartEditorPlaytestSongScripts.value;
-    stackedNoteThreshold = save.chartEditorStackedNoteThreshold.value;
-    currentTheme = save.chartEditorTheme.value;
-    metronomeVolume = save.chartEditorMetronomeVolume.value;
-    hitsoundVolumePlayer = save.chartEditorHitsoundVolumePlayer.value;
-    hitsoundVolumeOpponent = save.chartEditorHitsoundVolumeOpponent.value;
-    shouldPlayWelcomeMusic = save.chartEditorThemeMusic.value;
-
-    preferencesVolumeInstrumental.value = Std.int(save.chartEditorInstVolume.value * 100);
-    preferencesVolumeVocalsPlayer.value = Std.int(save.chartEditorPlayerVoiceVolume.value * 100);
-    preferencesVolumeVocalsOpponent.value = Std.int(save.chartEditorOpponentVoiceVolume.value * 100);
-    menubarItemPlaybackSpeed.value = Math.round(save.chartEditorPlaybackSpeed.value * 100.0);
-  }
-
-  /**
-   * Write the Chart Editor preferences to the save file.
-   *
-   * @param hasBackup Whether there is a
-   */
-  public function writePreferences(hasBackup:Bool):Void
-  {
-    var save:Save = Save.instance;
-
-    // Can't use filter() because of null safety checking!
-    var filteredWorkingFilePaths:Array<String> = [];
-    for (chartPath in previousWorkingFilePaths) if (chartPath != null) filteredWorkingFilePaths.pushUnique(chartPath);
-    save.chartEditorPreviousFiles.value = filteredWorkingFilePaths;
-
-    if (hasBackup) trace('Queuing backup prompt for next time!');
-    save.chartEditorHasBackup.value = hasBackup;
-
-    save.chartEditorNoteQuant.value = noteSnapQuantIndex;
-    save.chartEditorZoomLevel.value = zoomLevelIndex;
-    save.chartEditorLiveInputStyle.value = currentLiveInputStyle;
-    save.chartEditorWaveformPos.value = currentWaveformPos;
-    save.chartEditorShowInstrumentalWaveform.value = showInstrumentalWaveform;
-    save.chartEditorWaveformFilter.value = waveformFilter;
-    save.chartEditorWaveformFilterStrength.value = waveformFilterStrength;
-    save.chartEditorDownscroll.value = isViewDownscroll;
-    save.chartEditorShowNoteKinds.value = showNoteKindIndicators;
-    save.chartEditorShowDifficultyHeatmap.value = showDifficultyHeatmap;
-    save.chartEditorShowBeatLines.value = showBeatLines;
-    save.chartEditorShowCursorLine.value = showCursorLine;
-    save.chartEditorConstantScroll.value = constantScrollEnabled;
-    save.chartEditorConstantScrollSpeed.value = constantScrollSpeed;
-    save.chartEditorUIScale.value = uiScale;
-    save.chartEditorGridBackingAlpha.value = gridBackingAlpha;
-    save.chartEditorPlaytestStartTime.value = playtestStartTime;
-    save.chartEditorPlaytestAudioSettings.value = playtestAudioSettings;
-    save.chartEditorPlaytestResultsSettings.value = playtestShowResults;
-    save.chartEditorPlaytestPracticeMode.value = playtestPracticeMode;
-    save.chartEditorPlaytestBotPlayMode.value = playtestBotPlayMode;
-    save.chartEditorPlaytestSongScripts.value = playtestSongScripts;
-    save.chartEditorStackedNoteThreshold.value = stackedNoteThreshold;
-    save.chartEditorShowSubtitles.value = showSubtitles;
-    save.chartEditorTheme.value = currentTheme;
-    save.chartEditorMetronomeVolume.value = metronomeVolume;
-    save.chartEditorHitsoundVolumePlayer.value = hitsoundVolumePlayer;
-    save.chartEditorHitsoundVolumeOpponent.value = hitsoundVolumeOpponent;
-    save.chartEditorThemeMusic.value = shouldPlayWelcomeMusic;
-
-    save.chartEditorInstVolume.value = preferencesVolumeInstrumental.value / 100.0;
-    save.chartEditorPlayerVoiceVolume.value = preferencesVolumeVocalsPlayer.value / 100.0;
-    save.chartEditorOpponentVoiceVolume.value = preferencesVolumeVocalsOpponent.value / 100.0;
-    save.chartEditorPlaybackSpeed.value = menubarItemPlaybackSpeed.value / 100.0;
   }
 
   public function populateOpenRecentMenu():Void
@@ -4274,14 +4147,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       }
       else
       {
-        incrementDifficulty(-1);
+        this.incrementDifficulty(-1);
         this.refreshToolbox(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
       }
     }
 
     playbarDifficulty.onRightClick = _ ->
     {
-      incrementDifficulty(1);
+      this.incrementDifficulty(1);
       this.refreshToolbox(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
     }
 
@@ -4410,8 +4283,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       new SelectAllItemsBetweenTimeCommand(scrollPositionInMs + playheadPositionInMs, false, true, true)
     );
 
-    menubarItemPlaytestFull.onClick = _ -> testSongInPlayState(false);
-    menubarItemPlaytestMinimal.onClick = _ -> testSongInPlayState(true);
+    menubarItemPlaytestFull.onClick = _ -> this.testSongInPlayState(false);
+    menubarItemPlaytestMinimal.onClick = _ -> this.testSongInPlayState(true);
 
     menuBarItemNoteSnapDecrease.onClick = _ ->
     {
@@ -4451,8 +4324,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     menubarItemViewWaveforms.selected = audioWaveforms.visible;
 
     menubarItemCommandPalette.onClick = _ -> ChartEditorCommandPalette.openPalette(this, '?');
-    menubarItemDifficultyUp.onClick = _ -> incrementDifficulty(1);
-    menubarItemDifficultyDown.onClick = _ -> incrementDifficulty(-1);
+    menubarItemDifficultyUp.onClick = _ -> this.incrementDifficulty(1);
+    menubarItemDifficultyDown.onClick = _ -> this.incrementDifficulty(-1);
 
     menubarItemPlayPause.onClick = _ -> toggleAudioPlayback();
 
@@ -4717,63 +4590,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     add(rightStickRightGamepadHandler);
   }
 
-  /**
-   * Setup timers and listeners to handle auto-save.
-   */
-  function setupAutoSave():Void
-  {
-    // Called when clicking the X button on the window.
-    WindowUtil.windowExit.add(onWindowClose);
-
-    // Called when the game crashes.
-    CrashHandler.errorSignal.add(onWindowCrash);
-    CrashHandler.criticalErrorSignal.add(onWindowCrash);
-
-    saveDataDirty = false;
-  }
-
   var displayAutosavePopup:Bool = false;
-
-  /**
-   * UPDATE FUNCTIONS
-   */
-  function autoSave(?beforePlaytest:Bool = false):Void
-  {
-    var needsAutoSave:Bool = saveDataDirty;
-
-    saveDataDirty = false;
-
-    // Auto-save preferences.
-    writePreferences(needsAutoSave);
-
-    // Auto-save the chart.
-    #if html5
-    // Auto-save to local storage.
-    // TODO: Implement this.
-    #else
-    // Auto-save to temp file.
-    if (needsAutoSave)
-    {
-      this.exportCurrentChartToFNFC(true, null);
-      if (beforePlaytest)
-      {
-        displayAutosavePopup = true;
-      }
-      else
-      {
-        displayAutosavePopup = false;
-        var absoluteBackupsPath:String = Path.join([
-          Sys.getCwd(),
-          ChartEditorImportExportHandler.BACKUPS_PATH
-        ]);
-        this.infoWithActions('Auto-Save', 'Chart auto-saved to ${absoluteBackupsPath}.', [{
-          text: 'Open In Folder',
-          callback: openBackupsFolder,
-        }]);
-      }
-    }
-    #end
-  }
 
   /**
    * Open the backups folder in the file explorer.
@@ -4793,49 +4610,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     trace('No file system access, cannot open backups folder.');
     return false;
     #end
-  }
-
-  /**
-   * Called when the window was closed, to save a backup of the chart.
-   * @param exitCode The exit code of the window. We use `-1` when calling the function due to a game crash.
-   */
-  function onWindowClose(exitCode:Int):Void
-  {
-    trace('Window exited with exit code: $exitCode');
-    trace('Should save chart? $saveDataDirty');
-
-    var needsAutoSave:Bool = saveDataDirty;
-
-    writePreferences(needsAutoSave);
-
-    if (needsAutoSave)
-    {
-      this.exportCurrentChartToFNFC(true, null);
-    }
-  }
-
-  function onWindowCrash(message:String):Void
-  {
-    trace('Chart editor intercepted crash:');
-    trace('${message}');
-
-    trace('Should save chart? $saveDataDirty');
-
-    var needsAutoSave:Bool = saveDataDirty;
-
-    writePreferences(needsAutoSave);
-
-    if (needsAutoSave)
-    {
-      this.exportCurrentChartToFNFC(true, null);
-    }
-  }
-
-  function cleanupAutoSave():Void
-  {
-    WindowUtil.windowExit.remove(onWindowClose);
-    CrashHandler.errorSignal.remove(onWindowCrash);
-    CrashHandler.criticalErrorSignal.remove(onWindowCrash);
   }
 
   override public function update(elapsed:Float):Void
@@ -4874,7 +4648,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     handleScrollKeybinds();
 
     handleCursor();
-    handleGridDoubleClicks();
+    this.handleGridDoubleClicks();
 
     handleListKeybinds();
     if (!(isHaxeUIFocused || isCursorOverHaxeUI))
@@ -5300,80 +5074,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   var timeChangeSelection:Null<ChartEditorTimeChangeSelection> = null;
 
-  /**
-   * The time change to box on the grid, or -1 when the Timing panel isn't on screen.
-   */
-  function outlinedTimeChangeIndex():Int
-  {
-    var toolbox:Null<CollapsibleDialog> = activeToolboxes.get(CHART_EDITOR_TOOLBOX_TIMING_LAYOUT);
-    if (toolbox == null || toolbox.hidden || !Screen.instance.rootComponents.contains(toolbox)) return -1;
-    return selectedTimeChangeIndex;
-  }
-
   static final DOUBLE_CLICK_SECONDS:Float = 0.35;
-
-  /**
-   * Double clicking an event opens it in the Events panel.
-   */
-  function handleGridDoubleClicks():Void
-  {
-    if (!FlxG.mouse.justPressed || isCursorOverHaxeUI) return;
-
-    var timeChangeIndex:Int = gridLines != null ? gridLines.timeChangeUnderMouse() : -1;
-    if (timeChangeIndex >= 0)
-    {
-      lastGridClickTarget = null;
-      if (selectedTimeChangeIndex == timeChangeIndex)
-      {
-        openToolboxFromGrid(CHART_EDITOR_TOOLBOX_TIMING_LAYOUT, menubarItemToggleToolboxTiming);
-        var timingToolbox:Null<ChartEditorTimingToolbox> = cast activeToolboxes.get(CHART_EDITOR_TOOLBOX_TIMING_LAYOUT);
-        if (timingToolbox != null) timingToolbox.refreshTimeChanges(timeChangeIndex);
-      }
-      else
-      {
-        selectedTimeChangeIndex = timeChangeIndex;
-      }
-      timeChangeSelection ??= new ChartEditorTimeChangeSelection(this);
-      listKeyTarget = timeChangeSelection;
-      return;
-    }
-
-    if (outlinedTimeChangeIndex() < 0) selectedTimeChangeIndex = -1;
-
-    var target:Dynamic = null;
-    var clickedEvent:Null<SongEventData> = null;
-    for (eventSprite in renderedEvents.members)
-    {
-      if (eventSprite != null && eventSprite.alive && eventSprite.eventData != null && FlxG.mouse.overlaps(eventSprite))
-      {
-        clickedEvent = eventSprite.eventData;
-        target = clickedEvent;
-        break;
-      }
-    }
-
-    var now:Float = haxe.Timer.stamp();
-    var isDouble:Bool = target != null && target == lastGridClickTarget && now - lastGridClickTime <= DOUBLE_CLICK_SECONDS;
-    lastGridClickTarget = isDouble ? null : target;
-    lastGridClickTime = now;
-    if (!isDouble) return;
-
-    if (clickedEvent != null)
-    {
-      // The first click already selected the event and its chain.
-      if (!isEventSelected(clickedEvent)) performCommand(new SetItemSelectionCommand([], [clickedEvent]));
-      openToolboxFromGrid(CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT, menubarItemToggleToolboxEventData);
-      this.refreshToolbox(CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT);
-      var eventToolbox:Null<ChartEditorEventDataToolbox> = cast activeToolboxes.get(CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT);
-      if (eventToolbox != null) listKeyTarget = eventToolbox;
-    }
-  }
-
-  function openToolboxFromGrid(id:String, menuItem:MenuCheckBox):Void
-  {
-    if (!menuItem.selected) menuItem.selected = true;
-    this.setToolboxState(id, true);
-  }
 
   function handleNoteDisplay():Void
   {
@@ -5479,7 +5180,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       }
 
       // Remove events that are no longer visible and list the ones that are.
-      rebuildEventChains();
+      this.rebuildEventChains();
       displayedEventSet.clear();
       for (eventSprite in renderedEvents.members)
       {
@@ -5768,6 +5469,15 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
         // Additional cleanup on notes.
         if (noteTooltipsDirty) noteSprite.updateTooltipText();
+      }
+
+      // Re-query event errors before drawing selection boxes and tooltips.
+      if (noteTooltipsDirty)
+      {
+        for (eventData in currentSongChartEventData)
+        {
+          this.isEventInvalidated(eventData);
+        }
       }
 
       for (eventSprite in renderedEvents.members)
@@ -6378,7 +6088,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
           for (i in 0...currentOverlappingEvents.length)
           {
-            if (isEventSelected(currentOverlappingEvents[i].eventData))
+            if (this.isEventSelected(currentOverlappingEvents[i].eventData))
             {
               currentOverlappingEventCycleIndex = i;
               break;
@@ -6735,7 +6445,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
             else if (highlightedEvent != null && highlightedEvent.eventData != null)
             {
               // Control click to select/deselect an individual note.
-              if (isEventSelected(highlightedEvent.eventData))
+              if (this.isEventSelected(highlightedEvent.eventData))
               {
                 performCommand(new DeselectItemsCommand([], [highlightedEvent.eventData]));
               }
@@ -7031,7 +6741,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
             }
             else if (highlightedEvent != null && highlightedEvent.eventData != null)
             {
-              if (isEventSelected(highlightedEvent.eventData))
+              if (this.isEventSelected(highlightedEvent.eventData))
               {
                 performCommand(new DeselectItemsCommand([], [highlightedEvent.eventData]));
               }
@@ -7078,7 +6788,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
             }
             else if (highlightedEvent != null && highlightedEvent.eventData != null)
             {
-              if (isEventSelected(highlightedEvent.eventData))
+              if (this.isEventSelected(highlightedEvent.eventData))
               {
                 // Clicked a selected event, start dragging.
                 dragTargetEvent = highlightedEvent;
@@ -7181,7 +6891,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           {
             // Shift + Right click opens the context menu.
             // If we are clicking a large selection, open the Selection context menu, otherwise open the Event context menu.
-            var isHighlightedEventSelected:Bool = isEventSelected(highlightedEvent.eventData);
+            var isHighlightedEventSelected:Bool = this.isEventSelected(highlightedEvent.eventData);
             var useSingleEventContextMenu:Bool = (!isHighlightedEventSelected) || (isHighlightedEventSelected && currentEventSelection.length == 1);
             if (useSingleEventContextMenu)
             {
@@ -7997,10 +7707,24 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       return;
     }
 
+    this.autoSave();
+
+    this.hideAllToolboxes();
+
+    stopWelcomeMusic();
+    // TODO: PR Flixel to make onComplete nullable.
+    if (audioInstTrack != null) audioInstTrack.onComplete = null;
+
+    performCleanup();
+
+    MenuMusicGroup.instance.reset(MAIN_MENU);
+
     Transition.switchState(() -> new MainMenuState(), {
       assetQuery: MainMenuState.queryAssets,
       transition: BlackScreen(None, None)
     });
+
+    this.resetWindowTitle();
   }
 
   /**
@@ -8251,11 +7975,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       if (pressingControl() && FlxG.keys.justPressed.LEFT)
       {
-        incrementDifficulty(-1);
+        this.incrementDifficulty(-1);
       }
       if (pressingControl() && FlxG.keys.justPressed.RIGHT)
       {
-        incrementDifficulty(1);
+        this.incrementDifficulty(1);
       }
       // Would bind Ctrl+A and Ctrl+D here, but they are already bound to Select All and Select None.
     }
@@ -8337,7 +8061,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       var minimal = FlxG.keys.pressed.SHIFT;
       this.hideAllToolboxes();
-      testSongInPlayState(minimal);
+      this.testSongInPlayState(minimal);
     }
   }
 
@@ -8445,181 +8169,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     wasHaxeUIDialogOpen = isHaxeUIDialogOpen;
   }
 
-  function moveToCameraEditor(hasSaved:Bool = false):Void
-  {
-    if (!hasSaved)
-    {
-      // Save the current chart as a file.
-      if (currentWorkingFilePath != null)
-      {
-        this.exportCurrentChartToFNFC(true, currentWorkingFilePath);
-        moveToCameraEditor(true);
-      }
-      else
-      {
-        this.exportCurrentChartToFNFC(false, null, function(path:String)
-        {
-          // CTRL + SHIFT + S Successful
-          // Just to be sure
-          currentWorkingFilePath = path;
-
-          moveToCameraEditor(true);
-        }, function()
-        {
-          // CTRL + SHIFT + S Cancelled, do NOTHING
-          return;
-        });
-      }
-    }
-    else
-    {
-      if (currentWorkingFilePath == null)
-      {
-        this.error("Can't Move To Camera Editor", 'Camera Editor can only be accessed when the current chart has been saved to a file.');
-        return;
-      }
-
-      var startTimestamp:Float = scrollPositionInMs + playheadPositionInMs;
-
-      @:nullSafety(Off)
-      {
-        final f = FocusManager.instance.focus;
-        if (f != null) f.focus = false;
-      }
-
-      writePreferences(false);
-      performCleanup();
-
-      var cameraEditorParams = {
-        loadFromPath: this.currentWorkingFilePath,
-        targetSongDifficulty: this.selectedDifficulty,
-        targetSongVariation: this.selectedVariation,
-        targetSongPosition: startTimestamp,
-      };
-
-      Transition.switchState(() -> new CameraEditorState(cameraEditorParams), {
-        assetQuery: Transition.NO_ASSETS, // CameraEditorState.queryAssets.bind(_, cameraEditorParams),
-        transition: BlackScreen(None, Fade(South))
-      });
-    }
-  }
-
   /**
    * PLAYTEST FUNCTIONS
    */
   // ====================
-
-  /**
-   * Transitions to the Play State to test the song
-   */
-  function testSongInPlayState(minimal:Bool = false):Void
-  {
-    for (component in Screen.instance.rootComponents.copy())
-    {
-      if (component is Menu)
-      {
-        if (cast(component, Menu).menuBar != null) component.dispatch(new UIEvent(UIEvent.CLOSE));
-        else
-          Screen.instance.removeComponent(component, false);
-      }
-      for (dropDown in component.findComponents(null, DropDown, -1)) dropDown.hideDropDown();
-    }
-
-    autoSave(true);
-
-    if (!wasPlaytesting)
-    {
-      }
-
-    // Stop audio playback after note preview is stopped.
-    // `false` to force the welcome theme to stop too.
-    stopAudioPlayback(false);
-
-    var startTimestamp:Float = 0;
-    if (playtestStartTime) startTimestamp = scrollPositionInMs + playheadPositionInMs;
-
-    var playbackRate:Float = 1.0;
-    if (playtestAudioSettings)
-    {
-      playbackRate = ((menubarItemPlaybackSpeed.value / 100.0) ?? 0.5) * 2.0;
-      playbackRate = playbackRate.clamp(0.05, 2.0); // Clamp to 5% to 200%
-    }
-
-    funkin.play.GameOverSubState.reset();
-    funkin.play.PauseSubState.reset();
-
-    var targetSong:Song;
-    try
-    {
-      targetSong = Song.buildRaw(currentSongId, songMetadata.values(), selectedVariation, songChartData, playtestSongScripts, false);
-    }
-    catch (e)
-    {
-      this.error('Could Not Playtest', 'Got an error trying to playtest the song.\n${e}');
-      return;
-    }
-
-    PlayStatePlaylist.reset();
-
-    subStateClosed.add(reviveUICamera);
-    subStateClosed.add(resetConductorAfterTest);
-
-    var targetStateParams = {
-      targetSong: targetSong,
-      targetDifficulty: selectedDifficulty,
-      targetVariation: selectedVariation,
-      practiceMode: playtestPracticeMode,
-      botPlayMode: playtestBotPlayMode,
-      playtestResults: playtestShowResults,
-      minimalMode: minimal,
-      startTimestamp: startTimestamp,
-      playbackRate: playbackRate,
-      overrideMusic: true,
-    };
-
-    // Override music.
-    if (audioInstTrack != null)
-    {
-      FlxG.sound.music = audioInstTrack;
-    }
-    // The playtest runs at the game's normal size.
-    ChartEditorScaleMode.restore();
-
-    // Kill and replace the UI camera so it doesn't get destroyed during the state transition.
-    uiCamera.kill();
-    FlxG.cameras.remove(uiCamera, false);
-    FlxG.cameras.reset(new FunkinCamera('chartEditorUI2'));
-
-    this.persistentUpdate = false;
-    this.persistentDraw = false;
-
-    Cursor.hide();
-
-    funkin.ui.transition.Transition.openPlayState(targetStateParams, {
-      transition: Throbber,
-      shouldStopMusic: false,
-      onConstruct: (targetState) ->
-      {
-        if (playbarHeadDragging) playbarHeadDragging = false;
-        // Apply volume settings.
-        final playState = cast(targetState, funkin.play.PlayState);
-        if (playtestAudioSettings)
-        {
-          playState.instrumentalVolume = instrumentalMuted ? 0.0 : ((preferencesVolumeInstrumental.value / 100.0) ?? 1.0);
-          playState.playerVocalsVolume = playerVocalsMuted ? 0.0 : ((preferencesVolumeVocalsPlayer.value / 100.0) ?? 1.0);
-          playState.opponentVocalsVolume = opponentVocalsMuted ? 0.0 : ((preferencesVolumeVocalsOpponent.value / 100.0) ?? 1.0);
-        }
-        else audioVocalTrackGroup.muted = false;
-
-        playState.vocals = audioVocalTrackGroup;
-      }
-    }, true);
-
-    /*LoadingState.loadPlayState(targetStateParams, false, true, function(targetState)
-      {
-
-    });*/
-  }
 
   /**
    * COMMAND FUNCTIONS
@@ -8706,28 +8259,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     var result = new ChartEditorSelectionSquareSprite(this);
     result.loadGraphic(selectionSquareBitmap);
     return result;
-  }
-
-  /**
-   * Revive the UI camera and re-establish it as the main camera so UI elements depending on it don't explode.
-   */
-  function reviveUICamera(?closedSubState:FlxSubState):Void
-  {
-    if (closedSubState != null && (FlxStateUtil.isTransition(closedSubState) || FlxStateUtil.isLoadingState(closedSubState)))
-    {
-      // The state that closed was a loading screen for the substate we're opening,
-      // so we shouldn't do any cleanup.
-      return;
-    }
-
-    uiScaleDirty = false;
-    ChartEditorScaleMode.apply(uiScale);
-    uiCamera.revive();
-    FlxG.cameras.reset(uiCamera);
-    uiCamera.setSize(FlxG.width, FlxG.height);
-    uiCamera.onResize();
-
-    add(this.root);
   }
 
   /**
@@ -8832,420 +8363,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   }
 
   /**
-   * Which snap position an event is on.
-   */
-  public function eventChainKey(event:SongEventData):Int
-  {
-    return Math.round(Conductor.instance.getTimeInSteps(event.time) / noteSnapRatio);
-  }
-
-  /**
-   * Every event in the same chain as an event, including it, in chart order.
-   */
-  public function eventChainOf(event:SongEventData):Array<SongEventData>
-  {
-    var key:Int = eventChainKey(event);
-    var chain:Array<SongEventData> = [for (other in currentSongChartEventData) if (other == event || eventChainKey(other) == key) other];
-    if (!chain.contains(event)) chain.push(event);
-    return chain;
-  }
-
-  /**
-   * The events given, plus every event in a chain with any of them.
-   */
-  public function withEventChains(events:Array<SongEventData>):Array<SongEventData>
-  {
-    if (events.length == 0) return events;
-    var result:Array<SongEventData> = [];
-    for (event in events)
-    {
-      for (member in eventChainOf(event)) if (!result.contains(member)) result.push(member);
-    }
-    return result;
-  }
-
-  /**
-   * Whether the events are all one chain, or one event on its own.
-   */
-  public function isOneEventChain(events:Array<SongEventData>):Bool
-  {
-    if (events.length == 0) return false;
-    var key:Int = eventChainKey(events[0]);
-    for (event in events) if (eventChainKey(event) != key) return false;
-    return true;
-  }
-
-  /**
    * For each event chain, the event the grid shows for it, and the rest of the chain.
    */
   var eventChainFollowers:haxe.ds.ObjectMap<SongEventData, Bool> = new haxe.ds.ObjectMap();
 
   var eventChainRest:haxe.ds.ObjectMap<SongEventData, Array<SongEventData>> = new haxe.ds.ObjectMap();
-
-  function rebuildEventChains():Void
-  {
-    eventChainFollowers.clear();
-    eventChainRest.clear();
-    var sorted:Array<SongEventData> = [for (event in currentSongChartEventData) if (event != null) event];
-    haxe.ds.ArraySort.sort(sorted, (a, b) -> a.time < b.time ? -1 : (a.time > b.time ? 1 : 0));
-    var leader:Null<SongEventData> = null;
-    var leaderKey:Int = 0;
-    for (event in sorted)
-    {
-      var key:Int = eventChainKey(event);
-      if (leader != null && key == leaderKey)
-      {
-        eventChainFollowers.set(event, true);
-        eventChainRest.get(leader).push(event);
-      }
-      else
-      {
-        leader = event;
-        leaderKey = key;
-        eventChainRest.set(leader, []);
-      }
-    }
-  }
-
-  function isEventSelected(event:Null<SongEventData>):Bool
-  {
-    return event != null && currentEventSelection.indexOf(event) != -1;
-  }
-
-  function createDifficulty(variation:String, difficulty:String, scrollSpeed:Float = 1.0):Void
-  {
-    var variationMetadata:Null<SongMetadata> = songMetadata.get(variation);
-    if (variationMetadata == null) return;
-
-    variationMetadata.playData.difficulties.pushUnique(difficulty);
-
-    var resultChartData = songChartData.get(variation);
-    if (resultChartData == null)
-    {
-      resultChartData = new SongChartData([difficulty => scrollSpeed], [], [difficulty => []]);
-      songChartData.set(variation, resultChartData);
-    }
-    else
-    {
-      resultChartData.scrollSpeed.set(difficulty, scrollSpeed);
-      resultChartData.notes.set(difficulty, []);
-    }
-
-    difficultySelectDirty = true; // Force the Difficulty toolbox to update.
-  }
-
-  function cloneDifficulty(variation:String, difficulty:String, newVariation:String, newDifficulty:String, scrollSpeed:Float = 1.0):Void
-  {
-    var newVariationMetadata:Null<SongMetadata> = songMetadata.get(newVariation);
-    if (newVariationMetadata == null) return;
-
-    var oldChartData:Null<SongChartData> = songChartData.get(variation);
-    if (oldChartData == null)
-    {
-      // If we can't access the difficulty to copy, just create a blank one.
-      createDifficulty(newVariation, newDifficulty, scrollSpeed);
-      return;
-    };
-
-    var newNoteData:Null<Array<SongNoteData>> = oldChartData.notes.get(difficulty)?.clone();
-    if (newNoteData == null || newNoteData.length == 0)
-    {
-      // If we can't access the difficulty to copy, just create a blank one.
-      createDifficulty(newVariation, newDifficulty, scrollSpeed);
-      return;
-    };
-
-    // Actually add the new difficulty.
-
-    newVariationMetadata.playData.difficulties.pushUnique(newDifficulty);
-
-    var newChartData = songChartData.get(newVariation);
-    if (newChartData == null)
-    {
-      newChartData = new SongChartData([newDifficulty => scrollSpeed], [], [newDifficulty => newNoteData]);
-      songChartData.set(newVariation, newChartData);
-    }
-    else
-    {
-      newChartData.scrollSpeed.set(newDifficulty, scrollSpeed);
-      newChartData.notes.set(newDifficulty, newNoteData);
-    }
-
-    difficultySelectDirty = true; // Force the Difficulty toolbox to update.
-  }
-
-  function removeDifficulty(variation:String, difficulty:String):Void
-  {
-    var variationMetadata:Null<SongMetadata> = songMetadata.get(variation);
-    if (variationMetadata == null) return;
-
-    variationMetadata.playData.difficulties.remove(difficulty);
-
-    var resultChartData = songChartData.get(variation);
-    if (resultChartData != null)
-    {
-      resultChartData.scrollSpeed.remove(difficulty);
-      resultChartData.notes.remove(difficulty);
-    }
-
-    // Remove the variation if it is empty.
-    var variationEmpty:Bool = variation != Constants.DEFAULT_VARIATION && variationMetadata.playData.difficulties.length == 0;
-    if (variationEmpty)
-    {
-      songMetadata.remove(variation);
-      songChartData.remove(variation);
-    }
-
-    if (variation == selectedVariation)
-    {
-      if (variationEmpty) selectedVariation = Constants.DEFAULT_VARIATION;
-      var remaining:Array<String> = songMetadata.get(selectedVariation)?.playData.difficulties ?? [];
-      if (remaining.length > 0 && !remaining.contains(selectedDifficulty)) selectedDifficulty = remaining[0];
-    }
-
-    refreshPlayDataVariations();
-    difficultySelectDirty = true; // Force the Difficulty toolbox to update.
-  }
-
-  /**
-   * Turn typed text into a difficulty or variation ID.
-   */
-  static function sanitizeDifficultyId(text:String):Null<String>
-  {
-    var result:String = ~/[^a-z0-9_-]/g.replace(~/\s+/g.replace(StringTools.trim(text).toLowerCase(), '-'), '');
-    return result.length > 0 ? result : null;
-  }
-
-  /**
-   * Find an ID based on `base` that is not in `taken`.
-   */
-  static function uniqueDifficultyId(base:String, taken:Array<String>):String
-  {
-    if (!taken.contains(base)) return base;
-    var index:Int = 2;
-    while (taken.contains('$base-$index')) index++;
-    return '$base-$index';
-  }
-
-  static function moveMapKey<T>(map:Null<Map<String, T>>, from:String, to:String):Void
-  {
-    if (map == null || !map.exists(from)) return;
-    map.set(to, map.get(from));
-    map.remove(from);
-  }
-
-  function markDifficultiesChanged():Void
-  {
-    difficultySelectDirty = true;
-    saveDataDirty = true;
-    noteDisplayDirty = true;
-    notePreviewDirty = true;
-    noteTooltipsDirty = true;
-    this.refreshToolbox(CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
-  }
-
-  /**
-   * Give a difficulty a new ID.
-   * @return Whether the rename happened.
-   */
-  function renameDifficulty(variation:String, difficulty:String, newDifficulty:String):Bool
-  {
-    if (difficulty == newDifficulty) return false;
-    var variationMetadata:Null<SongMetadata> = songMetadata.get(variation);
-    if (variationMetadata == null) return false;
-    var difficulties:Array<String> = variationMetadata.playData.difficulties;
-    var index:Int = difficulties.indexOf(difficulty);
-    if (index == -1 || difficulties.contains(newDifficulty)) return false;
-
-    difficulties[index] = newDifficulty;
-    var chartData:Null<SongChartData> = songChartData.get(variation);
-    if (chartData != null)
-    {
-      moveMapKey(chartData.scrollSpeed, difficulty, newDifficulty);
-      moveMapKey(chartData.notes, difficulty, newDifficulty);
-    }
-    moveMapKey(variationMetadata.playData.ratings, difficulty, newDifficulty);
-
-    if (variation == selectedVariation && selectedDifficulty == difficulty) selectedDifficulty = newDifficulty;
-    markDifficultiesChanged();
-    return true;
-  }
-
-  /**
-   * Copy a difficulty into a new difficulty, which can be in another variation.
-   * @return Whether the copy was made.
-   */
-  function duplicateDifficulty(variation:String, difficulty:String, targetVariation:String, newDifficulty:String):Bool
-  {
-    var targetMetadata:Null<SongMetadata> = songMetadata.get(targetVariation);
-    if (targetMetadata == null || targetMetadata.playData.difficulties.contains(newDifficulty)) return false;
-
-    var sourceChart:Null<SongChartData> = songChartData.get(variation);
-    var sourceNotes:Null<Array<SongNoteData>> = sourceChart != null ? sourceChart.notes.get(difficulty) : null;
-    var notes:Array<SongNoteData> = sourceNotes != null ? sourceNotes.deepClone() : [];
-    var sourceSpeed:Null<Float> = sourceChart != null ? sourceChart.scrollSpeed.get(difficulty) : null;
-    var speed:Float = sourceSpeed ?? 1.0;
-
-    targetMetadata.playData.difficulties.push(newDifficulty);
-    var targetChart:Null<SongChartData> = songChartData.get(targetVariation);
-    if (targetChart == null)
-    {
-      songChartData.set(targetVariation, new SongChartData([newDifficulty => speed], [], [newDifficulty => notes]));
-    }
-    else
-    {
-      targetChart.scrollSpeed.set(newDifficulty, speed);
-      targetChart.notes.set(newDifficulty, notes);
-    }
-
-    var rating:Null<Int> = songMetadata.get(variation)?.playData.ratings?.get(difficulty);
-    if (rating != null && targetMetadata.playData.ratings != null) targetMetadata.playData.ratings.set(newDifficulty, rating);
-
-    markDifficultiesChanged();
-    return true;
-  }
-
-  /**
-   * Move a difficulty to another variation, following it if it was the one being edited.
-   * @return Whether the move happened.
-   */
-  function moveDifficulty(variation:String, difficulty:String, targetVariation:String):Bool
-  {
-    if (variation == targetVariation) return false;
-    var targetMetadata:Null<SongMetadata> = songMetadata.get(targetVariation);
-    if (targetMetadata == null) return false;
-
-    var newDifficulty:String = uniqueDifficultyId(difficulty, targetMetadata.playData.difficulties);
-    var wasSelected:Bool = variation == selectedVariation && difficulty == selectedDifficulty;
-    if (!duplicateDifficulty(variation, difficulty, targetVariation, newDifficulty)) return false;
-
-    if (wasSelected)
-    {
-      selectedVariation = targetVariation;
-      selectedDifficulty = newDifficulty;
-    }
-    removeDifficulty(variation, difficulty);
-    markDifficultiesChanged();
-    return true;
-  }
-
-  /**
-   * Delete a whole variation. The default variation can't be removed.
-   */
-  function removeVariation(variation:String):Void
-  {
-    if (variation == Constants.DEFAULT_VARIATION || !songMetadata.exists(variation)) return;
-
-    if (variation == selectedVariation)
-    {
-      selectedVariation = Constants.DEFAULT_VARIATION;
-      selectedDifficulty = availableDifficulties[0];
-    }
-    songMetadata.remove(variation);
-    songChartData.remove(variation);
-
-    refreshPlayDataVariations();
-    markDifficultiesChanged();
-  }
-
-  function incrementDifficulty(change:Int):Void
-  {
-    var variatedDifficulty:String = '$selectedDifficulty-$selectedVariation';
-    var currentDifficultyIndex:Int = availableDifficulties.indexOf(selectedDifficulty);
-    var currentAllDifficultyIndex:Int = allDifficulties.indexOf(variatedDifficulty);
-
-    if (currentDifficultyIndex == -1 || currentAllDifficultyIndex == -1)
-    {
-      trace('ERROR determining difficulty index!');
-    }
-
-    var isFirstDiff:Bool = currentAllDifficultyIndex == 0;
-    var isLastDiff:Bool = (currentAllDifficultyIndex == allDifficulties.length - 1);
-
-    var isFirstDiffInVariation:Bool = currentDifficultyIndex == 0;
-    var isLastDiffInVariation:Bool = (currentDifficultyIndex == availableDifficulties.length - 1);
-
-    trace(allDifficulties);
-
-    if (change < 0 && isFirstDiff)
-    {
-      trace('At lowest difficulty! Do nothing.');
-      return;
-    }
-
-    if (change > 0 && isLastDiff)
-    {
-      trace('At highest difficulty! Do nothing.');
-      return;
-    }
-
-    if (change < 0)
-    {
-      trace('Decrement difficulty.');
-
-      // If we reached this point, we are not at the lowest difficulty.
-      if (isFirstDiffInVariation)
-      {
-        // Go to the previous variation, then last difficulty in that variation.
-        var currentVariationIndex:Int = availableVariations.indexOf(selectedVariation);
-        var prevVariation = availableVariations[currentVariationIndex - 1];
-        var prevVariationDifficulties:Array<String> = getAvailableDifficulties(prevVariation);
-        var prevDifficulty = prevVariationDifficulties[prevVariationDifficulties.length - 1];
-
-        trace('${selectedVariation}:${selectedDifficulty} -> ${prevVariation}:${prevDifficulty}');
-        performCommand(new SwitchDifficultyCommand(selectedDifficulty, prevDifficulty, selectedVariation, prevVariation));
-
-        Conductor.instance.mapTimeChanges(this.currentSongMetadata.timeChanges);
-        updateTimeSignature();
-
-        this.refreshToolbox(CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
-        this.refreshToolbox(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
-      }
-      else
-      {
-        // Go to previous difficulty in this variation.
-        var prevDifficulty = availableDifficulties[currentDifficultyIndex - 1];
-        trace('${selectedVariation}:${selectedDifficulty} -> ${selectedVariation}:${prevDifficulty}');
-        performCommand(new SwitchDifficultyCommand(selectedDifficulty, prevDifficulty, selectedVariation, selectedVariation));
-
-        this.refreshToolbox(CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
-        this.refreshToolbox(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
-      }
-    }
-    else
-    {
-      trace('Increment difficulty.');
-
-      // If we reached this point, we are not at the highest difficulty.
-      if (isLastDiffInVariation)
-      {
-        // Go to next variation, then first difficulty in that variation.
-        var currentVariationIndex:Int = availableVariations.indexOf(selectedVariation);
-        var nextVariation = availableVariations[currentVariationIndex + 1];
-        var nextVariationDifficulties:Array<String> = getAvailableDifficulties(nextVariation);
-        var nextDifficulty = nextVariationDifficulties[0];
-
-        trace('${selectedVariation}:${selectedDifficulty} -> ${nextVariation}:${nextDifficulty}');
-        performCommand(new SwitchDifficultyCommand(selectedDifficulty, nextDifficulty, selectedVariation, nextVariation));
-
-        this.refreshToolbox(CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
-        this.refreshToolbox(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
-      }
-      else
-      {
-        // Go to next difficulty in this variation.
-        var nextDifficulty = availableDifficulties[currentDifficultyIndex + 1];
-        trace('${selectedVariation}:${selectedDifficulty} -> ${selectedVariation}:${nextDifficulty}');
-        performCommand(new SwitchDifficultyCommand(selectedDifficulty, nextDifficulty, selectedVariation, selectedVariation));
-
-        this.refreshToolbox(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
-        this.refreshToolbox(CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
-      }
-    }
-
-    // Removed this notification because you can see your difficulty in the playbar now.
-    // this.success('Switch Difficulty', 'Switched difficulty to ${selectedDifficulty.toTitleCase()}');
-  }
 
   /**
    * SCROLLING FUNCTIONS
@@ -9300,74 +8422,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   public function easeToSongTimeMs(songTimeMs:Float):Void
   {
     easeSongToScrollPosition(ChartEditorTimeScale.msToPixels(songTimeMs));
-  }
-
-  /**
-   * Fix the current scroll position after exiting the PlayState used when testing.
-   */
-  @:nullSafety(Off)
-  function resetConductorAfterTest(?closedSubState:FlxSubState):Void
-  {
-    if (closedSubState != null && (FlxStateUtil.isTransition(closedSubState) || FlxStateUtil.isLoadingState(closedSubState)))
-    {
-      // The state that closed was a loading screen for the substate we're opening,
-      // so we shouldn't do any cleanup.
-      return;
-    }
-
-    this.persistentUpdate = true;
-    this.persistentDraw = true;
-
-    if (displayAutosavePopup)
-    {
-      displayAutosavePopup = false;
-      #if sys
-      haxe.ui.Toolkit.callLater(() ->
-      {
-        var absoluteBackupsPath:String = Path.join([
-          Sys.getCwd(),
-          ChartEditorImportExportHandler.BACKUPS_PATH
-        ]);
-        this.infoWithActions('Auto-Save', 'Chart auto-saved to ${absoluteBackupsPath}.', [{
-          text: 'Open In Folder',
-          callback: openBackupsFolder,
-        }]);
-      });
-      #else
-      // TODO: No auto-save on HTML5?
-      #end
-    }
-
-    moveSongToScrollPosition();
-
-    fadeInWelcomeMusic(WELCOME_MUSIC_FADE_IN_DELAY, WELCOME_MUSIC_FADE_IN_DURATION);
-
-    Cursor.show();
-
-    // Reapply the volume and playback rate.
-    var instTargetVolume:Float = (preferencesVolumeInstrumental.value / 100.0) ?? 1.0;
-    var vocalPlayerTargetVolume:Float = (preferencesVolumeVocalsPlayer.value / 100.0) ?? 1.0;
-    var vocalOpponentTargetVolume:Float = (preferencesVolumeVocalsOpponent.value / 100.0) ?? 1.0;
-
-    var playbackRate = ((menubarItemPlaybackSpeed.value / 100.0) ?? 0.5) * 2.0;
-    playbackRate = playbackRate.clamp(0.05, 2.0); // Clamp to 5% to 200%
-
-    if (audioInstTrack != null)
-    {
-      audioInstTrack.volume = instTargetVolume;
-      audioInstTrack.pitch = playbackRate;
-      audioInstTrack.onComplete = null;
-    }
-    if (audioVocalTrackGroup != null)
-    {
-      audioVocalTrackGroup.playerVolume = vocalPlayerTargetVolume;
-      audioVocalTrackGroup.opponentVolume = vocalOpponentTargetVolume;
-      audioVocalTrackGroup.pitch = playbackRate;
-    }
-    if (audioInstTrack != null) audioInstTrack.muted = instrumentalMuted;
-    applyVocalMutes();
-
-    noteTooltipsDirty = true;
   }
 
   /**
@@ -9841,9 +8895,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     super.destroy();
 
     performCleanup();
-    resetWindowTitle();
+    this.resetWindowTitle();
 
-    cleanupAutoSave();
+    this.cleanupAutoSave();
 
     this.closeExistingMenu();
 
@@ -9887,40 +8941,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       haxe.ui.ToolkitAssets.instance._imageCache.clear();
       haxe.ui.ToolkitAssets.instance._imageCallbacks._map.clear();
     }
-  }
-
-  function applyCanQuickSave():Void
-  {
-    if (menubarItemSaveChart == null) return;
-
-    if (currentWorkingFilePath == null)
-    {
-      menubarItemSaveChart.disabled = true;
-    }
-    else
-    {
-      menubarItemSaveChart.disabled = false;
-    }
-  }
-
-  function applyWindowTitle():Void
-  {
-    var inner:String = 'New Chart';
-    var cwfp:Null<String> = currentWorkingFilePath;
-    if (cwfp != null)
-    {
-      inner = cwfp;
-    }
-    if (currentWorkingFilePath == null || saveDataDirty)
-    {
-      inner += '*';
-    }
-    WindowUtil.setWindowTitle('Friday Night Funkin\' Chart Editor - ${inner} ');
-  }
-
-  function resetWindowTitle():Void
-  {
-    WindowUtil.setWindowTitle('Friday Night Funkin\'');
   }
 }
 

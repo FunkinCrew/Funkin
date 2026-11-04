@@ -371,7 +371,7 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
 
   function submitName(variation:String, difficulty:Null<String>, text:String):Void
   {
-    var id:Null<String> = ChartEditorState.sanitizeDifficultyId(text);
+    var id:Null<String> = ChartEditorDifficultyHandler.sanitizeDifficultyId(text);
     if (id == null || id == difficulty) return;
 
     var taken:Array<String> = chartEditorState.songMetadata.get(variation)?.playData.difficulties ?? [];
@@ -406,7 +406,7 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
     addMenuItem(menu, 'Duplicate', function()
     {
       var taken:Array<String> = chartEditorState.songMetadata.get(variation)?.playData.difficulties ?? [];
-      var copy:String = ChartEditorState.uniqueDifficultyId('$difficulty-copy', taken);
+      var copy:String = ChartEditorDifficultyHandler.uniqueDifficultyId('$difficulty-copy', taken);
       if (chartEditorState.duplicateDifficulty(variation, difficulty, variation, copy)) startEditing('$variation:$copy');
     });
 
@@ -422,7 +422,7 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
         addMenuItem(copyMenu, target.toTitleCase(), function()
         {
           var taken:Array<String> = chartEditorState.songMetadata.get(target)?.playData.difficulties ?? [];
-          chartEditorState.duplicateDifficulty(variation, difficulty, target, ChartEditorState.uniqueDifficultyId(difficulty, taken));
+          chartEditorState.duplicateDifficulty(variation, difficulty, target, ChartEditorDifficultyHandler.uniqueDifficultyId(difficulty, taken));
         });
         addMenuItem(moveMenu, target.toTitleCase(), () -> { chartEditorState.moveDifficulty(variation, difficulty, target); });
       }
@@ -523,7 +523,7 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
     var target:String = chartEditorState.selectedVariation;
     var taken:Array<String> = chartEditorState.songMetadata.get(target)?.playData.difficulties ?? [];
     var base:String = source.variation == target ? '${source.difficulty}-copy' : source.difficulty;
-    var id:String = ChartEditorState.uniqueDifficultyId(base, taken);
+    var id:String = ChartEditorDifficultyHandler.uniqueDifficultyId(base, taken);
     if (chartEditorState.duplicateDifficulty(source.variation, source.difficulty, target, id)) updateTree();
   }
 
