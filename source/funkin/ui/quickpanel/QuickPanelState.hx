@@ -1146,8 +1146,8 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
       tickSound = null;
     }
 
-    paWipe.destroy();
-    paMiddle.destroy();
+    if (paWipe != null) paWipe.destroy();
+    if (paMiddle != null) paMiddle.destroy();
 
     super.destroy();
 
