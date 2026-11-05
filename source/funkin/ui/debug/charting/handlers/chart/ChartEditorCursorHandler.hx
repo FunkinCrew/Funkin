@@ -649,6 +649,7 @@ class ChartEditorCursorHandler
           }
           var noteTimes:Array<Float> = [for (note in state.currentNoteSelection) alignedTime(note.getStepTime())];
           var eventTimes:Array<Float> = [for (event in state.currentEventSelection) alignedTime(event.getStepTime())];
+          for (time in newSubBeats) state.rememberSubBeatSnap(time, state.noteSnapQuant);
           state.performCommand(new AlignItemsToSubBeatsCommand(state.currentNoteSelection, state.currentEventSelection, noteTimes, eventTimes,
             dragDistanceColumns, newSubBeats));
 

@@ -765,12 +765,15 @@ class SongChartEditorData implements ICloneable<SongChartEditorData>
   @:optional
   @:default([])
   public var subBeats:Array<Float>;
+  @:optional
+  public var subBeatSnaps:Null<Map<String, Int>>;
 
   public function new()
   {
     this.eventLayers = [];
     this.comments = [];
     this.subBeats = [];
+    this.subBeatSnaps = new Map<String, Int>();
   }
 
   /**
@@ -784,6 +787,8 @@ class SongChartEditorData implements ICloneable<SongChartEditorData>
     result.eventLayers = this.eventLayers.clone();
     result.comments = this.comments.clone();
     result.subBeats = (this.subBeats ?? []).copy();
+    var snaps:Null<Map<String, Int>> = this.subBeatSnaps;
+    result.subBeatSnaps = (snaps != null) ? snaps.copy() : new Map<String, Int>();
 
     return result;
   }

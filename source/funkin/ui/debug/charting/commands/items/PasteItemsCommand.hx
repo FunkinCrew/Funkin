@@ -71,13 +71,16 @@ class PasteItemsCommand implements ChartEditorCommand
     state.currentNoteSelection = addedNotes.copy();
     state.currentEventSelection = addedEvents.copy();
 
-    var pastedSubBeats:Array<Float> = [
-      for (offset in currentClipboard.subBeats ?? [])
-      {
-        var time:Float = (offset + targetTimestamp).clamp(0, msCutoff);
-        if (!state.isTimeOnSnap(time)) time;
-      }
-    ];
+    var pastedSubBeats:Array<Float> = [];
+    var copiedSubBeats:Array<Float> = currentClipboard.subBeats ?? [];
+    var copiedSnaps:Array<Int> = currentClipboard.subBeatSnaps ?? [];
+    for (i in 0...copiedSubBeats.length)
+    {
+      var time:Float = (copiedSubBeats[i] + targetTimestamp).clamp(0, msCutoff);
+      if (state.isTimeOnSnap(time)) continue;
+      pastedSubBeats.push(time);
+      if (i < copiedSnaps.length) state.rememberSubBeatSnap(time, copiedSnaps[i]);
+    }
     if (pastedSubBeats.length > 0)
     {
       var before:Array<Float> = state.currentSubBeats().copy();

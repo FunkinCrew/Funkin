@@ -478,4 +478,6 @@ typedef SongClipboardItems =
   var events:Array<SongEventData>;
   @:optional
   var subBeats:Array<Float>;
+  @:optional
+  var subBeatSnaps:Array<Int>;
 }

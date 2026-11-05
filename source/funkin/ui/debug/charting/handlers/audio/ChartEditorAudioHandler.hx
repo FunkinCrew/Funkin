@@ -619,6 +619,7 @@ class ChartEditorAudioHandler
     }
     Conductor.instance.mapTimeChanges(state.currentSongMetadata.timeChanges);
     state.removeSubBeatsOnSnap();
+    state.pruneSubBeatSnaps();
     state.updateTimeSignature();
     @:privateAccess state.measureTicks?.updateMeasureNumbers(true);
 

@@ -3,6 +3,7 @@ package funkin.ui.debug.charting.selection;
 #if FEATURE_CHART_EDITOR
 import funkin.data.song.SongData.SongNoteData;
 import funkin.ui.debug.charting.commands.song.SetSubBeatsCommand;
+import funkin.ui.debug.charting.handlers.chart.ChartEditorSubBeatHandler;
 
 /**
  * The sub-beats, picked and dragged by their tags right of the grid.
@@ -19,6 +20,7 @@ class ChartEditorSubBeatItems extends ChartEditorSelectableItems<Int>
    * The last copied sub-beats, relative to the first one.
    */
   var copied:Array<Float> = [];
+  var copiedSnaps:Array<Int> = [];
 
   /**
    * How close, in milliseconds, a note has to be to a sub-beat to move with it.
@@ -152,6 +154,8 @@ class ChartEditorSubBeatItems extends ChartEditorSelectableItems<Int>
     for (i in 0...items.length)
     {
       after[items[i]] = targetTimes[i];
+      var snap:Null<Int> = ChartEditorSubBeatHandler.subBeatSnapOf(state.currentSongChartData?.editorData, subBeats[items[i]]);
+      if (snap != null) state.rememberSubBeatSnap(targetTimes[i], snap);
     }
 
     after = after.filter(time -> !state.isTimeOnSnap(time));
@@ -187,6 +191,7 @@ class ChartEditorSubBeatItems extends ChartEditorSelectableItems<Int>
     if (times.length == 0) return;
     times.sort((a, b) -> a < b ? -1 : (a > b ? 1 : 0));
     copied = [for (time in times) time - times[0]];
+    copiedSnaps = [for (time in times) ChartEditorSubBeatHandler.subBeatSnapOf(state.currentSongChartData?.editorData, time) ?? 0];
     ChartEditorSelectableItems.lastCopied = this;
     state.success('Copied Sub-Beats', times.length == 1 ? 'Copied 1 sub-beat.' : 'Copied ${times.length} sub-beats.');
   }
@@ -198,7 +203,14 @@ class ChartEditorSubBeatItems extends ChartEditorSelectableItems<Int>
   {
     if (copied.length == 0) return;
     var start:Float = state.scrollPositionInMs + state.playheadPositionInMs;
-    var pasted:Array<Float> = [for (offset in copied) if (!state.isTimeOnSnap(start + offset)) start + offset];
+    var pasted:Array<Float> = [];
+    for (i in 0...copied.length)
+    {
+      var time:Float = start + copied[i];
+      if (state.isTimeOnSnap(time)) continue;
+      pasted.push(time);
+      if (i < copiedSnaps.length) state.rememberSubBeatSnap(time, copiedSnaps[i]);
+    }
     state.performCommand(new SetSubBeatsCommand(subBeats, subBeats.concat(pasted), pasted, 'Paste Sub-Beats'));
   }
 

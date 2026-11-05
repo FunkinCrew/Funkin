@@ -35,6 +35,35 @@ class ChartEditorSubBeatHandler
   }
 
   /**
+   * The key a sub-beat's snap is stored under.
+   */
+  public static function subBeatSnapKey(time:Float):String
+  {
+    return Std.string(Math.round(time * 1000));
+  }
+
+  /**
+   * The snap a sub-beat was placed with, or `null` if it isn't known.
+   */
+  public static function subBeatSnapOf(editorData:Null<SongChartEditorData>, time:Float):Null<Int>
+  {
+    return editorData?.subBeatSnaps?.get(subBeatSnapKey(time));
+  }
+
+  /**
+   * Remember the snap a sub-beat of the current variation was placed with.
+   */
+  @:nullSafety(Off)
+  public static function rememberSubBeatSnap(state:ChartEditorState, time:Float, quant:Int):Void
+  {
+    if (quant <= 0) return;
+    currentSubBeats(state);
+    var editorData:SongChartEditorData = state.currentSongChartData.editorData;
+    if (editorData.subBeatSnaps == null) editorData.subBeatSnaps = new Map<String, Int>();
+    editorData.subBeatSnaps.set(subBeatSnapKey(time), quant);
+  }
+
+  /**
    * Add a sub-beat exactly where the mouse is, or remove the one under it.
    */
   public static function toggleSubBeatAtCursor(state:ChartEditorState):Void
@@ -53,7 +82,9 @@ class ChartEditorSubBeatHandler
 
     var step:Float = Math.max(0, Math.min(ChartEditorTimeScale.pixelsToStep(mouseY), state.lastSnappedGridStep));
     if (isOnSnap(state, step)) return;
-    state.performCommand(new ToggleSubBeatCommand(Conductor.instance.getStepTimeInMs(step), true));
+    var time:Float = Conductor.instance.getStepTimeInMs(step);
+    rememberSubBeatSnap(state, time, state.noteSnapQuant);
+    state.performCommand(new ToggleSubBeatCommand(time, true));
   }
 
   /**
@@ -139,6 +170,22 @@ class ChartEditorSubBeatHandler
     for (time in kept) subBeats.push(time);
     state.subBeatItems?.clearSelection();
     state.gridLinesDirty = true;
+    pruneSubBeatSnaps(state);
+  }
+
+  /**
+   * Forget the snaps of sub-beats that are gone, so they aren't saved.
+   */
+  @:nullSafety(Off)
+  public static function pruneSubBeatSnaps(state:ChartEditorState):Void
+  {
+    var editorData:Null<SongChartEditorData> = state.currentSongChartData?.editorData;
+    if (editorData?.subBeatSnaps == null) return;
+    var live:Map<String, Bool> = [for (time in editorData.subBeats ?? []) subBeatSnapKey(time) => true];
+    for (key in [for (k in editorData.subBeatSnaps.keys()) k])
+    {
+      if (!live.exists(key)) editorData.subBeatSnaps.remove(key);
+    }
   }
 
   /**

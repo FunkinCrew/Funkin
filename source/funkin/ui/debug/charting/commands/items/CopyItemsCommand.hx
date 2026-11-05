@@ -8,6 +8,7 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import funkin.data.song.SongDataUtils.SongClipboardItems;
 import funkin.ui.debug.charting.commands.ChartEditorCommand;
+import funkin.ui.debug.charting.handlers.chart.ChartEditorSubBeatHandler;
 import funkin.ui.debug.charting.selection.ChartEditorSelectableItems;
 
 /**
@@ -64,7 +65,11 @@ class CopyItemsCommand implements ChartEditorCommand
     return {
       notes: SongDataUtils.buildNoteClipboard(notes, timeOffset),
       events: SongDataUtils.buildEventClipboard(events, timeOffset),
-      subBeats: [for (time in sortedSubBeats) time - timeOffset]
+      subBeats: [for (time in sortedSubBeats) time - timeOffset],
+      subBeatSnaps: [
+        for (time in sortedSubBeats)
+          ChartEditorSubBeatHandler.subBeatSnapOf(state.currentSongChartData?.editorData, time) ?? 0
+      ]
     };
   }
 

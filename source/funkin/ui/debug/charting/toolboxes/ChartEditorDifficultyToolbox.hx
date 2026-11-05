@@ -17,6 +17,7 @@ import haxe.ui.containers.dialogs.MessageBox.MessageBoxType;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.util.DiffCalcUtil;
 import funkin.ui.debug.charting.commands.song.SwitchDifficultyCommand;
+import funkin.ui.debug.charting.dialogs.ChartEditorGenerateDifficultyDialog;
 import funkin.ui.debug.charting.handlers.ui.ChartEditorContextMenuHandler;
 import haxe.ui.components.Label;
 import haxe.ui.components.NumberStepper;
@@ -499,6 +500,7 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
         startEditing('$variation:$copy');
       }
     });
+    addMenuItem(menu, 'Generate...', () -> { ChartEditorGenerateDifficultyDialog.open(chartEditorState, variation, difficulty); });
 
     var others:Array<String> = chartEditorState.availableVariations.filter(v -> v != variation);
     if (others.length > 0)
