@@ -36,7 +36,7 @@ class SetAudioOffsetCommand implements ChartEditorCommand
 
         // Update rendering.
         Conductor.instance.instrumentalOffset = state.currentInstrumentalOffset;
-        state.songLengthInMs = (state.audioInstTrack?.length ?? 1000.0) + Conductor.instance.instrumentalOffset;
+        updateSongLength(state);
       case PLAYER:
         oldOffset = state.currentVocalOffsetPlayer;
         state.currentVocalOffsetPlayer = newOffset;
@@ -72,7 +72,7 @@ class SetAudioOffsetCommand implements ChartEditorCommand
 
         // Update rendering.
         Conductor.instance.instrumentalOffset = state.currentInstrumentalOffset;
-        state.songLengthInMs = (state.audioInstTrack?.length ?? 1000.0) + Conductor.instance.instrumentalOffset;
+        updateSongLength(state);
       case PLAYER:
         state.currentVocalOffsetPlayer = oldOffset;
 
@@ -87,6 +87,15 @@ class SetAudioOffsetCommand implements ChartEditorCommand
 
     // Update the offsets toolbox.
     state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
+  }
+
+  function updateSongLength(state:ChartEditorState):Void
+  {
+    var scrollPosition:Float = state.scrollPositionInPixels;
+    var playheadPosition:Float = state.playheadPositionInPixels;
+    state.songLengthInMs = (state.audioInstTrack?.length ?? 1000.0) + Conductor.instance.instrumentalOffset;
+    state.scrollPositionInPixels = scrollPosition;
+    state.playheadPositionInPixels = playheadPosition;
   }
 
   /**
