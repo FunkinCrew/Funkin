@@ -69,7 +69,7 @@ import funkin.ui.debug.cameraeditor.handlers.CameraEditorCommandHandler;
 import funkin.ui.debug.cameraeditor.handlers.CameraEditorImportExportHandler;
 import funkin.ui.debug.cameraeditor.handlers.CameraEditorNotificationHandler;
 import funkin.ui.debug.charting.ChartEditorState;
-import funkin.ui.debug.charting.handlers.ChartEditorImportExportHandler;
+import funkin.ui.debug.charting.handlers.chart.ChartEditorImportExportHandler;
 import funkin.ui.debug.stageeditor.handlers.AssetDataHandler;
 import funkin.ui.haxeui.components.editors.camera.CameraViewportEvent;
 import funkin.ui.haxeui.components.editors.timeline.TimelineEvent;

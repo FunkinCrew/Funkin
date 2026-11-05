@@ -8,10 +8,10 @@ import funkin.data.event.SongEventRegistry;
 import funkin.data.event.SongEventSchema;
 import funkin.play.event.SongEvent;
 import funkin.play.event.SongEventHelper;
+import funkin.ui.debug.charting.commands.selection.SetItemSelectionCommand;
+import funkin.ui.debug.charting.handlers.ui.ChartEditorContextMenuHandler;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
-import funkin.ui.debug.charting.commands.SetItemSelectionCommand;
 import funkin.data.song.SongData.SongEventData;
-import funkin.ui.debug.charting.handlers.ChartEditorContextMenuHandler;
 import haxe.ui.containers.menus.Menu;
 import haxe.ui.containers.menus.MenuItem;
 import haxe.ui.containers.menus.MenuSeparator;
@@ -186,7 +186,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
       for (moving in movingGroup) if (Math.abs(targetMs - moving.time) >= 0.5) allThere = false;
       if (allThere) return;
       movingByBeat = true;
-      chartEditorState.performCommand(new funkin.ui.debug.charting.commands.MoveEventsCommand(movingGroup, targetMs, true));
+      chartEditorState.performCommand(new funkin.ui.debug.charting.commands.events.MoveEventsCommand(movingGroup, targetMs, true));
       movingByBeat = false;
       // The command swaps the events for moved copies and selects them.
       movingGroup = chartEditorState.currentEventSelection.copy();
@@ -585,7 +585,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
   {
     if (chainEvents.length == 0) return;
     var added:SongEventData = new SongEventData(chainEvents[0].time, source.eventKind, copyValue(source.value));
-    chartEditorState.performCommand(new funkin.ui.debug.charting.commands.AddEventsCommand([added], true));
+    chartEditorState.performCommand(new funkin.ui.debug.charting.commands.events.AddEventsCommand([added], true));
     chainActive = added;
     chainActiveIndex = chainEvents.length;
     loadActiveIntoForm();
@@ -608,7 +608,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
   {
     if (chainEvents.length == 0) return;
     var added:SongEventData = new SongEventData(chainEvents[0].time, chartEditorState.eventKindToPlace, {});
-    chartEditorState.performCommand(new funkin.ui.debug.charting.commands.AddEventsCommand([added], true));
+    chartEditorState.performCommand(new funkin.ui.debug.charting.commands.events.AddEventsCommand([added], true));
     chainActive = added;
     chainActiveIndex = chainEvents.length;
     loadActiveIntoForm();
@@ -618,7 +618,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
   function removeFromChain(event:SongEventData):Void
   {
     var remaining:Array<SongEventData> = [for (other in chainEvents) if (other != event) other];
-    chartEditorState.performCommand(new funkin.ui.debug.charting.commands.RemoveEventsCommand([event]));
+    chartEditorState.performCommand(new funkin.ui.debug.charting.commands.events.RemoveEventsCommand([event]));
     // Keep the rest of the chain selected so the panel stays on it.
     chartEditorState.currentEventSelection = remaining;
     if (chainActive == event) chainActive = remaining.length > 0 ? remaining[0] : null;

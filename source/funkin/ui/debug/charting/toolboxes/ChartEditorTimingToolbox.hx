@@ -2,10 +2,10 @@ package funkin.ui.debug.charting.toolboxes;
 
 #if FEATURE_CHART_EDITOR
 import funkin.data.song.SongData.SongTimeChange;
-import funkin.ui.debug.charting.commands.AddNewTimeChangeCommand;
-import funkin.ui.debug.charting.commands.ModifyTimeChangeCommand;
-import funkin.ui.debug.charting.commands.RemoveTimeChangeCommand;
-import funkin.ui.debug.charting.handlers.ChartEditorContextMenuHandler;
+import funkin.ui.debug.charting.commands.timing.AddNewTimeChangeCommand;
+import funkin.ui.debug.charting.commands.timing.ModifyTimeChangeCommand;
+import funkin.ui.debug.charting.commands.timing.RemoveTimeChangeCommand;
+import funkin.ui.debug.charting.handlers.ui.ChartEditorContextMenuHandler;
 import haxe.ui.components.DropDown;
 import haxe.ui.components.Label;
 import haxe.ui.components.NumberStepper;

@@ -1,29 +1,29 @@
 package funkin.ui.debug.charting.components.palette;
 
-import funkin.ui.debug.charting.commands.AddNewTimeChangeCommand;
+import funkin.ui.debug.charting.commands.timing.AddNewTimeChangeCommand;
 #if FEATURE_CHART_EDITOR
 import funkin.util.SearchUtil;
 import funkin.util.SearchUtil.FuzzyScore;
 import funkin.ui.debug.charting.ChartEditorState;
-import funkin.ui.debug.charting.components.ChartEditorCommandPalette.PaletteCommand;
-import funkin.ui.debug.charting.commands.AddCommentCommand;
-import funkin.ui.debug.charting.commands.CopyItemsCommand;
-import funkin.ui.debug.charting.commands.CutItemsCommand;
-import funkin.ui.debug.charting.commands.DeselectAllItemsBetweenTimeCommand;
-import funkin.ui.debug.charting.commands.DeselectAllItemsCommand;
-import funkin.ui.debug.charting.commands.FlipNotesCommand;
-import funkin.ui.debug.charting.commands.InvertSelectedItemsCommand;
-import funkin.ui.debug.charting.commands.MirrorNotesCommand;
-import funkin.ui.debug.charting.commands.PasteItemsCommand;
-import funkin.ui.debug.charting.commands.RemoveEventsCommand;
-import funkin.ui.debug.charting.commands.RemoveItemsCommand;
-import funkin.ui.debug.charting.commands.RemoveNotesCommand;
-import funkin.ui.debug.charting.commands.RemoveStackedNotesCommand;
-import funkin.ui.debug.charting.commands.SelectAllItemsBetweenTimeCommand;
-import funkin.ui.debug.charting.commands.SelectAllItemsCommand;
-import funkin.ui.debug.charting.commands.SelectItemsCommand;
-import funkin.ui.debug.charting.handlers.ChartEditorNotificationHandler;
-import funkin.ui.debug.charting.handlers.ChartEditorToolboxHandler;
+import funkin.ui.debug.charting.commands.comments.AddCommentCommand;
+import funkin.ui.debug.charting.commands.items.CopyItemsCommand;
+import funkin.ui.debug.charting.commands.items.CutItemsCommand;
+import funkin.ui.debug.charting.commands.selection.DeselectAllItemsBetweenTimeCommand;
+import funkin.ui.debug.charting.commands.selection.DeselectAllItemsCommand;
+import funkin.ui.debug.charting.commands.notes.FlipNotesCommand;
+import funkin.ui.debug.charting.commands.selection.InvertSelectedItemsCommand;
+import funkin.ui.debug.charting.commands.notes.MirrorNotesCommand;
+import funkin.ui.debug.charting.commands.items.PasteItemsCommand;
+import funkin.ui.debug.charting.commands.events.RemoveEventsCommand;
+import funkin.ui.debug.charting.commands.items.RemoveItemsCommand;
+import funkin.ui.debug.charting.commands.notes.RemoveNotesCommand;
+import funkin.ui.debug.charting.commands.notes.RemoveStackedNotesCommand;
+import funkin.ui.debug.charting.commands.selection.SelectAllItemsBetweenTimeCommand;
+import funkin.ui.debug.charting.commands.selection.SelectAllItemsCommand;
+import funkin.ui.debug.charting.commands.selection.SelectItemsCommand;
+import funkin.ui.debug.charting.components.palette.ChartEditorCommandPalette.PaletteCommand;
+import funkin.ui.debug.charting.handlers.ui.ChartEditorNotificationHandler;
+import funkin.ui.debug.charting.handlers.ui.ChartEditorToolboxHandler;
 
 /**
  * Holds and filters the list of available commands for the command palette.
