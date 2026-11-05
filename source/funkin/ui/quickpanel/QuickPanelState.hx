@@ -253,11 +253,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
   {
     super();
 
-    panelCam = new FunkinCamera('panelCam', 0, 0, FlxG.width, FlxG.height);
-    panelCam.bgColor = FlxColor.TRANSPARENT;
-    panelCam.zoom = 1;
-    FlxG.cameras.add(panelCam, false);
-
+    createCamera();
     buildBackdrop();
 
     panel = new QuickPanelGroup(DEFAULT_BUTTON_DATA, onButtonTapped);
@@ -272,6 +268,15 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     forEach(obj -> obj.cameras = [panelCam]);
 
     repositionSide(left);
+  }
+
+  function createCamera(reset:Bool = false):Void
+  {
+    panelCam = new FunkinCamera('panelCam', 0, 0, FlxG.width, FlxG.height);
+    panelCam.bgColor = FlxColor.TRANSPARENT;
+    panelCam.zoom = 1;
+    FlxG.cameras.add(panelCam, false);
+    if (reset) forEach(obj -> obj.cameras = [panelCam]);
   }
 
   function buildBackdrop():Void
@@ -585,6 +590,11 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
   override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
+    if (panelCam == null || !FlxG.cameras.list.contains(panelCam))
+    {
+      // wtf! someone just called flxg.cameras.reset!! Relax i'll handle it, i am the angry pumpkin
+      createCamera(true);
+    }
 
     updateBlockerRequest();
     updateHint(elapsed);
