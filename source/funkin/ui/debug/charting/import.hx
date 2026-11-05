@@ -9,6 +9,7 @@ using funkin.ui.debug.charting.handlers.chart.ChartEditorDifficultyHandler;
 using funkin.ui.debug.charting.handlers.chart.ChartEditorEventChainHandler;
 using funkin.ui.debug.charting.handlers.chart.ChartEditorGridInteractionHandler;
 using funkin.ui.debug.charting.handlers.chart.ChartEditorImportExportHandler;
+using funkin.ui.debug.charting.handlers.chart.ChartEditorNoteDisplayHandler;
 using funkin.ui.debug.charting.handlers.editor.ChartEditorAutoSaveHandler;
 using funkin.ui.debug.charting.handlers.editor.ChartEditorGamepadHandler;
 using funkin.ui.debug.charting.handlers.editor.ChartEditorPlaytestHandler;
@@ -20,6 +21,7 @@ using funkin.ui.debug.charting.handlers.ui.ChartEditorDialogHandler;
 using funkin.ui.debug.charting.handlers.ui.ChartEditorLayoutHandler;
 using funkin.ui.debug.charting.handlers.ui.ChartEditorNotificationHandler;
 using funkin.ui.debug.charting.handlers.ui.ChartEditorToolboxHandler;
+using funkin.ui.debug.charting.handlers.ui.ChartEditorUIHandler;
 import funkin.ui.debug.charting.util.ChartEditorNoteUtil;
 import funkin.ui.debug.charting.util.ChartEditorTimeScale;
 #end

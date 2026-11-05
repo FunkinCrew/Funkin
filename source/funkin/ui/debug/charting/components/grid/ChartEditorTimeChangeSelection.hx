@@ -1,6 +1,7 @@
 package funkin.ui.debug.charting.components.grid;
 
 #if FEATURE_CHART_EDITOR
+import funkin.ui.debug.charting.commands.timing.RemoveTimeChangeCommand;
 import funkin.ui.debug.charting.toolboxes.ChartEditorListKeyTarget;
 import funkin.ui.debug.charting.toolboxes.ChartEditorTimingToolbox;
 
@@ -31,7 +32,7 @@ class ChartEditorTimeChangeSelection implements ChartEditorListKeyTarget
   {
     // Clicking the picked tag again keeps it picked; clicking anything else lets go.
     var gridLines = chartEditorState.gridLines;
-    return gridLines != null && gridLines.timeChangeUnderMouse() == chartEditorState.selectedTimeChangeIndex;
+    return gridLines != null && chartEditorState.selectedTimeChangeIndexes.contains(gridLines.timeChangeUnderMouse());
   }
 
   public function isListShown():Bool
@@ -51,7 +52,11 @@ class ChartEditorTimeChangeSelection implements ChartEditorListKeyTarget
 
   public function deleteSelection():Void
   {
-    timingToolbox()?.deleteSelection();
+    // The first time change can't be removed.
+    var indexes:Array<Int> = chartEditorState.selectedTimeChangeIndexes.filter(index -> index > 0);
+    if (indexes.length == 0) return;
+    indexes.sort((a, b) -> a - b);
+    chartEditorState.performCommand(new RemoveTimeChangeCommand(indexes[0], indexes.slice(1)));
   }
 }
 #end

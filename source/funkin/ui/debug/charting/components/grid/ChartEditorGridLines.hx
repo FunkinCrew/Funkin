@@ -149,13 +149,14 @@ class ChartEditorGridLines
 
   function refreshSelectionOutline():Void
   {
-    var selected:Int = chartEditorState.selectedTimeChangeIndex;
-    var left:Float = Math.POSITIVE_INFINITY;
-    var top:Float = Math.POSITIVE_INFINITY;
-    var right:Float = Math.NEGATIVE_INFINITY;
-    var bottom:Float = Math.NEGATIVE_INFINITY;
-    if (selected >= 0)
+    // Four edges per picked time change, made as needed.
+    var used:Int = 0;
+    for (selected in chartEditorState.selectedTimeChangeIndexes)
     {
+      var left:Float = Math.POSITIVE_INFINITY;
+      var top:Float = Math.POSITIVE_INFINITY;
+      var right:Float = Math.NEGATIVE_INFINITY;
+      var bottom:Float = Math.NEGATIVE_INFINITY;
       for (back in markerIndexes.keys())
       {
         if (!back.alive || markerIndexes.get(back) != selected) continue;
@@ -164,21 +165,43 @@ class ChartEditorGridLines
         right = Math.max(right, back.x + back.width);
         bottom = Math.max(bottom, back.y + back.height);
       }
+      if (left == Math.POSITIVE_INFINITY) continue;
+
+      while (selectionEdges.length < used + 4)
+      {
+        var edge:FlxSprite = new FunkinSprite().makeSolidColor(2, 2, FlxColor.WHITE);
+        selectionEdges.push(edge);
+        markers.add(edge);
+      }
+
+      var pad:Float = SELECTION_EDGE;
+      left -= pad;
+      top -= pad;
+      right += pad;
+      bottom += pad;
+      placeEdge(selectionEdges[used], left, top, right - left, SELECTION_EDGE);
+      placeEdge(selectionEdges[used + 1], left, bottom - SELECTION_EDGE, right - left, SELECTION_EDGE);
+      placeEdge(selectionEdges[used + 2], left, top, SELECTION_EDGE, bottom - top);
+      placeEdge(selectionEdges[used + 3], right - SELECTION_EDGE, top, SELECTION_EDGE, bottom - top);
+      for (i in used...used + 4) selectionEdges[i].visible = true;
+      used += 4;
     }
+    for (i in used...selectionEdges.length) selectionEdges[i].visible = false;
+  }
 
-    var show:Bool = left != Math.POSITIVE_INFINITY;
-    for (edge in selectionEdges) edge.visible = show;
-    if (!show) return;
-
-    var pad:Float = SELECTION_EDGE;
-    left -= pad;
-    top -= pad;
-    right += pad;
-    bottom += pad;
-    placeEdge(selectionEdges[0], left, top, right - left, SELECTION_EDGE);
-    placeEdge(selectionEdges[1], left, bottom - SELECTION_EDGE, right - left, SELECTION_EDGE);
-    placeEdge(selectionEdges[2], left, top, SELECTION_EDGE, bottom - top);
-    placeEdge(selectionEdges[3], right - SELECTION_EDGE, top, SELECTION_EDGE, bottom - top);
+  /**
+   * The time changes a selection box covers. The box has to reach the tags left of the grid.
+   */
+  public function timeChangesInBox(boxLeft:Float, startMs:Float, endMs:Float):Array<Int>
+  {
+    var result:Array<Int> = [];
+    if (boxLeft > markers.x - ChartEditorState.GRID_SIZE - MARKER_GAP) return result;
+    var timeChanges = Conductor.instance.timeChanges;
+    for (i in 0...timeChanges.length)
+    {
+      if (timeChanges[i].timeStamp >= startMs && timeChanges[i].timeStamp <= endMs) result.push(i);
+    }
+    return result;
   }
 
   static function placeEdge(edge:FlxSprite, x:Float, y:Float, width:Float, height:Float):Void

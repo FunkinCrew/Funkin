@@ -13,12 +13,14 @@ import funkin.ui.debug.charting.commands.ChartEditorCommand;
 class RemoveTimeChangeCommand implements ChartEditorCommand
 {
   var timeChangeIndex:Int;
+  var timeChangeIndexes:Array<Int>;
   var previousTimeChanges:Null<Array<SongTimeChange>>;
   var removedTimeChange:Null<Array<SongTimeChange>>;
 
-  public function new(timeChangeIndex:Int)
+  public function new(timeChangeIndex:Int, ?otherIndexes:Array<Int>)
   {
     this.timeChangeIndex = timeChangeIndex;
+    timeChangeIndexes = [timeChangeIndex].concat(otherIndexes ?? []);
   }
 
   /**
@@ -36,7 +38,18 @@ class RemoveTimeChangeCommand implements ChartEditorCommand
     }
     else
     {
-      removedTimeChange = timeChanges.splice(timeChangeIndex, 1);
+      // Highest first, so removing one doesn't shift the ones still to go.
+      var sorted:Array<Int> = timeChangeIndexes.copy();
+      sorted.sort((a, b) -> b - a);
+      var removed:Array<SongTimeChange> = [];
+      var last:Int = -1;
+      for (index in sorted)
+      {
+        if (index == last || index < 0 || index >= timeChanges.length) continue;
+        last = index;
+        removed = timeChanges.splice(index, 1).concat(removed);
+      }
+      removedTimeChange = removed;
     }
 
     state.currentSongMetadata.timeChanges = timeChanges;

@@ -25,7 +25,14 @@ class ChartEditorGridInteractionHandler
     if (timeChangeIndex >= 0)
     {
       state.lastGridClickTarget = null;
-      if (state.selectedTimeChangeIndex == timeChangeIndex)
+      if (state.pressingControl())
+      {
+        // Ctrl clicking adds or removes a tag from the picked time changes.
+        var picked:Array<Int> = state.selectedTimeChangeIndexes.copy();
+        if (!picked.remove(timeChangeIndex)) picked.push(timeChangeIndex);
+        state.selectedTimeChangeIndexes = picked;
+      }
+      else if (state.selectedTimeChangeIndexes.length == 1 && state.selectedTimeChangeIndex == timeChangeIndex)
       {
         state.openToolboxFromGrid(ChartEditorState.CHART_EDITOR_TOOLBOX_TIMING_LAYOUT, state.menubarItemToggleToolboxTiming);
         var timingToolbox:Null<ChartEditorTimingToolbox> = cast state.activeToolboxes.get(ChartEditorState.CHART_EDITOR_TOOLBOX_TIMING_LAYOUT);
@@ -40,8 +47,12 @@ class ChartEditorGridInteractionHandler
       return;
     }
 
-    state.selectedTimeChangeIndex = -1;
-    if (state.listKeyTarget == state.timeChangeSelection) state.listKeyTarget = null;
+    // Ctrl keeps them, so a Ctrl selection box can add to them.
+    if (!state.pressingControl())
+    {
+      state.selectedTimeChangeIndex = -1;
+      if (state.listKeyTarget == state.timeChangeSelection) state.listKeyTarget = null;
+    }
 
     var target:Dynamic = null;
     var clickedEvent:Null<SongEventData> = null;
