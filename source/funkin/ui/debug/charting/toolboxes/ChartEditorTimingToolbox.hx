@@ -114,7 +114,8 @@ class ChartEditorTimingToolbox extends ChartEditorBaseToolbox implements ChartEd
       if (refreshing || event.value == null || selectedIndex == 0) return;
       var timeChange:Null<SongTimeChange> = timeChanges[selectedIndex];
       if (timeChange == null) return;
-      if (Math.abs(event.value - msToBeats(timeChange.timeStamp, selectedIndex)) < BEAT_STEP / 2) return;
+      var shown:Float = Math.max(timingInputStart.min, Math.min(timingInputStart.max, msToBeats(timeChange.timeStamp, selectedIndex)));
+      if (Math.abs(event.value - shown) < BEAT_STEP / 2) return;
       // The stepper works in beats, the metadata keeps milliseconds.
       var targetTimeStamp:Float = beatsToMs(event.value, selectedIndex);
       if (Math.abs(targetTimeStamp - timeChange.timeStamp) <= 0.0001) return;
@@ -304,10 +305,13 @@ class ChartEditorTimingToolbox extends ChartEditorBaseToolbox implements ChartEd
     {
       var previous:SongTimeChange = timeChanges[selectedIndex - 1];
       var next:Null<SongTimeChange> = timeChanges[selectedIndex + 1];
-      timingInputStart.step = BEAT_STEP;
-      timingInputStart.min = previous.beatTime + BEAT_STEP;
-      timingInputStart.max = (next != null ? next.beatTime : msToBeats(chartEditorState.songLengthInMs, selectedIndex)) - BEAT_STEP;
-      timingInputStart.value = msToBeats(timeChange.timeStamp, selectedIndex);
+      var min:Float = previous.beatTime + BEAT_STEP;
+      var max:Float = (next != null ? next.beatTime : msToBeats(chartEditorState.songLengthInMs, selectedIndex)) - BEAT_STEP;
+      var value:Float = msToBeats(timeChange.timeStamp, selectedIndex);
+      if (timingInputStart.step != BEAT_STEP) timingInputStart.step = BEAT_STEP;
+      if (timingInputStart.min != min) timingInputStart.min = min;
+      if (timingInputStart.max != max) timingInputStart.max = max;
+      if (timingInputStart.value != value) timingInputStart.value = value;
     }
     refreshing = false;
   }

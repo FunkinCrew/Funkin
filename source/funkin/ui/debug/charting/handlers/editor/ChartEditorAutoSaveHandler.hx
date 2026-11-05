@@ -13,17 +13,26 @@ using Lambda;
 @:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorAutoSaveHandler
 {
+  static var windowCloseListener:Null<Int->Void> = null;
+
+  static var windowCrashListener:Null<String->Void> = null;
+
   /**
    * Setup timers and listeners to handle auto-save.
    */
   public static function setupAutoSave(state:ChartEditorState):Void
   {
     // Called when clicking the X button on the window.
-    WindowUtil.windowExit.add(state.onWindowClose);
+    cleanupAutoSave(state);
+    var closeListener:Int->Void = state.onWindowClose;
+    var crashListener:String->Void = state.onWindowCrash;
+    windowCloseListener = closeListener;
+    windowCrashListener = crashListener;
+    WindowUtil.windowExit.add(closeListener);
 
     // Called when the game crashes.
-    CrashHandler.errorSignal.add(state.onWindowCrash);
-    CrashHandler.criticalErrorSignal.add(state.onWindowCrash);
+    CrashHandler.errorSignal.add(crashListener);
+    CrashHandler.criticalErrorSignal.add(crashListener);
 
     state.saveDataDirty = false;
   }
@@ -126,9 +135,16 @@ class ChartEditorAutoSaveHandler
 
   public static function cleanupAutoSave(state:ChartEditorState):Void
   {
-    WindowUtil.windowExit.remove(state.onWindowClose);
-    CrashHandler.errorSignal.remove(state.onWindowCrash);
-    CrashHandler.criticalErrorSignal.remove(state.onWindowCrash);
+    var closeListener:Null<Int->Void> = windowCloseListener;
+    var crashListener:Null<String->Void> = windowCrashListener;
+    if (closeListener != null) WindowUtil.windowExit.remove(closeListener);
+    if (crashListener != null)
+    {
+      CrashHandler.errorSignal.remove(crashListener);
+      CrashHandler.criticalErrorSignal.remove(crashListener);
+    }
+    windowCloseListener = null;
+    windowCrashListener = null;
   }
 
   public static function applyCanQuickSave(state:ChartEditorState):Void
