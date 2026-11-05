@@ -58,6 +58,11 @@ class QuickPanelGroup extends FunkinSpriteGroup
   public var buttons(default, null):Array<QuickPanelButton> = [];
 
   /**
+   * Whether the panel background and buttons have been built.
+   */
+  public var bodyBuilt(default, null):Bool = false;
+
+  /**
    * Whether the panel is docked to the left edge of the screen.
    */
   public var left(default, null):Bool = false;
@@ -86,11 +91,16 @@ class QuickPanelGroup extends FunkinSpriteGroup
   var panelBoilTimer:Float = 0;
   var hintBreathing:Bool = false;
   var hintBreatheTimer:Float = 0;
+  var buttonData:Array<QuickPanelButtonData>;
+  var onButtonTapped:QuickPanelButton->Void;
 
   public function new(buttonData:Array<QuickPanelButtonData>,
     onButtonTapped:QuickPanelButton->Void)
   {
     super();
+
+    this.buttonData = buttonData;
+    this.onButtonTapped = onButtonTapped;
 
     pullExtra = new FlxSprite().makeGraphic(1, 1, FlxColor.BLACK);
     pullExtra.scrollFactor.set(0, 0);
@@ -100,9 +110,10 @@ class QuickPanelGroup extends FunkinSpriteGroup
     pullExtra.localScale.x = FlxG.width;
     pullExtra.localScale.y = FlxG.height;
     pullExtra.localY = 0;
+    pullExtra.visible = false; // Nothing to trail behind until the panel exists.
     add(pullExtra);
 
-    pullHint = new FlxText(0, 0, 600, "you're not supposed to see this! if you do, i seriously messed up!", 30);
+    pullHint = new FlxText(0, 0, 600, "How the fuck did you get here?", 30);
     pullHint.setFormat(funkin.assets.Paths.font('ui/fonts/FunkinOptions', 'otf'), 38, HINT_COLOR_NORMAL, RIGHT);
     pullHint.localY = (FlxG.height / 2) - (pullHint.height / 2);
     pullHint.localAlpha = 0;
@@ -113,6 +124,27 @@ class QuickPanelGroup extends FunkinSpriteGroup
     pullTabVisual.playIdle(CLOSED);
     pullTabVisual.zIndex = Z_ABOVE;
     add(pullTabVisual);
+
+    pullTabHitbox = new FlxSprite().makeGraphic(200, 280, 0xFFFF9191);
+    pullTabHitbox.scrollFactor.set(0, 0);
+    pullTabHitbox.localAlpha = 0;
+    pullTabHitbox.updateHitbox();
+    pullTabHitbox.zIndex = Z_HITBOX;
+    pullTabHitbox.localY = (FlxG.height / 2) - (pullTabHitbox.height / 2);
+    add(pullTabHitbox);
+
+    setupHintAnims();
+    setSide(left);
+    refresh();
+  }
+
+  /**
+   * Builds the panel background, shader and buttons.
+   */
+  public function buildBody():Void
+  {
+    if (bodyBuilt) return;
+    bodyBuilt = true;
 
     panelSprite = new FlxSprite();
     panelSprite.frames = Assets.getSparrowAtlas(Paths.image('ui/quick-panel/panel-bg'));
@@ -129,16 +161,9 @@ class QuickPanelGroup extends FunkinSpriteGroup
     panelSprite.animation.onFrameChange.add((_, _, _) -> panelShader.updateFrameInfo(panelSprite.frame));
     panelShader.updateFrameInfo(panelSprite.frame);
 
-    pullTabHitbox = new FlxSprite().makeGraphic(200, 280, 0xFFFF9191);
-    pullTabHitbox.scrollFactor.set(0, 0);
-    pullTabHitbox.localAlpha = 0;
-    pullTabHitbox.updateHitbox();
-    pullTabHitbox.zIndex = Z_HITBOX;
-    pullTabHitbox.localY = (FlxG.height / 2) - (pullTabHitbox.height / 2);
-    add(pullTabHitbox);
-
     grpButtons = new FunkinGroup<QuickPanelButton>();
     grpButtons.zIndex = Z_BUTTONS;
+    grpButtons.active = active;
     add(grpButtons);
 
     for (index => data in buttonData)
@@ -150,7 +175,9 @@ class QuickPanelGroup extends FunkinSpriteGroup
       buttons.push(button);
     }
 
-    setupAnims();
+    setupBodyAnims();
+
+    pullExtra.visible = true;
     setSide(left);
     refresh();
   }
@@ -165,12 +192,16 @@ class QuickPanelGroup extends FunkinSpriteGroup
 
     pullTabVisual.localX = left ? 120 - pullTabVisual.width : -120;
     pullTabHitbox.localX = left ? 145 - pullTabHitbox.width : -145;
-
-    panelSprite.localX = left ? -panelSprite.width : 0;
-    pullExtra.localX = left ? -(pullExtra.width + panelSprite.width) + 5 : panelSprite.width - 5;
-
-    panelSprite.flipX = left;
     pullTabVisual.flipX = left;
+
+    var panelWidth:Float = panelSprite != null ? panelSprite.width : 0;
+    pullExtra.localX = left ? -(pullExtra.width + panelWidth) + 5 : panelWidth - 5;
+
+    if (panelSprite != null)
+    {
+      panelSprite.localX = left ? -panelSprite.width : 0;
+      panelSprite.flipX = left;
+    }
 
     pullHint.localX = left ? 135 : -135 - pullHint.width;
     pullHint.alignment = left ? LEFT : RIGHT;
@@ -181,7 +212,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
   function layoutButtons():Void
   {
     var count:Int = buttons.length;
-    if (count == 0) return;
+    if (count == 0 || panelSprite == null) return;
 
     var angleStep:Float = count > 1 ? (BUTTON_ANGLE_RANGE * 2) / (count - 1) : 0;
     var fullHeight:Float = (QuickPanelButton.ITEM_HEIGHT * count) + (BUTTON_PADDING * (count - 1));
@@ -206,7 +237,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
    */
   public function setTabOnTop(top:Bool):Void
   {
-    panelSprite.zIndex = top ? Z_BELOW : Z_ABOVE;
+    if (panelSprite != null) panelSprite.zIndex = top ? Z_BELOW : Z_ABOVE;
     pullTabVisual.zIndex = top ? Z_ABOVE : Z_BELOW;
     refresh();
   }
@@ -218,6 +249,8 @@ class QuickPanelGroup extends FunkinSpriteGroup
    */
   public function showSelection(index:Int, disabled:Bool):Void
   {
+    if (!bodyBuilt) return;
+
     for (i => button in buttons) if (i == index || button.selected) button.selected = (i == index);
 
     var count:Int = buttons.length;
@@ -241,6 +274,8 @@ class QuickPanelGroup extends FunkinSpriteGroup
       if (button.selected) button.selected = false;
     }
 
+    if (!bodyBuilt) return;
+
     paColor.stop();
     panelShader.sliceVisible = false;
   }
@@ -251,12 +286,21 @@ class QuickPanelGroup extends FunkinSpriteGroup
    */
   public function playScrollBump(direction:Int):Void
   {
+    if (!bodyBuilt) return;
+
     paScroll.onFinish = null;
     paScroll.playAnimation(direction < 0 ? 'bumpUp' : (direction > 0 ? 'bumpDown' : 'bumpNeutral'));
   }
 
   public function playDeny(onDone:Void->Void):Void
   {
+    if (!bodyBuilt)
+    {
+      // Still release the caller's lock.
+      if (onDone != null) onDone();
+      return;
+    }
+
     panelShader.doLerp = false;
     paScroll.playAnimation('deny', true);
     paScroll.onFinish = () ->
@@ -270,6 +314,8 @@ class QuickPanelGroup extends FunkinSpriteGroup
 
   public function playAccept(selectedIndex:Int):Void
   {
+    if (!bodyBuilt) return;
+
     paScroll.onFinish = null;
     paScroll.playAnimation('accept', true);
     panelShader.doLerp = false;
@@ -309,11 +355,14 @@ class QuickPanelGroup extends FunkinSpriteGroup
   {
     super.update(elapsed);
 
-    panelBoilTimer -= elapsed;
-    if (panelBoilTimer <= 0)
+    if (bodyBuilt)
     {
-      panelBoilTimer += PANEL_BOIL_INTERVAL / 24;
-      panelShader.updateBoil();
+      panelBoilTimer -= elapsed;
+      if (panelBoilTimer <= 0)
+      {
+        panelBoilTimer += PANEL_BOIL_INTERVAL / 24;
+        panelShader.updateBoil();
+      }
     }
 
     if (hintBreathing)
@@ -335,7 +384,10 @@ class QuickPanelGroup extends FunkinSpriteGroup
     super.destroy();
   }
 
-  function setupAnims():Void
+  /**
+   * Hint animations.
+   */
+  function setupHintAnims():Void
   {
     paHint = new PropertyAnimator(pullHint);
 
@@ -394,7 +446,13 @@ class QuickPanelGroup extends FunkinSpriteGroup
     paHint.addProperty('disappear', 'localAlpha', fadeOut);
 
     paHint.setDefaultProperties();
+  }
 
+  /**
+   * Panel shader animations.
+   */
+  function setupBodyAnims():Void
+  {
     // Slice movement
     paScroll = new PropertyAnimator(panelShader);
 
@@ -496,7 +554,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
 
   override function set_active(v:Bool):Bool
   {
-    grpButtons.active = v;
+    if (grpButtons != null) grpButtons.active = v;
     return super.set_active(v);
   }
 

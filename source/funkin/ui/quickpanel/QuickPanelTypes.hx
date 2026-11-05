@@ -31,8 +31,31 @@ typedef QuickPanelButtonData =
  */
 class PanelBlockerSubState extends MusicBeatSubState
 {
+  /**
+   * Called once the blocker is actually open on top of the host.
+   */
+  public var onReady:Null<PanelBlockerSubState->Void> = null;
+
+  /**
+   * Set when the panel no longer wants this blocker (closed or destroyed mid-load).
+   */
+  public var cancelled:Bool = false;
+
   public function new()
   {
     super();
+  }
+
+  override public function create():Void
+  {
+    super.create();
+
+    if (cancelled)
+    {
+      close();
+      return;
+    }
+
+    if (onReady != null) onReady(this);
   }
 }

@@ -138,6 +138,11 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
   static final DESCRIPTION_OFFSET:Float = 100;
 
   /**
+   * Frames to wait after requesting the blocker before checking whether its load was cancelled.
+   */
+  static final BLOCKER_GRACE_FRAMES:Int = 3;
+
+  /**
    * Whether the inactivity hint was shown or not.
    */
   static var inactivityHintUsed:Bool = false;
@@ -177,7 +182,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
   var descriptionPanelY:Float = 0;
   var descriptionTextY:Float = 0;
   var circleWipe:BoilShader;
-  var tickSound:FunkinSound;
+  var tickSound:Null<FunkinSound> = null;
   var moveTween:Null<FlxTween> = null;
   var transitionTimers:Array<FlxTimer> = [];
   var curSelected:Int = 0;
@@ -222,6 +227,28 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
   var savedPersistence:Array<
     {state:FlxState, update:Bool, draw:Bool}> = [];
 
+  /**
+   * True while the blocker (and the panel's assets) are being loaded.
+   */
+  var blockerPending:Bool = false;
+
+  /**
+   * The blocker that has been constructed by the transition but not opened yet.
+   */
+  var pendingBlocker:Null<PanelBlockerSubState> = null;
+
+  /**
+   * Incremented per request. A blocker whose request id no longer matches is stale and closes itself.
+   */
+  var blockerRequest:Int = 0;
+
+  var blockerPendingFrames:Int = 0;
+
+  /**
+   * Whether the panel body and transition visuals have been built.
+   */
+  var panelVisualsBuilt:Bool = false;
+
   public function new()
   {
     super();
@@ -235,9 +262,6 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
 
     panel = new QuickPanelGroup(DEFAULT_BUTTON_DATA, onButtonTapped);
     add(panel);
-
-    buildTransitionVisuals();
-    setupTransitionAnims();
 
     tickSound = new FunkinSound();
     tickSound.loadEmbedded(Paths.sound('ui/quick-panel/sounds/tab-pull').toFlxSoundAsset());
@@ -275,6 +299,27 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     descriptionTextY = (descriptionPanelY + descriptionPanel.height / 2) - descriptionText.height / 2;
     descriptionText.y = descriptionTextY + DESCRIPTION_OFFSET;
     add(descriptionText);
+  }
+
+  /**
+   * Builds the entirety of the panel
+   * Called once the blocker transition has finished loading them.
+   */
+  function ensurePanelVisuals():Void
+  {
+    if (panelVisualsBuilt) return;
+    panelVisualsBuilt = true;
+
+    panel.buildBody();
+
+    buildTransitionVisuals();
+    setupTransitionAnims();
+    wipeSprite.flipX = left;
+
+    // Members added after construction may not inherit the camera.
+    panel.cameras = [panelCam];
+    var built:Array<FlxBasic> = [wipeSprite, selectedIcon, selectedSplash];
+    for (obj in built) obj.cameras = [panelCam];
   }
 
   function buildTransitionVisuals():Void
@@ -365,7 +410,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     var textCenterX:Float = (left ? FlxG.width + 443 : FlxG.width - 443) / 2;
     descriptionText.x = textCenterX - descriptionText.width / 2;
 
-    wipeSprite.flipX = left;
+    if (wipeSprite != null) wipeSprite.flipX = left;
     panel.setSide(left);
 
     if (curState == OPEN) openPanel(true);
@@ -375,9 +420,14 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
 
   public function openPanel(instant:Bool = false):Void
   {
+    if (blocker == null)
+    {
+      requestBlocker(instant);
+      return;
+    }
+
     curState = OPEN;
 
-    openBlocker();
     duckMusic();
     movePanel(panel.openX, instant);
 
@@ -528,6 +578,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
   {
     super.update(elapsed);
 
+    updateBlockerRequest();
     updateHint(elapsed);
     updateTabFade(elapsed);
     updatePanelInput(elapsed);
@@ -608,7 +659,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
 
   function updatePanelInput(elapsed:Float):Void
   {
-    if (isHostTransitioning()) return;
+    if (blockerPending || isHostTransitioning()) return;
 
     #if FEATURE_TOUCH_CONTROLS
     updateTracking(elapsed);
@@ -730,6 +781,15 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
 
     if (tracking && canPull && trackDistance > GRAB_THRESHOLD)
     {
+      if (!panel.bodyBuilt)
+      {
+        tracking = false;
+        panel.setTabOnTop(true);
+        openPanel();
+        FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/open-tab-click').toFlxSoundAsset());
+        return;
+      }
+
       grabPanel();
       FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/tab-release-pull').toFlxSoundAsset());
       return;
@@ -841,6 +901,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
 
   function playDragTick(openRatio:Float):Void
   {
+    if (tickSound == null) return;
     if (tickDistance <= TICK_MIN_DISTANCE || tickCooldown >= 0) return;
 
     tickDistance = 0;
@@ -940,11 +1001,75 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     duckedMusic = null;
   }
 
-  function openBlocker():Void
+  /**
+   * Opens the blocker substate through and queries the proper assets.
+   * @param instant Whether the panel should snap open once ready.
+   */
+  function requestBlocker(instant:Bool):Void
   {
-    if (blocker != null || FlxG.state == null) return;
+    if (blockerPending || FlxG.state == null) return;
 
-    savedPersistence = [];
+    blockerPending = true;
+    blockerPendingFrames = 0;
+    lock = true;
+
+    // Freeze the host now, so it doesn't keep running underneath the load.
+    savePersistence();
+
+    var requestId:Int = ++blockerRequest;
+
+    Transition.openSubState(() -> new PanelBlockerSubState(), {
+      assetQuery: queryPanelAssets,
+      transition: Throbber,
+      shouldPurgeCache: false,
+      onConstruct: (subState) ->
+      {
+        var newBlocker:PanelBlockerSubState = cast subState;
+
+        // The panel was closed or destroyed while loading.
+        if (requestId != blockerRequest)
+        {
+          newBlocker.cancelled = true;
+          return;
+        }
+
+        pendingBlocker = newBlocker;
+        newBlocker.onReady = (readyBlocker) -> onBlockerReady(readyBlocker, instant);
+      }
+    });
+  }
+
+  function onBlockerReady(readyBlocker:PanelBlockerSubState,
+    instant:Bool):Void
+  {
+    blockerPending = false;
+    pendingBlocker = null;
+    blocker = readyBlocker;
+    lock = false;
+
+    ensurePanelVisuals();
+    openPanel(instant);
+  }
+
+  /**
+   * If another transition replaced ours mid-load, the blocker never arrives.
+   * Detect that and back out cleanly instead of leaving the host frozen.
+   */
+  function updateBlockerRequest():Void
+  {
+    if (!blockerPending || pendingBlocker != null) return;
+
+    // Give the loading substate a couple of frames to actually open.
+    if (++blockerPendingFrames < BLOCKER_GRACE_FRAMES) return;
+    if (Transition.isTransitionActive()) return;
+
+    closePanel(true);
+  }
+
+  function savePersistence():Void
+  {
+    if (savedPersistence.length > 0 || FlxG.state == null) return;
+
     for (state in StateUtil.getAllStates(FlxG.state))
     {
       savedPersistence.push({
@@ -955,12 +1080,6 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
       state.persistentDraw = true;
       state.persistentUpdate = false;
     }
-
-    var topState:Null<FlxState> = StateUtil.getTopSubState(FlxG.state);
-    if (topState == null) return;
-
-    blocker = new PanelBlockerSubState();
-    topState.openSubState(blocker); // TODO: Probably use transition?
   }
 
   function closeBlocker():Void
@@ -972,6 +1091,16 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
       entry.state.persistentDraw = entry.draw;
     }
     savedPersistence = [];
+
+    // Abandon an in-flight request.
+    if (blockerPending)
+    {
+      blockerRequest++;
+      if (pendingBlocker != null) pendingBlocker.cancelled = true;
+      pendingBlocker = null;
+      blockerPending = false;
+      lock = false;
+    }
 
     if (blocker == null) return;
     blocker.close();
@@ -988,7 +1117,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     FlxTween.cancelTweensOf(bg);
     FlxTween.cancelTweensOf(descriptionPanel);
     FlxTween.cancelTweensOf(descriptionText);
-    FlxTween.cancelTweensOf(selectedIcon);
+    if (selectedIcon != null) FlxTween.cancelTweensOf(selectedIcon);
 
     restoreMusic();
     closeBlocker();
@@ -1070,8 +1199,8 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
   }
 
   /**
-   * Produce a list of all the AssetPaths that this interface depends on to load.
-   * This is used to ensure those assets are properly cached during the preceding loading screen.
+   * Produce a list of all the AssetPaths that the pull tab depends on to load.
+   * These must be cached before the host state appears.
    *
    * @param type The type of AssetPath to return a list of paths for.
    * @return A list of AssetPaths of that type that the interface will use.
@@ -1083,11 +1212,52 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     switch (type)
     {
       case IMAGE:
+        #if FEATURE_TOUCH_CONTROLS
+        results.append(Paths.animateAtlas('ui/quick-panel/tabSquare').image());
+        #end
+        results.append(Paths.animateAtlas('ui/quick-panel/tabSquareKeyboard').image());
+
+      case SOUND:
+        results.push(Paths.sound('ui/quick-panel/sounds/tab-pull'));
+        results.push(Paths.sound('ui/quick-panel/sounds/open-tab-soft'));
+        results.push(Paths.sound('ui/quick-panel/sounds/close-tab-soft'));
+        results.push(Paths.sound('ui/quick-panel/sounds/open-tab-click'));
+        results.push(Paths.sound('ui/quick-panel/sounds/close-tab-click'));
+        #if FEATURE_TOUCH_CONTROLS
+        results.push(Paths.sound('ui/quick-panel/sounds/tab-press'));
+        results.push(Paths.sound('ui/quick-panel/sounds/tab-release-pull'));
+        #end
+
+      case JSON:
+        #if FEATURE_TOUCH_CONTROLS
+        results.append(Paths.animateAtlas('ui/quick-panel/tabSquare').json());
+        #end
+        results.append(Paths.animateAtlas('ui/quick-panel/tabSquareKeyboard').json());
+
+      default:
+        // No assets.
+    }
+
+    return results;
+  }
+
+  /**
+   * Produce a list of all the AssetPaths that the side panel depends on to load.
+   * Loaded by the blocker transition when the panel is opened.
+   *
+   * @param type The type of AssetPath to return a list of paths for.
+   * @return A list of AssetPaths of that type that the interface will use.
+   */
+  public static function queryPanelAssets(type:AssetType):Array<AssetPath>
+  {
+    var results = [];
+
+    switch (type)
+    {
+      case IMAGE:
         results.push(Paths.image('ui/boil_texture'));
         results.push(Paths.image('ui/quick-panel/splash'));
         results.push(Paths.image('ui/quick-panel/panel-bg'));
-        results.append(Paths.animateAtlas('ui/quick-panel/tabSquare').image());
-        results.append(Paths.animateAtlas('ui/quick-panel/tabSquareKeyboard').image());
         for (buttonData in DEFAULT_BUTTON_DATA)
         {
           results.push(Paths.image('ui/quick-panel/icons/${buttonData.icon}'));
@@ -1098,26 +1268,12 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
         results.push(Paths.xml('ui/quick-panel/panel-bg'));
 
       case SOUND:
-        results.push(Paths.sound('ui/quick-panel/sounds/open-tab-soft'));
-        results.push(Paths.sound('ui/quick-panel/sounds/close-tab-soft'));
-        results.push(Paths.sound('ui/quick-panel/sounds/close-tab-click'));
         results.push(Paths.sound('ui/quick-panel/sounds/menu-scroll'));
         results.push(Paths.sound('ui/quick-panel/sounds/menu-deny'));
         results.push(Paths.sound('ui/main-menu/confirm-menu'));
-        results.push(Paths.sound('ui/quick-panel/sounds/tab-pull'));
-        results.push(Paths.sound('ui/quick-panel/sounds/open-tab-click'));
         #if FEATURE_TOUCH_CONTROLS
-        results.push(Paths.sound('ui/quick-panel/sounds/tab-press'));
-        results.push(Paths.sound('ui/quick-panel/sounds/tab-release-pull'));
         results.push(Paths.sound('ui/quick-panel/sounds/menu-press'));
         #end
-
-      case JSON:
-        results.append(Paths.animateAtlas('ui/quick-panel/tabSquare').json());
-        results.append(Paths.animateAtlas('ui/quick-panel/tabSquareKeyboard').json());
-
-      case TEXT:
-        results.push(Paths.txt('ui/title/intro-text'));
 
       default:
         // No assets.
