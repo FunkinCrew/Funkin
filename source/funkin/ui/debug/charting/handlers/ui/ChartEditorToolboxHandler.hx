@@ -192,6 +192,8 @@ class ChartEditorToolboxHandler
   {
     if (id == ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT)
     {
+      var eventDataToolbox:Null<ChartEditorEventDataToolbox> = cast state.activeToolboxes.get(ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT);
+      if (eventDataToolbox != null) eventDataToolbox.refreshOptionLists();
       refreshToolbox(state, ChartEditorState.CHART_EDITOR_TOOLBOX_TIMING_LAYOUT);
       var difficultyToolbox:Null<ChartEditorDifficultyToolbox> = cast state.activeToolboxes.get(ChartEditorState.CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
       if (difficultyToolbox != null) difficultyToolbox.refreshDetails();
