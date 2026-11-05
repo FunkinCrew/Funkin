@@ -95,6 +95,11 @@ class QuickPanelGroup extends FunkinSpriteGroup
   var buttonData:Array<QuickPanelButtonData>;
   var onButtonTapped:QuickPanelButton->Void;
 
+  /**
+   * Callback of the deny animation that is currently playing, if any.
+   */
+  var pendingDenyDone:Null<Void->Void> = null;
+
   public function new(buttonData:Array<QuickPanelButtonData>,
     onButtonTapped:QuickPanelButton->Void)
   {
@@ -438,6 +443,8 @@ class QuickPanelGroup extends FunkinSpriteGroup
    */
   public function clearSelection():Void
   {
+    finishDeny();
+
     for (button in buttons)
     {
       if (button.selected) button.selected = false;
@@ -457,7 +464,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
   {
     if (!bodyBuilt) return;
 
-    paScroll.onFinish = null;
+    finishDeny();
     paScroll.playAnimation(direction < 0 ? 'bumpUp' : (direction > 0 ? 'bumpDown' : 'bumpNeutral'));
   }
 
@@ -470,22 +477,34 @@ class QuickPanelGroup extends FunkinSpriteGroup
       return;
     }
 
+    finishDeny();
+
+    pendingDenyDone = onDone;
     panelShader.doLerp = false;
     paScroll.playAnimation('deny', true);
-    paScroll.onFinish = () ->
-    {
-      // Clear immediately so later animations don't re-run this.
-      paScroll.onFinish = null;
-      panelShader.doLerp = true;
-      if (onDone != null) onDone();
-    };
+    paScroll.onFinish = finishDeny;
+  }
+
+  /**
+   * Ends the current deny (if any) and runs its callback.
+   */
+  function finishDeny():Void
+  {
+    if (paScroll != null) paScroll.onFinish = null;
+
+    var done = pendingDenyDone;
+    if (done == null) return;
+    pendingDenyDone = null;
+
+    if (panelShader != null) panelShader.doLerp = true;
+    done();
   }
 
   public function playAccept(selectedIndex:Int):Void
   {
     if (!bodyBuilt) return;
 
-    paScroll.onFinish = null;
+    finishDeny();
     paScroll.playAnimation('accept', true);
     panelShader.doLerp = false;
 
@@ -551,11 +570,12 @@ class QuickPanelGroup extends FunkinSpriteGroup
   {
     if (paHint != null) paHint.onFinish = null;
     if (paScroll != null) paScroll.onFinish = null;
+    pendingDenyDone = null;
     if (pullTabVisual != null) FlxTween.cancelTweensOf(pullTabVisual);
     FlxTween.cancelTweensOf(this);
-    paScroll.destroy();
-    paColor.destroy();
-    paHint.destroy();
+    if (paScroll != null) paScroll.destroy();
+    if (paColor != null) paColor.destroy();
+    if (paHint != null) paHint.destroy();
     buttons = [];
 
     super.destroy();

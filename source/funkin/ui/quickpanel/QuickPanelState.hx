@@ -451,6 +451,8 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
 
   public function closePanel(instant:Bool = false):Void
   {
+    lock = false;
+
     closeBlocker();
 
     uiState.transition(PanelClosed);
