@@ -618,6 +618,7 @@ class ChartEditorAudioHandler
       trace('ERROR: Instrumental track is null!');
     }
     Conductor.instance.mapTimeChanges(state.currentSongMetadata.timeChanges);
+    state.removeSubBeatsOnSnap();
     state.updateTimeSignature();
     @:privateAccess state.measureTicks?.updateMeasureNumbers(true);
 

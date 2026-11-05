@@ -104,7 +104,7 @@ class ChartEditorNoteDisplayHandler
         if (noteSprite == null || noteSprite.noteData == null || !noteSprite.exists || !noteSprite.visible) continue;
 
         // Resolve an issue where dragging an event too far would cause it to be hidden.
-        var isSelectedAndDragged = (state.dragTargetCurrentStep != 0) && state.selectedNoteSet.exists(noteSprite.noteData);
+        var isSelectedAndDragged = state.isDragPreviewing() && state.selectedNoteSet.exists(noteSprite.noteData);
 
         if ((state.windowNoteSet.exists(noteSprite.noteData) && noteSprite.isNoteVisible(viewAreaBottomPixels, viewAreaTopPixels)) || isSelectedAndDragged)
         {
@@ -128,7 +128,7 @@ class ChartEditorNoteDisplayHandler
         if (holdNoteSprite == null || holdNoteSprite.noteData == null || !holdNoteSprite.exists || !holdNoteSprite.visible) continue;
 
         // Fixes an issue where dragging a hold note too far would hide its sustain trail
-        var isSelectedAndDragged = (state.dragTargetCurrentStep != 0) && state.selectedNoteSet.exists(holdNoteSprite.noteData);
+        var isSelectedAndDragged = state.isDragPreviewing() && state.selectedNoteSet.exists(holdNoteSprite.noteData);
 
         if (!isSelectedAndDragged && (holdNoteSprite.noteData == state.currentPlaceNoteData // Being dragged, displayed by gridGhostHoldNoteSprite instead.
           || !state.windowNoteSet.exists(holdNoteSprite.noteData) // Deleted or out of range.
@@ -157,7 +157,7 @@ class ChartEditorNoteDisplayHandler
         if (eventSprite == null || eventSprite.eventData == null || !eventSprite.exists || !eventSprite.visible) continue;
 
         // Resolve an issue where dragging an event too far would cause it to be hidden.
-        var isSelectedAndDragged = (state.dragTargetCurrentStep != 0) && state.selectedEventSet.exists(eventSprite.eventData);
+        var isSelectedAndDragged = state.isDragPreviewing() && state.selectedEventSet.exists(eventSprite.eventData);
 
         var isChainFollower:Bool = state.eventChainFollowers.exists(eventSprite.eventData);
         if (!isChainFollower
@@ -346,11 +346,11 @@ class ChartEditorNoteDisplayHandler
           var holdNoteSprite:Null<ChartEditorHoldNoteSprite> = (noteSprite.noteData.length > 0) ? state.displayedHoldNotes.get(noteSprite.noteData) : null;
 
           // Determine if the note is being dragged and offset the vertical position accordingly.
-          if (state.dragTargetCurrentStep != 0.0)
+          if (state.isDragPreviewing())
           {
             var stepTime:Float = (noteSprite.noteData == null) ? 0.0 : noteSprite.noteData.getStepTime();
             // Update the note's "ghost" step time.
-            noteSprite.overrideStepTime = (stepTime + state.dragTargetCurrentStep).clamp(0, state.lastSnappedGridStep);
+            noteSprite.overrideStepTime = state.dragPreviewStep(stepTime);
             // Then reapply the note sprite's position relative to the grid.
             noteSprite.updateNotePosition(state.renderedNotes);
 
@@ -470,10 +470,10 @@ class ChartEditorNoteDisplayHandler
         if (eventSelected)
         {
           // Determine if the note is being dragged and offset the position accordingly.
-          if (state.dragTargetCurrentStep != 0.0 || state.dragTargetCurrentColumn != 0)
+          if (state.isDragPreviewing() || state.dragTargetCurrentColumn != 0)
           {
             var stepTime = (eventSprite.eventData == null) ? 0 : eventSprite.eventData.getStepTime();
-            eventSprite.overrideStepTime = (stepTime + state.dragTargetCurrentStep).clamp(0, state.lastSnappedGridStep);
+            eventSprite.overrideStepTime = state.dragPreviewStep(stepTime);
             // Then reapply the note sprite's position relative to the grid.
             eventSprite.updateEventPosition(state.renderedEvents);
           }
@@ -536,7 +536,7 @@ class ChartEditorNoteDisplayHandler
       state.noteTooltipsDirty = false;
 
       // Sort the notes DESCENDING. This keeps the sustain behind the associated note.
-      if (state.notesNeedSort || state.dragTargetCurrentStep != 0 || state.dragTargetCurrentColumn != 0)
+      if (state.notesNeedSort || state.isDragPreviewing() || state.dragTargetCurrentColumn != 0)
       {
         state.renderedNotes.sort(FlxSort.byY, FlxSort.DESCENDING);
         state.notesNeedSort = false;

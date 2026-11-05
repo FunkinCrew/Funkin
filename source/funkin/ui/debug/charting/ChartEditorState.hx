@@ -1253,13 +1253,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * The amount of vertical steps the note sprite has moved by since the user started dragging.
    */
   var dragTargetCurrentStep:Float = 0;
+  var dragTargetCurrentColumn:Int = 0;
+  var dragAlignToSubBeats:Bool = false;
+  var dragStartCursorStep:Float = 0;
 
   /**
-   * The amount of horizontal columns the note sprite has moved by since the user started dragging.
+   * Where the cursor was when the drag started, in steps, before snapping. Alt drags move freely from here.
    */
-  var dragTargetCurrentColumn:Int = 0;
-
-  var dragStartCursorStep:Float = 0;
+  var dragStartCursorFractionalStep:Float = 0;
   var dragStartCursorColumn:Int = 0;
   // Hold Note Dragging
 

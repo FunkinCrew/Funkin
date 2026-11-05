@@ -9,6 +9,7 @@ import funkin.data.song.SongNoteDataUtils;
 import funkin.ui.debug.charting.ChartEditorState;
 import funkin.ui.debug.charting.commands.ChartEditorCommand;
 import funkin.ui.debug.charting.commands.selection.SelectItemsCommand;
+import funkin.ui.debug.charting.toolboxes.ChartEditorListKeyTarget;
 
 /**
  * Represents a reversible action to insert the contents of the user's clipboard into the song at the provided timestamp.
@@ -22,6 +23,8 @@ class PasteItemsCommand implements ChartEditorCommand
   var addedNotes:Array<SongNoteData> = [];
   var addedEvents:Array<SongEventData> = [];
   var removedNotes:Array<SongNoteData> = [];
+
+  var subBeatsBefore:Null<Array<Float>> = null;
   var isRedo:Bool = false;
   var currentClipboard:SongClipboardItems = {
     valid: false,
@@ -55,9 +58,9 @@ class PasteItemsCommand implements ChartEditorCommand
     var stepCutoff:Float = stepEndOfSong - 1.0;
     var msCutoff:Float = Conductor.instance.getStepTimeInMs(stepCutoff);
 
-    addedNotes = SongDataUtils.offsetSongNoteData(currentClipboard.notes, Std.int(targetTimestamp));
+    addedNotes = SongDataUtils.offsetSongNoteData(currentClipboard.notes, targetTimestamp);
     addedNotes = SongDataUtils.clampSongNoteData(addedNotes, 0.0, msCutoff);
-    addedEvents = SongDataUtils.offsetSongEventData(currentClipboard.events, Std.int(targetTimestamp));
+    addedEvents = SongDataUtils.offsetSongEventData(currentClipboard.events, targetTimestamp);
     addedEvents = SongDataUtils.clampSongEventData(addedEvents, 0.0, msCutoff);
 
     removedNotes.clear();
@@ -67,6 +70,24 @@ class PasteItemsCommand implements ChartEditorCommand
     state.currentSongChartEventData = state.currentSongChartEventData.concat(addedEvents);
     state.currentNoteSelection = addedNotes.copy();
     state.currentEventSelection = addedEvents.copy();
+
+    var pastedSubBeats:Array<Float> = [
+      for (offset in currentClipboard.subBeats ?? [])
+      {
+        var time:Float = (offset + targetTimestamp).clamp(0, msCutoff);
+        if (!state.isTimeOnSnap(time)) time;
+      }
+    ];
+    if (pastedSubBeats.length > 0)
+    {
+      var before:Array<Float> = state.currentSubBeats().copy();
+      subBeatsBefore = before;
+      setSubBeats(state, before.concat(pastedSubBeats));
+
+      var keys:Null<ChartEditorListKeyTarget> = state.listKeyTarget;
+      state.subBeatItems.selectTimes(pastedSubBeats);
+      state.listKeyTarget = keys;
+    }
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
@@ -103,6 +124,18 @@ class PasteItemsCommand implements ChartEditorCommand
     isRedo = false;
   }
 
+  function setSubBeats(state:ChartEditorState, times:Array<Float>):Void
+  {
+    var subBeats:Array<Float> = state.currentSubBeats();
+    subBeats.resize(0);
+    for (time in times)
+    {
+      if (!subBeats.contains(time)) subBeats.push(time);
+    }
+    subBeats.sort((a, b) -> a < b ? -1 : (a > b ? 1 : 0));
+    state.gridLinesDirty = true;
+  }
+
   /**
    * Reverse the action, removing the pasted notes and events.
    *
@@ -115,6 +148,13 @@ class PasteItemsCommand implements ChartEditorCommand
     state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, addedNotes).concat(removedNotes);
     state.currentSongChartEventData = SongDataUtils.subtractEvents(state.currentSongChartEventData, addedEvents);
     state.currentEventSelection = [];
+    var before:Null<Array<Float>> = subBeatsBefore;
+    if (before != null)
+    {
+      setSubBeats(state, before);
+      state.subBeatItems.clearSelection();
+      subBeatsBefore = null;
+    }
     state.performCommand(new SelectItemsCommand(removedNotes.copy()), false);
 
     state.saveDataDirty = true;

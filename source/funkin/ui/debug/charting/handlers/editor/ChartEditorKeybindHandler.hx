@@ -949,20 +949,8 @@ class ChartEditorKeybindHandler
     state.clipboardValid = true;
     // Doesn't use a command because it's not undoable.
 
-    // Calculate a single time offset for all the notes and events.
-    var timeOffset:Null<Int> = state.currentNoteSelection.length > 0 ? Std.int(state.currentNoteSelection[0].time) : null;
-    if (state.currentEventSelection.length > 0)
-    {
-      if (timeOffset == null || state.currentEventSelection[0].time < timeOffset)
-      {
-        timeOffset = Std.int(state.currentEventSelection[0].time);
-      }
-    }
-
-    SongDataUtils.writeItemsToClipboard({
-      notes: SongDataUtils.buildNoteClipboard(state.currentNoteSelection, timeOffset),
-      events: SongDataUtils.buildEventClipboard(state.currentEventSelection, timeOffset),
-    });
+    SongDataUtils.writeItemsToClipboard(CopyItemsCommand.buildClipboard(state, state.currentNoteSelection, state.currentEventSelection,
+      state.subBeatItems.selectedTimes()));
   }
 }
 #end

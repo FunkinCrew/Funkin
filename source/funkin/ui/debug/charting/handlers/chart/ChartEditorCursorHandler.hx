@@ -19,6 +19,7 @@ import funkin.ui.debug.charting.commands.selection.DeselectAllItemsCommand;
 import funkin.ui.debug.charting.commands.selection.DeselectItemsCommand;
 import funkin.ui.debug.charting.commands.notes.ExtendNoteLengthCommand;
 import funkin.ui.debug.charting.commands.events.MoveEventsCommand;
+import funkin.ui.debug.charting.commands.items.AlignItemsToSubBeatsCommand;
 import funkin.ui.debug.charting.commands.items.MoveItemsCommand;
 import funkin.ui.debug.charting.commands.notes.MoveNotesCommand;
 import funkin.ui.debug.charting.commands.events.RemoveEventsCommand;
@@ -636,6 +637,30 @@ class ChartEditorCursorHandler
         }
         var dragDistanceColumns:Int = state.dragTargetCurrentColumn;
 
+        if (state.dragAlignToSubBeats)
+        {
+          var newSubBeats:Array<Float> = [];
+          function alignedTime(stepTime:Float):Float
+          {
+            var step:Float = state.dragPreviewStep(stepTime);
+            var time:Float = Conductor.instance.getStepTimeInMs(step);
+            if (state.needsSubBeat(step) && !newSubBeats.contains(time)) newSubBeats.push(time);
+            return time;
+          }
+          var noteTimes:Array<Float> = [for (note in state.currentNoteSelection) alignedTime(note.getStepTime())];
+          var eventTimes:Array<Float> = [for (event in state.currentEventSelection) alignedTime(event.getStepTime())];
+          state.performCommand(new AlignItemsToSubBeatsCommand(state.currentNoteSelection, state.currentEventSelection, noteTimes, eventTimes,
+            dragDistanceColumns, newSubBeats));
+
+          state.dragTargetNote = null;
+          state.dragTargetEvent = null;
+          state.dragTargetCurrentStep = 0;
+          state.dragTargetCurrentColumn = 0;
+          state.dragAlignToSubBeats = false;
+          state.noteDisplayDirty = true;
+          return;
+        }
+
         if (state.dragTargetCurrentStep == 0 && state.dragTargetCurrentColumn == 0)
         {
           // There's no need to move anything.
@@ -692,6 +717,12 @@ class ChartEditorCursorHandler
           Conductor.instance.getTimeInSteps(cursorSnappedMs).clamp(0, state.lastSnappedGridStep)
           - state.dragStartCursorStep;
 
+        // Alt drags freely, off the snap.
+        if (FlxG.keys.pressed.ALT)
+        {
+          dragDistanceSteps = cursorFractionalStep.clamp(0, state.lastSnappedGridStep) - state.dragStartCursorFractionalStep;
+        }
+
         var selectionEndStep:Float = 0;
         for (note in state.currentNoteSelection)
         {
@@ -707,13 +738,19 @@ class ChartEditorCursorHandler
 
         var dragDistanceColumns:Int = cursorGridPos - state.dragStartCursorColumn;
 
-        if ((state.dragTargetCurrentColumn != dragDistanceColumns && overlapsGrid) || state.dragTargetCurrentStep != dragDistanceSteps)
+        // Holding Alt places freely, and a sub-beat is made under each item that lands off the snap.
+        var alignToSubBeats:Bool = FlxG.keys.pressed.ALT;
+
+        if ((state.dragTargetCurrentColumn != dragDistanceColumns && overlapsGrid)
+          || state.dragTargetCurrentStep != dragDistanceSteps
+          || state.dragAlignToSubBeats != alignToSubBeats)
         {
           // Play a sound as we drag.
           state.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/note-place').toString());
 
           state.dragTargetCurrentStep = dragDistanceSteps;
           state.dragTargetCurrentColumn = dragDistanceColumns;
+          state.dragAlignToSubBeats = alignToSubBeats;
 
           state.noteDisplayDirty = true;
         }
@@ -849,6 +886,7 @@ class ChartEditorCursorHandler
                 // Clicked a selected event, start dragging.
                 state.dragTargetNote = highlightedNote;
                 state.dragStartCursorStep = Conductor.instance.getTimeInSteps(cursorSnappedMs);
+                state.dragStartCursorFractionalStep = cursorFractionalStep;
                 state.dragStartCursorColumn = cursorGridPos;
               }
               else
@@ -857,6 +895,7 @@ class ChartEditorCursorHandler
                 state.performCommand(new SetItemSelectionCommand([highlightedNote.noteData], []));
                 state.dragTargetNote = highlightedNote;
                 state.dragStartCursorStep = Conductor.instance.getTimeInSteps(cursorSnappedMs);
+                state.dragStartCursorFractionalStep = cursorFractionalStep;
                 state.dragStartCursorColumn = cursorGridPos;
               }
             }
@@ -867,6 +906,7 @@ class ChartEditorCursorHandler
                 // Clicked a selected event, start dragging.
                 state.dragTargetEvent = highlightedEvent;
                 state.dragStartCursorStep = Conductor.instance.getTimeInSteps(cursorSnappedMs);
+                state.dragStartCursorFractionalStep = cursorFractionalStep;
                 state.dragStartCursorColumn = cursorGridPos;
                 state.dragEventWasSelected = true;
               }
@@ -876,6 +916,7 @@ class ChartEditorCursorHandler
                 state.performCommand(new SetItemSelectionCommand([], [highlightedEvent.eventData]));
                 state.dragTargetEvent = highlightedEvent;
                 state.dragStartCursorStep = Conductor.instance.getTimeInSteps(cursorSnappedMs);
+                state.dragStartCursorFractionalStep = cursorFractionalStep;
                 state.dragStartCursorColumn = cursorGridPos;
                 state.dragEventWasSelected = false;
               }

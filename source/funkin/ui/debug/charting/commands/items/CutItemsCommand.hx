@@ -5,6 +5,7 @@ import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongDataUtils;
 import funkin.ui.debug.charting.commands.ChartEditorCommand;
+import funkin.ui.debug.charting.selection.ChartEditorSelectableItems;
 
 /**
  * Represents a reversible action to cut the currently selected notes and song events,
@@ -31,10 +32,8 @@ class CutItemsCommand implements ChartEditorCommand
   public function execute(state:ChartEditorState):Void
   {
     // Copy the notes.
-    SongDataUtils.writeItemsToClipboard({
-      notes: SongDataUtils.buildNoteClipboard(notes),
-      events: SongDataUtils.buildEventClipboard(events)
-    });
+    ChartEditorSelectableItems.lastCopied = null;
+    SongDataUtils.writeItemsToClipboard(CopyItemsCommand.buildClipboard(state, notes, events, []));
 
     // Delete the notes.
     state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, notes);

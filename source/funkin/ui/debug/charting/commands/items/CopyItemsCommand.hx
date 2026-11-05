@@ -6,7 +6,9 @@ import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongDataUtils;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
+import funkin.data.song.SongDataUtils.SongClipboardItems;
 import funkin.ui.debug.charting.commands.ChartEditorCommand;
+import funkin.ui.debug.charting.selection.ChartEditorSelectableItems;
 
 /**
  * Represents a reversible action to copy the currently selected notes and events to the clipboard.
@@ -31,24 +33,39 @@ class CopyItemsCommand implements ChartEditorCommand
    */
   public function execute(state:ChartEditorState):Void
   {
-    // Calculate a single time offset for all the notes and events.
-    var timeOffset:Null<Int> = state.currentNoteSelection.length > 0 ? Std.int(state.currentNoteSelection[0].time) : null;
-    if (state.currentEventSelection.length > 0)
-    {
-      if (timeOffset == null || state.currentEventSelection[0].time < timeOffset)
-      {
-        timeOffset = Std.int(state.currentEventSelection[0].time);
-      }
-    }
-
-    SongDataUtils.writeItemsToClipboard({
-      notes: SongDataUtils.buildNoteClipboard(state.currentNoteSelection, timeOffset),
-      events: SongDataUtils.buildEventClipboard(state.currentEventSelection, timeOffset),
-    });
+    ChartEditorSelectableItems.lastCopied = null;
+    SongDataUtils.writeItemsToClipboard(buildClipboard(state, state.currentNoteSelection, state.currentEventSelection, state.subBeatItems.selectedTimes()));
 
     performVisuals(state);
     state.clipboardDirty = true;
     state.clipboardValid = true;
+  }
+
+  /**
+   * Build a clipboard object from the given notes, events, and sub-beats.
+   */
+  public static function buildClipboard(state:ChartEditorState, notes:Array<SongNoteData>, events:Array<SongEventData>,
+      subBeats:Array<Float>):SongClipboardItems
+  {
+    var earliest:Float = Math.POSITIVE_INFINITY;
+    for (note in notes) if (note.time < earliest) earliest = note.time;
+    for (event in events) if (event.time < earliest) earliest = event.time;
+    for (time in subBeats) if (time < earliest) earliest = time;
+
+    var timeOffset:Float = 0;
+    if (earliest != Math.POSITIVE_INFINITY)
+    {
+      var step:Float = Conductor.instance.getTimeInSteps(earliest);
+      timeOffset = Conductor.instance.getStepTimeInMs(Math.floor(step / state.noteSnapRatio + 0.0001) * state.noteSnapRatio);
+    }
+
+    var sortedSubBeats:Array<Float> = subBeats.copy();
+    sortedSubBeats.sort((a, b) -> a < b ? -1 : (a > b ? 1 : 0));
+    return {
+      notes: SongDataUtils.buildNoteClipboard(notes, timeOffset),
+      events: SongDataUtils.buildEventClipboard(events, timeOffset),
+      subBeats: [for (time in sortedSubBeats) time - timeOffset]
+    };
   }
 
   function performVisuals(state:ChartEditorState):Void

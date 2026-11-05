@@ -153,6 +153,8 @@ class ChartEditorSubBeatItems extends ChartEditorSelectableItems<Int>
     {
       after[items[i]] = targetTimes[i];
     }
+
+    after = after.filter(time -> !state.isTimeOnSnap(time));
     var notes:Array<SongNoteData> = [];
     var notesBefore:Array<Float> = [];
     var notesAfter:Array<Float> = [];
@@ -196,7 +198,7 @@ class ChartEditorSubBeatItems extends ChartEditorSelectableItems<Int>
   {
     if (copied.length == 0) return;
     var start:Float = state.scrollPositionInMs + state.playheadPositionInMs;
-    var pasted:Array<Float> = [for (offset in copied) start + offset];
+    var pasted:Array<Float> = [for (offset in copied) if (!state.isTimeOnSnap(start + offset)) start + offset];
     state.performCommand(new SetSubBeatsCommand(subBeats, subBeats.concat(pasted), pasted, 'Paste Sub-Beats'));
   }
 
