@@ -9,11 +9,11 @@ import flixel.util.FlxColor;
 import funkin.assets.Assets;
 import funkin.assets.ValidatedPaths as Paths;
 import funkin.graphics.FunkinSprite;
-import funkin.group.FunkinGroup;
-import funkin.ui.quickpanel.QuickPanelTypes;
 import funkin.graphics.shaders.QuickPanelShader;
-import funkin.util.EaseUtil;
+import funkin.group.FunkinGroup;
 import funkin.ui.UIStateMachine.UIState;
+import funkin.ui.quickpanel.QuickPanelTypes;
+import funkin.util.EaseUtil;
 
 /**
  * Group containing quick panel visuals
@@ -21,7 +21,7 @@ import funkin.ui.UIStateMachine.UIState;
 class QuickPanelGroup extends FunkinSpriteGroup
 {
   /**
-   * Distance in pixels between the closed and the open position.
+   * Distance in pixels between the closed and open positions.
    */
   public static final OPEN_DISTANCE:Float = 467;
 
@@ -30,71 +30,114 @@ class QuickPanelGroup extends FunkinSpriteGroup
    */
   public static final TAB_MIN_ALPHA:Float = 0.25;
 
-  static final PANEL_BOIL_INTERVAL:Int = 4;
-  static final HINT_COLOR_NORMAL:FlxColor = 0xFFEEEEEE;
-  static final HINT_COLOR_DARK:FlxColor = 0xFFCCCCCC;
+  /**
+   * The padding for each button
+   */
   static final BUTTON_PADDING:Float = 20;
+
+  /**
+   * The button angle range
+   */
   static final BUTTON_ANGLE_RANGE:Float = 5;
+
+  /**
+   * The button angle distance
+   */
   static final BUTTON_ANGLE_DISTANCE:Float = 20;
+
+  /**
+   * The slice angle distance
+   */
   static final SLICE_ANGLE_RANGE:Float = 4.45;
+
+  /**
+   * Z-index for background
+   */
   static final Z_BELOW:Int = 10;
+
+  /**
+   * Z-index for foreground
+   */
   static final Z_ABOVE:Int = 11;
+
+  /**
+   * Z-index for the buttons
+   */
   static final Z_BUTTONS:Int = 12;
+
+  /**
+   * Z-index for the hitboxes.
+   */
   static final Z_HITBOX:Int = 200;
 
   /**
-   * Hint sliding/fading duration
+   * Frames (at 24fps) between panel boil steps.
+   */
+  static final PANEL_BOIL_INTERVAL:Int = 4;
+
+  /**
+   * The hint color
+   */
+  static final HINT_COLOR_NORMAL:FlxColor = 0xFFEEEEEE;
+
+  /**
+   * The hint color, darkened
+   */
+  static final HINT_COLOR_DARK:FlxColor = 0xFFCCCCCC;
+
+  /**
+   * How long the hint takes to slide/fade in or out.
    */
   static final HINT_DURATION:Float = 10 / 30;
 
   /**
-   * Hint sliding distance.
+   * How far the hint slides in from, in pixels.
    */
   static final HINT_SLIDE_DISTANCE:Float = 10;
 
   /**
-   * How much bump to we give to the panel shader angular direction
+   * How far (degrees) the slice kicks in the scroll direction.
    */
   static final SCROLL_DIR_AMOUNT:Float = 0.2;
 
   /**
-   * Scroll direction bump duration
+   * How long the direction kick takes to return.
    */
   static final SCROLL_DIR_DURATION:Float = 6 / 30;
 
   /**
-   * How much extra thickness to give to the panel shader when scroll bumping
+   * Extra slice width (degrees) on a scroll bump.
    * Dude what are these names actually?
    */
   static final SCROLL_FAT_AMOUNT:Float = 0.3;
 
   /**
-   * How long do we hold the extra thickness for the panel shader.
+   * How long the extra width holds before settling.
    */
   static final SCROLL_FAT_HOLD:Float = 5 / 30;
 
   /**
-   * Duration of the bump settle animation
+   * How long the extra width takes to settle.
    */
   static final SCROLL_FAT_SETTLE:Float = 5 / 30;
 
   /**
-   * How much would the extra thickness overshoot during a scroll bump
+   * Back-out overshoot of the width settle.
    */
   static final SCROLL_FAT_OVERSHOOT:Float = 7.3;
 
   /**
-   * How much extra thickness for the panel shader when accepting
+   * Extra slice width (degrees) when a button is accepted.
    */
   static final ACCEPT_FAT_AMOUNT:Float = 1.05;
 
   /**
-   * The duration of the accept animation
+   * The duration of the accept flair.
    */
   static final ACCEPT_DURATION:Float = 10 / 24;
 
   /**
-   * How many frames do we flicker when accepting
+   * Number of frames the slice colour flickers over during accept (swaps every 2).
    */
   static final ACCEPT_FLICKER_FRAMES:Int = 10;
 
@@ -109,17 +152,17 @@ class QuickPanelGroup extends FunkinSpriteGroup
   static final ACCEPT_COLOR_B:FlxColor = 0xFFF3E63A;
 
   /**
-   * How much to shake when a button denied
+   * Starting amplitude (degrees) of the deny shake.
    */
   static final DENY_SHAKE_AMOUNT:Float = 0.2;
 
   /**
-   * Duration for the denying animation
+   * The duration of the deny flair.
    */
   static final DENY_DURATION:Float = 8 / 30;
 
   /**
-   * How many cycles to shake
+   * Number of back-and-forth shakes over DENY_DURATION.
    */
   static final DENY_SHAKE_CYCLES:Float = 2;
 
@@ -158,6 +201,9 @@ class QuickPanelGroup extends FunkinSpriteGroup
    */
   public var pullTabHitbox(default, null):FlxSprite;
 
+  /**
+   * Collection of buttons this panel has.
+   */
   public var buttons(default, null):Array<QuickPanelButton> = [];
 
   /**
@@ -185,14 +231,45 @@ class QuickPanelGroup extends FunkinSpriteGroup
    */
   var pullExtra:FlxSprite;
 
+  /**
+   * The pull hint text.
+   */
   var pullHint:FlxText;
+
+  /**
+   * The panel shader
+   */
   var panelShader:QuickPanelShader;
+
+  /**
+   * A group containing the buttons this panel has,
+   */
   var grpButtons:FunkinGroup<QuickPanelButton>;
 
   /**
-   * Helper tween variable for the hint
+   * A collection of button data associated with the buttons we have currently.
+   */
+  var buttonData:Array<QuickPanelButtonData>;
+
+  /**
+   * Gets called when a button gets tapped.
+   */
+  var onButtonTapped:QuickPanelButton->Void;
+
+  /**
+   * Helper tween variable for the hint flair
    */
   var hintTween:Null<FlxTween> = null;
+
+  /**
+   * Whether the hint is currently doing the breathing flair
+   */
+  var hintBreathing:Bool = false;
+
+  /**
+   * Helper variable for the hint breathing flair.
+   */
+  var hintBreatheTimer:Float = 0;
 
   /**
    * A collection of tweens that are used for the scrolling flair
@@ -203,6 +280,11 @@ class QuickPanelGroup extends FunkinSpriteGroup
    * Helper twene variable for the small little breath flair.
    */
   var breatheTween:Null<FlxTween> = null;
+
+  /**
+   * Helper variable for the panel boiling
+   */
+  var panelBoilTimer:Float = 0;
 
   /**
    * Helper variable for little extra angular flair for the panel shader.
@@ -219,17 +301,16 @@ class QuickPanelGroup extends FunkinSpriteGroup
    */
   var defaultSliceColor:FlxColor = FlxColor.WHITE;
 
-  var panelBoilTimer:Float = 0;
-  var hintBreathing:Bool = false;
-  var hintBreatheTimer:Float = 0;
-  var buttonData:Array<QuickPanelButtonData>;
-  var onButtonTapped:QuickPanelButton->Void;
-
   /**
    * Callback of the deny animation that is currently playing, if any.
    */
   var pendingDenyDone:Null<Void->Void> = null;
 
+  /**
+   * Creates a new QuickPanelGroup
+   * @param buttonData Buttons to build in `buildBody()`.
+   * @param onButtonTapped Forwarded to every button.
+   */
   public function new(buttonData:Array<QuickPanelButtonData>,
     onButtonTapped:QuickPanelButton->Void)
   {
@@ -242,7 +323,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
     pullExtra.scrollFactor.set(0, 0);
     pullExtra.scale.set(FlxG.width, FlxG.height);
     pullExtra.updateHitbox();
-    // Both scale and localScale need setting here (see original note).
+    // Both scale and localScale need setting here.
     pullExtra.localScale.x = FlxG.width;
     pullExtra.localScale.y = FlxG.height;
     pullExtra.localY = 0;
@@ -347,6 +428,9 @@ class QuickPanelGroup extends FunkinSpriteGroup
     layoutButtons();
   }
 
+  /**
+   * Fans the buttons along the panel's curved edge.
+   */
   function layoutButtons():Void
   {
     var count:Int = buttons.length;
@@ -409,10 +493,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
   {
     finishDeny();
 
-    for (button in buttons)
-    {
-      if (button.selected) button.selected = false;
-    }
+    for (button in buttons) if (button.selected) button.selected = false;
 
     if (!bodyBuilt) return;
 
@@ -421,7 +502,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
   }
 
   /**
-   * Plays the scroll bump animation.
+   * Kicks the slice in the scroll direction and briefly widens it.
    * @param direction -1 = moved up, 1 = moved down, 0 = no movement.
    */
   public function playScrollBump(direction:Int):Void
@@ -447,11 +528,14 @@ class QuickPanelGroup extends FunkinSpriteGroup
     }, (v:Float) -> panelShader.fatExtra = v));
   }
 
+  /**
+   * Shakes the slice and greys it out.
+   * @param onDone Called once the denying is done
+   */
   public function playDeny(onDone:Void->Void):Void
   {
     if (!bodyBuilt)
     {
-      // Still release the caller's lock.
       if (onDone != null) onDone();
       return;
     }
@@ -473,18 +557,9 @@ class QuickPanelGroup extends FunkinSpriteGroup
   }
 
   /**
-   * Ends the current deny (if any) and runs its callback.
+   * Widens and flickers the slice, bumps the accepted button and fades the rest.
+   * @param selectedIndex The index
    */
-  function finishDeny():Void
-  {
-    var done = pendingDenyDone;
-    if (done == null) return;
-    pendingDenyDone = null;
-
-    if (panelShader != null) panelShader.doLerp = true;
-    done();
-  }
-
   public function playAccept(selectedIndex:Int):Void
   {
     if (!bodyBuilt) return;
@@ -498,7 +573,6 @@ class QuickPanelGroup extends FunkinSpriteGroup
       ease: EaseUtil.backInOut()
     }, (v:Float) -> panelShader.fatExtra = v));
 
-    // COlor flickering
     panelShader.sliceColor = ACCEPT_COLOR_A;
     scrollTweens.push(FlxTween.num(0, ACCEPT_FLICKER_FRAMES, ACCEPT_DURATION, null, (frame:Float) ->
     {
@@ -514,52 +588,15 @@ class QuickPanelGroup extends FunkinSpriteGroup
   }
 
   /**
-   * Cancels any running scroll / accept / deny animation and resets the shader values.
+   * Slides the hint in next to the tab.
+   * @param open Whether the panel is open.
+   * @param canPull For touch, whether the user is able to pull the pull-tab or not.,
    */
-  function stopScroll():Void
-  {
-    for (tween in scrollTweens) tween.cancel();
-    scrollTweens = [];
-
-    if (panelShader == null) return;
-    panelShader.dirExtra = defaultDirExtra;
-    panelShader.fatExtra = defaultFatExtra;
-    panelShader.sliceColor = defaultSliceColor;
-  }
-
-  /**
-   * Starts the slice color breathing loop, unless itss already running.
-   */
-  function startBreathe():Void
-  {
-    if (breatheTween != null && breatheTween.active) return;
-
-    panelShader.sliceLerp = 0;
-    breatheTween = FlxTween.num(0, 1, BREATHE_HALF_PERIOD, {
-      type: PINGPONG,
-      ease: FlxEase.quadInOut
-    }, (v:Float) -> panelShader.sliceLerp = v);
-  }
-
-  /**
-   * Stops the slice color breathing loop.
-   */
-  function stopBreathe():Void
-  {
-    if (breatheTween == null) return;
-    breatheTween.cancel();
-    breatheTween = null;
-  }
-
-  /**
-   * Shows the hint text under the pull tab.
-   */
-  public function showHint(open:Bool):Void
+  public function showHint(open:Bool, canPull:Bool = true):Void
   {
     var action:String = #if FEATURE_TOUCH_CONTROLS canPull ? 'PULL' : 'TAP' #else 'TAB' #end;
-    var text:String = '($action) to ${open ? 'close' : 'open'} quick menu';
 
-    pullHint.text = text;
+    pullHint.text = '($action) to ${open ? 'close' : 'open'} quick menu';
     pullHint.color = HINT_COLOR_NORMAL;
     hintBreathing = false;
     hintBreatheTimer = 0;
@@ -584,27 +621,19 @@ class QuickPanelGroup extends FunkinSpriteGroup
       });
   }
 
+  /**
+   * Fades the hint out from wherever it currently is.
+   */
   public function hideHint():Void
   {
     hintBreathing = false;
     cancelHintTween();
 
-    // Start fading by force
     hintTween = FlxTween.num(pullHint.localAlpha, 0, HINT_DURATION, {
       ease: FlxEase.cubeIn,
       onComplete: (_) -> hintTween = null
     }, (a:Float) -> pullHint.localAlpha = a);
     pullHint.color = HINT_COLOR_NORMAL;
-  }
-
-  /**
-   * Cancels the hint tweening flair.
-   */
-  function cancelHintTween():Void
-  {
-    if (hintTween == null) return;
-    hintTween.cancel();
-    hintTween = null;
   }
 
   override public function update(elapsed:Float):Void
@@ -648,7 +677,68 @@ class QuickPanelGroup extends FunkinSpriteGroup
     return super.set_active(v);
   }
 
-  /// Helpers
+  // Helpers
+
+  /**
+   * Ends the current deny, if any, and runs its callback.
+   */
+  function finishDeny():Void
+  {
+    var done = pendingDenyDone;
+    if (done == null) return;
+    pendingDenyDone = null;
+
+    if (panelShader != null) panelShader.doLerp = true;
+    done();
+  }
+
+  /**
+   * Cancels any scroll / accept / deny animation and puts the shader back at rest.
+   */
+  function stopScroll():Void
+  {
+    for (tween in scrollTweens) tween.cancel();
+    scrollTweens = [];
+
+    if (panelShader == null) return;
+    panelShader.dirExtra = defaultDirExtra;
+    panelShader.fatExtra = defaultFatExtra;
+    panelShader.sliceColor = defaultSliceColor;
+  }
+
+  /**
+   * Starts the slice colour breathing loop, unless itss already running.
+   */
+  function startBreathe():Void
+  {
+    if (breatheTween != null && breatheTween.active) return;
+
+    panelShader.sliceLerp = 0;
+    breatheTween = FlxTween.num(0, 1, BREATHE_HALF_PERIOD, {
+      type: PINGPONG,
+      ease: FlxEase.quadInOut
+    }, (v:Float) -> panelShader.sliceLerp = v);
+  }
+
+  /**
+   * Stops the breath loop.
+   */
+  function stopBreathe():Void
+  {
+    if (breatheTween == null) return;
+    breatheTween.cancel();
+    breatheTween = null;
+  }
+
+  /**
+   * Cancels the hint tween flair.
+   */
+  function cancelHintTween():Void
+  {
+    if (hintTween == null) return;
+    hintTween.cancel();
+    hintTween = null;
+  }
 
   inline function get_closedX():Float return left ? 0 : FlxG.width;
 

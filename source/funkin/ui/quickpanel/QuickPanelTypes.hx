@@ -1,22 +1,41 @@
 package funkin.ui.quickpanel;
 
-import flixel.FlxSubState;
-
 /**
- * one button's data for the quick panel
+ * The data behind one quick panel button.
  * TODO: Make this more flexible.
  */
 typedef QuickPanelButtonData =
 {
+  /**
+   * Label shown next to the icon.
+   */
   var text:Null<String>;
+
+  /**
+   * Runs once the accept transition finishes.
+   */
   var callback:Null<Void->Void>;
+
+  /**
+   * Icon name.
+   */
   var icon:Null<String>;
+
+  /**
+   * Whether it is disabled.
+   */
   var disabled:Null<Bool>;
+
+  /**
+   * Button Description.
+   */
   var description:Null<String>;
 }
 
 /**
  * An empty substate opened on top of the host state while the panel is open,
+ * so the host stops updating (and reading input) underneath it.
+ * Also responsible for for trriggering the assets query for the side panel.
  */
 class PanelBlockerSubState extends MusicBeatSubState
 {
@@ -30,6 +49,9 @@ class PanelBlockerSubState extends MusicBeatSubState
    */
   public var cancelled:Bool = false;
 
+  /**
+   * Makes new PanelBlockerSubState
+   */
   public function new()
   {
     super();

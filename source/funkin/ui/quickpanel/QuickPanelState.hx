@@ -18,14 +18,14 @@ import funkin.assets.ValidatedPaths as Paths;
 import funkin.audio.FunkinSound;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
+import funkin.graphics.shaders.BoilShader;
 import funkin.input.Controls;
 import funkin.ui.UIStateMachine;
 import funkin.ui.options.OptionsSubState;
 import funkin.ui.quickpanel.QuickPanelTypes;
 import funkin.ui.transition.Transition;
-import funkin.util.MathUtil;
 import funkin.util.EaseUtil;
-import funkin.graphics.shaders.BoilShader;
+import funkin.util.MathUtil;
 import funkin.util.StateUtil;
 import funkin.util.TouchUtil;
 
@@ -95,7 +95,8 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
       callback: () ->
       {
         // TODO: getReturnState() was computed here and discarded. Pass it to OptionsSubState once it accepts one.
-        playMenuMusic();
+        FlxG.sound.music?.stop();
+        funkin.audio.MenuMusicGroup.instance.reset(OPTIONS_MENU);
         Transition.switchState(() -> new OptionsSubState(), {
           assetQuery: OptionsSubState.queryAssets,
           transition: None,
@@ -109,7 +110,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
   ];
 
   /**
-   * Horizontal threshold in pixels before a tab press turns into a drag.
+   * Horizontal travel in pixels before a tab press turns into a drag.
    */
   static final GRAB_THRESHOLD:Float = 15;
 
@@ -119,42 +120,77 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
   static final OPEN_THRESHOLD:Float = 0.55;
 
   /**
+   * Delay before held up/down starts repeating, then the repeat interval.
+   */
+  static final SCROLL_REPEAT_DELAY:Float = 0.4;
+
+  /**
+   * The hold spam interval.
+   */
+  static final SCROLL_REPEAT_INTERVAL:Float = 0.12;
+
+  /**
+   * Finger travel in pixels between drag tick sounds.
+   */
+  static final TICK_MIN_DISTANCE:Float = 40;
+
+  /**
+   * The cooldown for the drag tick sounds
+   */
+  static final TICK_COOLDOWN:Float = 0.08;
+
+  /**
    * Seconds without input before the "(TAB) to open" hint appears.
    */
   static final HINT_INACTIVITY_DELAY:Float = 45;
 
   /**
-   * The tab d
+   * Seconds the tab stays fully visible after activity, then how long it takes to fade to its minimum alpha
    */
   static final TAB_FADE_DELAY:Float = 3.0;
 
+  /**
+   * The tab fading duration
+   */
   static final TAB_FADE_DURATION:Float = 1.5;
+
+  /**
+   * Background alpha.
+   */
   static final BG_ALPHA:Float = 0.6;
+
+  /**
+   * Music ducking factor
+   */
   static final MUSIC_DUCK_FACTOR:Float = 0.2;
+
+  /**
+   * Move Duration for the panel to open fully.
+   */
   static final MOVE_DURATION:Float = 0.4;
-  static final SCROLL_REPEAT_DELAY:Float = 0.4;
-  static final SCROLL_REPEAT_INTERVAL:Float = 0.12;
-  static final TICK_MIN_DISTANCE:Float = 40;
-  static final TICK_COOLDOWN:Float = 0.08;
+
+  /**
+   * How far below the screen the description bar sits while hidden.
+   */
   static final DESCRIPTION_OFFSET:Float = 100;
 
   /**
-   * Circular wipe starting radius
+   * Starting radius for the wipe flair
    */
   static final WIPE_RADIUS_START:Float = 3.1;
 
   /**
-   * Circular wipe ending radius
+   * Ending radius for the wipe flair.
    */
   static final WIPE_RADIUS_END:Float = 4.8;
 
   /**
-   * Circular wipe radius but FULL.
+   * Radius that covers the whole screen for the wipe flair.
    */
   static final WIPE_RADIUS_FULL:Float = 10.0;
 
   /**
-   * How many frames to wipe for in 24 fps.
+   * Wipe flair frame interval
    */
   static final WIPE_FRAMES:Int = 4;
 
@@ -218,11 +254,34 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
    */
   static var tabFadeTimer:Float = 0;
 
+  /**
+   * The panel camera
+   */
   public var panelCam(default, null):FunkinCamera;
+
+  /**
+   * The translucent bg for the panel
+   */
   public var bg(default, null):FunkinSprite;
+
+  /**
+   * The visual panel itself
+   */
   public var panel(default, null):QuickPanelGroup;
+
+  /**
+   * UI State
+   */
   public var uiState(default, null):UIStateMachine;
+
+  /**
+   * The current UI state this panel is in.
+   */
   public var curState(get, never):UIState;
+
+  /**
+   * Wether panel is open.
+   */
   public var isOpen(get, never):Bool;
 
   /**
@@ -235,46 +294,135 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
    */
   public var canPull:Bool = true;
 
+  /**
+   * Whether the panel is docked to the left edge.
+   */
   public var left(default, null):Bool = false;
-  public var currentButton(get, never):Null<QuickPanelButton>;
-  public var wipeSprite(default, null):FlxSprite;
-  public var selectedIcon(default, null):FunkinSprite;
-  public var selectedSplash(default, null):FunkinSprite;
-
-  var controls(get, never):Controls;
-  var descriptionPanel:FunkinSprite;
-  var descriptionText:FlxText;
-  var descriptionPanelY:Float = 0;
-  var descriptionTextY:Float = 0;
-  var circleWipe:BoilShader;
-  var tickSound:Null<FunkinSound> = null;
-  var moveTween:Null<FlxTween> = null;
-  var transitionTimers:Array<FlxTimer> = [];
-  var transitionTweens:Array<FlxTween> = [];
-  var curSelected:Int = 0;
-  var scrollHoldTime:Float = 0;
-  var scrollRepeating:Bool = false;
-  var inactivityTimer:Float = 0;
-  var hintVisible:Bool = false;
-  var hostState:Null<MusicBeatState> = null;
-  // TODO: Probably lock these behind the touch define.
 
   /**
-   * True from a touch landing on the tab until it lifts.
+   * The currently selected button.
+   */
+  public var currentButton(get, never):Null<QuickPanelButton>;
+
+  /**
+   * The wiping sprite.
+   */
+  public var wipeSprite(default, null):FlxSprite;
+
+  /**
+   * The currently selected button's icon.
+   */
+  public var selectedIcon(default, null):FunkinSprite;
+
+  /**
+   * The currently selected button;s splash.
+   */
+  public var selectedSplash(default, null):FunkinSprite;
+
+  /**
+   * Controls
+   */
+  var controls(get, never):Controls;
+
+  /**
+   * The description backing for the panel
+   */
+  var descriptionPanel:FunkinSprite;
+
+  /**
+   * The description text.
+   */
+  var descriptionText:FlxText;
+
+  /**
+   * Description panel Ypos
+   */
+  var descriptionPanelY:Float = 0;
+
+  /**
+   * Desciption panel text Ypos
+   */
+  var descriptionTextY:Float = 0;
+
+  /**
+   * The circular wipe boil shader.
+   */
+  var circleWipe:BoilShader;
+
+  /**
+   * The ticking sound.
+   */
+  var tickSound:Null<FunkinSound> = null;
+
+  /**
+   * Helper tween variable for panel moving
+   */
+  var moveTween:Null<FlxTween> = null;
+
+  /**
+   * Accept transition timers
+   */
+  var transitionTimers:Array<FlxTimer> = [];
+
+  /**
+   * Accept transition tweens
+   */
+  var transitionTweens:Array<FlxTween> = [];
+
+  /**
+   * Currently selected index
+   */
+  var curSelected:Int = 0;
+
+  /**
+   * Helper variable for spam-holding
+   */
+  var scrollHoldTime:Float = 0;
+
+  /**
+   * Is spamming
+   */
+  var scrollRepeating:Bool = false;
+
+  /**
+   * Helper timer variable for tab fading
+   */
+  var inactivityTimer:Float = 0;
+
+  var hintVisible:Bool = false;
+
+  /**
+   * Cached so the panel doesn't react while the host state is transitioning.
+   */
+  var hostState:Null<MusicBeatState> = null;
+
+  /**
+   * Is a press happening on the tab right now
    */
   var tracking:Bool = false;
 
+  /**
+   * Helper variable for the starting touch position
+   */
   var trackStartX:Float = 0;
+
+  /**
+   * Helper variable for the distance traveled since the touch.
+   */
   var trackDistance:Float = 0;
+
+  /**
+   * Helper variable for the previous distance traveled since the touch.
+   */
   var prevTrackDistance:Float = 0;
 
   /**
-   * How open the panel was (px) when the press began.
+   * How open the panel was, in pixels, when the press began.
    */
   var dragStartOpenness:Float = 0;
 
   /**
-   * Where the finger wants the panel (px open), after rubber-banding.
+   * Where the press wants the panel, in pixels, after rubber-banding.
    */
   var dragTarget:Float = 0;
 
@@ -283,18 +431,39 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
    */
   var dragCurrent:Float = 0;
 
+  /**
+   * The current ticking distance
+   */
   var tickDistance:Float = 0;
+
+  /**
+   * The current ticking cooldown
+   */
   var tickCooldown:Float = 0;
-  // Music ducking: remember which sound we ducked so we never restore a different one.
+
+  /**
+   * The ducked sound.
+   */
   var duckedMusic:Null<FlxSound> = null;
+
+  /**
+   * Ducked from what volume
+   */
   var duckedFromVolume:Float = 1;
-  // Host blocking: remember the flags we overwrote so they can be put back exactly.
+
+  /**
+   * The blocker substate
+   */
   var blocker:Null<PanelBlockerSubState> = null;
+
+  /**
+   * Remembered state data so we'd avoid annoying bugs for modders.
+   */
   var savedPersistence:Array<
     {state:FlxState, update:Bool, draw:Bool}> = [];
 
   /**
-   * The blocker that has been constructed by the transition but not opened yet.
+   * The blocker constructed by the transition but not opened yet.
    */
   var pendingBlocker:Null<PanelBlockerSubState> = null;
 
@@ -303,6 +472,9 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
    */
   var blockerRequest:Int = 0;
 
+  /**
+   * Blocker pending in frames.
+   */
   var blockerPendingFrames:Int = 0;
 
   /**
@@ -310,6 +482,9 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
    */
   var panelVisualsBuilt:Bool = false;
 
+  /**
+   * Makes a new QuickPanel.
+   */
   public function new()
   {
     super();
@@ -339,133 +514,6 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     repositionSide(left);
   }
 
-  function createCamera(reset:Bool = false):Void
-  {
-    panelCam = new FunkinCamera('panelCam', 0, 0, FlxG.width, FlxG.height);
-    panelCam.bgColor = FlxColor.TRANSPARENT;
-    panelCam.zoom = 1;
-    FlxG.cameras.add(panelCam, false);
-    if (reset) forEach(obj -> obj.cameras = [panelCam]);
-  }
-
-  function buildBackdrop():Void
-  {
-    bg = new FunkinSprite(0, 0);
-    bg.makeSolidColor(FlxG.width * 2, FlxG.height * 2, 0xFF1A1A1A);
-    bg.scrollFactor.set(0, 0);
-    bg.alpha = 0;
-    bg.updateHitbox();
-    bg.screenCenter();
-    add(bg);
-
-    descriptionPanel = new FunkinSprite(0, 0);
-    descriptionPanel.makeSolidColor(FlxG.width * 2, 60, 0xFF0B0B0B);
-    descriptionPanel.scrollFactor.set(0, 0);
-    descriptionPanel.updateHitbox();
-    descriptionPanel.screenCenter(X);
-    descriptionPanelY = FlxG.height - descriptionPanel.height;
-    descriptionPanel.y = descriptionPanelY + DESCRIPTION_OFFSET;
-    add(descriptionPanel);
-
-    descriptionText = new FlxText(0, 0, 800, '', 30);
-    descriptionText.setFormat(funkin.assets.Paths.font('ui/fonts/FunkinOptions', 'otf'), 30, 0xFFE6E6E6, CENTER);
-    descriptionText.offset.y = -4;
-    descriptionTextY = (descriptionPanelY + descriptionPanel.height / 2) - descriptionText.height / 2;
-    descriptionText.y = descriptionTextY + DESCRIPTION_OFFSET;
-    add(descriptionText);
-  }
-
-  /**
-   * Builds the entirety of the panel
-   * Called once the blocker transition has finished loading them.
-   */
-  function ensurePanelVisuals():Void
-  {
-    if (panelVisualsBuilt) return;
-    panelVisualsBuilt = true;
-
-    panel.buildBody();
-
-    buildTransitionVisuals();
-    wipeSprite.flipX = left;
-
-    // Members added after construction may not inherit the camera.
-    panel.cameras = [panelCam];
-    var built:Array<FlxBasic> = [wipeSprite, selectedIcon, selectedSplash];
-    for (obj in built) obj.cameras = [panelCam];
-  }
-
-  function buildTransitionVisuals():Void
-  {
-    wipeSprite = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, 0x00FFFFFF);
-    wipeSprite.scrollFactor.set(0, 0);
-    wipeSprite.updateHitbox();
-    wipeSprite.screenCenter();
-    wipeSprite.visible = false;
-    add(wipeSprite);
-
-    circleWipe = new BoilShader(true);
-    wipeSprite.shader = circleWipe;
-
-    selectedIcon = new FunkinSprite(0, 0);
-    selectedIcon.scrollFactor.set(0, 0);
-    selectedIcon.visible = false;
-    selectedIcon.color = 0xFFCCCCCC;
-    add(selectedIcon);
-
-    selectedSplash = new FunkinSprite(0, 0);
-    selectedSplash.frames = Assets.getSparrowAtlas(Paths.image('ui/quick-panel/splash'));
-    selectedSplash.animation.addByPrefix('splash', 'splash0', 24, false);
-    selectedSplash.screenCenter();
-    selectedSplash.visible = false;
-    selectedSplash.scale.set(1.85, 1.85);
-    selectedSplash.color = 0xFFCCCCCC;
-    add(selectedSplash);
-  }
-
-  /**
-   * Grows the circle wipe, then snaps it to fully covering the screen.
-   */
-  function playWipe():Void
-  {
-    wipeSprite.visible = true;
-    circleWipe.circleRadius = WIPE_RADIUS_START;
-
-    transitionTweens.push(FlxTween.num(WIPE_RADIUS_START, WIPE_RADIUS_END, WIPE_FRAMES / 24, {
-      ease: FlxEase.sineOut
-    }, (r:Float) -> circleWipe.circleRadius = r));
-
-    afterFrames(WIPE_FRAMES + 1, () -> circleWipe.circleRadius = WIPE_RADIUS_FULL);
-  }
-
-  /**
-   * Pops the selected icon up, then settles it.
-   */
-  function playIconBump():Void
-  {
-    selectedIcon.scale.set(ICON_SCALE_START, ICON_SCALE_START);
-    selectedIcon.angle = ICON_ANGLE_START;
-
-    transitionTweens.push(FlxTween.num(0, 1, ICON_POP_DURATION, {
-      ease: FlxEase.quadOut
-    }, (p:Float) ->
-      {
-        var s:Float = FlxMath.lerp(ICON_SCALE_START, ICON_SCALE_PEAK, p);
-        selectedIcon.scale.set(s, s);
-        selectedIcon.angle = FlxMath.lerp(ICON_ANGLE_START, ICON_ANGLE_PEAK, p);
-      }));
-
-    transitionTweens.push(FlxTween.num(ICON_SCALE_PEAK, ICON_SCALE_END, ICON_SETTLE_DURATION, {
-      startDelay: ICON_SETTLE_DELAY,
-      ease: EaseUtil.backOut(ICON_SCALE_OVERSHOOT)
-    }, (s:Float) -> selectedIcon.scale.set(s, s)));
-
-    transitionTweens.push(FlxTween.num(ICON_ANGLE_PEAK, 0, ICON_SETTLE_DURATION, {
-      startDelay: ICON_SETTLE_DELAY,
-      ease: FlxEase.quartOut
-    }, (a:Float) -> selectedIcon.angle = a));
-  }
-
   /**
    * Docks the panel to the left or right edge and snaps it to its current state.
    * If there's a drag in progress just can it
@@ -486,6 +534,10 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
       closePanel(true);
   }
 
+  /**
+   * Opens the panel.
+   * @param instant Open it instantly
+   */
   public function openPanel(instant:Bool = false):Void
   {
     if (blocker == null)
@@ -494,7 +546,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
       return;
     }
 
-    if (!uiState.transition(PanelOpen)) return;
+    if (!uiState.is(PanelOpen) && !uiState.transition(PanelOpen)) return;
 
     duckMusic();
     movePanel(panel.openX, instant);
@@ -507,13 +559,17 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     fadeScreen(false);
   }
 
+  /**
+   * Closes the panel.
+   * @param instant Close it instantly
+   */
   public function closePanel(instant:Bool = false):Void
   {
     lock = false;
 
     closeBlocker();
 
-    uiState.transition(PanelClosed);
+    if (!uiState.is(PanelClosed)) uiState.transition(PanelClosed);
 
     restoreMusic();
     movePanel(panel.closedX, instant);
@@ -526,12 +582,11 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
   }
 
   /**
-   * Shows the "(TAB) to open" hint on the next update.
+   * Force shows the "(TAB) to open" hint on the next update.
    */
   public function showHint():Void
   {
     inactivityTimer = -1;
-    panel.active = true;
   }
 
   /**
@@ -577,11 +632,15 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
       ease: FlxEase.expoOut,
       onComplete: (_) ->
       {
-        if (out) panel.active = false;
+        if (out && uiState.is(PanelClosed) && !hintVisible) panel.active = false;
       }
     });
   }
 
+  /**
+   * Updates the panel description.
+   * @param text The text to use.
+   */
   public function updateDescription(text:String):Void
   {
     if (descriptionText.text != text) descriptionText.text = text;
@@ -597,8 +656,9 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     if (!uiState.is(PanelOpen) || panel.buttons.length == 0) return;
 
     var prevSelected:Int = curSelected;
+    var lastIndex:Int = panel.buttons.length - 1;
 
-    curSelected = snap ? Std.int(FlxMath.bound(change, 0, panel.buttons.length - 1)) : FlxMath.wrap(curSelected + change, 0, panel.buttons.length - 1);
+    curSelected = snap ? Std.int(FlxMath.bound(change, 0, lastIndex)) : FlxMath.wrap(curSelected + change, 0, lastIndex);
 
     if (snap || change != 0) FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/menu-scroll').toFlxSoundAsset());
 
@@ -623,7 +683,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
   public function startTransition(data:QuickPanelButtonData):Void
   {
     selectedIcon.loadGraphic(Paths.image('ui/quick-panel/icons/${data.icon}').toFlxGraphicAsset());
-    selectedIcon.scale.set(1.4, 1.4);
+    selectedIcon.scale.set(ICON_SCALE_START, ICON_SCALE_START);
     selectedIcon.antialiasing = true;
     selectedIcon.updateHitbox();
     selectedIcon.screenCenter();
@@ -653,11 +713,9 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
   override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
-    if (panelCam == null || !FlxG.cameras.list.contains(panelCam))
-    {
-      // wtf! someone just called flxg.cameras.reset!! Relax i'll handle it, i am the angry pumpkin
-      createCamera(true);
-    }
+
+    // wtf! someone just called flxg.cameras.reset!! Relax i'll handle it, i am the angry pumpkin
+    if (panelCam == null || !FlxG.cameras.list.contains(panelCam)) createCamera(true);
 
     updateBlockerRequest();
     updateHint(elapsed);
@@ -671,6 +729,10 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     #end
   }
 
+  /**
+   * Updates the hint flair and text.
+   * @param elapsed Elapsed.
+   */
   function updateHint(elapsed:Float):Void
   {
     if (inactivityTimer > 0 && !inactivityHintUsed) inactivityTimer -= elapsed;
@@ -691,7 +753,9 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
       inactivityHintUsed = true;
       hintVisible = true;
       resetTabFade();
-      panel.showHint(uiState.is(PanelOpen));
+
+      panel.active = true;
+      panel.showHint(uiState.is(PanelOpen), canPull);
     }
 
     if (uiState.is(PanelClosed))
@@ -700,17 +764,27 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     }
   }
 
+  /**
+   * Checks whether the player is active or not.
+   * Any key except volume keys or any touch counts as activity.
+   * @return They active?
+   */
   function userIsActive():Bool
   {
-    #if FEATURE_DEBUG_FUNCTIONS
-    var keyPressed:Bool = FlxG.keys.pressed.ANY && !controls.VOLUME_MUTE && !controls.VOLUME_UP && !controls.VOLUME_DOWN && !FlxG.keys.pressed.B;
-    #else
     var keyPressed:Bool = FlxG.keys.pressed.ANY && !controls.VOLUME_MUTE && !controls.VOLUME_UP && !controls.VOLUME_DOWN;
+
+    #if FEATURE_DEBUG_FUNCTIONS
+    keyPressed = keyPressed && !FlxG.keys.pressed.B;
     #end
+
     var touchPressed:Bool = TouchUtil.touch != null && TouchUtil.touch.pressed;
     return keyPressed || touchPressed;
   }
 
+  /**
+   * Updates the tab fade flair.
+   * @param elapsed Elapsed.
+   */
   function updateTabFade(elapsed:Float):Void
   {
     var tab = panel.pullTabVisual;
@@ -731,12 +805,19 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     tab.alpha = FlxMath.lerp(1.0, QuickPanelGroup.TAB_MIN_ALPHA, progress);
   }
 
+  /**
+   * Resets the tab fade flair
+   */
   function resetTabFade():Void
   {
     tabFadeTimer = 0;
     fadeTab(1.0);
   }
 
+  /**
+   * Updates the panel's input
+   * @param elapsed Elapsied.
+   */
   function updatePanelInput(elapsed:Float):Void
   {
     if (isHostTransitioning()) return;
@@ -778,12 +859,19 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     }
   }
 
+  /**
+   * Checks whether the current state is transitioning or not.
+   */
   function isHostTransitioning():Bool
   {
     if (hostState == null && Std.isOfType(FlxG.state, MusicBeatState)) hostState = cast FlxG.state;
     return hostState != null && hostState.default_trans_isTransitioning;
   }
 
+  /**
+   * Updates the navigation for the panel.
+   * @param elapsed Elapsed.
+   */
   function updateNavigation(elapsed:Float):Void
   {
     if (lock || !uiState.canInteract()) return;
@@ -832,8 +920,10 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     }
   }
 
-  // Touch stuff
-
+  /**
+   * Updates the pull-tab tracking
+   * @param elapsed Elapsed.
+   */
   function updateTracking(elapsed:Float):Void
   {
     if (TouchUtil.justReleased) tracking = false;
@@ -854,7 +944,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
   }
 
   /**
-   * Handles presses, taps and grabs on the tab while the panel is closed or open.
+   * Updates presses for the pull-tab.
    */
   function updateTabTouch():Void
   {
@@ -904,6 +994,9 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     }
   }
 
+  /**
+   * Startss the tab pressing and their variables
+   */
   function beginTabPress():Void
   {
     var touch = TouchUtil.touch;
@@ -922,6 +1015,9 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/tab-press').toFlxSoundAsset());
   }
 
+  /**
+   * Cancels the current tab press.
+   */
   function cancelTabPress():Void
   {
     tracking = false;
@@ -929,11 +1025,14 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     panel.pullTabVisual.release(curState);
   }
 
+  /**
+   * Grabs the panel itself.
+   */
   function grabPanel():Void
   {
     if (!uiState.transition(PanelDragging)) return;
 
-    // Stop any open/close tween so it doesnt fight the finger
+    // Stop any open/close tween so it doesn't fight the finger.
     cancelMoveTween();
 
     dragCurrent = panel.opennessOf(panel.x);
@@ -944,6 +1043,10 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     panel.clearSelection();
   }
 
+  /**
+   * Updates the dragging for pulling the pulltab.
+   * @param elapsed Elapsedx
+   */
   function updateDrag(elapsed:Float):Void
   {
     var touch = TouchUtil.touch;
@@ -982,6 +1085,10 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     }
   }
 
+  /**
+   * Plays the drag ticking sound.
+   * @param openRatio The ratio for each tiick.
+   */
   function playDragTick(openRatio:Float):Void
   {
     if (tickSound == null) return;
@@ -1001,6 +1108,9 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     changeSelection(button.curIndex, true);
   }
 
+  /**
+   * Accepts the current button.
+   */
   function clickSelected():Void
   {
     if (lock || !uiState.canInteract()) return;
@@ -1025,8 +1135,143 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
   }
 
   /**
-   * Runs `fn` after a number of 24fps frames.
-   * @param frames How many frames of 24fps frames.
+   * Creates the overlay camera
+   * @param reset Whether to reset every member's camera.
+   */
+  function createCamera(reset:Bool = false):Void
+  {
+    panelCam = new FunkinCamera('panelCam', 0, 0, FlxG.width, FlxG.height);
+    panelCam.bgColor = FlxColor.TRANSPARENT;
+    panelCam.zoom = 1;
+    FlxG.cameras.add(panelCam, false);
+    if (reset) forEach(obj -> obj.cameras = [panelCam]);
+  }
+
+  /**
+   * Makes the bg backdrop for the panel.
+   */
+  function buildBackdrop():Void
+  {
+    bg = new FunkinSprite(0, 0);
+    bg.makeSolidColor(FlxG.width * 2, FlxG.height * 2, 0xFF1A1A1A);
+    bg.scrollFactor.set(0, 0);
+    bg.alpha = 0;
+    bg.updateHitbox();
+    bg.screenCenter();
+    add(bg);
+
+    descriptionPanel = new FunkinSprite(0, 0);
+    descriptionPanel.makeSolidColor(FlxG.width * 2, 60, 0xFF0B0B0B);
+    descriptionPanel.scrollFactor.set(0, 0);
+    descriptionPanel.updateHitbox();
+    descriptionPanel.screenCenter(X);
+    descriptionPanelY = FlxG.height - descriptionPanel.height;
+    descriptionPanel.y = descriptionPanelY + DESCRIPTION_OFFSET;
+    add(descriptionPanel);
+
+    descriptionText = new FlxText(0, 0, 800, '', 30);
+    descriptionText.setFormat(funkin.assets.Paths.font('ui/fonts/FunkinOptions', 'otf'), 30, 0xFFE6E6E6, CENTER);
+    descriptionText.offset.y = -4;
+    descriptionTextY = (descriptionPanelY + descriptionPanel.height / 2) - descriptionText.height / 2;
+    descriptionText.y = descriptionTextY + DESCRIPTION_OFFSET;
+    add(descriptionText);
+  }
+
+  /**
+   * Builds the panel body and transition visuals.
+   */
+  function ensurePanelVisuals():Void
+  {
+    if (panelVisualsBuilt) return;
+    panelVisualsBuilt = true;
+
+    panel.buildBody();
+
+    buildTransitionVisuals();
+    wipeSprite.flipX = left;
+
+    panel.cameras = [panelCam];
+    var built:Array<FlxBasic> = [wipeSprite, selectedIcon, selectedSplash];
+    for (obj in built) obj.cameras = [panelCam];
+  }
+
+  /**
+   * Builds the transitional visual flair
+   */
+  function buildTransitionVisuals():Void
+  {
+    wipeSprite = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, 0x00FFFFFF);
+    wipeSprite.scrollFactor.set(0, 0);
+    wipeSprite.updateHitbox();
+    wipeSprite.screenCenter();
+    wipeSprite.visible = false;
+    add(wipeSprite);
+
+    circleWipe = new BoilShader(true);
+    wipeSprite.shader = circleWipe;
+
+    selectedIcon = new FunkinSprite(0, 0);
+    selectedIcon.scrollFactor.set(0, 0);
+    selectedIcon.visible = false;
+    selectedIcon.color = 0xFFCCCCCC;
+    add(selectedIcon);
+
+    selectedSplash = new FunkinSprite(0, 0);
+    selectedSplash.frames = Assets.getSparrowAtlas(Paths.image('ui/quick-panel/splash'));
+    selectedSplash.animation.addByPrefix('splash', 'splash0', 24, false);
+    selectedSplash.screenCenter();
+    selectedSplash.visible = false;
+    selectedSplash.scale.set(1.85, 1.85);
+    selectedSplash.color = 0xFFCCCCCC;
+    add(selectedSplash);
+  }
+
+  /**
+   * Plays the wiping screen flair.
+   */
+  function playWipe():Void
+  {
+    wipeSprite.visible = true;
+    circleWipe.circleRadius = WIPE_RADIUS_START;
+
+    transitionTweens.push(FlxTween.num(WIPE_RADIUS_START, WIPE_RADIUS_END, WIPE_FRAMES / 24, {
+      ease: FlxEase.sineOut
+    }, (r:Float) -> circleWipe.circleRadius = r));
+
+    afterFrames(WIPE_FRAMES + 1, () -> circleWipe.circleRadius = WIPE_RADIUS_FULL);
+  }
+
+  /**
+   * Bumps the icon
+   */
+  function playIconBump():Void
+  {
+    selectedIcon.scale.set(ICON_SCALE_START, ICON_SCALE_START);
+    selectedIcon.angle = ICON_ANGLE_START;
+
+    transitionTweens.push(FlxTween.num(0, 1, ICON_POP_DURATION, {
+      ease: FlxEase.quadOut
+    }, (p:Float) ->
+      {
+        var s:Float = FlxMath.lerp(ICON_SCALE_START, ICON_SCALE_PEAK, p);
+        selectedIcon.scale.set(s, s);
+        selectedIcon.angle = FlxMath.lerp(ICON_ANGLE_START, ICON_ANGLE_PEAK, p);
+      }));
+
+    transitionTweens.push(FlxTween.num(ICON_SCALE_PEAK, ICON_SCALE_END, ICON_SETTLE_DURATION, {
+      startDelay: ICON_SETTLE_DELAY,
+      ease: EaseUtil.backOut(ICON_SCALE_OVERSHOOT)
+    }, (s:Float) -> selectedIcon.scale.set(s, s)));
+
+    transitionTweens.push(FlxTween.num(ICON_ANGLE_PEAK, 0, ICON_SETTLE_DURATION, {
+      startDelay: ICON_SETTLE_DELAY,
+      ease: FlxEase.quartOut
+    }, (a:Float) -> selectedIcon.angle = a));
+  }
+
+  /**
+   * Runs a callback after a number of 24fps frames.
+   * @param frames The frames to run
    * @param fn The callback to run
    */
   function afterFrames(frames:Int, fn:Void->Void):Void
@@ -1034,6 +1279,11 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     transitionTimers.push(new FlxTimer().start(frames / 24, _ -> fn()));
   }
 
+  /**
+   * Moves the panel to the given target.
+   * @param targetX The target X pos
+   * @param instant Whether it is instant.
+   */
   function movePanel(targetX:Float, instant:Bool):Void
   {
     cancelMoveTween();
@@ -1047,6 +1297,9 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
       });
   }
 
+  /**
+   * Cancels the move tween.
+   */
   function cancelMoveTween():Void
   {
     if (moveTween == null) return;
@@ -1054,9 +1307,12 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     moveTween = null;
   }
 
+  /**
+   * Ducks down the music.
+   */
   function duckMusic():Void
   {
-    if (duckedMusic != null) return; // already ducked, don't compound
+    if (duckedMusic != null) return; // Already ducked; don't compound.
 
     var music = FlxG.sound.music;
     if (music == null) return;
@@ -1066,6 +1322,9 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     music.volume = duckedFromVolume * MUSIC_DUCK_FACTOR;
   }
 
+  /**
+   * Restores the music
+   */
   function restoreMusic():Void
   {
     if (duckedMusic == null) return;
@@ -1113,6 +1372,11 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     });
   }
 
+  /**
+   * Called when the blocker substate is ready
+   * @param readyBlocker The readied blocker substate.
+   * @param instant Whether it is instant
+   */
   function onBlockerReady(readyBlocker:PanelBlockerSubState,
     instant:Bool):Void
   {
@@ -1125,6 +1389,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
   }
 
   /**
+   * Updates the blocker request.
    * If another transition replaced ours mid-load, the blocker never arrives.
    * Detect that and back out cleanly instead of leaving the host frozen.
    */
@@ -1139,6 +1404,9 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     closePanel(true);
   }
 
+  /**
+   * Stops every state in the stack from updating (they keep drawing) and remembers the old flags.
+   */
   function savePersistence():Void
   {
     if (savedPersistence.length > 0 || FlxG.state == null) return;
@@ -1155,9 +1423,11 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     }
   }
 
+  /**
+   * Closes the blocker properly and restore's the host state's params.
+   */
   function closeBlocker():Void
   {
-    // Put back exactly what we changed, rather than forcing persistentUpdate on.
     for (entry in savedPersistence)
     {
       entry.state.persistentUpdate = entry.update;
@@ -1211,12 +1481,9 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     panelCam = null;
   }
 
-  public static function playMenuMusic():Void
-  {
-    FlxG.sound.music?.stop();
-    funkin.audio.MenuMusicGroup.instance.reset(OPTIONS_MENU);
-  }
-
+  /**
+   * Stops the current music playing.
+   */
   public static function stopMusic():Void
   {
     if (FlxG.sound.music == null) return;
@@ -1283,13 +1550,12 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
   {
     var results = [];
 
+    var tabAtlas = #if FEATURE_TOUCH_CONTROLS 'ui/quick-panel/tabSquare' #else 'ui/quick-panel/tabSquareKeyboard' #end;
+
     switch (type)
     {
       case IMAGE:
-        #if FEATURE_TOUCH_CONTROLS
-        results.append(Paths.animateAtlas('ui/quick-panel/tabSquare').image());
-        #end
-        results.append(Paths.animateAtlas('ui/quick-panel/tabSquareKeyboard').image());
+        results.append(Paths.animateAtlas(tabAtlas).image());
 
       case SOUND:
         results.push(Paths.sound('ui/quick-panel/sounds/tab-pull'));
@@ -1303,10 +1569,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
         #end
 
       case JSON:
-        #if FEATURE_TOUCH_CONTROLS
-        results.append(Paths.animateAtlas('ui/quick-panel/tabSquare').json());
-        #end
-        results.append(Paths.animateAtlas('ui/quick-panel/tabSquareKeyboard').json());
+        results.append(Paths.animateAtlas(tabAtlas).json());
 
       default:
         // No assets.
@@ -1332,10 +1595,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
         results.push(Paths.image('ui/boil_texture'));
         results.push(Paths.image('ui/quick-panel/splash'));
         results.push(Paths.image('ui/quick-panel/panel-bg'));
-        for (buttonData in DEFAULT_BUTTON_DATA)
-        {
-          results.push(Paths.image('ui/quick-panel/icons/${buttonData.icon}'));
-        }
+        for (buttonData in DEFAULT_BUTTON_DATA) results.push(Paths.image('ui/quick-panel/icons/${buttonData.icon}'));
 
       case XML:
         results.push(Paths.xml('ui/quick-panel/splash'));
@@ -1356,7 +1616,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     return results;
   }
 
-  /// Helpers
+  // Getters
 
   inline function get_controls():Controls return PlayerSettings.controls;
 

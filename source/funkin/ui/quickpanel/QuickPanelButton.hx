@@ -1,6 +1,5 @@
 package funkin.ui.quickpanel;
 
-import flixel.FlxG;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -18,9 +17,55 @@ import funkin.util.TouchUtil;
  */
 class QuickPanelButton extends FunkinSpriteGroup
 {
+  /**
+   * The width of the button
+   */
   public static final ITEM_WIDTH:Int = 320;
+
+  /**
+   * The height of the button
+   */
   public static final ITEM_HEIGHT:Int = 100;
+
+  /**
+   * The width of the icon
+   */
   public static final ICON_WIDTH:Int = 100;
+
+  /**
+   * Gap between the icon and the label.
+   */
+  static final LABEL_GAP:Float = 20;
+
+  /**
+   * The color of the text for this button
+   */
+  static final TEXT_COLOR:FlxColor = 0xFFCCCCCC;
+
+  /**
+   * The color of the text for this button when selected
+   */
+  static final SELECTED_COLOR:FlxColor = FlxColor.BLACK;
+
+  /**
+   * Boil strength while selected.
+   */
+  static final BOIL_AMOUNT_SELECTED:Float = 1.5;
+
+  /**
+   * Boil strength while idle
+   */
+  static final BOIL_AMOUNT_IDLE:Float = 0.5;
+
+  /**
+   * Frames (at 24fps) between boil steps while selected.
+   */
+  static final BOIL_INTERVAL_SELECTED:Int = 4;
+
+  /**
+   * Frames (at 24fps) between boil steps while idle.
+   */
+  static final BOIL_INTERVAL_IDLE:Int = 8;
 
   /**
    * Alpha while a touch is held on the button.
@@ -28,98 +73,89 @@ class QuickPanelButton extends FunkinSpriteGroup
   static final PRESS_ALPHA:Float = 0.7;
 
   /**
-   * Fade-out duration on accept
+   * Alpha multiplier for disabled buttons.
+   */
+  static final DISABLED_ALPHA:Float = 0.5;
+
+  /**
+   * How long the fade-out takes when another button is accepted.
    */
   static final FADE_DURATION:Float = 5 / 24;
 
   /**
-   * How long for a bump to hold its peak size
+   * How long a bump holds its peak before settling.
    */
   static final BUMP_HOLD:Float = 5 / 30;
 
   /**
-    *How long for a bump to settle back to its normal size.
+   * How long a bump takes to settle back to normal size.
    */
   static final BUMP_SETTLE:Float = 5 / 30;
 
   /**
-   * The biggest a bump can be.
+   * Peak scale of the selection bump.
    */
   static final BUMP_PEAK:Float = 1.04;
 
   /**
-   * How much the bump overshoots.
+   * Back-out overshoot of the selection bump.
    */
   static final BUMP_OVERSHOOT:Float = 4.9;
 
   /**
-   * The biggest a bump can be, but bigger
+   * Peak scale of the accept bump.
    */
   static final BUMP_BIG_PEAK:Float = 1.2;
 
   /**
-   * How much the biggest bump can overshoot
+   * Back-out overshoot of the accept bump.
    */
   static final BUMP_BIG_OVERSHOOT:Float = 3.0;
 
   /**
-   * How much to bump the button's icon
+   * Extra icon scale at the peak of a bump, on top of its base scale.
    */
   static final ICON_BUMP:Float = 0.05;
 
   /**
-   * How long for a bump to hold its peak size, but icon!
+   * How long the icon holds its peak before settling.
    */
   static final ICON_BUMP_HOLD:Float = 1 / 30;
 
   /**
-   * How long for a bump to settle back to its normal size, but icon!
+   * How long the icon takes to settle.
    */
   static final ICON_BUMP_SETTLE:Float = 9 / 30;
 
   /**
-   * How much the bump overshoots, but icon!
+   * Back-out overshoot of the icon settle.
    */
   static final ICON_BUMP_OVERSHOOT:Float = 2.6;
-
-  var boilShaderIcon:BoilShader;
-  var boilShaderText:BoilShader;
-
-  /**
-   * How many frames should pass between each time the boilShader should move.
-   * (the idle animation of the button changes visuals every 4 frames)
-   */
-  var BOIL_INTERVAL:Int = 4;
-
-  var boilTimer:Float = 0;
 
   /**
    * The data assigned to this button.
    */
   public var data:QuickPanelButtonData;
 
+  /**
+   * Whether this is the highlighted button, setting it updates the flair on this button
+   */
   public var selected(default, set):Bool;
 
   /**
-   * A hitbox for the button.
+   * Invisible sprite that defines the button's size and hit area.
    */
   public var guide:FunkinSprite;
 
+  /**
+   * The button text
+   */
   public var buttonText:FlxText;
+
+  /**
+   * The Button Icon
+   */
   public var icon:FunkinSprite;
-
-  /**
-   * Helper tween variable for fading
-   */
-  var fadeTween:Null<FlxTween> = null;
-
-  /**
-   * A collection of tweens related to bumpin'
-   */
-  var bumpTweens:Array<FlxTween> = [];
-
-  var ICON_SCALE_X:Float;
-  var ICON_SCALE_Y:Float;
 
   /**
    * This button's index in the panel.
@@ -131,32 +167,71 @@ class QuickPanelButton extends FunkinSpriteGroup
    */
   public var onTapped:Null<QuickPanelButton->Void> = null;
 
+  /**
+   * Boil shader for the icon
+   */
+  var boilShaderIcon:BoilShader;
+
+  /**
+   * Boil shader for the text
+   */
+  var boilShaderText:BoilShader;
+
+  /**
+   * Current boil interval
+   */
+  var boilInterval:Int = BOIL_INTERVAL_IDLE;
+
+  /**
+   * Helper variable for boil cycling
+   */
+  var boilTimer:Float = 0;
+
+  /**
+   * Helper tween variable for fading
+   */
+  var fadeTween:Null<FlxTween> = null;
+
+  /**
+   * A collection of tweens related to bumpin'
+   */
+  var bumpTweens:Array<FlxTween> = [];
+
+  /**
+   * Icon scale X after fitting it to ICON_WIDTH. Bumps are added on top of this.
+   */
+  var baseIconScaleX:Float;
+
+  /**
+   * Icon scale Y after fitting it to ICON_WIDTH. Bumps are added on top of this.
+   */
+  var baseIconScaleY:Float;
+
+  /**
+   * Whether the current touch started on this button.
+   */
   var touchHeld:Bool = false;
+
+  /**
+   * Is this button on the left
+   */
   var left:Bool = true;
 
   /**
-   * Disabled buttons are drawn at half opacity.
+   * Alpha multiplier for selected buttons
    */
-  var alphaMultiplier:Float = 0;
+  var alphaMultiplier:Float = 1;
 
-  public function repositionSide(_left:Bool = false)
-  {
-    left = _left;
-
-    buttonText.localX = left ? guide.width - (ICON_WIDTH + buttonText.width + 20) : ICON_WIDTH + 20;
-    icon.localX = left ? guide.width - ICON_WIDTH : 0;
-
-    // makes sense... right?
-    buttonText.alignment = left ? RIGHT : LEFT;
-  }
-
-  public function new(_data:QuickPanelButtonData)
+  /**
+   * Creates a new QuickPanelButton
+   * @param data The data to use
+   */
+  public function new(data:QuickPanelButtonData)
   {
     super();
 
-    data = _data;
-
-    alphaMultiplier = data.disabled ? 0.5 : 1.0;
+    this.data = data;
+    alphaMultiplier = data.disabled == true ? DISABLED_ALPHA : 1.0;
 
     guide = new FunkinSprite(0, 0);
     guide.makeGraphic(ITEM_WIDTH, ITEM_HEIGHT, 0x00D1D1D1);
@@ -165,42 +240,49 @@ class QuickPanelButton extends FunkinSpriteGroup
     guide.localY = 0;
     add(guide);
 
-    buttonText = new FlxText(0, 0, ITEM_WIDTH - (ICON_WIDTH + 20), '${data.text ?? 'NO TEXT'}', 30);
-    buttonText.setFormat(funkin.assets.Paths.font('ui/fonts/FunkinOptions', 'otf'), 38, 0xFFCCCCCC, LEFT);
-    buttonText.localX = ICON_WIDTH + 20;
+    buttonText = new FlxText(0, 0, ITEM_WIDTH - (ICON_WIDTH + LABEL_GAP), data.text ?? 'NO TEXT', 30);
+    buttonText.setFormat(funkin.assets.Paths.font('ui/fonts/FunkinOptions', 'otf'), 38, TEXT_COLOR, LEFT);
+    buttonText.localX = ICON_WIDTH + LABEL_GAP;
     buttonText.localY = (ITEM_HEIGHT / 2) - (buttonText.height / 2);
     buttonText.offset.y = -6;
     add(buttonText);
 
     icon = new FunkinSprite(0, 0);
     icon.loadGraphic(Paths.image('ui/quick-panel/icons/${data.icon}'));
-    add(icon);
-
     icon.antialiasing = true;
     icon.setGraphicSize(ICON_WIDTH, ICON_WIDTH);
+    add(icon);
 
-    ICON_SCALE_X = icon.scale.x;
-    ICON_SCALE_Y = icon.scale.y;
-
-    icon.localScale.x = ICON_SCALE_X;
-    icon.localScale.y = ICON_SCALE_Y;
+    baseIconScaleX = icon.scale.x;
+    baseIconScaleY = icon.scale.y;
+    icon.localScale.x = baseIconScaleX;
+    icon.localScale.y = baseIconScaleY;
     icon.updateHitbox();
 
     boilShaderIcon = new BoilShader();
     boilShaderIcon.bumpTimer();
-    boilShaderIcon.amount = 100;
+    icon.shader = boilShaderIcon;
 
     boilShaderText = new BoilShader();
     boilShaderText.bumpTimer();
-    boilShaderText.amount = 100;
-
     buttonText.shader = boilShaderText;
-    icon.shader = boilShaderIcon;
 
     resetOrigin();
     updateSelected();
-
     setFadeAlpha(1.0);
+  }
+
+  /**
+   * Mirrors the icon and label for the given screen edge.
+   * @param left Whether it is on the left side or not.
+   */
+  public function repositionSide(left:Bool = false):Void
+  {
+    this.left = left;
+
+    buttonText.localX = left ? guide.width - (ICON_WIDTH + buttonText.width + LABEL_GAP) : ICON_WIDTH + LABEL_GAP;
+    buttonText.alignment = left ? RIGHT : LEFT;
+    icon.localX = left ? guide.width - ICON_WIDTH : 0;
   }
 
   /**
@@ -213,26 +295,6 @@ class QuickPanelButton extends FunkinSpriteGroup
       ease: FlxEase.cubeOut,
       onComplete: (_) -> fadeTween = null
     }, (a:Float) -> localAlpha = a);
-  }
-
-  /**
-   * Snaps the button's alpha properly.
-   * @param a Alpha
-   */
-  function setFadeAlpha(a:Float):Void
-  {
-    cancelFade();
-    localAlpha = a * alphaMultiplier;
-  }
-
-  /**
-   * Cancels the fading, if one is going on right now.
-   */
-  function cancelFade():Void
-  {
-    if (fadeTween == null) return;
-    fadeTween.cancel();
-    fadeTween = null;
   }
 
   /**
@@ -265,6 +327,75 @@ class QuickPanelButton extends FunkinSpriteGroup
   }
 
   /**
+   * Calls the callback assigned in the data, if it exists.
+   */
+  public function doCallback():Void
+  {
+    if (data.callback != null) data.callback();
+  }
+
+  override function update(elapsed:Float):Void
+  {
+    super.update(elapsed);
+
+    boilTimer -= elapsed;
+    if (boilTimer <= 0)
+    {
+      boilTimer = boilInterval / 24;
+      boilShaderIcon.updateBoil();
+      boilShaderText.updateBoil();
+    }
+
+    #if FEATURE_TOUCH_CONTROLS
+    updateTouch();
+    #end
+  }
+
+  #if FEATURE_TOUCH_CONTROLS
+  /**
+   * Updates touch checks
+   */
+  function updateTouch():Void
+  {
+    if (TouchUtil.justPressed && TouchUtil.overlaps(this))
+    {
+      touchHeld = true;
+      setFadeAlpha(PRESS_ALPHA);
+      FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/menu-press'), 0.1);
+    }
+
+    // Only react to releases of a press that started on this button,
+    // so a stray release doesnt unfade buttons mid-transition.
+    if (TouchUtil.justReleased && touchHeld)
+    {
+      touchHeld = false;
+      setFadeAlpha(1.0);
+
+      if (TouchUtil.overlaps(this) && onTapped != null) onTapped(this);
+    }
+  }
+  #end
+
+  /**
+   * Updates this button selection flair
+   */
+  function updateSelected():Void
+  {
+    var color:FlxColor = selected ? SELECTED_COLOR : TEXT_COLOR;
+    icon.color = color;
+    buttonText.color = color;
+
+    var boilAmount:Float = selected ? BOIL_AMOUNT_SELECTED : BOIL_AMOUNT_IDLE;
+    boilShaderIcon.amount = boilAmount;
+    boilShaderText.amount = boilAmount;
+    boilInterval = selected ? BOIL_INTERVAL_SELECTED : BOIL_INTERVAL_IDLE;
+
+    if (selected) playBump();
+    else
+      stopBump();
+  }
+
+  /**
    * Stops any bump that is ongoing.
    */
   function stopBump():Void
@@ -283,67 +414,28 @@ class QuickPanelButton extends FunkinSpriteGroup
    */
   function setIconBump(offset:Float):Void
   {
-    icon.localScale.x = ICON_SCALE_X + offset;
-    icon.localScale.y = ICON_SCALE_Y + offset;
+    icon.localScale.x = baseIconScaleX + offset;
+    icon.localScale.y = baseIconScaleY + offset;
   }
 
   /**
-   * Updates the button visuals based on whether it is selected.
+   * Snaps the button's alpha properly.
+   * @param alpha Alpha
    */
-  function updateSelected()
+  function setFadeAlpha(alpha:Float):Void
   {
-    icon.color = selected ? FlxColor.BLACK : 0xFFCCCCCC;
-    buttonText.color = selected ? FlxColor.BLACK : 0xFFCCCCCC;
-
-    boilShaderIcon.amount = selected ? 1.5 : 0.5;
-    boilShaderText.amount = selected ? 1.5 : 0.5;
-
-    BOIL_INTERVAL = selected ? 4 : 8;
-
-    stopBump();
-
-    if (selected) playBump();
-  }
-
-  override function update(elapsed:Float):Void
-  {
-    super.update(elapsed);
-
-    boilTimer -= elapsed;
-
-    if (boilTimer <= 0)
-    {
-      boilTimer = BOIL_INTERVAL / 24;
-      boilShaderIcon.updateBoil();
-      boilShaderText.updateBoil();
-    }
-
-    #if FEATURE_TOUCH_CONTROLS
-    if (TouchUtil.justPressed && TouchUtil.overlaps(this))
-    {
-      touchHeld = true;
-      setFadeAlpha(PRESS_ALPHA);
-      FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/menu-press'), 0.1);
-    }
-
-    // Only react to releases of a press that started on this button,
-    // so a stray release doesnt unfade buttons mid-transition.
-    if (TouchUtil.justReleased && touchHeld)
-    {
-      touchHeld = false;
-      setFadeAlpha(1.0);
-
-      if (TouchUtil.overlaps(this) && onTapped != null) onTapped(this);
-    }
-    #end
+    cancelFade();
+    localAlpha = alpha * alphaMultiplier;
   }
 
   /**
-   * Calls the callback assigned in the data, if it exists.
+   * Cancels the fading, if one is going on right now.
    */
-  public function doCallback()
+  function cancelFade():Void
   {
-    if (data.callback != null) data.callback();
+    if (fadeTween == null) return;
+    fadeTween.cancel();
+    fadeTween = null;
   }
 
   override function destroy():Void
@@ -353,7 +445,7 @@ class QuickPanelButton extends FunkinSpriteGroup
     for (tween in bumpTweens) if (tween != null) tween.cancel();
     bumpTweens = [];
     FlxTween.cancelTweensOf(this);
-    FlxTween.cancelTweensOf(this.scale);
+
     super.destroy();
   }
 

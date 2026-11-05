@@ -24,6 +24,9 @@ class SidePanelPlugin extends FlxTypedContainer<FlxBasic>
    */
   public static var instance(get, never):Null<SidePanelPlugin>;
 
+  /**
+   * Side panel plugin instance, but private!
+   */
   static var _instance:Null<SidePanelPlugin> = null;
 
   /**
@@ -36,7 +39,14 @@ class SidePanelPlugin extends FlxTypedContainer<FlxBasic>
    */
   public var panelState(default, null):Null<QuickPanelState> = null;
 
+  /**
+   * True until the first-run hint has been shown.
+   */
   var firstRunHintPending:Bool;
+
+  /**
+   * Helper variable for the first-run hint.
+   */
   var firstRunHintTimer:Float = 0;
 
   /**
@@ -48,6 +58,9 @@ class SidePanelPlugin extends FlxTypedContainer<FlxBasic>
     FlxG.plugins.addPlugin(new SidePanelPlugin());
   }
 
+  /**
+   * Creates Side panel plugin
+   */
   function new()
   {
     super();
@@ -61,11 +74,28 @@ class SidePanelPlugin extends FlxTypedContainer<FlxBasic>
     syncPanel();
   }
 
-  static function isScriptedState():Bool
+  override function update(elapsed:Float):Void
   {
-    return FlxG.state != null && polymod.Polymod.isScriptedClass(FlxG.state);
+    super.update(elapsed);
+    updateFirstRunHint(elapsed);
   }
 
+  override public function destroy():Void
+  {
+    FlxG.signals.preStateSwitch.remove(onPreStateSwitch);
+    FlxG.signals.postStateSwitch.remove(onPostStateSwitch);
+
+    destroyPanel();
+
+    if (_instance == this) _instance = null;
+    if (FlxG.plugins.list.contains(this)) FlxG.plugins.remove(this);
+
+    super.destroy();
+  }
+
+  /**
+   * Syncs the panel with showGrabber, creating / destroying it.
+   */
   function syncPanel():Void
   {
     if (showGrabber && FlxG.state != null) createPanel();
@@ -73,6 +103,9 @@ class SidePanelPlugin extends FlxTypedContainer<FlxBasic>
       destroyPanel();
   }
 
+  /**
+   * Creates the panel
+   */
   function createPanel():Void
   {
     if (panelState != null) return;
@@ -81,6 +114,9 @@ class SidePanelPlugin extends FlxTypedContainer<FlxBasic>
     add(panelState);
   }
 
+  /**
+   * Destroys the panel
+   */
   function destroyPanel():Void
   {
     if (panelState == null) return;
@@ -90,20 +126,20 @@ class SidePanelPlugin extends FlxTypedContainer<FlxBasic>
     panelState = null;
   }
 
+  /**
+   * Called before a state switch
+   */
   function onPreStateSwitch():Void
   {
     destroyPanel();
   }
 
+  /**
+   * Called after a state switch
+   */
   function onPostStateSwitch():Void
   {
     showGrabber = isScriptedState();
-  }
-
-  override function update(elapsed:Float):Void
-  {
-    super.update(elapsed);
-    updateFirstRunHint(elapsed);
   }
 
   /**
@@ -126,17 +162,13 @@ class SidePanelPlugin extends FlxTypedContainer<FlxBasic>
     panelState.showHint();
   }
 
-  override public function destroy():Void
+  /**
+   * Checks if the state is scripted.
+   * @return Whether the state is scripted.
+   */
+  static function isScriptedState():Bool
   {
-    FlxG.signals.preStateSwitch.remove(onPreStateSwitch);
-    FlxG.signals.postStateSwitch.remove(onPostStateSwitch);
-
-    destroyPanel();
-
-    if (_instance == this) _instance = null;
-    if (FlxG.plugins.list.contains(this)) FlxG.plugins.remove(this);
-
-    super.destroy();
+    return FlxG.state != null && polymod.Polymod.isScriptedClass(FlxG.state);
   }
 
   /// Helpers
