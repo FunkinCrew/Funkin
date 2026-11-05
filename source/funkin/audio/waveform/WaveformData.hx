@@ -124,6 +124,7 @@ class WaveformData
     return (peak > 0) ? peak : 1;
   }
 
+  @:nullSafety(Off)
   function buildMipLevels():Array<lime.utils.Int16Array>
   {
     var levels:Array<lime.utils.Int16Array> = [];
