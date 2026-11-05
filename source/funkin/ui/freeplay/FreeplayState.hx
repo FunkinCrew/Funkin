@@ -69,7 +69,7 @@ import funkin.api.discord.DiscordClient;
 #if FEATURE_TOUCH_CONTROLS
 import funkin.util.TouchUtil;
 import funkin.util.SwipeUtil;
-import funkin.mobile.input.ControlsHandler;
+import funkin.touch.input.ControlsHandler;
 #end
 import funkin.assets.Paths;
 import funkin.ui.transition.Transition;

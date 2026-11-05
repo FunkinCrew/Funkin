@@ -45,8 +45,8 @@ import funkin.api.discord.DiscordClient;
 import funkin.api.newgrounds.NewgroundsClient;
 #end
 #if mobile
-import funkin.mobile.input.ControlsHandler;
-import funkin.mobile.util.InAppPurchasesUtil;
+import funkin.touch.input.ControlsHandler;
+import funkin.util.mobile.InAppPurchasesUtil;
 #end
 //
 // ~PATHS~

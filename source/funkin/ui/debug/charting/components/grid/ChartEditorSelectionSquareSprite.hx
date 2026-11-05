@@ -18,6 +18,12 @@ class ChartEditorSelectionSquareSprite extends FlxSliceSprite
   public var noteData:Null<SongNoteData>;
   public var eventData:Null<SongEventData>;
 
+  /**
+   * Whether this square is used to display an error.
+   * If `false`, it's being used to display a selection.
+   */
+  public var isError:Bool = false;
+
   public function new(chartEditorState:ChartEditorState)
   {
     super(

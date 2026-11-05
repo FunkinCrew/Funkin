@@ -706,6 +706,41 @@ class SongChartData implements ICloneable<SongChartData> implements ISerializabl
   }
 
   /**
+   * Scan the chart for invalid song events (based on their positioning, data, or other events near them).
+   *
+   * @param difficulty The difficulty to scan. `null` to scan all difficulties.
+   * @return The list of errors for the first invalid event found.
+   */
+  public function validateChartEvents(?difficulty:String):Array<String>
+  {
+    for (event in this.events)
+    {
+      if (event == null) continue;
+
+      var errors:Array<String> = validateChartEvent(event, difficulty);
+      if (errors.length > 0) return errors;
+    }
+
+    return [];
+  }
+
+  /**
+   * Validate one song events (based on its positioning, data, or other events near them).
+   *
+   * @param event The event to scan.
+   * @param difficulty The difficulty to scan. `null` to scan all difficulties.
+   * @return A list of errors with that event, or `[]` if no errors exist.
+   */
+  public function validateChartEvent(event:SongEventData, ?difficulty:String):Array<String>
+  {
+    var eventHandler:Null<SongEvent> = event.getHandler();
+    if (eventHandler == null) return [];
+
+    var errors:Array<String> = eventHandler.validate(event, this, difficulty);
+    return errors;
+  }
+
+  /**
    * Produces a string representation suitable for debugging.
    */
   public function toString():String
@@ -889,6 +924,8 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
 
   @:jignored
   var _activationTime:Null<Float> = null;
+  @:jignored
+  var _validationErrors:Null<Array<String>> = null;
 
   /**
    * Get the timestamp at which `handleEvent()` should be called for this event.
@@ -1137,6 +1174,16 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
       result += '\n- ${title}: ${valueStr}';
     }
 
+    // `_validationErrors` holds results of `validateChartEvent(event)` cached by the editor.
+    if (_validationErrors != null && _validationErrors.length > 0)
+    {
+      result += '\n\nERRORS:';
+      for (error in _validationErrors)
+      {
+        result += '\n- ${error}';
+      }
+    }
+
     return result;
   }
 
@@ -1166,6 +1213,24 @@ abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataR
     var result:SongEventData = new SongEventData(this.time, this.eventKind, this.value, this.editorLayer);
     result.editorLayer = this.editorLayer;
     return result;
+  }
+
+  /**
+   * @return A list of cached validation errors for this event.
+   */
+  public function getValidationErrors():Array<String>
+  {
+    @:privateAccess
+    return this._validationErrors ?? [];
+  }
+
+  /**
+   * @param errors A list of validation errors to cache in this event.
+   */
+  function cacheValidationErrors(errors:Array<String>):Void
+  {
+    @:privateAccess // @:allow doesn't work on abstracts I guess.
+    this._validationErrors = errors;
   }
 
   /**

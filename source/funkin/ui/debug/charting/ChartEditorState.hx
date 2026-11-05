@@ -1453,7 +1453,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (value)
     {
       // Start the auto-save timer.
-      autoSaveTimer = new FlxTimer().start(Constants.AUTOSAVE_TIMER_DELAY_SEC, (_) -> autoSave());
+      autoSaveTimer = new FlxTimer().start(Constants.AUTOSAVE_TIMER_DELAY_SEC, (_) -> this.autoSave());
     }
     else
     {
@@ -3674,8 +3674,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (audioInstTrack != null) audioInstTrack.onComplete = null;
 
     performCleanup();
-
-    MenuMusicGroup.instance.reset(MAIN_MENU);
 
     Transition.switchState(() -> new MainMenuState(), {
       assetQuery: MainMenuState.queryAssets,

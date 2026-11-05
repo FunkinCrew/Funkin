@@ -4,7 +4,7 @@ package funkin;
 import funkin.touch.ui.FunkinHitbox;
 #end
 #if FEATURE_MOBILE_IAP
-import funkin.mobile.util.InAppPurchasesUtil;
+import funkin.util.mobile.InAppPurchasesUtil;
 #end
 import funkin.save.Save;
 import funkin.util.WindowUtil;

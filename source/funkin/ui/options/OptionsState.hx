@@ -23,11 +23,11 @@ import funkin.api.newgrounds.NewgroundsClient;
 #if FEATURE_TOUCH_CONTROLS
 import funkin.util.TouchUtil;
 import funkin.touch.ui.FunkinBackButton;
-import funkin.mobile.input.ControlsHandler;
+import funkin.touch.input.ControlsHandler;
 import funkin.touch.ui.options.ControlsSchemeMenu;
 #end
 #if FEATURE_MOBILE_IAP
-import funkin.mobile.util.InAppPurchasesUtil;
+import funkin.util.mobile.InAppPurchasesUtil;
 #end
 import flixel.util.FlxColor;
 import funkin.assets.Assets;

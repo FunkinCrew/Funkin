@@ -7,7 +7,7 @@ import funkin.touch.ui.FunkinBackButton;
 #if FEATURE_TOUCH_CONTROLS
 import funkin.touch.ui.FunkinHitbox;
 import funkin.touch.ui.FunkinHitbox.FunkinHitboxControlSchemes;
-import funkin.mobile.input.ControlsHandler;
+import funkin.touch.input.ControlsHandler;
 import funkin.util.TouchUtil;
 #end
 import funkin.input.PreciseInputManager;

@@ -2,7 +2,7 @@ package funkin.ui.transition.preload;
 
 import funkin.assets.FunkinAssetCache;
 import lime.app.Future;
-import funkin.mobile.util.ScreenUtil;
+import funkin.util.mobile.ScreenUtil;
 import funkin.data.BaseRegistry.LoadEntriesResult;
 import openfl.events.MouseEvent;
 import openfl.ui.Mouse;

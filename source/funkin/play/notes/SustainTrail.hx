@@ -344,7 +344,7 @@ class SustainTrail extends funkin.graphics.FunkinSprite
 
     flipY = Preferences.downscroll
     #if FEATURE_TOUCH_CONTROLS
-    || (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows && !funkin.mobile.input.ControlsHandler.hasExternalInputDevice)
+    || (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows && !funkin.touch.input.ControlsHandler.hasExternalInputDevice)
     #end;
 
     // alpha = 0.6;

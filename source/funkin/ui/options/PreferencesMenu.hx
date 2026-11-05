@@ -19,7 +19,7 @@ import funkin.ui.options.items.EnumPreferenceItem;
 import funkin.ui.debug.FunkinDebugDisplay.DebugDisplayMode;
 #if FEATURE_TOUCH_CONTROLS
 import funkin.touch.ui.FunkinBackButton;
-import funkin.mobile.input.ControlsHandler;
+import funkin.touch.input.ControlsHandler;
 import funkin.touch.ui.FunkinHitbox.FunkinHitboxControlSchemes;
 import funkin.util.TouchUtil;
 import funkin.util.SwipeUtil;

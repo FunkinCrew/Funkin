@@ -9,6 +9,7 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxDestroyUtil;
 import flixel.util.FlxSignal;
+import funkin.graphics.FunkinSprite;
 import funkin.graphics.shaders.HSVShader;
 import funkin.touch.input.ControlsHandler;
 import funkin.play.notes.NoteDirection;
