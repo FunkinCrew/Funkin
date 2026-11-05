@@ -3,6 +3,7 @@ package funkin.ui.quickpanel;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.text.FlxText;
+import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import funkin.assets.Assets;
@@ -11,7 +12,7 @@ import funkin.graphics.FunkinSprite;
 import funkin.group.FunkinGroup;
 import funkin.ui.quickpanel.QuickPanelTypes;
 import funkin.graphics.shaders.QuickPanelShader;
-import funkin.util.PropertyAnimator;
+import funkin.util.EaseUtil;
 import funkin.ui.UIStateMachine.UIState;
 
 /**
@@ -40,6 +41,107 @@ class QuickPanelGroup extends FunkinSpriteGroup
   static final Z_ABOVE:Int = 11;
   static final Z_BUTTONS:Int = 12;
   static final Z_HITBOX:Int = 200;
+
+  /**
+   * Hint sliding/fading duration
+   */
+  static final HINT_DURATION:Float = 10 / 30;
+
+  /**
+   * Hint sliding distance.
+   */
+  static final HINT_SLIDE_DISTANCE:Float = 10;
+
+  /**
+   * How much bump to we give to the panel shader angular direction
+   */
+  static final SCROLL_DIR_AMOUNT:Float = 0.2;
+
+  /**
+   * Scroll direction bump duration
+   */
+  static final SCROLL_DIR_DURATION:Float = 6 / 30;
+
+  /**
+   * How much extra thickness to give to the panel shader when scroll bumping
+   * Dude what are these names actually?
+   */
+  static final SCROLL_FAT_AMOUNT:Float = 0.3;
+
+  /**
+   * How long do we hold the extra thickness for the panel shader.
+   */
+  static final SCROLL_FAT_HOLD:Float = 5 / 30;
+
+  /**
+   * Duration of the bump settle animation
+   */
+  static final SCROLL_FAT_SETTLE:Float = 5 / 30;
+
+  /**
+   * How much would the extra thickness overshoot during a scroll bump
+   */
+  static final SCROLL_FAT_OVERSHOOT:Float = 7.3;
+
+  /**
+   * How much extra thickness for the panel shader when accepting
+   */
+  static final ACCEPT_FAT_AMOUNT:Float = 1.05;
+
+  /**
+   * The duration of the accept animation
+   */
+  static final ACCEPT_DURATION:Float = 10 / 24;
+
+  /**
+   * How many frames do we flicker when accepting
+   */
+  static final ACCEPT_FLICKER_FRAMES:Int = 10;
+
+  /**
+   * Accept panel colors
+   */
+  static final ACCEPT_COLOR_A:FlxColor = 0xFFFF596A;
+
+  /**
+   * Accept panel colors
+   */
+  static final ACCEPT_COLOR_B:FlxColor = 0xFFF3E63A;
+
+  /**
+   * How much to shake when a button denied
+   */
+  static final DENY_SHAKE_AMOUNT:Float = 0.2;
+
+  /**
+   * Duration for the denying animation
+   */
+  static final DENY_DURATION:Float = 8 / 30;
+
+  /**
+   * How many cycles to shake
+   */
+  static final DENY_SHAKE_CYCLES:Float = 2;
+
+  /**
+   * Deny panel colors
+   */
+  static final DENY_COLOR_A:FlxColor = 0xFF7C6969;
+
+  /**
+   * Deny panel colors
+   */
+  static final DENY_COLOR_B:FlxColor = 0xFF6F6969;
+
+  /**
+   * Fraction of the deny animation after which the slice swaps from colour A to colour B.
+   */
+  static final DENY_COLOR_SWAP:Float = 2 / 8;
+
+  /**
+   * The slice colour breathe period.
+   */
+  static final BREATHE_HALF_PERIOD:Float = 1.0;
 
   /**
    * The animated panel background.
@@ -86,9 +188,37 @@ class QuickPanelGroup extends FunkinSpriteGroup
   var pullHint:FlxText;
   var panelShader:QuickPanelShader;
   var grpButtons:FunkinGroup<QuickPanelButton>;
-  var paScroll:PropertyAnimator;
-  var paColor:PropertyAnimator;
-  var paHint:PropertyAnimator;
+
+  /**
+   * Helper tween variable for the hint
+   */
+  var hintTween:Null<FlxTween> = null;
+
+  /**
+   * A collection of tweens that are used for the scrolling flair
+   */
+  var scrollTweens:Array<FlxTween> = [];
+
+  /**
+   * Helper twene variable for the small little breath flair.
+   */
+  var breatheTween:Null<FlxTween> = null;
+
+  /**
+   * Helper variable for little extra angular flair for the panel shader.
+   */
+  var defaultDirExtra:Float = 0;
+
+  /**
+   * Helper variable for extra extra-thickness flair for the panel shader
+   */
+  var defaultFatExtra:Float = 0;
+
+  /**
+   * The default slice color
+   */
+  var defaultSliceColor:FlxColor = FlxColor.WHITE;
+
   var panelBoilTimer:Float = 0;
   var hintBreathing:Bool = false;
   var hintBreatheTimer:Float = 0;
@@ -139,7 +269,6 @@ class QuickPanelGroup extends FunkinSpriteGroup
     pullTabHitbox.localY = (FlxG.height / 2) - (pullTabHitbox.height / 2);
     add(pullTabHitbox);
 
-    setupHintAnims();
     setSide(left);
     refresh();
   }
@@ -181,7 +310,10 @@ class QuickPanelGroup extends FunkinSpriteGroup
       buttons.push(button);
     }
 
-    setupBodyAnims();
+    defaultDirExtra = panelShader.dirExtra;
+    defaultFatExtra = panelShader.fatExtra;
+    defaultSliceColor = panelShader.sliceColor;
+    startBreathe();
 
     pullExtra.visible = true;
     setSide(left);
@@ -213,174 +345,6 @@ class QuickPanelGroup extends FunkinSpriteGroup
     pullHint.alignment = left ? LEFT : RIGHT;
 
     layoutButtons();
-  }
-
-  /**
-   * Hint animations.
-   */
-  function setupHintAnims():Void
-  {
-    paHint = new PropertyAnimator(pullHint);
-
-    final fadeIn = [
-      0.0,
-      0.0,
-      0.5,
-      0.5,
-      0.7,
-      0.7,
-      0.9,
-      0.9,
-      0.95,
-      0.95,
-      1.0,
-      1.0
-    ];
-    final fadeOut = [
-      1.0,
-      1.0,
-      0.95,
-      0.95,
-      0.9,
-      0.9,
-      0.7,
-      0.7,
-      0.5,
-      0.5,
-      0.0,
-      0.0
-    ];
-    final slide = [
-      10.0,
-      10.0,
-      5.0,
-      5.0,
-      2.0,
-      2.0,
-      1.0,
-      1.0,
-      0.05,
-      0.05,
-      0.0,
-      0.0
-    ];
-
-    paHint.addAnimationByName('slideLeft', 30);
-    paHint.addProperty('slideLeft', 'offset.x', [for (v in slide) -v]);
-    paHint.addProperty('slideLeft', 'localAlpha', fadeIn.copy());
-
-    paHint.addAnimationByName('slideRight', 30);
-    paHint.addProperty('slideRight', 'offset.x', slide.copy());
-    paHint.addProperty('slideRight', 'localAlpha', fadeIn.copy());
-
-    paHint.addAnimationByName('disappear', 30);
-    paHint.addProperty('disappear', 'localAlpha', fadeOut);
-
-    paHint.setDefaultProperties();
-  }
-
-  /**
-   * Panel shader animations.
-   */
-  function setupBodyAnims():Void
-  {
-    // Slice movement
-    paScroll = new PropertyAnimator(panelShader);
-
-    final bumpFat = [
-      0.3,
-      0.3,
-      0.3,
-      0.3,
-      0.3,
-      0.3,
-      -0.25,
-      -0.25,
-      -0.05,
-      -0.05,
-      0.0
-    ];
-
-    paScroll.addAnimationByName('bumpUp', 30);
-    paScroll.addProperty('bumpUp', 'dirExtra', [
-      -0.2,
-      -0.2,
-      -0.03,
-      -0.03,
-      -0.01,
-      -0.01,
-      0.0
-    ]);
-    paScroll.addProperty('bumpUp', 'fatExtra', bumpFat.copy());
-
-    paScroll.addAnimationByName('bumpDown', 30);
-    paScroll.addProperty('bumpDown', 'dirExtra', [
-      0.2,
-      0.2,
-      0.03,
-      0.03,
-      0.01,
-      0.01,
-      0.0
-    ]);
-    paScroll.addProperty('bumpDown', 'fatExtra', bumpFat.copy());
-
-    paScroll.addAnimationByName('bumpNeutral', 30);
-    paScroll.addProperty('bumpNeutral', 'fatExtra', bumpFat.copy());
-
-    paScroll.addAnimationByName('accept', 24);
-    paScroll.addProperty('accept', 'fatExtra', [
-      1.05,
-      1.05,
-      1.1,
-      1.1,
-      1.0,
-      1.0,
-      -0.05,
-      -0.05,
-      -0.05,
-      -0.05,
-      0.0
-    ]);
-    paScroll.addProperty('accept', 'sliceColor', [
-      0xFFFF596A,
-      0xFFFF596A,
-      0xffF3E63A,
-      0xffF3E63A,
-      0xFFFF596A,
-      0xFFFF596A,
-      0xffF3E63A,
-      0xffF3E63A,
-      0xFFFF596A,
-      0xFFFF596A,
-      0xffF3E63A
-    ]);
-
-    paScroll.addAnimationByName('deny', 30);
-    paScroll.addProperty('deny', 'sliceColor', [0xFF7C6969, 0xFF7C6969, 0xff6f6969, 0xff6f6969]);
-    paScroll.addProperty('deny', 'dirExtra', [
-      0.2,
-      0.2,
-      -0.2,
-      -0.2,
-      0.1,
-      0.1,
-      -0.1,
-      -0.1,
-      0.0
-    ]);
-
-    paScroll.setDefaultProperties();
-
-    // Slice colour breathing
-    paColor = new PropertyAnimator(panelShader);
-    paColor.addAnimationByName('breathe', 12, true);
-    paColor.addProperty('breathe', 'sliceLerp', [
-      0.0, 0.0, 0.1, 0.1, 0.2, 0.2, 0.5, 0.5, 0.8, 0.8, 0.9, 0.9,
-      1.0, 1.0, 0.9, 0.9, 0.8, 0.8, 0.5, 0.5, 0.2, 0.2, 0.1, 0.1
-    ]);
-    paColor.setDefaultProperties();
-    paColor.playAnimation('breathe');
   }
 
   function layoutButtons():Void
@@ -435,7 +399,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
     panelShader.dir = -90 + (SLICE_ANGLE_RANGE - (step * index));
     panelShader.sliceColorStart = disabled ? QuickPanelShader.START_COLOR_DISABLED : QuickPanelShader.START_COLOR_NORMAL;
     panelShader.sliceColorEnd = disabled ? QuickPanelShader.END_COLOR_DISABLED : QuickPanelShader.END_COLOR_NORMAL;
-    paColor.playAnimation('breathe');
+    startBreathe();
   }
 
   /**
@@ -452,7 +416,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
 
     if (!bodyBuilt) return;
 
-    paColor.stop();
+    stopBreathe();
     panelShader.sliceVisible = false;
   }
 
@@ -465,7 +429,22 @@ class QuickPanelGroup extends FunkinSpriteGroup
     if (!bodyBuilt) return;
 
     finishDeny();
-    paScroll.playAnimation(direction < 0 ? 'bumpUp' : (direction > 0 ? 'bumpDown' : 'bumpNeutral'));
+    stopScroll();
+
+    if (direction != 0)
+    {
+      var from:Float = SCROLL_DIR_AMOUNT * (direction < 0 ? -1 : 1);
+      panelShader.dirExtra = from;
+      scrollTweens.push(FlxTween.num(from, 0, SCROLL_DIR_DURATION, {
+        ease: FlxEase.quintOut
+      }, (v:Float) -> panelShader.dirExtra = v));
+    }
+
+    panelShader.fatExtra = SCROLL_FAT_AMOUNT;
+    scrollTweens.push(FlxTween.num(SCROLL_FAT_AMOUNT, 0, SCROLL_FAT_SETTLE, {
+      startDelay: SCROLL_FAT_HOLD,
+      ease: EaseUtil.backOut(SCROLL_FAT_OVERSHOOT)
+    }, (v:Float) -> panelShader.fatExtra = v));
   }
 
   public function playDeny(onDone:Void->Void):Void
@@ -478,11 +457,19 @@ class QuickPanelGroup extends FunkinSpriteGroup
     }
 
     finishDeny();
+    stopScroll();
 
     pendingDenyDone = onDone;
     panelShader.doLerp = false;
-    paScroll.playAnimation('deny', true);
-    paScroll.onFinish = finishDeny;
+    panelShader.sliceColor = DENY_COLOR_A;
+
+    scrollTweens.push(FlxTween.num(0, 1, DENY_DURATION, {
+      onComplete: (_) -> finishDeny()
+    }, (t:Float) ->
+      {
+        panelShader.dirExtra = DENY_SHAKE_AMOUNT * (1 - t) * Math.cos(t * DENY_SHAKE_CYCLES * 2 * Math.PI);
+        panelShader.sliceColor = t < DENY_COLOR_SWAP ? DENY_COLOR_A : DENY_COLOR_B;
+      }));
   }
 
   /**
@@ -490,8 +477,6 @@ class QuickPanelGroup extends FunkinSpriteGroup
    */
   function finishDeny():Void
   {
-    if (paScroll != null) paScroll.onFinish = null;
-
     var done = pendingDenyDone;
     if (done == null) return;
     pendingDenyDone = null;
@@ -505,15 +490,65 @@ class QuickPanelGroup extends FunkinSpriteGroup
     if (!bodyBuilt) return;
 
     finishDeny();
-    paScroll.playAnimation('accept', true);
+    stopScroll();
     panelShader.doLerp = false;
+
+    panelShader.fatExtra = ACCEPT_FAT_AMOUNT;
+    scrollTweens.push(FlxTween.num(ACCEPT_FAT_AMOUNT, 0, ACCEPT_DURATION, {
+      ease: EaseUtil.backInOut()
+    }, (v:Float) -> panelShader.fatExtra = v));
+
+    // COlor flickering
+    panelShader.sliceColor = ACCEPT_COLOR_A;
+    scrollTweens.push(FlxTween.num(0, ACCEPT_FLICKER_FRAMES, ACCEPT_DURATION, null, (frame:Float) ->
+    {
+      panelShader.sliceColor = (Std.int(frame / 2) % 2 == 0) ? ACCEPT_COLOR_A : ACCEPT_COLOR_B;
+    }));
 
     for (i => button in buttons)
     {
-      if (i == selectedIndex) button.paScale.playAnimation('bumpBig');
+      if (i == selectedIndex) button.playBump(true);
       else
-        button.paFade.playAnimation('fade');
+        button.fadeOut();
     }
+  }
+
+  /**
+   * Cancels any running scroll / accept / deny animation and resets the shader values.
+   */
+  function stopScroll():Void
+  {
+    for (tween in scrollTweens) tween.cancel();
+    scrollTweens = [];
+
+    if (panelShader == null) return;
+    panelShader.dirExtra = defaultDirExtra;
+    panelShader.fatExtra = defaultFatExtra;
+    panelShader.sliceColor = defaultSliceColor;
+  }
+
+  /**
+   * Starts the slice color breathing loop, unless itss already running.
+   */
+  function startBreathe():Void
+  {
+    if (breatheTween != null && breatheTween.active) return;
+
+    panelShader.sliceLerp = 0;
+    breatheTween = FlxTween.num(0, 1, BREATHE_HALF_PERIOD, {
+      type: PINGPONG,
+      ease: FlxEase.quadInOut
+    }, (v:Float) -> panelShader.sliceLerp = v);
+  }
+
+  /**
+   * Stops the slice color breathing loop.
+   */
+  function stopBreathe():Void
+  {
+    if (breatheTween == null) return;
+    breatheTween.cancel();
+    breatheTween = null;
   }
 
   /**
@@ -529,20 +564,47 @@ class QuickPanelGroup extends FunkinSpriteGroup
     hintBreathing = false;
     hintBreatheTimer = 0;
 
-    paHint.playAnimation(left ? 'slideRight' : 'slideLeft');
-    paHint.onFinish = () ->
-    {
-      paHint.onFinish = null;
-      hintBreathing = true;
-    };
+    cancelHintTween();
+
+    var slideFrom:Float = left ? HINT_SLIDE_DISTANCE : -HINT_SLIDE_DISTANCE;
+    pullHint.offset.x = slideFrom;
+    pullHint.localAlpha = 0;
+
+    hintTween = FlxTween.num(0, 1, HINT_DURATION, {
+      ease: FlxEase.cubeOut,
+      onComplete: (_) ->
+      {
+        hintTween = null;
+        hintBreathing = true;
+      }
+    }, (p:Float) ->
+      {
+        pullHint.localAlpha = p;
+        pullHint.offset.x = slideFrom * (1 - p);
+      });
   }
 
   public function hideHint():Void
   {
     hintBreathing = false;
-    paHint.onFinish = null;
-    paHint.playAnimation('disappear');
+    cancelHintTween();
+
+    // Start fading by force
+    hintTween = FlxTween.num(pullHint.localAlpha, 0, HINT_DURATION, {
+      ease: FlxEase.cubeIn,
+      onComplete: (_) -> hintTween = null
+    }, (a:Float) -> pullHint.localAlpha = a);
     pullHint.color = HINT_COLOR_NORMAL;
+  }
+
+  /**
+   * Cancels the hint tweening flair.
+   */
+  function cancelHintTween():Void
+  {
+    if (hintTween == null) return;
+    hintTween.cancel();
+    hintTween = null;
   }
 
   override public function update(elapsed:Float):Void
@@ -568,14 +630,13 @@ class QuickPanelGroup extends FunkinSpriteGroup
 
   override public function destroy():Void
   {
-    if (paHint != null) paHint.onFinish = null;
-    if (paScroll != null) paScroll.onFinish = null;
     pendingDenyDone = null;
+    cancelHintTween();
+    for (tween in scrollTweens) if (tween != null) tween.cancel();
+    scrollTweens = [];
+    stopBreathe();
     if (pullTabVisual != null) FlxTween.cancelTweensOf(pullTabVisual);
     FlxTween.cancelTweensOf(this);
-    if (paScroll != null) paScroll.destroy();
-    if (paColor != null) paColor.destroy();
-    if (paHint != null) paHint.destroy();
     buttons = [];
 
     super.destroy();

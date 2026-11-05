@@ -24,7 +24,7 @@ import funkin.ui.options.OptionsSubState;
 import funkin.ui.quickpanel.QuickPanelTypes;
 import funkin.ui.transition.Transition;
 import funkin.util.MathUtil;
-import funkin.util.PropertyAnimator;
+import funkin.util.EaseUtil;
 import funkin.graphics.shaders.BoilShader;
 import funkin.util.StateUtil;
 import funkin.util.TouchUtil;
@@ -139,6 +139,71 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
   static final DESCRIPTION_OFFSET:Float = 100;
 
   /**
+   * Circular wipe starting radius
+   */
+  static final WIPE_RADIUS_START:Float = 3.1;
+
+  /**
+   * Circular wipe ending radius
+   */
+  static final WIPE_RADIUS_END:Float = 4.8;
+
+  /**
+   * Circular wipe radius but FULL.
+   */
+  static final WIPE_RADIUS_FULL:Float = 10.0;
+
+  /**
+   * How many frames to wipe for in 24 fps.
+   */
+  static final WIPE_FRAMES:Int = 4;
+
+  /**
+   * Duration for the icon pop bump animation
+   */
+  static final ICON_POP_DURATION:Float = 2 / 24;
+
+  /**
+   * How long to wait before starting the icon bump settling
+   */
+  static final ICON_SETTLE_DELAY:Float = 4 / 24;
+
+  /**
+   * Duration for the icon bump settling animation
+   */
+  static final ICON_SETTLE_DURATION:Float = 6 / 24;
+
+  /**
+   * The icon scale at the start of a bump
+   */
+  static final ICON_SCALE_START:Float = 1.4;
+
+  /**
+   * The biggest the icon scale can be during a bump
+   */
+  static final ICON_SCALE_PEAK:Float = 1.6;
+
+  /**
+   * The icon scale at the end of a bump
+   */
+  static final ICON_SCALE_END:Float = 1.2;
+
+  /**
+   * How far to overshoot the icon scal during a bump
+   */
+  static final ICON_SCALE_OVERSHOOT:Float = 3.0;
+
+  /**
+   * The starting icon angle
+   */
+  static final ICON_ANGLE_START:Float = 2.0;
+
+  /**
+   * The furtherest the icon angle can be
+   */
+  static final ICON_ANGLE_PEAK:Float = 2.2;
+
+  /**
    * Frames to wait after requesting the blocker before checking whether its load was cancelled.
    */
   static final BLOCKER_GRACE_FRAMES:Int = 3;
@@ -175,8 +240,6 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
   public var wipeSprite(default, null):FlxSprite;
   public var selectedIcon(default, null):FunkinSprite;
   public var selectedSplash(default, null):FunkinSprite;
-  public var paWipe(default, null):PropertyAnimator;
-  public var paMiddle(default, null):PropertyAnimator;
 
   var controls(get, never):Controls;
   var descriptionPanel:FunkinSprite;
@@ -187,6 +250,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
   var tickSound:Null<FunkinSound> = null;
   var moveTween:Null<FlxTween> = null;
   var transitionTimers:Array<FlxTimer> = [];
+  var transitionTweens:Array<FlxTween> = [];
   var curSelected:Int = 0;
   var scrollHoldTime:Float = 0;
   var scrollRepeating:Bool = false;
@@ -323,7 +387,6 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     panel.buildBody();
 
     buildTransitionVisuals();
-    setupTransitionAnims();
     wipeSprite.flipX = left;
 
     // Members added after construction may not inherit the camera.
@@ -360,52 +423,47 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     add(selectedSplash);
   }
 
-  function setupTransitionAnims():Void
+  /**
+   * Grows the circle wipe, then snaps it to fully covering the screen.
+   */
+  function playWipe():Void
   {
-    paWipe = new PropertyAnimator(circleWipe);
-    paWipe.addAnimationByName('wipe', 24, false);
-    paWipe.addProperty('wipe', 'circleRadius', [
-      3.1,
-      3.8,
-      4.3,
-      4.6,
-      4.8,
-      10.0
-    ]);
-    paWipe.setDefaultProperties();
+    wipeSprite.visible = true;
+    circleWipe.circleRadius = WIPE_RADIUS_START;
 
-    final bumpScale = [
-      1.4,
-      1.4,
-      1.6,
-      1.6,
-      1.55,
-      1.55,
-      1.1,
-      1.1,
-      1.17,
-      1.17,
-      1.2
-    ];
+    transitionTweens.push(FlxTween.num(WIPE_RADIUS_START, WIPE_RADIUS_END, WIPE_FRAMES / 24, {
+      ease: FlxEase.sineOut
+    }, (r:Float) -> circleWipe.circleRadius = r));
 
-    paMiddle = new PropertyAnimator(selectedIcon);
-    paMiddle.addAnimationByName('bump', 24, false);
-    paMiddle.addProperty('bump', 'scale.x', bumpScale.copy());
-    paMiddle.addProperty('bump', 'scale.y', bumpScale.copy());
-    paMiddle.addProperty('bump', 'angle', [
-      2.0,
-      2.0,
-      2.2,
-      2.2,
-      1.9,
-      1.9,
-      0.5,
-      0.5,
-      0.1,
-      0.1,
-      0.0
-    ]);
-    paMiddle.setDefaultProperties();
+    afterFrames(WIPE_FRAMES + 1, () -> circleWipe.circleRadius = WIPE_RADIUS_FULL);
+  }
+
+  /**
+   * Pops the selected icon up, then settles it.
+   */
+  function playIconBump():Void
+  {
+    selectedIcon.scale.set(ICON_SCALE_START, ICON_SCALE_START);
+    selectedIcon.angle = ICON_ANGLE_START;
+
+    transitionTweens.push(FlxTween.num(0, 1, ICON_POP_DURATION, {
+      ease: FlxEase.quadOut
+    }, (p:Float) ->
+      {
+        var s:Float = FlxMath.lerp(ICON_SCALE_START, ICON_SCALE_PEAK, p);
+        selectedIcon.scale.set(s, s);
+        selectedIcon.angle = FlxMath.lerp(ICON_ANGLE_START, ICON_ANGLE_PEAK, p);
+      }));
+
+    transitionTweens.push(FlxTween.num(ICON_SCALE_PEAK, ICON_SCALE_END, ICON_SETTLE_DURATION, {
+      startDelay: ICON_SETTLE_DELAY,
+      ease: EaseUtil.backOut(ICON_SCALE_OVERSHOOT)
+    }, (s:Float) -> selectedIcon.scale.set(s, s)));
+
+    transitionTweens.push(FlxTween.num(ICON_ANGLE_PEAK, 0, ICON_SETTLE_DURATION, {
+      startDelay: ICON_SETTLE_DELAY,
+      ease: FlxEase.quartOut
+    }, (a:Float) -> selectedIcon.angle = a));
   }
 
   /**
@@ -570,16 +628,12 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     selectedIcon.updateHitbox();
     selectedIcon.screenCenter();
 
-    afterFrames(6, () ->
-    {
-      wipeSprite.visible = true;
-      paWipe.playAnimation('wipe', true);
-    });
+    afterFrames(6, playWipe);
 
     afterFrames(8, () ->
     {
       selectedIcon.visible = true;
-      paMiddle.playAnimation('bump', true);
+      playIconBump();
 
       selectedSplash.visible = true;
       selectedSplash.animation.play('splash');
@@ -1127,8 +1181,10 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
 
   override public function destroy():Void
   {
-    for (timer in transitionTimers) timer.cancel();
+    for (timer in transitionTimers) if (timer != null) timer.cancel();
     transitionTimers = [];
+    for (tween in transitionTweens) if (tween != null) tween.cancel();
+    transitionTweens = [];
 
     cancelMoveTween();
 
@@ -1147,9 +1203,6 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
       tickSound.destroy();
       tickSound = null;
     }
-
-    if (paWipe != null) paWipe.destroy();
-    if (paMiddle != null) paMiddle.destroy();
 
     super.destroy();
 

@@ -2,6 +2,7 @@ package funkin.ui.quickpanel;
 
 import flixel.FlxG;
 import flixel.text.FlxText;
+import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import funkin.ui.quickpanel.QuickPanelState;
@@ -9,10 +10,7 @@ import funkin.group.FunkinGroup;
 import funkin.ui.quickpanel.QuickPanelGroup;
 import funkin.ui.quickpanel.QuickPanelState;
 import funkin.ui.quickpanel.QuickPanelTypes;
-import funkin.graphics.shaders.BoilShader;
-import funkin.graphics.FunkinSprite;
-import funkin.util.PropertyAnimator;
-import funkin.audio.FunkinSound;
+import funkin.util.EaseUtil;
 import funkin.util.TouchUtil;
 
 /**
@@ -23,6 +21,66 @@ class QuickPanelButton extends FunkinSpriteGroup
   public static final ITEM_WIDTH:Int = 320;
   public static final ITEM_HEIGHT:Int = 100;
   public static final ICON_WIDTH:Int = 100;
+
+  /**
+   * Alpha while a touch is held on the button.
+   */
+  static final PRESS_ALPHA:Float = 0.7;
+
+  /**
+   * Fade-out duration on accept
+   */
+  static final FADE_DURATION:Float = 5 / 24;
+
+  /**
+   * How long for a bump to hold its peak size
+   */
+  static final BUMP_HOLD:Float = 5 / 30;
+
+  /**
+    *How long for a bump to settle back to its normal size.
+   */
+  static final BUMP_SETTLE:Float = 5 / 30;
+
+  /**
+   * The biggest a bump can be.
+   */
+  static final BUMP_PEAK:Float = 1.04;
+
+  /**
+   * How much the bump overshoots.
+   */
+  static final BUMP_OVERSHOOT:Float = 4.9;
+
+  /**
+   * The biggest a bump can be, but bigger
+   */
+  static final BUMP_BIG_PEAK:Float = 1.2;
+
+  /**
+   * How much the biggest bump can overshoot
+   */
+  static final BUMP_BIG_OVERSHOOT:Float = 3.0;
+
+  /**
+   * How much to bump the button's icon
+   */
+  static final ICON_BUMP:Float = 0.05;
+
+  /**
+   * How long for a bump to hold its peak size, but icon!
+   */
+  static final ICON_BUMP_HOLD:Float = 1 / 30;
+
+  /**
+   * How long for a bump to settle back to its normal size, but icon!
+   */
+  static final ICON_BUMP_SETTLE:Float = 9 / 30;
+
+  /**
+   * How much the bump overshoots, but icon!
+   */
+  static final ICON_BUMP_OVERSHOOT:Float = 2.6;
 
   var boilShaderIcon:BoilShader;
   var boilShaderText:BoilShader;
@@ -49,8 +107,16 @@ class QuickPanelButton extends FunkinSpriteGroup
 
   public var buttonText:FlxText;
   public var icon:FunkinSprite;
-  public var paScale:PropertyAnimator;
-  public var paFade:PropertyAnimator;
+
+  /**
+   * Helper tween variable for fading
+   */
+  var fadeTween:Null<FlxTween> = null;
+
+  /**
+   * A collection of tweens related to bumpin'
+   */
+  var bumpTweens:Array<FlxTween> = [];
 
   var ICON_SCALE_X:Float;
   var ICON_SCALE_Y:Float;
@@ -134,85 +200,91 @@ class QuickPanelButton extends FunkinSpriteGroup
     resetOrigin();
     updateSelected();
 
-    setupAnims();
-
-    paFade.playAnimation('release');
+    setFadeAlpha(1.0);
   }
 
   /**
-   * Sets up the fade and scale animations.
+   * Fades the button out.
    */
-  public function setupAnims()
+  public function fadeOut():Void
   {
-    paFade = new PropertyAnimator(this);
-
-    paFade.addAnimationByName('fade', 24);
-    paFade.addProperty('fade', 'localAlpha', [for (a in [
-      1.0,
-      0.5,
-      0.2,
-      0.1,
-      0.1,
-      0.0
-    ]) a * alphaMultiplier]);
-
-    paFade.addAnimationByName('press', 24);
-    paFade.addProperty('press', 'localAlpha', [0.7 * alphaMultiplier]);
-
-    paFade.addAnimationByName('release', 24);
-    paFade.addProperty('release', 'localAlpha', [1.0 * alphaMultiplier]);
-
-    paFade.setDefaultProperties();
-
-    paScale = new PropertyAnimator(this);
-    addBumpAnimation('bump', 1.04, 0.98);
-    addBumpAnimation('bumpBig', 1.2, 0.95);
-    paScale.setDefaultProperties();
-
-    icon.localScale.x = ICON_SCALE_X;
-    icon.localScale.y = ICON_SCALE_Y;
+    cancelFade();
+    fadeTween = FlxTween.num(localAlpha, 0, FADE_DURATION, {
+      ease: FlxEase.cubeOut,
+      onComplete: (_) -> fadeTween = null
+    }, (a:Float) -> localAlpha = a);
   }
 
   /**
-   * Adds a squash-and-settle animation: the whole button peaks then dips, then settles at 1.
-   * @param name Anim name
-   * @param peak The peak scale value
-   * @param dip The dip scale value.
+   * Snaps the button's alpha properly.
+   * @param a Alpha
    */
-  function addBumpAnimation(name:String, peak:Float, dip:Float):Void
+  function setFadeAlpha(a:Float):Void
   {
-    final iconOffsets = [
-      0.05,
-      0.05,
-      0.02,
-      0.02,
-      0.02,
-      0.02,
-      -0.01,
-      -0.01,
-      -0.01,
-      -0.01,
-      0.0
-    ];
-    final groupScale = [
-      peak,
-      peak,
-      peak,
-      peak,
-      peak,
-      peak,
-      dip,
-      dip,
-      dip,
-      dip,
-      1.0
-    ];
+    cancelFade();
+    localAlpha = a * alphaMultiplier;
+  }
 
-    paScale.addAnimationByName(name, 30);
-    paScale.addProperty(name, 'icon.localScale.x', [for (o in iconOffsets) ICON_SCALE_X + o]);
-    paScale.addProperty(name, 'icon.localScale.y', [for (o in iconOffsets) ICON_SCALE_Y + o]);
-    paScale.addProperty(name, 'localScale.x', groupScale);
-    paScale.addProperty(name, 'localScale.y', groupScale.copy());
+  /**
+   * Cancels the fading, if one is going on right now.
+   */
+  function cancelFade():Void
+  {
+    if (fadeTween == null) return;
+    fadeTween.cancel();
+    fadeTween = null;
+  }
+
+  /**
+   * Plays a nice little bump animation for this button, bumps it for the icon too.
+   * @param big Use the bigger accept bump.
+   */
+  public function playBump(big:Bool = false):Void
+  {
+    stopBump();
+
+    var peak:Float = big ? BUMP_BIG_PEAK : BUMP_PEAK;
+
+    localScale.x = peak;
+    localScale.y = peak;
+    setIconBump(ICON_BUMP);
+
+    bumpTweens.push(FlxTween.num(peak, 1, BUMP_SETTLE, {
+      startDelay: BUMP_HOLD,
+      ease: EaseUtil.backOut(big ? BUMP_BIG_OVERSHOOT : BUMP_OVERSHOOT)
+    }, (v:Float) ->
+      {
+        localScale.x = v;
+        localScale.y = v;
+      }));
+
+    bumpTweens.push(FlxTween.num(ICON_BUMP, 0, ICON_BUMP_SETTLE, {
+      startDelay: ICON_BUMP_HOLD,
+      ease: EaseUtil.backOut(ICON_BUMP_OVERSHOOT)
+    }, setIconBump));
+  }
+
+  /**
+   * Stops any bump that is ongoing.
+   */
+  function stopBump():Void
+  {
+    for (tween in bumpTweens) tween.cancel();
+    bumpTweens = [];
+
+    localScale.x = 1;
+    localScale.y = 1;
+    setIconBump(0);
+  }
+
+  /**
+   * Sets the icon bump scaling with the given offset.
+   * @param offset Ofsset
+   */
+  function setIconBump(offset:Float):Void
+  {
+    icon.localScale.x = ICON_SCALE_X + offset;
+    icon.localScale.y = ICON_SCALE_Y + offset;
   }
 
   /**
@@ -228,16 +300,9 @@ class QuickPanelButton extends FunkinSpriteGroup
 
     BOIL_INTERVAL = selected ? 4 : 8;
 
-    if (paScale == null) return; // still constructing
+    stopBump();
 
-    paScale.stop();
-
-    localScale.x = 1;
-    localScale.y = 1;
-    icon.localScale.x = ICON_SCALE_X;
-    icon.localScale.y = ICON_SCALE_Y;
-
-    if (selected) paScale.playAnimation('bump');
+    if (selected) playBump();
   }
 
   override function update(elapsed:Float):Void
@@ -257,7 +322,7 @@ class QuickPanelButton extends FunkinSpriteGroup
     if (TouchUtil.justPressed && TouchUtil.overlaps(this))
     {
       touchHeld = true;
-      paFade.playAnimation('press');
+      setFadeAlpha(PRESS_ALPHA);
       FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/menu-press'), 0.1);
     }
 
@@ -266,7 +331,7 @@ class QuickPanelButton extends FunkinSpriteGroup
     if (TouchUtil.justReleased && touchHeld)
     {
       touchHeld = false;
-      paFade.playAnimation('release');
+      setFadeAlpha(1.0);
 
       if (TouchUtil.overlaps(this) && onTapped != null) onTapped(this);
     }
@@ -284,6 +349,9 @@ class QuickPanelButton extends FunkinSpriteGroup
   override function destroy():Void
   {
     onTapped = null;
+    cancelFade();
+    for (tween in bumpTweens) if (tween != null) tween.cancel();
+    bumpTweens = [];
     FlxTween.cancelTweensOf(this);
     FlxTween.cancelTweensOf(this.scale);
     super.destroy();
