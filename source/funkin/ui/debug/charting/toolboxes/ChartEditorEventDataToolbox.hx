@@ -779,7 +779,9 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
     {
       if (dropDown.dataSource.get(i).value == text)
       {
-        if (dropDown.selectedIndex != i) dropDown.selectedIndex = i;
+        if (dropDown.selectedIndex == i && dropDown.selectedItem?.value == text) return;
+        if (dropDown.selectedIndex == i) dropDown.selectedIndex = -1;
+        dropDown.selectedIndex = i;
         return;
       }
     }
