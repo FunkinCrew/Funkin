@@ -19,6 +19,7 @@ import funkin.audio.FunkinSound;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
 import funkin.input.Controls;
+import funkin.ui.UIStateMachine;
 import funkin.ui.options.OptionsSubState;
 import funkin.ui.quickpanel.QuickPanelTypes;
 import funkin.ui.transition.Transition;
@@ -155,7 +156,8 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
   public var panelCam(default, null):FunkinCamera;
   public var bg(default, null):FunkinSprite;
   public var panel(default, null):QuickPanelGroup;
-  public var curState(default, null):PanelState = CLOSED;
+  public var uiState(default, null):UIStateMachine;
+  public var curState(get, never):UIState;
   public var isOpen(get, never):Bool;
 
   /**
@@ -228,11 +230,6 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     {state:FlxState, update:Bool, draw:Bool}> = [];
 
   /**
-   * True while the blocker (and the panel's assets) are being loaded.
-   */
-  var blockerPending:Bool = false;
-
-  /**
    * The blocker that has been constructed by the transition but not opened yet.
    */
   var pendingBlocker:Null<PanelBlockerSubState> = null;
@@ -252,6 +249,14 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
   public function new()
   {
     super();
+
+    uiState = new UIStateMachine('QuickPanel', [
+      PanelClosed => [PanelLoading, PanelDragging, PanelOpen],
+      PanelLoading => [PanelOpen, PanelClosed],
+      PanelDragging => [PanelLoading, PanelOpen, PanelClosed],
+      PanelOpen => [PanelDragging, PanelConfirming, PanelClosed],
+      PanelConfirming => [PanelClosed]
+    ], PanelClosed);
 
     createCamera();
     buildBackdrop();
@@ -418,7 +423,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     if (wipeSprite != null) wipeSprite.flipX = left;
     panel.setSide(left);
 
-    if (curState == OPEN) openPanel(true);
+    if (uiState.is(PanelOpen)) openPanel(true);
     else
       closePanel(true);
   }
@@ -431,7 +436,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
       return;
     }
 
-    curState = OPEN;
+    if (!uiState.transition(PanelOpen)) return;
 
     duckMusic();
     movePanel(panel.openX, instant);
@@ -446,9 +451,10 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
 
   public function closePanel(instant:Bool = false):Void
   {
-    curState = CLOSED;
-
     closeBlocker();
+
+    uiState.transition(PanelClosed);
+
     restoreMusic();
     movePanel(panel.closedX, instant);
 
@@ -528,7 +534,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
    */
   public function changeSelection(change:Int = 0, snap:Bool = false):Void
   {
-    if (curState != OPEN || panel.buttons.length == 0) return;
+    if (!uiState.is(PanelOpen) || panel.buttons.length == 0) return;
 
     var prevSelected:Int = curSelected;
 
@@ -629,10 +635,10 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
       inactivityHintUsed = true;
       hintVisible = true;
       resetTabFade();
-      panel.showHint(curState == OPEN);
+      panel.showHint(uiState.is(PanelOpen));
     }
 
-    if (curState == CLOSED)
+    if (uiState.is(PanelClosed))
     {
       bg.alpha = MathUtil.smoothLerpPrecision(bg.alpha, hintVisible ? BG_ALPHA : 0, elapsed, 1);
     }
@@ -662,7 +668,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     }
     #end
 
-    if (curState != CLOSED || hintVisible) return;
+    if (!uiState.is(PanelClosed) || hintVisible) return;
 
     tabFadeTimer += elapsed;
     var progress:Float = FlxMath.bound((tabFadeTimer - TAB_FADE_DELAY) / TAB_FADE_DURATION, 0, 1);
@@ -677,7 +683,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
 
   function updatePanelInput(elapsed:Float):Void
   {
-    if (blockerPending || isHostTransitioning()) return;
+    if (isHostTransitioning()) return;
 
     #if FEATURE_TOUCH_CONTROLS
     updateTracking(elapsed);
@@ -685,11 +691,11 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
 
     switch (curState)
     {
-      case CLOSED | OPEN:
+      case PanelClosed | PanelOpen:
         if (FlxG.keys.justPressed.TAB)
         {
           resetTabFade();
-          if (curState == CLOSED)
+          if (uiState.is(PanelClosed))
           {
             openPanel();
             FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/open-tab-click').toFlxSoundAsset());
@@ -706,10 +712,13 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
         updateTabTouch();
         #end
 
-      case OPENING:
+      case PanelDragging:
         #if FEATURE_TOUCH_CONTROLS
         updateDrag(elapsed);
         #end
+
+      default:
+        // PanelLoading / PanelConfirming: no input.
     }
   }
 
@@ -721,7 +730,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
 
   function updateNavigation(elapsed:Float):Void
   {
-    if (lock || curState != OPEN) return;
+    if (lock || !uiState.canInteract()) return;
 
     if (controls.ACCEPT_P)
     {
@@ -789,7 +798,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
   }
 
   /**
-   * Handles presses, taps and grabs on the tab while the panel is CLOSED or OPEN.
+   * Handles presses, taps and grabs on the tab while the panel is closed or open.
    */
   function updateTabTouch():Void
   {
@@ -818,7 +827,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
 
     if (TouchUtil.justReleased && overTab)
     {
-      if (curState == CLOSED)
+      if (uiState.is(PanelClosed))
       {
         openPanel();
         FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/open-tab-click').toFlxSoundAsset());
@@ -832,7 +841,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     }
 
     // Tapping outside an open panel closes it.
-    if (curState == OPEN && TouchUtil.justPressed && !overTab && !TouchUtil.overlaps(panel.panelSprite))
+    if (uiState.is(PanelOpen) && TouchUtil.justPressed && !overTab && !TouchUtil.overlaps(panel.panelSprite))
     {
       closePanel();
       FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/close-tab-click').toFlxSoundAsset());
@@ -866,6 +875,8 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
 
   function grabPanel():Void
   {
+    if (!uiState.transition(PanelDragging)) return;
+
     // Stop any open/close tween so it doesnt fight the finger
     cancelMoveTween();
 
@@ -875,8 +886,6 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     panel.setTabOnTop(true);
     panel.pullTabVisual.grab(curState);
     panel.clearSelection();
-
-    curState = OPENING;
   }
 
   function updateDrag(elapsed:Float):Void
@@ -932,25 +941,26 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
 
   function onButtonTapped(button:QuickPanelButton):Void
   {
-    if (lock || curState != OPEN) return;
+    if (lock || !uiState.canInteract()) return;
     changeSelection(button.curIndex, true);
   }
 
   function clickSelected():Void
   {
-    if (curState != OPEN || lock) return;
+    if (lock || !uiState.canInteract()) return;
 
     var button = currentButton;
     if (button == null) return;
 
-    lock = true;
-
     if (button.data.disabled == true)
     {
+      lock = true;
       panel.playDeny(() -> lock = false);
       FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/menu-deny').toFlxSoundAsset());
       return;
     }
+
+    if (!uiState.transition(PanelConfirming)) return;
 
     panel.playAccept(curSelected);
     FunkinSound.playOnce(Paths.sound('ui/main-menu/confirm-menu').toFlxSoundAsset());
@@ -1015,11 +1025,11 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
    */
   function requestBlocker(instant:Bool):Void
   {
-    if (blockerPending || FlxG.state == null) return;
+    // Already loading, or nothing to block.
+    if (uiState.is(PanelLoading) || FlxG.state == null) return;
+    if (!uiState.transition(PanelLoading)) return;
 
-    blockerPending = true;
     blockerPendingFrames = 0;
-    lock = true;
 
     // Freeze the host now, so it doesn't keep running underneath the load.
     savePersistence();
@@ -1050,10 +1060,9 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
   function onBlockerReady(readyBlocker:PanelBlockerSubState,
     instant:Bool):Void
   {
-    blockerPending = false;
     pendingBlocker = null;
+    blockerPendingFrames = 0;
     blocker = readyBlocker;
-    lock = false;
 
     ensurePanelVisuals();
     openPanel(instant);
@@ -1065,7 +1074,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
    */
   function updateBlockerRequest():Void
   {
-    if (!blockerPending || pendingBlocker != null) return;
+    if (!uiState.is(PanelLoading) || pendingBlocker != null) return;
 
     // Give the loading substate a couple of frames to actually open.
     if (++blockerPendingFrames < BLOCKER_GRACE_FRAMES) return;
@@ -1101,13 +1110,12 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     savedPersistence = [];
 
     // Abandon an in-flight request.
-    if (blockerPending)
+    if (uiState.is(PanelLoading))
     {
       blockerRequest++;
       if (pendingBlocker != null) pendingBlocker.cancelled = true;
       pendingBlocker = null;
-      blockerPending = false;
-      lock = false;
+      blockerPendingFrames = 0;
     }
 
     if (blocker == null) return;
@@ -1297,7 +1305,9 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
 
   inline function get_controls():Controls return PlayerSettings.controls;
 
-  inline function get_isOpen():Bool return curState == OPEN;
+  inline function get_curState():UIState return uiState.currentState;
+
+  inline function get_isOpen():Bool return uiState.is(PanelOpen);
 
   function get_currentButton():Null<QuickPanelButton>
   {

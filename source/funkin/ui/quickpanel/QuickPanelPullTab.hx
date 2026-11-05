@@ -1,7 +1,7 @@
 package funkin.ui.quickpanel;
 
 import funkin.graphics.FunkinSprite;
-import funkin.ui.quickpanel.QuickPanelTypes;
+import funkin.ui.UIStateMachine;
 
 class QuickPanelPullTab extends FunkinSprite
 {
@@ -30,52 +30,50 @@ class QuickPanelPullTab extends FunkinSprite
     anim.play(name);
   }
 
-  public function press(state:PanelState):Void
+  public function press(state:UIState):Void
   {
     switch (state)
     {
-      case CLOSED:
+      case PanelClosed:
         playAnimation('pressLeft');
-      case OPENING:
-        // No press animation mid-drag.
-      case OPEN:
+      case PanelOpen:
         playAnimation('pressRight');
       default:
+        // Nothin'
     }
   }
 
-  public function grab(state:PanelState):Void
+  public function grab(state:UIState):Void
   {
     playAnimation('held');
   }
 
-  public function release(state:PanelState):Void
+  public function release(state:UIState):Void
   {
     switch (state)
     {
-      case OPEN:
+      case PanelOpen:
         playAnimation('release');
       default:
         playAnimation('idleLeft');
     }
   }
 
-  public function playIdle(state:PanelState):Void
+  public function playIdle(state:UIState):Void
   {
     switch (state)
     {
-      case CLOSED:
-        playAnimation('idleLeft');
-      case OPENING:
+      case PanelDragging:
         playAnimation('held');
-      case OPEN:
+      case PanelOpen | PanelConfirming:
         playAnimation('idleRight');
       default:
+        playAnimation('idleLeft');
     }
   }
 
   function onAnimationFinished(name:String):Void
   {
-    if (name == 'release') playIdle(OPEN);
+    if (name == 'release') playIdle(PanelOpen);
   }
 }

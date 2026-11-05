@@ -12,6 +12,7 @@ import funkin.group.FunkinGroup;
 import funkin.ui.quickpanel.QuickPanelTypes;
 import funkin.graphics.shaders.QuickPanelShader;
 import funkin.util.PropertyAnimator;
+import funkin.ui.UIStateMachine.UIState;
 
 /**
  * Group containing quick panel visuals
@@ -121,7 +122,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
 
     pullTabVisual = new QuickPanelPullTab(0, 0, #if FEATURE_TOUCH_CONTROLS false #else true #end);
     pullTabVisual.localY = (FlxG.height / 2) - (pullTabVisual.height / 2);
-    pullTabVisual.playIdle(CLOSED);
+    pullTabVisual.playIdle(PanelClosed);
     pullTabVisual.zIndex = Z_ABOVE;
     add(pullTabVisual);
 

@@ -3,17 +3,6 @@ package funkin.ui.quickpanel;
 import flixel.FlxSubState;
 
 /**
- * Shared types for the quick panel.
- * TODO: Probably use UIStateMachine instead.
- */
-enum PanelState
-{
-  CLOSED;
-  OPENING;
-  OPEN;
-}
-
-/**
  * one button's data for the quick panel
  * TODO: Make this more flexible.
  */
