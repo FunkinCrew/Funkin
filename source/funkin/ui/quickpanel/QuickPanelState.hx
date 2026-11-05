@@ -571,7 +571,15 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
       selectedSplash.animation.play('splash');
     });
 
-    afterFrames(22, () -> finishTransition(data));
+    afterFrames(22, () ->
+    {
+      FlxTween.tween(selectedIcon, {
+        alpha: 0
+      }, 8 / 24, {
+        ease: FlxEase.expoOut
+      });
+      if (data.callback != null) data.callback();
+    });
   }
 
   override public function update(elapsed:Float):Void
@@ -585,7 +593,8 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     updateNavigation(elapsed);
 
     #if FEATURE_DEBUG_FUNCTIONS
-    if (FlxG.keys.justPressed.F) repositionSide(!left);
+    if (FlxG.keys.justPressed.B) showHint(); // Shows the hint
+    if (FlxG.keys.justPressed.F) repositionSide(!left); // Moves the panel to the side
     #end
   }
 
@@ -609,7 +618,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
       inactivityHintUsed = true;
       hintVisible = true;
       resetTabFade();
-      panel.showHint(hintText(curState == OPEN));
+      panel.showHint(curState == OPEN);
     }
 
     if (curState == CLOSED)
@@ -620,15 +629,13 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
 
   function userIsActive():Bool
   {
+    #if FEATURE_DEBUG_FUNCTIONS
+    var keyPressed:Bool = FlxG.keys.pressed.ANY && !controls.VOLUME_MUTE && !controls.VOLUME_UP && !controls.VOLUME_DOWN && !FlxG.keys.pressed.B;
+    #else
     var keyPressed:Bool = FlxG.keys.pressed.ANY && !controls.VOLUME_MUTE && !controls.VOLUME_UP && !controls.VOLUME_DOWN;
+    #end
     var touchPressed:Bool = TouchUtil.touch != null && TouchUtil.touch.pressed;
     return keyPressed || touchPressed;
-  }
-
-  function hintText(panelOpen:Bool):String
-  {
-    var action:String = #if FEATURE_TOUCH_CONTROLS canPull ? 'PULL' : 'TAP' #else 'TAB' #end;
-    return '($action) to ${panelOpen ? 'close' : 'open'} quick menu';
   }
 
   function updateTabFade(elapsed:Float):Void
@@ -940,16 +947,6 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     startTransition(button.data);
   }
 
-  function finishTransition(data:QuickPanelButtonData):Void
-  {
-    FlxTween.tween(selectedIcon, {
-      alpha: 0
-    }, 8 / 24, {
-      ease: FlxEase.expoOut
-    });
-    if (data.callback != null) data.callback();
-  }
-
   /**
    * Runs `fn` after a number of 24fps frames.
    * @param frames How many frames of 24fps frames.
@@ -1114,9 +1111,9 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
 
     cancelMoveTween();
 
-    FlxTween.cancelTweensOf(bg);
-    FlxTween.cancelTweensOf(descriptionPanel);
-    FlxTween.cancelTweensOf(descriptionText);
+    if (bg != null) FlxTween.cancelTweensOf(bg);
+    if (descriptionPanel != null) FlxTween.cancelTweensOf(descriptionPanel);
+    if (descriptionText != null) FlxTween.cancelTweensOf(descriptionText);
     if (selectedIcon != null) FlxTween.cancelTweensOf(selectedIcon);
 
     restoreMusic();

@@ -45,9 +45,6 @@ class SidePanelPlugin extends FlxTypedContainer<FlxBasic>
   public static function initialize():Void
   {
     if (_instance != null) return;
-
-    // NOTE: this is global and affects every plugin, not just this one.
-    FlxG.plugins.drawOnTop = true;
     FlxG.plugins.addPlugin(new SidePanelPlugin());
   }
 

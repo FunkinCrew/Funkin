@@ -27,7 +27,7 @@ class QuickPanelPullTab extends FunkinSprite
 
   public function playAnimation(name:String):Void
   {
-    this.animation.play(name);
+    anim.play(name);
   }
 
   public function press(state:PanelState):Void

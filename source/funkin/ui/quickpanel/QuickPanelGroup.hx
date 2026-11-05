@@ -209,181 +209,6 @@ class QuickPanelGroup extends FunkinSpriteGroup
     layoutButtons();
   }
 
-  function layoutButtons():Void
-  {
-    var count:Int = buttons.length;
-    if (count == 0 || panelSprite == null) return;
-
-    var angleStep:Float = count > 1 ? (BUTTON_ANGLE_RANGE * 2) / (count - 1) : 0;
-    var fullHeight:Float = (QuickPanelButton.ITEM_HEIGHT * count) + (BUTTON_PADDING * (count - 1));
-    var startY:Float = (FlxG.height / 2) - (fullHeight / 2);
-    var baseX:Float = left ? -panelSprite.width + 58 : 98;
-
-    for (index => button in buttons)
-    {
-      var targetAngle:Float = BUTTON_ANGLE_RANGE - (angleStep * index);
-      var dist:Float = Math.abs(Math.cos(targetAngle) * BUTTON_ANGLE_DISTANCE);
-
-      button.localX = left ? baseX + dist : baseX - dist;
-      button.localY = startY + ((QuickPanelButton.ITEM_HEIGHT + BUTTON_PADDING) * index);
-      button.localAngle = left ? -targetAngle : targetAngle;
-      button.repositionSide(left);
-    }
-  }
-
-  /**
-   * Puts the pull tab above / below the panel sprite.
-   * @param top Whether its uptop and down below.
-   */
-  public function setTabOnTop(top:Bool):Void
-  {
-    if (panelSprite != null) panelSprite.zIndex = top ? Z_BELOW : Z_ABOVE;
-    pullTabVisual.zIndex = top ? Z_ABOVE : Z_BELOW;
-    refresh();
-  }
-
-  /**
-   * Highlights one button and points the shader slice at it.
-   * @param index The index of the button to highlight.
-   * @param disabled Whether button is disabled or not.
-   */
-  public function showSelection(index:Int, disabled:Bool):Void
-  {
-    if (!bodyBuilt) return;
-
-    for (i => button in buttons) if (i == index || button.selected) button.selected = (i == index);
-
-    var count:Int = buttons.length;
-    var step:Float = count > 1 ? (SLICE_ANGLE_RANGE * 2) / (count - 1) : 0;
-
-    panelShader.sliceVisible = true;
-    panelShader.doLerp = true;
-    panelShader.dir = -90 + (SLICE_ANGLE_RANGE - (step * index));
-    panelShader.sliceColorStart = disabled ? QuickPanelShader.START_COLOR_DISABLED : QuickPanelShader.START_COLOR_NORMAL;
-    panelShader.sliceColorEnd = disabled ? QuickPanelShader.END_COLOR_DISABLED : QuickPanelShader.END_COLOR_NORMAL;
-    paColor.playAnimation('breathe');
-  }
-
-  /**
-   * Deselects every button and hides the shader slice.
-   */
-  public function clearSelection():Void
-  {
-    for (button in buttons)
-    {
-      if (button.selected) button.selected = false;
-    }
-
-    if (!bodyBuilt) return;
-
-    paColor.stop();
-    panelShader.sliceVisible = false;
-  }
-
-  /**
-   * Plays the scroll bump animation.
-   * @param direction -1 = moved up, 1 = moved down, 0 = no movement.
-   */
-  public function playScrollBump(direction:Int):Void
-  {
-    if (!bodyBuilt) return;
-
-    paScroll.onFinish = null;
-    paScroll.playAnimation(direction < 0 ? 'bumpUp' : (direction > 0 ? 'bumpDown' : 'bumpNeutral'));
-  }
-
-  public function playDeny(onDone:Void->Void):Void
-  {
-    if (!bodyBuilt)
-    {
-      // Still release the caller's lock.
-      if (onDone != null) onDone();
-      return;
-    }
-
-    panelShader.doLerp = false;
-    paScroll.playAnimation('deny', true);
-    paScroll.onFinish = () ->
-    {
-      // Clear immediately so later animations don't re-run this.
-      paScroll.onFinish = null;
-      panelShader.doLerp = true;
-      if (onDone != null) onDone();
-    };
-  }
-
-  public function playAccept(selectedIndex:Int):Void
-  {
-    if (!bodyBuilt) return;
-
-    paScroll.onFinish = null;
-    paScroll.playAnimation('accept', true);
-    panelShader.doLerp = false;
-
-    for (i => button in buttons)
-    {
-      if (i == selectedIndex) button.paScale.playAnimation('bumpBig');
-      else
-        button.paFade.playAnimation('fade');
-    }
-  }
-
-  public function showHint(text:String):Void
-  {
-    pullHint.text = text;
-    pullHint.color = HINT_COLOR_NORMAL;
-    hintBreathing = false;
-    hintBreatheTimer = 0;
-
-    paHint.playAnimation(left ? 'slideRight' : 'slideLeft');
-    paHint.onFinish = () ->
-    {
-      paHint.onFinish = null;
-      hintBreathing = true;
-    };
-  }
-
-  public function hideHint():Void
-  {
-    hintBreathing = false;
-    paHint.onFinish = null;
-    paHint.playAnimation('disappear');
-    pullHint.color = HINT_COLOR_NORMAL;
-  }
-
-  override public function update(elapsed:Float):Void
-  {
-    super.update(elapsed);
-
-    if (bodyBuilt)
-    {
-      panelBoilTimer -= elapsed;
-      if (panelBoilTimer <= 0)
-      {
-        panelBoilTimer += PANEL_BOIL_INTERVAL / 24;
-        panelShader.updateBoil();
-      }
-    }
-
-    if (hintBreathing)
-    {
-      hintBreatheTimer += elapsed;
-      pullHint.color = FlxColor.interpolate(HINT_COLOR_DARK, HINT_COLOR_NORMAL, (Math.cos(hintBreatheTimer * 2) / 2) + 0.5);
-    }
-  }
-
-  override public function destroy():Void
-  {
-    if (paHint != null) paHint.onFinish = null;
-    if (paScroll != null) paScroll.onFinish = null;
-    if (pullTabVisual != null) FlxTween.cancelTweensOf(pullTabVisual);
-    FlxTween.cancelTweensOf(this);
-
-    buttons = [];
-
-    super.destroy();
-  }
-
   /**
    * Hint animations.
    */
@@ -550,6 +375,187 @@ class QuickPanelGroup extends FunkinSpriteGroup
     ]);
     paColor.setDefaultProperties();
     paColor.playAnimation('breathe');
+  }
+
+  function layoutButtons():Void
+  {
+    var count:Int = buttons.length;
+    if (count == 0 || panelSprite == null) return;
+
+    var angleStep:Float = count > 1 ? (BUTTON_ANGLE_RANGE * 2) / (count - 1) : 0;
+    var fullHeight:Float = (QuickPanelButton.ITEM_HEIGHT * count) + (BUTTON_PADDING * (count - 1));
+    var startY:Float = (FlxG.height / 2) - (fullHeight / 2);
+    var baseX:Float = left ? -panelSprite.width + 58 : 98;
+
+    for (index => button in buttons)
+    {
+      var targetAngle:Float = BUTTON_ANGLE_RANGE - (angleStep * index);
+      var dist:Float = Math.abs(Math.cos(targetAngle) * BUTTON_ANGLE_DISTANCE);
+
+      button.localX = left ? baseX + dist : baseX - dist;
+      button.localY = startY + ((QuickPanelButton.ITEM_HEIGHT + BUTTON_PADDING) * index);
+      button.localAngle = left ? -targetAngle : targetAngle;
+      button.repositionSide(left);
+    }
+  }
+
+  /**
+   * Puts the pull tab above / below the panel sprite.
+   * @param top Whether its uptop and down below.
+   */
+  public function setTabOnTop(top:Bool):Void
+  {
+    if (panelSprite != null) panelSprite.zIndex = top ? Z_BELOW : Z_ABOVE;
+    pullTabVisual.zIndex = top ? Z_ABOVE : Z_BELOW;
+    refresh();
+  }
+
+  /**
+   * Highlights one button and points the shader slice at it.
+   * @param index The index of the button to highlight.
+   * @param disabled Whether button is disabled or not.
+   */
+  public function showSelection(index:Int, disabled:Bool):Void
+  {
+    if (!bodyBuilt) return;
+
+    for (i => button in buttons) if (i == index || button.selected) button.selected = (i == index);
+
+    var count:Int = buttons.length;
+    var step:Float = count > 1 ? (SLICE_ANGLE_RANGE * 2) / (count - 1) : 0;
+
+    panelShader.sliceVisible = true;
+    panelShader.doLerp = true;
+    panelShader.dir = -90 + (SLICE_ANGLE_RANGE - (step * index));
+    panelShader.sliceColorStart = disabled ? QuickPanelShader.START_COLOR_DISABLED : QuickPanelShader.START_COLOR_NORMAL;
+    panelShader.sliceColorEnd = disabled ? QuickPanelShader.END_COLOR_DISABLED : QuickPanelShader.END_COLOR_NORMAL;
+    paColor.playAnimation('breathe');
+  }
+
+  /**
+   * Deselects every button and hides the shader slice.
+   */
+  public function clearSelection():Void
+  {
+    for (button in buttons)
+    {
+      if (button.selected) button.selected = false;
+    }
+
+    if (!bodyBuilt) return;
+
+    paColor.stop();
+    panelShader.sliceVisible = false;
+  }
+
+  /**
+   * Plays the scroll bump animation.
+   * @param direction -1 = moved up, 1 = moved down, 0 = no movement.
+   */
+  public function playScrollBump(direction:Int):Void
+  {
+    if (!bodyBuilt) return;
+
+    paScroll.onFinish = null;
+    paScroll.playAnimation(direction < 0 ? 'bumpUp' : (direction > 0 ? 'bumpDown' : 'bumpNeutral'));
+  }
+
+  public function playDeny(onDone:Void->Void):Void
+  {
+    if (!bodyBuilt)
+    {
+      // Still release the caller's lock.
+      if (onDone != null) onDone();
+      return;
+    }
+
+    panelShader.doLerp = false;
+    paScroll.playAnimation('deny', true);
+    paScroll.onFinish = () ->
+    {
+      // Clear immediately so later animations don't re-run this.
+      paScroll.onFinish = null;
+      panelShader.doLerp = true;
+      if (onDone != null) onDone();
+    };
+  }
+
+  public function playAccept(selectedIndex:Int):Void
+  {
+    if (!bodyBuilt) return;
+
+    paScroll.onFinish = null;
+    paScroll.playAnimation('accept', true);
+    panelShader.doLerp = false;
+
+    for (i => button in buttons)
+    {
+      if (i == selectedIndex) button.paScale.playAnimation('bumpBig');
+      else
+        button.paFade.playAnimation('fade');
+    }
+  }
+
+  /**
+   * Shows the hint text under the pull tab.
+   */
+  public function showHint(open:Bool):Void
+  {
+    var action:String = #if FEATURE_TOUCH_CONTROLS canPull ? 'PULL' : 'TAP' #else 'TAB' #end;
+    var text:String = '($action) to ${open ? 'close' : 'open'} quick menu';
+
+    pullHint.text = text;
+    pullHint.color = HINT_COLOR_NORMAL;
+    hintBreathing = false;
+    hintBreatheTimer = 0;
+
+    paHint.playAnimation(left ? 'slideRight' : 'slideLeft');
+    paHint.onFinish = () ->
+    {
+      paHint.onFinish = null;
+      hintBreathing = true;
+    };
+  }
+
+  public function hideHint():Void
+  {
+    hintBreathing = false;
+    paHint.onFinish = null;
+    paHint.playAnimation('disappear');
+    pullHint.color = HINT_COLOR_NORMAL;
+  }
+
+  override public function update(elapsed:Float):Void
+  {
+    super.update(elapsed);
+
+    if (bodyBuilt)
+    {
+      panelBoilTimer -= elapsed;
+      if (panelBoilTimer <= 0)
+      {
+        panelBoilTimer += PANEL_BOIL_INTERVAL / 24;
+        panelShader.updateBoil();
+      }
+    }
+
+    if (hintBreathing)
+    {
+      hintBreatheTimer += elapsed;
+      pullHint.color = FlxColor.interpolate(HINT_COLOR_DARK, HINT_COLOR_NORMAL, (Math.cos(hintBreatheTimer * 2) / 2) + 0.5);
+    }
+  }
+
+  override public function destroy():Void
+  {
+    if (paHint != null) paHint.onFinish = null;
+    if (paScroll != null) paScroll.onFinish = null;
+    if (pullTabVisual != null) FlxTween.cancelTweensOf(pullTabVisual);
+    FlxTween.cancelTweensOf(this);
+
+    buttons = [];
+
+    super.destroy();
   }
 
   override function set_active(v:Bool):Bool
