@@ -1,6 +1,7 @@
 package funkin.ui.debug.charting.commands.song;
 
 #if FEATURE_CHART_EDITOR
+import funkin.data.song.SongData.SongNoteData;
 import funkin.ui.debug.charting.commands.ChartEditorCommand;
 
 /**
@@ -16,12 +17,21 @@ class SetSubBeatsCommand implements ChartEditorCommand
   var pickAfter:Array<Float>;
   var label:String;
 
-  public function new(before:Array<Float>, after:Array<Float>, pickAfter:Array<Float>, label:String)
+  var notes:Array<SongNoteData>;
+
+  var notesBefore:Array<Float>;
+  var notesAfter:Array<Float>;
+
+  public function new(before:Array<Float>, after:Array<Float>, pickAfter:Array<Float>, label:String, ?notes:Array<SongNoteData>, ?notesBefore:Array<Float>,
+      ?notesAfter:Array<Float>)
   {
     this.before = before.copy();
     this.after = after.copy();
     this.pickAfter = pickAfter.copy();
     this.label = label;
+    this.notes = notes ?? [];
+    this.notesBefore = notesBefore ?? [];
+    this.notesAfter = notesAfter ?? [];
   }
 
   /**
@@ -32,6 +42,7 @@ class SetSubBeatsCommand implements ChartEditorCommand
   public function execute(state:ChartEditorState):Void
   {
     apply(state, after);
+    moveNotes(state, notesAfter);
     state.subBeatItems.selectTimes(pickAfter);
     state.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/${after.length < before.length ? 'note-erase' : 'note-place'}'));
   }
@@ -44,8 +55,22 @@ class SetSubBeatsCommand implements ChartEditorCommand
   public function undo(state:ChartEditorState):Void
   {
     apply(state, before);
+    moveNotes(state, notesBefore);
     state.subBeatItems.clearSelection();
     state.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/undo'));
+  }
+
+  function moveNotes(state:ChartEditorState, times:Array<Float>):Void
+  {
+    if (notes.length == 0) return;
+    for (i in 0...notes.length)
+    {
+      notes[i].time = times[i];
+    }
+    state.sortChartData();
+    state.noteDisplayDirty = true;
+    state.notePreviewDirty = true;
+    state.noteTooltipsDirty = true;
   }
 
   function apply(state:ChartEditorState, times:Array<Float>):Void

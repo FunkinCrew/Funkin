@@ -1,6 +1,7 @@
 package funkin.ui.debug.charting.selection;
 
 #if FEATURE_CHART_EDITOR
+import funkin.data.song.SongData.SongNoteData;
 import funkin.ui.debug.charting.commands.song.SetSubBeatsCommand;
 
 /**
@@ -18,6 +19,16 @@ class ChartEditorSubBeatItems extends ChartEditorSelectableItems<Int>
    * The last copied sub-beats, relative to the first one.
    */
   var copied:Array<Float> = [];
+
+  /**
+   * How close, in milliseconds, a note has to be to a sub-beat to move with it.
+   */
+  static final ATTACHED_NOTE_MS:Float = 1;
+
+  var dragStartTimes:Array<Float> = [];
+
+  var attachedNotes:Array<Array<SongNoteData>> = [];
+  var attachedTimes:Array<Array<Float>> = [];
 
   var subBeats(get, never):Array<Float>;
 
@@ -89,6 +100,26 @@ class ChartEditorSubBeatItems extends ChartEditorSelectableItems<Int>
     return step;
   }
 
+  /**
+   * Notes sitting on a dragged sub-beat come along with it.
+   */
+  override function dragItems(item:Int):Array<Int>
+  {
+    var items:Array<Int> = super.dragItems(item);
+    dragStartTimes = [];
+    attachedNotes = [];
+    attachedTimes = [];
+    for (index in items)
+    {
+      var time:Float = subBeats[index];
+      var notes:Array<SongNoteData> = state.currentSongChartNoteData.filter(note -> Math.abs(note.time - time) <= ATTACHED_NOTE_MS);
+      dragStartTimes.push(time);
+      attachedNotes.push(notes);
+      attachedTimes.push([for (note in notes) note.time]);
+    }
+    return items;
+  }
+
   override function getTime(item:Int):Float
   {
     return subBeats[item];
@@ -99,11 +130,20 @@ class ChartEditorSubBeatItems extends ChartEditorSelectableItems<Int>
    */
   override function setTimes(items:Array<Int>, times:Array<Float>):Void
   {
+    var notesMoved:Bool = false;
     for (i in 0...items.length)
     {
       subBeats[items[i]] = times[i];
+      if (i >= attachedNotes.length) continue;
+      var delta:Float = times[i] - dragStartTimes[i];
+      for (j in 0...attachedNotes[i].length)
+      {
+        attachedNotes[i][j].time = attachedTimes[i][j] + delta;
+        notesMoved = true;
+      }
     }
     state.gridLinesDirty = true;
+    if (notesMoved) state.noteDisplayDirty = true;
   }
 
   override function commitMove(items:Array<Int>, targetTimes:Array<Float>):Void
@@ -113,7 +153,25 @@ class ChartEditorSubBeatItems extends ChartEditorSelectableItems<Int>
     {
       after[items[i]] = targetTimes[i];
     }
-    state.performCommand(new SetSubBeatsCommand(subBeats, after, targetTimes, items.length == 1 ? 'Move Sub-Beat' : 'Move Sub-Beats'));
+    var notes:Array<SongNoteData> = [];
+    var notesBefore:Array<Float> = [];
+    var notesAfter:Array<Float> = [];
+    for (i in 0...items.length)
+    {
+      if (i >= attachedNotes.length) continue;
+      var delta:Float = targetTimes[i] - dragStartTimes[i];
+      for (j in 0...attachedNotes[i].length)
+      {
+        notes.push(attachedNotes[i][j]);
+        notesBefore.push(attachedTimes[i][j]);
+        notesAfter.push(attachedTimes[i][j] + delta);
+      }
+    }
+    state.performCommand(new SetSubBeatsCommand(subBeats, after, targetTimes, items.length == 1 ? 'Move Sub-Beat' : 'Move Sub-Beats', notes, notesBefore,
+      notesAfter));
+    attachedNotes = [];
+    attachedTimes = [];
+    dragStartTimes = [];
   }
 
   override function onSelectionChanged():Void
