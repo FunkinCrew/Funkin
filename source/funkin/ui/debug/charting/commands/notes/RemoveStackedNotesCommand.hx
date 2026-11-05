@@ -42,7 +42,10 @@ class RemoveStackedNotesCommand implements ChartEditorCommand
     removedNotes = SongNoteDataUtils.listStackedNotes(notesToCheck, ChartEditorState.stackedNoteThreshold, false, overlappedNotes);
     if (removedNotes.length == 0) return;
 
-    state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, removedNotes);
+    var removedSet:haxe.ds.ObjectMap<SongNoteData, Bool> = new haxe.ds.ObjectMap();
+    for (note in removedNotes)
+      removedSet.set(note, true);
+    state.currentSongChartNoteData = state.currentSongChartNoteData.filter(note -> !removedSet.exists(note));
     state.currentNoteSelection = isSelection ? overlappedNotes.copy() : [];
     state.currentEventSelection = [];
 

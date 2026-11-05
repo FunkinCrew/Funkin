@@ -701,7 +701,9 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
           var dropDown:DropDown = new DropDown();
           dropDown.id = field.name;
           var isEase:Bool = field.name == 'ease' || field.name == 'easeDir';
-          dropDown.width = isEase ? 100.0 : 150.0;
+          if (isEase) dropDown.width = 100.0;
+          else
+            dropDown.percentWidth = 100;
           dropDown.dropdownSize = 10;
           dropDown.dropdownWidth = isEase ? 107 : 157;
           dropDown.searchable = true;

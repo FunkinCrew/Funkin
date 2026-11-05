@@ -1274,8 +1274,19 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function set_currentNoteSelection(value:Array<SongNoteData>):Array<SongNoteData>
   {
     // This value is true if all elements of the current selection are also in the new selection.
-    var isSuperset:Bool = currentNoteSelection.isSubset(value);
-    var isEqual:Bool = currentNoteSelection.isEqualUnordered(value);
+    var newSet:haxe.ds.ObjectMap<SongNoteData, Bool> = new haxe.ds.ObjectMap();
+    for (note in value)
+      newSet.set(note, true);
+    var isSuperset:Bool = true;
+    for (note in currentNoteSelection)
+    {
+      if (!newSet.exists(note))
+      {
+        isSuperset = false;
+        break;
+      }
+    }
+    var isEqual:Bool = isSuperset && currentNoteSelection.length == value.length;
 
     currentNoteSelection = value;
     if (value.length > 0)
@@ -1305,8 +1316,19 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function set_currentOverlappingNotes(value:Array<SongNoteData>):Array<SongNoteData>
   {
     // This value is true if all elements of the current overlapping array are also in the new array.
-    var isSuperset:Bool = currentOverlappingNotes.isSubset(value);
-    var isEqual:Bool = currentOverlappingNotes.isEqualUnordered(value);
+    var newSet:haxe.ds.ObjectMap<SongNoteData, Bool> = new haxe.ds.ObjectMap();
+    for (note in value)
+      newSet.set(note, true);
+    var isSuperset:Bool = true;
+    for (note in currentOverlappingNotes)
+    {
+      if (!newSet.exists(note))
+      {
+        isSuperset = false;
+        break;
+      }
+    }
+    var isEqual:Bool = isSuperset && currentOverlappingNotes.length == value.length;
 
     currentOverlappingNotes = value;
 
@@ -2738,6 +2760,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var selectionSquareBitmap:Null<BitmapData> = null;
 
   /**
+   * The graphic for `selectionSquareBitmap`, made once.
+   */
+  var selectionSquareGraphic:Null<flixel.graphics.FlxGraphic> = null;
+
+  /**
    * The IMAGE used for the note preview bitmap. Updated by ChartEditorThemeHandler.
    * The image is split and used for a 9-slice sprite for the box over the note preview.
    */
@@ -3743,6 +3770,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function performCommand(command:ChartEditorCommand, purgeRedoStack:Bool = true):Void
   {
     command.execute(this);
+    chartRevision++;
     if (command.shouldAddToHistory(this))
     {
       undoHistory.push(command);
@@ -3761,6 +3789,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function undoCommand(command:ChartEditorCommand):Void
   {
     command.undo(this);
+    chartRevision++;
     // Note, if we are undoing a command, it should already be in the history,
     // therefore we don't need to check `shouldAddToHistory(state)`
     redoHistory.push(command);
@@ -3854,6 +3883,19 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * Handle the playback of hitsounds.
    */
   var _scriptNoteObj:NoteSprite = null;
+
+  /**
+   * Goes up every time a command runs or is undone.
+   */
+  var chartRevision:Int = 0;
+
+  var stackedNotesRevision:Int = -1;
+  var stackedNotesSource:Null<Array<SongNoteData>> = null;
+  var stackedNotesThreshold:Float = -1;
+
+  var longestHoldRevision:Int = -1;
+  var longestHoldSource:Null<Array<SongNoteData>> = null;
+  var longestHoldMs:Float = 0;
 
   var _currentEvents = null;
   var _allowedEvents = null;

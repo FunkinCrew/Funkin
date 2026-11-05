@@ -6,6 +6,7 @@ import flixel.FlxSprite;
 import flixel.util.FlxColor;
 import flixel.util.FlxSort;
 import funkin.data.song.SongData.CommentData;
+import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongNoteDataUtils;
 import funkin.play.notes.notekind.NoteKindManager;
 import funkin.ui.debug.charting.components.comments.ChartEditorCommentPanel;
@@ -52,10 +53,32 @@ class ChartEditorNoteDisplayHandler
       state.windowNoteSet.clear();
       state.windowNotes.resize(0);
 
-      for (noteData in state.currentSongChartNoteData)
+      var chartNotes:Array<SongNoteData> = state.currentSongChartNoteData;
+      if (state.longestHoldRevision != state.chartRevision || state.longestHoldSource != chartNotes)
       {
+        state.longestHoldRevision = state.chartRevision;
+        state.longestHoldSource = chartNotes;
+        state.longestHoldMs = 0;
+        for (noteData in chartNotes)
+        {
+          if (noteData != null && noteData.length > state.longestHoldMs) state.longestHoldMs = noteData.length;
+        }
+      }
+      var firstTime:Float = viewAreaTopMs - state.longestHoldMs;
+      var low:Int = 0;
+      var high:Int = chartNotes.length;
+      while (low < high)
+      {
+        var mid:Int = (low + high) >> 1;
+        if (chartNotes[mid] != null && chartNotes[mid].time < firstTime) low = mid + 1;
+        else
+          high = mid;
+      }
+      for (noteIndex in low...chartNotes.length)
+      {
+        var noteData:SongNoteData = chartNotes[noteIndex];
         if (noteData == null) continue;
-        if (noteData.time > viewAreaBottomMs) continue;
+        if (noteData.time > viewAreaBottomMs) break;
         // Hold notes that started earlier but still reach into the range count too.
         if (noteData.time + Math.max(0, noteData.length) < viewAreaTopMs) continue;
         state.windowNoteSet.set(noteData, true);
@@ -295,13 +318,20 @@ class ChartEditorNoteDisplayHandler
 
       // Gather stacked notes to render later
       // No need to update it every time we scroll
-      if (Math.abs(state.currentScrollEase - state.scrollPositionInPixels) < .0001)
+      // Only when the chart actually changed, it is slow on big charts.
+      if (Math.abs(state.currentScrollEase - state.scrollPositionInPixels) < .0001
+        && (state.stackedNotesRevision != state.chartRevision
+          || state.stackedNotesSource != state.currentSongChartNoteData
+          || state.stackedNotesThreshold != ChartEditorState.stackedNoteThreshold))
       {
+        state.stackedNotesRevision = state.chartRevision;
+        state.stackedNotesSource = state.currentSongChartNoteData;
+        state.stackedNotesThreshold = ChartEditorState.stackedNoteThreshold;
         state.currentOverlappingNotes = SongNoteDataUtils.listStackedNotes(state.currentSongChartNoteData, ChartEditorState.stackedNoteThreshold);
+        state.stackedNoteSet.clear();
+        for (noteData in state.currentOverlappingNotes)
+          state.stackedNoteSet.set(noteData, true);
       }
-      state.stackedNoteSet.clear();
-      for (noteData in state.currentOverlappingNotes)
-        state.stackedNoteSet.set(noteData, true);
 
       // Readd selection squares for selected notes.
       // Recycle selection squares if possible.
@@ -561,7 +591,6 @@ class ChartEditorNoteDisplayHandler
 
     // FlxG.bitmapLog.add(selectionSquareBitmap, "selectionSquareBitmap");
     var result = new ChartEditorSelectionSquareSprite(state);
-    result.loadGraphic(state.selectionSquareBitmap);
     return result;
   }
 

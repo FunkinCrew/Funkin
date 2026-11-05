@@ -76,6 +76,16 @@ class ChartEditorGridLines
 
   static final SUB_BEAT_TAG_HEIGHT:Int = 8;
 
+  /**
+   * Measure lines closer than this, in pixels, are thinned out to every few measures.
+   */
+  static final MIN_MEASURE_PIXELS:Float = 6;
+
+  /**
+   * How many lines of the pool are used. Reused by index, recycling searched the group for every line.
+   */
+  var usedLines:Int = 0;
+
   // The range of the grid that has been built.
   var builtTop:Float = 0;
   var builtBottom:Float = -1;
@@ -232,7 +242,7 @@ class ChartEditorGridLines
 
   function rebuild(top:Float, bottom:Float):Void
   {
-    lines.forEachAlive(line -> line.kill());
+    usedLines = 0;
     markerBacks.forEachAlive(back -> back.kill());
     markerIndexes.clear();
     markerTexts.forEachAlive(text -> text.kill());
@@ -243,7 +253,11 @@ class ChartEditorGridLines
     // Not clamped to the song, the first time change carries on before it and the last one after it.
     var topStep:Float = ChartEditorTimeScale.pixelsToStep(top);
     var bottomStep:Float = ChartEditorTimeScale.pixelsToStep(bottom);
-    if (bottomStep <= topStep) return;
+    if (bottomStep <= topStep)
+    {
+      killUnusedLines();
+      return;
+    }
     buildSubBeats(topStep, bottomStep);
 
     var conductor:Conductor = Conductor.instance;
@@ -252,6 +266,7 @@ class ChartEditorGridLines
     if (timeChanges.length == 0)
     {
       buildSegment(topStep, bottomStep, 0, 0, conductor.timeSignatureNumerator);
+      killUnusedLines();
       return;
     }
 
@@ -267,6 +282,16 @@ class ChartEditorGridLines
       buildSegment(Math.max(rangeStart, topStep), Math.min(rangeEnd, bottomStep), start, measureStart, timeChange.timeSignatureNum);
 
       if (start >= topStep && start <= bottomStep) addTimeChangeMarkers(timeChanges, i, start);
+    }
+    killUnusedLines();
+  }
+
+  function killUnusedLines():Void
+  {
+    for (i in usedLines...lines.members.length)
+    {
+      var line:Null<FlxSprite> = lines.members[i];
+      if (line != null && line.alive) line.kill();
     }
   }
 
@@ -364,9 +389,14 @@ class ChartEditorGridLines
     // Measures are counted the same way as the measure numbers, so the two always line up.
     var measure:Int = Math.ceil(measureStart + (from - start) / measureSteps - EPSILON);
     var measureStep:Float = start + (measure - measureStart) * measureSteps;
+    var measurePixels:Float = ChartEditorTimeScale.stepToPixels(from + measureSteps) - ChartEditorTimeScale.stepToPixels(from);
+    var stride:Int = (measurePixels > 0 && measurePixels < MIN_MEASURE_PIXELS) ? Math.ceil(MIN_MEASURE_PIXELS / measurePixels) : 1;
     while (measureStep < to - EPSILON)
     {
-      addLine(measureStep, ChartEditorThemeHandler.GRID_MEASURE_LINE_WIDTH, ChartEditorThemeHandler.GRID_MEASURE_LINE_ALPHA);
+      if (stride == 1 || ((measure % stride) + stride) % stride == 0)
+      {
+        addLine(measureStep, ChartEditorThemeHandler.GRID_MEASURE_LINE_WIDTH, ChartEditorThemeHandler.GRID_MEASURE_LINE_ALPHA);
+      }
       measure++;
       measureStep = start + (measure - measureStart) * measureSteps;
     }
@@ -390,7 +420,18 @@ class ChartEditorGridLines
 
   function addLine(step:Float, thickness:Int, alpha:Float):Void
   {
-    var line:FlxSprite = lines.recycle(makeLine);
+    var line:FlxSprite;
+    if (usedLines < lines.members.length && lines.members[usedLines] != null)
+    {
+      line = lines.members[usedLines];
+      if (!line.alive) line.revive();
+    }
+    else
+    {
+      line = makeLine();
+      lines.add(line);
+    }
+    usedLines++;
     line.setGraphicSize(ChartEditorState.GRID_SIZE * ChartEditorThemeHandler.TOTAL_COLUMN_COUNT, thickness);
     line.updateHitbox();
     line.color = lineColor;

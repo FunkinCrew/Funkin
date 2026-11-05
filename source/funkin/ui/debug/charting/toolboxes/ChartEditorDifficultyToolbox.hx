@@ -3,6 +3,7 @@ package funkin.ui.debug.charting.toolboxes;
 #if FEATURE_CHART_EDITOR
 import funkin.data.song.SongData.SongChartData;
 import funkin.data.song.SongData.SongMetadata;
+import funkin.util.SortUtil;
 import funkin.data.song.SongRegistry;
 import haxe.ui.components.Button;
 import haxe.ui.containers.dialogs.Dialogs;
@@ -226,6 +227,11 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
           difficultyToolboxRows.addComponent(buildDifficultyRow(variation, difficulty));
       }
 
+      for (difficulty in unlistedDifficulties(variation))
+      {
+        difficultyToolboxRows.addComponent(buildUnlistedRow(variation, difficulty));
+      }
+
       if (editingKey == '$variation:') difficultyToolboxRows.addComponent(buildNameField(variation, null));
       else
         difficultyToolboxRows.addComponent(buildAddRow('+ Add difficulty', ROW_STYLE, () -> startEditing('$variation:')));
@@ -281,6 +287,57 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
     {
       chartEditorState.listKeyTarget = this;
       openDifficultyMenu(variation, difficulty);
+    };
+    return row;
+  }
+
+  /**
+   * Difficulties that have a chart but are missing from the metadata's difficulty list.
+   */
+  function unlistedDifficulties(variation:String):Array<String>
+  {
+    var listed:Array<String> = chartEditorState.songMetadata.get(variation)?.playData.difficulties ?? [];
+    var chartData:Null<SongChartData> = chartEditorState.songChartData.get(variation);
+    if (chartData == null) return [];
+    var result:Array<String> = [for (difficulty in chartData.notes.keys()) if (!listed.contains(difficulty)) difficulty];
+    result.sort(SortUtil.defaultsThenAlphabetically.bind(Constants.DEFAULT_DIFFICULTY_LIST_FULL));
+    return result;
+  }
+
+  function buildUnlistedRow(variation:String, difficulty:String):HBox
+  {
+    var selected:Bool = variation == chartEditorState.selectedVariation && difficulty == chartEditorState.selectedDifficulty;
+    var row:HBox = makeRow(ROW_STYLE, selected);
+
+    var name:Label = new Label();
+    name.text = '${difficulty.toTitleCase()} (unlisted)';
+    name.styleString = DIM_STYLE;
+    name.percentWidth = 100;
+    row.addComponent(name);
+
+    var info:Label = new Label();
+    info.text = infoText(variation, difficulty);
+    info.styleString = DIM_STYLE;
+    row.addComponent(info);
+    infoLabels.set('$variation:$difficulty', info);
+
+    row.tooltip = 'This chart is in the file but not in the difficulty list, so the game never shows it.';
+    row.onClick = _ -> switchTo(variation, difficulty);
+    row.onRightClick = _ ->
+    {
+      var menu:Menu = makeMenu();
+      addMenuItem(menu, 'Add to Difficulty List', () -> {
+        chartEditorState.performDifficultyChange('List Difficulty', function()
+        {
+          var metadata:Null<SongMetadata> = chartEditorState.songMetadata.get(variation);
+          if (metadata == null || metadata.playData.difficulties.contains(difficulty)) return false;
+          metadata.playData.difficulties.push(difficulty);
+          chartEditorState.markDifficultiesChanged();
+          return true;
+        });
+        updateTree();
+      });
+      showMenu(menu);
     };
     return row;
   }

@@ -81,6 +81,11 @@ class ChartEditorNoteSprite extends FlxSprite
    */
   var indicatorKind:String = '';
 
+  /**
+   * The tint of the kind tag. The text stays white and is tinted while drawing.
+   */
+  var indicatorTint:FlxColor = FlxColor.WHITE;
+
   public function new(parent:ChartEditorState, isGhost:Bool = false)
   {
     super();
@@ -244,21 +249,27 @@ class ChartEditorNoteSprite extends FlxSprite
     {
       indicatorKind = kind;
       kindIndicator.text = ChartEditorNoteUtil.noteKindTag(kind);
-      kindIndicator.color = ChartEditorNoteUtil.noteKindColor(kind);
+      indicatorTint = ChartEditorNoteUtil.noteKindColor(kind);
     }
 
-    var tint:FlxColor = kindIndicator.color;
-    kindIndicator.color = FlxColor.BLACK;
-    kindIndicator.alpha = 0.5;
+    setIndicatorTint(0, 0, 0, 0.5);
     kindIndicator.x = this.x + 2;
     kindIndicator.y = this.y + 2;
     kindIndicator.draw();
 
-    kindIndicator.color = tint;
-    kindIndicator.alpha = 1;
+    setIndicatorTint(indicatorTint.redFloat, indicatorTint.greenFloat, indicatorTint.blueFloat, 1);
     kindIndicator.x = this.x;
     kindIndicator.y = this.y;
     kindIndicator.draw();
+  }
+
+  function setIndicatorTint(red:Float, green:Float, blue:Float, alpha:Float):Void
+  {
+    var transform = kindIndicator.colorTransform;
+    transform.redMultiplier = red;
+    transform.greenMultiplier = green;
+    transform.blueMultiplier = blue;
+    transform.alphaMultiplier = alpha;
   }
 
   function get_noteStyle():Null<String>

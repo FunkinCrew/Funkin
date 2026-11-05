@@ -200,9 +200,19 @@ class ChartEditorNotePreview extends FlxSprite
     drawRect(noteX, noteY, NOTE_WIDTH, noteHeight, color);
   }
 
+  /**
+   * Reused for every rectangle, the preview can draw tens of thousands of them at once.
+   */
+  var fillArea:openfl.geom.Rectangle = new openfl.geom.Rectangle();
+
+  /**
+   * Fills the bitmap directly. Every color here is opaque, and going through the vector renderer was far slower.
+   */
   inline function drawRect(noteX:Float, noteY:Float, width:Int, height:Int, color:FlxColor):Void
   {
-    FlxSpriteUtil.drawRect(this, noteX, noteY, width, height, color);
+    fillArea.setTo(Math.round(noteX), Math.round(noteY), width, height);
+    pixels.fillRect(fillArea, color);
+    dirty = true;
   }
 }
 

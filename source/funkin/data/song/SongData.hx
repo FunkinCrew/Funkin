@@ -578,6 +578,7 @@ class SongChartData implements ICloneable<SongChartData> implements ISerializabl
   public var scrollSpeed:Map<String, Float>;
   public var events:Array<SongEventData>;
   @:order(funkin.util.Constants.DEFAULT_DIFFICULTY_LIST_FULL)
+  @:jcustomparse(funkin.data.DataParse.songNotesMap)
   public var notes:Map<String, Array<SongNoteData>>;
 
   /**

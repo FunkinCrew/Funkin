@@ -21,7 +21,7 @@ class ChartEditorSelectionSquareSprite extends FlxSliceSprite
   public function new(chartEditorState:ChartEditorState)
   {
     super(
-      chartEditorState.selectionSquareBitmap,
+      chartEditorState.selectionSquareGraphic,
       new FlxRect(
         ChartEditorThemeHandler.SELECTION_SQUARE_BORDER_WIDTH + 4,
         ChartEditorThemeHandler.SELECTION_SQUARE_BORDER_WIDTH + 4,

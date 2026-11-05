@@ -274,6 +274,18 @@ class ChartEditorThemeHandler
       selectionSquareFillColor
     );
 
+    var oldGraphic:Null<flixel.graphics.FlxGraphic> = state.selectionSquareGraphic;
+    if (oldGraphic != null)
+    {
+      oldGraphic.persist = false;
+      oldGraphic.destroyOnNoUse = true;
+    }
+    var squareBitmap:BitmapData = state.selectionSquareBitmap ?? new BitmapData(1, 1, true, 0);
+    var selectionSquareGraphic:flixel.graphics.FlxGraphic = flixel.graphics.FlxGraphic.fromBitmapData(squareBitmap, false, null, false);
+    selectionSquareGraphic.persist = true;
+    selectionSquareGraphic.destroyOnNoUse = false;
+    state.selectionSquareGraphic = selectionSquareGraphic;
+
     state.selectionBoxSprite = new FlxSliceSprite(
       state.selectionSquareBitmap,
       new FlxRect(

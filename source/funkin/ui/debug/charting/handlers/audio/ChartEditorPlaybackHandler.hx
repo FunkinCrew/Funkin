@@ -5,6 +5,7 @@ import flixel.util.FlxTimer;
 import funkin.assets.ValidatedPaths as Paths;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.data.song.SongDataUtils;
+import funkin.data.song.SongData.SongNoteData;
 import funkin.play.PlayState;
 import funkin.play.notes.NoteSprite;
 import funkin.modding.events.ScriptEvent;
@@ -287,8 +288,19 @@ class ChartEditorPlaybackHandler
     state._allowedEvents = SongDataUtils.getEventsWithKind(state._currentEvents, ChartEditorState._allowedEventsNames);
 
     // Assume notes are sorted by time.
-    for (noteData in state.currentSongChartNoteData)
+    var notes:Array<SongNoteData> = state.currentSongChartNoteData;
+    var low:Int = 0;
+    var high:Int = notes.length;
+    while (low < high)
     {
+      var mid:Int = (low + high) >> 1;
+      if (notes[mid].time < oldSongPosition) low = mid + 1;
+      else
+        high = mid;
+    }
+    for (noteIndex in low...notes.length)
+    {
+      var noteData:SongNoteData = notes[noteIndex];
       // Check for notes between the old and new song positions.
 
       if (noteData.time < oldSongPosition) // Note is in the past.
@@ -300,7 +312,7 @@ class ChartEditorPlaybackHandler
        * We hit a note.
        * We're gonna create scripted event and dispatch it all over the Chart Editor.
        */
-      state._scriptNoteObj = new NoteSprite(NoteStyleRegistry.instance.fetchDefault());
+      if (state._scriptNoteObj == null) state._scriptNoteObj = new NoteSprite(NoteStyleRegistry.instance.fetchDefault());
       state._scriptNoteObj.noteData = noteData;
       state._scriptNoteObj.kill();
       state._scriptNoteObj.direction = state._scriptNoteObj.noteData?.getDirection() ?? 0;
