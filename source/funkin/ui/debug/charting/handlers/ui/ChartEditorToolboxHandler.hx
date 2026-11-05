@@ -86,14 +86,15 @@ class ChartEditorToolboxHandler
         var screenWidth:Float = Screen.instance.width;
         var screenHeight:Float = Screen.instance.height;
         final GRAB_MARGIN:Float = 40;
-        var offScreen:Bool = toolbox.left + toolbox.width < GRAB_MARGIN
-          || toolbox.left > screenWidth - GRAB_MARGIN
-          || toolbox.top < 0
-          || toolbox.top > screenHeight - GRAB_MARGIN;
+        var left:Float = toolbox.left ?? 0;
+        var top:Float = toolbox.top ?? 0;
+        var width:Float = toolbox.width ?? 0;
+        var height:Float = toolbox.height ?? 0;
+        var offScreen:Bool = left + width < GRAB_MARGIN || left > screenWidth - GRAB_MARGIN || top < 0 || top > screenHeight - GRAB_MARGIN;
         if (offScreen)
         {
-          toolbox.left = Math.max(0, (screenWidth - toolbox.width) / 2);
-          toolbox.top = Math.max(0, (screenHeight - toolbox.height) / 2);
+          toolbox.left = Math.max(0, (screenWidth - width) / 2);
+          toolbox.top = Math.max(0, (screenHeight - height) / 2);
         }
         else
         {

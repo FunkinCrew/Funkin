@@ -46,7 +46,9 @@ class ChartEditorImportExportHandler
     state.songManifestData = data.manifest;
 
     // Select the default variation if the currently selected one doesn't exist in the new song.
-    if (!state.songMetadata.exists(state.selectedVariation)) state.selectedVariation = Constants.DEFAULT_VARIATION;
+    if (!state.songMetadata.exists(state.selectedVariation)) @:bypassAccessor state.selectedVariation = Constants.DEFAULT_VARIATION;
+    state.currentNoteSelection = [];
+    state.currentEventSelection = [];
 
     // Select the first available difficulty if the currently selected one doesn't exist in the new song.
     if (state.availableDifficulties.indexOf(state.selectedDifficulty) < 0) state.selectedDifficulty = state.availableDifficulties[0];
