@@ -2849,7 +2849,7 @@ class PlayState extends MusicBeatSubState
 
     if (!overrideMusic && !isGamePaused && currentChart != null)
     {
-      currentChart?.playInst(1.0, currentInstrumental, false);
+      currentChart?.playInst(currentInstrumental);
     }
 
     if (FlxG.sound.music == null)
