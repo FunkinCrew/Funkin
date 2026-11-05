@@ -4,6 +4,7 @@ package funkin.ui.debug.charting.util;
 import funkin.data.song.SongData.SongEventData;
 
 @:allow(funkin.ui.debug.charting.ChartEditorState)
+@:allow(funkin.ui.debug.charting.handlers.ui.ChartEditorLayoutHandler)
 class ChartEditorTimeScale
 {
   /**

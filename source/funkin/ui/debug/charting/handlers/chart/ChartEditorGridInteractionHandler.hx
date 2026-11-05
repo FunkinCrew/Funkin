@@ -40,7 +40,8 @@ class ChartEditorGridInteractionHandler
       return;
     }
 
-    if (state.outlinedTimeChangeIndex() < 0) state.selectedTimeChangeIndex = -1;
+    state.selectedTimeChangeIndex = -1;
+    if (state.listKeyTarget == state.timeChangeSelection) state.listKeyTarget = null;
 
     var target:Dynamic = null;
     var clickedEvent:Null<SongEventData> = null;

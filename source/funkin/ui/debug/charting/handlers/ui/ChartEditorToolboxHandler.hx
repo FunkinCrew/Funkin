@@ -35,6 +35,10 @@ class ChartEditorToolboxHandler
 {
   public static function setToolboxState(state:ChartEditorState, id:String, shown:Bool):Void
   {
+    var existing:Null<CollapsibleDialog> = state.activeToolboxes.get(id);
+    var isShown:Bool = existing != null && !existing.hidden && Screen.instance.rootComponents.contains(existing);
+    if (shown == isShown) return;
+
     if (shown)
     {
       showToolbox(state, id);

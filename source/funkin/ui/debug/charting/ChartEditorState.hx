@@ -1275,6 +1275,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     var isEqual:Bool = currentNoteSelection.isEqualUnordered(value);
 
     currentNoteSelection = value;
+    if (value.length > 0)
+    {
+      selectedTimeChangeIndex = -1;
+      if (listKeyTarget == timeChangeSelection) listKeyTarget = null;
+    }
 
     if (!isEqual)
     {
