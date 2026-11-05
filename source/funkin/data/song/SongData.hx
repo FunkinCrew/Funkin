@@ -726,10 +726,15 @@ class SongChartEditorData implements ICloneable<SongChartEditorData>
 
   public var comments:Array<CommentData>;
 
+  @:optional
+  @:default([])
+  public var subBeats:Array<Float>;
+
   public function new()
   {
     this.eventLayers = [];
     this.comments = [];
+    this.subBeats = [];
   }
 
   /**
@@ -742,6 +747,7 @@ class SongChartEditorData implements ICloneable<SongChartEditorData>
 
     result.eventLayers = this.eventLayers.clone();
     result.comments = this.comments.clone();
+    result.subBeats = (this.subBeats ?? []).copy();
 
     return result;
   }

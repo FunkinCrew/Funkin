@@ -166,6 +166,8 @@ class ChartEditorLayoutHandler
     state.add(state.gridLines.lines);
     state.gridLines.dividers.zIndex = 16;
     state.add(state.gridLines.dividers);
+    state.gridLines.subBeats.zIndex = 17;
+    state.add(state.gridLines.subBeats);
     state.gridLines.markers.zIndex = 30;
     state.add(state.gridLines.markers);
 

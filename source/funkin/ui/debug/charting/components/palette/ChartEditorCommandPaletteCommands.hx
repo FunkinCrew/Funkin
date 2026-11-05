@@ -148,7 +148,7 @@ class ChartEditorCommandPaletteCommands
     {
       palette.chartEditorState.performCommand(new DeselectAllItemsBetweenTimeCommand(playheadTimeMs(palette, false), false, true, true));
     }),
-    command('Add Comment', 'Add a new comment at the playhead position.', 'B', (palette) ->
+    command('Add Comment', 'Add a new comment at the playhead position.', 'Alt+B', (palette) ->
     {
       var state = palette.chartEditorState;
       state.performCommand(new AddCommentCommand({

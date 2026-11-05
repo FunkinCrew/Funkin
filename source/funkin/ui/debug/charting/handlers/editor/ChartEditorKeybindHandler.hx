@@ -336,13 +336,14 @@ class ChartEditorKeybindHandler
   {
     if (state.currentLiveInputStyle != WASDKeys)
     {
-      if (FlxG.keys.justPressed.LEFT && !state.pressingControl())
+      // Shift + Left/Right changes the playback speed instead.
+      if (FlxG.keys.justPressed.LEFT && !state.pressingControl() && !FlxG.keys.pressed.SHIFT)
       {
         state.noteSnapQuantIndex--;
         if (state.noteSnapQuantIndex < 0) state.noteSnapQuantIndex = ChartEditorState.SNAP_QUANTS.length - 1;
       }
 
-      if (FlxG.keys.justPressed.RIGHT && !state.pressingControl())
+      if (FlxG.keys.justPressed.RIGHT && !state.pressingControl() && !FlxG.keys.pressed.SHIFT)
       {
         state.noteSnapQuantIndex++;
         if (state.noteSnapQuantIndex >= ChartEditorState.SNAP_QUANTS.length) state.noteSnapQuantIndex = 0;
@@ -782,15 +783,21 @@ class ChartEditorKeybindHandler
       // trace('Ignoring keybinds for View menu items because we are in live input mode (${currentLiveInputStyle}).');
     }
 
-    // Ctrl + Plus/Minus = Change the playback speed by 0.1x.
-    if (state.pressingControl() && !state.isHaxeUIFocused)
+    // Shift + Left/Right = Change the playback speed by 0.1x.
+    if (FlxG.keys.pressed.SHIFT && !state.pressingControl() && !state.isHaxeUIFocused)
     {
-      if (FlxG.keys.justPressed.PLUS || FlxG.keys.justPressed.NUMPADPLUS) state.changePlaybackSpeed(0.1);
-      if (FlxG.keys.justPressed.MINUS || FlxG.keys.justPressed.NUMPADMINUS) state.changePlaybackSpeed(-0.1);
+      if (FlxG.keys.justPressed.RIGHT) state.changePlaybackSpeed(0.1);
+      if (FlxG.keys.justPressed.LEFT) state.changePlaybackSpeed(-0.1);
     }
 
-    // B = New Comment
+    // B = Add or remove a sub-beat under the mouse.
     if (!state.pressingControl() && !FlxG.keys.pressed.SHIFT && !FlxG.keys.pressed.ALT && FlxG.keys.justPressed.B && !state.isHaxeUIDialogOpen && !state.isHaxeUIFocused)
+    {
+      state.toggleSubBeatAtCursor();
+    }
+
+    // ALT + B = New Comment.
+    if (!state.pressingControl() && !FlxG.keys.pressed.SHIFT && FlxG.keys.pressed.ALT && FlxG.keys.justPressed.B && !state.isHaxeUIDialogOpen && !state.isHaxeUIFocused)
     {
       // Add a new comment at the grid playhead's position.
       var playheadPosMs:Float = state.scrollPositionInMs + state.playheadPositionInMs;

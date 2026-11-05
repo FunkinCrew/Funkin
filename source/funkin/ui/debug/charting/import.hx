@@ -11,6 +11,7 @@ using funkin.ui.debug.charting.handlers.chart.ChartEditorEventChainHandler;
 using funkin.ui.debug.charting.handlers.chart.ChartEditorGridInteractionHandler;
 using funkin.ui.debug.charting.handlers.chart.ChartEditorImportExportHandler;
 using funkin.ui.debug.charting.handlers.chart.ChartEditorNoteDisplayHandler;
+using funkin.ui.debug.charting.handlers.chart.ChartEditorSubBeatHandler;
 using funkin.ui.debug.charting.handlers.editor.ChartEditorAutoSaveHandler;
 using funkin.ui.debug.charting.handlers.editor.ChartEditorGamepadHandler;
 using funkin.ui.debug.charting.handlers.editor.ChartEditorKeybindHandler;

@@ -321,6 +321,8 @@ class ChartEditorCursorHandler
     // Round the cursor step to the nearest snap quant.
     var cursorSnappedStep:Float = Math.max(0, Math.fround(cursorFractionalStep / state.noteSnapRatio) * state.noteSnapRatio);
     cursorSnappedStep = Math.min(cursorSnappedStep, state.lastSnappedGridStep);
+
+    cursorSnappedStep = state.snapToSubBeat(cursorFractionalStep, cursorSnappedStep);
     var cursorSnappedMs:Float = Conductor.instance.getStepTimeInMs(cursorSnappedStep);
 
     // A line across the grid at the snap the cursor would place on.

@@ -98,6 +98,7 @@ import funkin.ui.debug.charting.components.grid.ChartEditorMeasureTicks;
 import funkin.ui.debug.charting.components.grid.ChartEditorDifficultyHeatmap;
 import funkin.ui.debug.charting.selection.ChartEditorCommentItems;
 import funkin.ui.debug.charting.selection.ChartEditorSelectable;
+import funkin.ui.debug.charting.selection.ChartEditorSubBeatItems;
 import funkin.ui.debug.charting.selection.ChartEditorTimeChangeItems;
 import funkin.ui.debug.charting.components.playbar.ChartEditorNotePreview;
 import funkin.ui.debug.charting.components.notes.ChartEditorNoteSprite;
@@ -1339,6 +1340,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * The picked comments.
    */
   var commentItems:ChartEditorCommentItems;
+
+  /**
+   * The picked sub-beats.
+   */
+  var subBeatItems:ChartEditorSubBeatItems;
 
   /**
    * All selectable items.
@@ -2963,7 +2969,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     this.params = params;
     timeChangeItems = new ChartEditorTimeChangeItems(this);
     commentItems = new ChartEditorCommentItems(this);
-    selectables = [timeChangeItems, commentItems];
+    subBeatItems = new ChartEditorSubBeatItems(this);
+    selectables = [timeChangeItems, commentItems, subBeatItems];
   }
 
   override public function dispatchEvent(event:ScriptEvent, finish:Bool = true):Void

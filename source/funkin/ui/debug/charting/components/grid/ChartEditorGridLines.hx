@@ -30,7 +30,7 @@ class ChartEditorGridLines
   public var lines(default, null):FlxTypedSpriteGroup<FlxSprite> = new FlxTypedSpriteGroup<FlxSprite>();
 
   /**
-   * The vertical lines between the opponent, player and event columns. Drawn above the waveforms so a centered waveform can't hide them.
+   * The vertical lines between the opponent, player and event columns.
    */
   public var dividers(default, null):FlxTypedSpriteGroup<FlxSprite> = new FlxTypedSpriteGroup<FlxSprite>();
 
@@ -57,6 +57,24 @@ class ChartEditorGridLines
   var chartEditorState:ChartEditorState;
 
   var lineColor:FlxColor = FlxColor.WHITE;
+
+  /**
+   * Sub-beat lines and their tags. Drawn above the beat lines, since a sub-beat can sit right on a beat.
+   */
+  public var subBeats(default, null):FlxTypedSpriteGroup<FlxSprite> = new FlxTypedSpriteGroup<FlxSprite>();
+
+  static final SUB_BEAT_COLOR:FlxColor = 0xFF4FC3F7;
+
+  static final SUB_BEAT_ALPHA:Float = 0.9;
+
+  static final SUB_BEAT_LINE_WIDTH:Int = 3;
+
+  /**
+   * The size of the tag right of the grid that marks each sub-beat.
+   */
+  static final SUB_BEAT_TAG_WIDTH:Int = 12;
+
+  static final SUB_BEAT_TAG_HEIGHT:Int = 8;
 
   // The range of the grid that has been built.
   var builtTop:Float = 0;
@@ -127,6 +145,7 @@ class ChartEditorGridLines
     }
 
     lines.setPosition(grid.x, grid.y);
+    subBeats.setPosition(grid.x, grid.y);
     markers.setPosition(grid.x, grid.y);
 
     var viewTop:Float = viewTopScreen - grid.y;
@@ -225,6 +244,7 @@ class ChartEditorGridLines
     var topStep:Float = ChartEditorTimeScale.pixelsToStep(top);
     var bottomStep:Float = ChartEditorTimeScale.pixelsToStep(bottom);
     if (bottomStep <= topStep) return;
+    buildSubBeats(topStep, bottomStep);
 
     var conductor:Conductor = Conductor.instance;
     var timeChanges = conductor.timeChanges;
@@ -376,6 +396,35 @@ class ChartEditorGridLines
     line.color = lineColor;
     line.alpha = alpha;
     line.setPosition(lines.x, Math.round(lines.y + ChartEditorTimeScale.stepToPixels(step)) - Std.int(thickness / 2));
+  }
+
+  function buildSubBeats(topStep:Float, bottomStep:Float):Void
+  {
+    subBeats.forEachAlive(sprite -> sprite.kill());
+    var gridWidth:Int = ChartEditorState.GRID_SIZE * ChartEditorThemeHandler.TOTAL_COLUMN_COUNT;
+    var subBeatTimes:Array<Float> = chartEditorState.currentSubBeats();
+    for (i in 0...subBeatTimes.length)
+    {
+      var step:Float = Conductor.instance.getTimeInSteps(subBeatTimes[i]);
+      if (step < topStep || step > bottomStep) continue;
+
+      var color:FlxColor = chartEditorState.subBeatItems.contains(i) ? FlxColor.WHITE : SUB_BEAT_COLOR;
+      var y:Float = Math.round(subBeats.y + ChartEditorTimeScale.stepToPixels(step));
+
+      var line:FlxSprite = subBeats.recycle(makeLine);
+      line.setGraphicSize(gridWidth, SUB_BEAT_LINE_WIDTH);
+      line.updateHitbox();
+      line.color = color;
+      line.alpha = SUB_BEAT_ALPHA;
+      line.setPosition(subBeats.x, y - Std.int(SUB_BEAT_LINE_WIDTH / 2));
+
+      var tag:FlxSprite = subBeats.recycle(makeLine);
+      tag.setGraphicSize(SUB_BEAT_TAG_WIDTH, SUB_BEAT_TAG_HEIGHT);
+      tag.updateHitbox();
+      tag.color = color;
+      tag.alpha = 1;
+      tag.setPosition(subBeats.x + gridWidth, y - SUB_BEAT_TAG_HEIGHT / 2);
+    }
   }
 
   function makeLine():FlxSprite

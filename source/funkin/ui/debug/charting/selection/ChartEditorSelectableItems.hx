@@ -186,7 +186,7 @@ class ChartEditorSelectableItems<T> implements ChartEditorSelectable implements 
     var index:Int = current.items.indexOf(current.item);
     if (index < 0) return;
     var step:Float = ChartEditorTimeScale.pixelsToStep(FlxG.mouse.viewY - current.grabOffset - state.gridTiledSprite.y);
-    var snappedStep:Float = Math.fround(step / state.noteSnapRatio) * state.noteSnapRatio;
+    var snappedStep:Float = snapStep(step);
     var delta:Float = clampDelta(current.items, current.originalTimes, timeAtStep(current.item, snappedStep) - current.originalTimes[index]);
     if (Math.abs(getTime(current.item) - (current.originalTimes[index] + delta)) < 0.0001) return;
 
@@ -231,6 +231,14 @@ class ChartEditorSelectableItems<T> implements ChartEditorSelectable implements 
    * Turn a finished drag into an undoable command.
    */
   function commitMove(items:Array<T>, targetTimes:Array<Float>):Void {}
+
+  /**
+   * Where a dragged item lands, in steps. By default the current snap.
+   */
+  function snapStep(step:Float):Float
+  {
+    return Math.fround(step / state.noteSnapRatio) * state.noteSnapRatio;
+  }
 
   /**
    * The time a grid step lands on for this item.
