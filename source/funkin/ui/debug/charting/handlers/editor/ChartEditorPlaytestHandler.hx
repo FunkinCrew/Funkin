@@ -24,6 +24,8 @@ using Lambda;
 @:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorPlaytestHandler
 {
+  static var playtestClosedListener:Null<FlxSubState->Void> = null;
+
   /**
    * Transitions to the Play State to test the song
    */
@@ -90,8 +92,15 @@ class ChartEditorPlaytestHandler
     }
 
     PlayStatePlaylist.reset();
-    state.subStateClosed.add(closed -> state.reviveUICamera(closed));
-    state.subStateClosed.add(closed -> state.resetConductorAfterTest(closed));
+    var oldListener:Null<FlxSubState->Void> = playtestClosedListener;
+    if (oldListener != null) state.subStateClosed.remove(oldListener);
+    var listener:FlxSubState->Void = closed ->
+    {
+      state.reviveUICamera(closed);
+      state.resetConductorAfterTest(closed);
+    };
+    playtestClosedListener = listener;
+    state.subStateClosed.add(listener);
 
     var targetStateParams = {
       targetSong: targetSong,
