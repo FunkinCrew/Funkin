@@ -88,6 +88,7 @@ class ChartEditorDifficultyHandler
     if (variationMetadata == null) return;
 
     variationMetadata.playData.difficulties.remove(difficulty);
+    state.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/note-erase'));
 
     var resultChartData = state.songChartData.get(variation);
     if (resultChartData != null)
@@ -256,6 +257,7 @@ class ChartEditorDifficultyHandler
     }
     state.songMetadata.remove(variation);
     state.songChartData.remove(variation);
+    state.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/note-erase'));
 
     state.refreshPlayDataVariations();
     state.markDifficultiesChanged();

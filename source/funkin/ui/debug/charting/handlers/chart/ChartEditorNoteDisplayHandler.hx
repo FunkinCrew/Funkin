@@ -779,13 +779,29 @@ class ChartEditorNoteDisplayHandler
         state.buildCommentPanel();
       }
 
-      for (i in 0...state.commentPanels.length)
+      var unplaced:Array<CommentData> = nearbyCommentData.copy();
+      var freePanels:Array<ChartEditorCommentPanel> = [];
+      for (commentPanel in state.commentPanels)
       {
-        var commentPanel:ChartEditorCommentPanel = state.commentPanels[i];
-        commentPanel.commentData = i < nearbyCommentData.length ? nearbyCommentData[i] : null;
-        commentPanel.updatePosition();
+        var current:Null<CommentData> = commentPanel.commentData;
+        if (current != null && unplaced.remove(current)) continue;
+        freePanels.push(commentPanel);
+      }
+      for (commentPanel in freePanels)
+      {
+        commentPanel.commentData = unplaced.length > 0 ? unplaced.shift() : null;
+      }
+
+      for (commentPanel in state.commentPanels)
+      {
+        commentPanel.updateText();
         commentPanel.updateColor();
       }
+    }
+
+    for (commentPanel in state.commentPanels)
+    {
+      if (commentPanel.commentData != null) commentPanel.updatePosition();
     }
 
     if (state.commentDisplayDirty)
@@ -801,7 +817,6 @@ class ChartEditorNoteDisplayHandler
         if (!state.currentSongChartCommentData.contains(pinSprite.commentData))
         {
           // Comment has been removed!
-          trace('Discarding comment pin ${pinSprite.commentData}');
           // Clearing the comment data on the pin will automatically kill it.
           pinSprite.commentData = null;
         }
@@ -820,7 +835,6 @@ class ChartEditorNoteDisplayHandler
       {
         if (displayedCommentData.contains(commentData)) continue;
 
-        trace('Rendering comment pin ${commentData}');
         var pinSprite:ChartEditorCommentPinSprite = state.renderedPins.recycle(() -> new ChartEditorCommentPinSprite(state));
 
         // Updating the comment data automatically triggers a position/color/text update.

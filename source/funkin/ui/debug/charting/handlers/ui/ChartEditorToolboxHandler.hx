@@ -20,6 +20,7 @@ import haxe.ui.components.Label;
 import haxe.ui.components.Slider;
 import haxe.ui.containers.menus.Menu;
 import haxe.ui.containers.dialogs.CollapsibleDialog;
+import haxe.ui.containers.menus.MenuCheckBox;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialog.DialogEvent;
 import haxe.ui.core.Screen;
@@ -47,6 +48,18 @@ class ChartEditorToolboxHandler
     {
       hideToolbox(state, id);
     }
+  }
+
+  /**
+   * Set the state of a toolbox from a menu item.
+   */
+  public static function setToolboxStateFromMenu(state:ChartEditorState, id:String, menuItem:MenuCheckBox, shown:Bool):Void
+  {
+    haxe.ui.Toolkit.callLater(function()
+    {
+      if (menuItem.selected != shown) return;
+      setToolboxState(state, id, shown);
+    });
   }
 
   public static function clearHaxeUIFocus():Void

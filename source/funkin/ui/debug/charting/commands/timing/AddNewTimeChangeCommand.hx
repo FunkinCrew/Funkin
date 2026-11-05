@@ -52,6 +52,7 @@ class AddNewTimeChangeCommand implements ChartEditorCommand
     }
 
     state.currentSongMetadata.timeChanges = timeChanges;
+    state.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/note-place'));
 
     state.noteDisplayDirty = true;
     state.notePreviewDirty = true;
@@ -82,6 +83,7 @@ class AddNewTimeChangeCommand implements ChartEditorCommand
     }
 
     state.currentSongMetadata.timeChanges = previousTimeChanges;
+    state.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/undo'));
 
     state.noteDisplayDirty = true;
     state.notePreviewDirty = true;

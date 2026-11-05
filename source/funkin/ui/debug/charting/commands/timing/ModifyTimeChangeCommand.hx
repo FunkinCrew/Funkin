@@ -95,6 +95,7 @@ class ModifyTimeChangeCommand implements ChartEditorCommand
       timeChanges[timeChangeIndex].timeStamp = previousTimeStamp;
       timeChanges[timeChangeIndex].timeSignatureNum = previousNumerator;
       timeChanges[timeChangeIndex].timeSignatureDen = previousDenominator;
+      state.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/undo'));
     }
 
     state.currentSongMetadata.timeChanges = timeChanges;

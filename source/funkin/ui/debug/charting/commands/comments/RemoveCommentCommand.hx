@@ -7,38 +7,49 @@ import funkin.data.song.SongData.CommentData;
 import funkin.ui.debug.charting.commands.ChartEditorCommand;
 
 /**
- * Represents a reversible action to remove a comment.
+ * Represents a reversible action to remove one or more comments.
  */
 @:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
 class RemoveCommentCommand implements ChartEditorCommand
 {
-  var comment:CommentData;
+  var comments:Array<CommentData>;
 
-  public function new(comment:CommentData)
+  public function new(comment:CommentData, ?otherComments:Array<CommentData>)
   {
-    this.comment = comment;
+    this.comments = [comment].concat(otherComments ?? []);
   }
 
   /**
-   * Perform the action, removing the comment.
+   * Perform the action, removing the comments.
    *
    * @param state The ChartEditorState to perform the command on.
    */
   public function execute(state:ChartEditorState):Void
   {
-    state.currentSongChartCommentData.remove(comment);
+    for (comment in comments)
+    {
+      state.currentSongChartCommentData.remove(comment);
+      state.commentItems.deselect(comment);
+    }
+
+    state.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/note-erase'));
 
     state.commentDisplayDirty = true;
   }
 
   /**
-   * Reverse the action, restoring the removed comment.
+   * Reverse the action, restoring the removed comments.
    *
    * @param state The ChartEditorState to perform the command on.
    */
   public function undo(state:ChartEditorState):Void
   {
-    state.currentSongChartCommentData.push(comment);
+    for (comment in comments)
+    {
+      state.currentSongChartCommentData.push(comment);
+    }
+
+    state.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/undo'));
 
     state.commentDisplayDirty = true;
   }
@@ -62,7 +73,7 @@ class RemoveCommentCommand implements ChartEditorCommand
    */
   public function toString():String
   {
-    return 'Remove Comment';
+    return comments.length == 1 ? 'Remove Comment' : 'Remove ${comments.length} Comments';
   }
 }
 #end

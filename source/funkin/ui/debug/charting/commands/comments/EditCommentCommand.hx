@@ -7,47 +7,51 @@ import funkin.data.song.SongData.CommentData;
 import funkin.ui.debug.charting.commands.ChartEditorCommand;
 
 /**
- * Represents a reversible action to modify a comment.
+ * Represents a reversible action to change a comment's text or color.
  */
 @:nullSafety
 @:access(funkin.ui.debug.charting.ChartEditorState)
 class EditCommentCommand implements ChartEditorCommand
 {
   var comment:CommentData;
-  var time:Null<Float>;
   var text:Null<String>;
   var color:Null<String>;
+  var previousText:String = '';
+  var previousColor:String = '';
 
-  public function new(targetComment:CommentData, newTime:Null<Float>, newText:Null<String>, newColor:Null<String>)
+  public function new(targetComment:CommentData, newText:Null<String>, newColor:Null<String>)
   {
     this.comment = targetComment;
-
-    this.time = newTime;
     this.text = newText;
     this.color = newColor;
   }
 
   /**
-   * Perform the action, adding the new comment.
+   * Perform the action, changing the comment.
    *
    * @param state The ChartEditorState to perform the command on.
    */
   public function execute(state:ChartEditorState):Void
   {
-    trace('Modifying comment');
-    state.currentSongChartCommentData.push(comment);
+    previousText = comment.text;
+    previousColor = comment.color;
+    if (text != null) comment.text = text;
+    if (color != null) comment.color = color;
 
     state.commentDisplayDirty = true;
   }
 
   /**
-   * Reverse the action, removing the added comment.
+   * Reverse the action, putting the old text and color back.
    *
    * @param state The ChartEditorState to perform the command on.
    */
   public function undo(state:ChartEditorState):Void
   {
-    state.currentSongChartCommentData.remove(comment);
+    comment.text = previousText;
+    comment.color = previousColor;
+
+    state.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/undo'));
 
     state.commentDisplayDirty = true;
   }
@@ -61,8 +65,7 @@ class EditCommentCommand implements ChartEditorCommand
    */
   public function shouldAddToHistory(state:ChartEditorState):Bool
   {
-    // This command is undoable.
-    return true;
+    return (text != null && text != previousText) || (color != null && color != previousColor);
   }
 
   /**
@@ -71,7 +74,7 @@ class EditCommentCommand implements ChartEditorCommand
    */
   public function toString():String
   {
-    return 'Add Comment';
+    return color != null ? 'Change Comment Color' : 'Edit Comment';
   }
 }
 #end

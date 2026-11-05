@@ -151,7 +151,7 @@ class ChartEditorGridLines
   {
     // Four edges per picked time change, made as needed.
     var used:Int = 0;
-    for (selected in chartEditorState.selectedTimeChangeIndexes)
+    for (selected in chartEditorState.timeChangeItems.selectedIndexes())
     {
       var left:Float = Math.POSITIVE_INFINITY;
       var top:Float = Math.POSITIVE_INFINITY;

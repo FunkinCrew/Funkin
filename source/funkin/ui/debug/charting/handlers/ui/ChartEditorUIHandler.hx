@@ -14,6 +14,7 @@ import funkin.ui.debug.charting.commands.notes.FlipNotesCommand;
 import funkin.ui.debug.charting.commands.selection.InvertSelectedItemsCommand;
 import funkin.ui.debug.charting.commands.notes.MirrorNotesCommand;
 import funkin.ui.debug.charting.commands.items.PasteItemsCommand;
+import funkin.ui.debug.charting.selection.ChartEditorSelectableItems;
 import funkin.ui.debug.charting.commands.events.RemoveEventsCommand;
 import funkin.ui.debug.charting.commands.items.RemoveItemsCommand;
 import funkin.ui.debug.charting.commands.notes.RemoveNotesCommand;
@@ -397,6 +398,7 @@ class ChartEditorUIHandler
 
     state.menubarItemPaste.onClick = _ ->
     {
+      if (ChartEditorSelectableItems.pasteLastCopied()) return;
       var targetMs:Float = state.scrollPositionInMs + state.playheadPositionInMs;
       var targetStep:Float = Conductor.instance.getTimeInSteps(targetMs);
       var targetSnappedStep:Float = Math.floor(targetStep / state.noteSnapRatio) * state.noteSnapRatio;
@@ -701,19 +703,19 @@ class ChartEditorUIHandler
     state.menubarItemPlaybackSpeed.onChange = _ -> state.applyPlaybackSpeed(state.menubarItemPlaybackSpeed.pos / 50.0);
     state.menubarItemPlaybackSpeed.onRightClick = _ -> state.setPlaybackSpeed(1.0);
 
-    state.menubarItemToggleToolboxDifficulty.onChange = event -> state.setToolboxState(ChartEditorState.CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT, event.value);
-    state.menubarItemToggleToolboxMetadata.onChange = event -> state.setToolboxState(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT, event.value);
-    state.menubarItemToggleToolboxTiming.onChange = event -> state.setToolboxState(ChartEditorState.CHART_EDITOR_TOOLBOX_TIMING_LAYOUT, event.value);
-    state.menubarItemToggleToolboxNoteData.onChange = event -> state.setToolboxState(ChartEditorState.CHART_EDITOR_TOOLBOX_NOTE_DATA_LAYOUT, event.value);
-    state.menubarItemToggleToolboxEventData.onChange = event -> state.setToolboxState(ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT, event.value);
+    state.menubarItemToggleToolboxDifficulty.onChange = event -> state.setToolboxStateFromMenu(ChartEditorState.CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT, state.menubarItemToggleToolboxDifficulty, event.value);
+    state.menubarItemToggleToolboxMetadata.onChange = event -> state.setToolboxStateFromMenu(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT, state.menubarItemToggleToolboxMetadata, event.value);
+    state.menubarItemToggleToolboxTiming.onChange = event -> state.setToolboxStateFromMenu(ChartEditorState.CHART_EDITOR_TOOLBOX_TIMING_LAYOUT, state.menubarItemToggleToolboxTiming, event.value);
+    state.menubarItemToggleToolboxNoteData.onChange = event -> state.setToolboxStateFromMenu(ChartEditorState.CHART_EDITOR_TOOLBOX_NOTE_DATA_LAYOUT, state.menubarItemToggleToolboxNoteData, event.value);
+    state.menubarItemToggleToolboxEventData.onChange = event -> state.setToolboxStateFromMenu(ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT, state.menubarItemToggleToolboxEventData, event.value);
     state.menubarItemToggleToolboxPlayerPreview.onChange = event ->
     {
-      state.setToolboxState(ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT, event.value);
+      state.setToolboxStateFromMenu(ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT, state.menubarItemToggleToolboxPlayerPreview, event.value);
       state.playerPreviewDirty = event.value;
     }
     state.menubarItemToggleToolboxOpponentPreview.onChange = event ->
     {
-      state.setToolboxState(ChartEditorState.CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT, event.value);
+      state.setToolboxStateFromMenu(ChartEditorState.CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT, state.menubarItemToggleToolboxOpponentPreview, event.value);
       state.opponentPreviewDirty = event.value;
     }
 

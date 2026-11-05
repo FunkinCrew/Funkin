@@ -7,39 +7,57 @@ import funkin.data.song.SongData.CommentData;
 import funkin.ui.debug.charting.commands.ChartEditorCommand;
 
 /**
- * Represents a reversible action to add a comment.
+ * Represents a reversible action to add one or more comments.
  */
 @:nullSafety
 @:access(funkin.ui.debug.charting.ChartEditorState)
 class AddCommentCommand implements ChartEditorCommand
 {
-  var comment:CommentData;
+  var comments:Array<CommentData>;
 
-  public function new(comment:CommentData)
+  /**
+   * Whether the added comments become the selection, like pasted notes do.
+   */
+  var selectAdded:Bool;
+
+  public function new(comment:CommentData, ?otherComments:Array<CommentData>, selectAdded:Bool = false)
   {
-    this.comment = comment;
+    this.comments = [comment].concat(otherComments ?? []);
+    this.selectAdded = selectAdded;
   }
 
   /**
-   * Perform the action, adding the new comment.
+   * Perform the action, adding the new comments.
    *
    * @param state The ChartEditorState to perform the command on.
    */
   public function execute(state:ChartEditorState):Void
   {
-    state.currentSongChartCommentData.push(comment);
+    for (comment in comments)
+    {
+      state.currentSongChartCommentData.push(comment);
+    }
+    if (selectAdded) state.commentItems.select(comments.copy());
+
+    state.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/note-place'));
 
     state.commentDisplayDirty = true;
   }
 
   /**
-   * Reverse the action, removing the added comment.
+   * Reverse the action, removing the added comments.
    *
    * @param state The ChartEditorState to perform the command on.
    */
   public function undo(state:ChartEditorState):Void
   {
-    state.currentSongChartCommentData.remove(comment);
+    for (comment in comments)
+    {
+      state.currentSongChartCommentData.remove(comment);
+      state.commentItems.deselect(comment);
+    }
+
+    state.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/undo'));
 
     state.commentDisplayDirty = true;
   }
@@ -63,7 +81,7 @@ class AddCommentCommand implements ChartEditorCommand
    */
   public function toString():String
   {
-    return 'Add Comment';
+    return comments.length == 1 ? 'Add Comment' : 'Add ${comments.length} Comments';
   }
 }
 #end

@@ -8,6 +8,7 @@ import flixel.math.FlxMath;
 import flixel.util.FlxColor;
 import funkin.data.song.SongData.CommentData;
 import funkin.graphics.FunkinSprite;
+import funkin.ui.debug.charting.handlers.ui.ChartEditorLayoutHandler;
 import haxe.ui.tooltips.ToolTipManager;
 import haxe.ui.tooltips.ToolTipRegionOptions;
 
@@ -93,8 +94,16 @@ class ChartEditorCommentPinSprite extends FunkinSprite
       0, chartEditorState.songLengthInMs, // ...to note preview position.
       ChartEditorState.NOTE_PREVIEW_Y_POS, ChartEditorState.NOTE_PREVIEW_Y_POS + (chartEditorState.notePreview?.height ?? 0.0));
 
-    this.x = ChartEditorState.NOTE_PREVIEW_X_POS - this.height + 6;
+    this.x = pinX();
     this.y = position - (this.height / 2);
+  }
+
+  /**
+   * Just left of the note preview, which moves with the window size and UI scale.
+   */
+  function pinX():Float
+  {
+    return ChartEditorLayoutHandler.notePreviewXPos() - this.height + 6;
   }
 
   function updateColor():Void
@@ -154,9 +163,8 @@ class ChartEditorCommentPinSprite extends FunkinSprite
    */
   function onMouseOver():Void
   {
-    trace('Mouse over comment: ${commentData?.text}');
     this.scale.set(1.2, 1.2);
-    this.x = ChartEditorState.NOTE_PREVIEW_X_POS - this.height + 6 - (this.height * 0.2);
+    this.x = pinX() - (this.height * 0.2);
     updateTooltipPosition();
   }
 
@@ -165,9 +173,8 @@ class ChartEditorCommentPinSprite extends FunkinSprite
    */
   function onMouseOut():Void
   {
-    trace('Mouse out comment: ${commentData?.text}');
     this.scale.set(1.0, 1.0);
-    this.x = ChartEditorState.NOTE_PREVIEW_X_POS - this.height + 6;
+    this.x = pinX();
     updateTooltipPosition();
   }
 

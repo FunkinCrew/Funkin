@@ -89,7 +89,7 @@ class ChartEditorTimingToolbox extends ChartEditorBaseToolbox implements ChartEd
   function onClose(event:UIEvent)
   {
     chartEditorState.menubarItemToggleToolboxTiming.selected = false;
-    chartEditorState.selectedTimeChangeIndex = -1;
+    chartEditorState.timeChangeItems.clearSelection();
   }
 
   var timeChanges(get, never):Array<SongTimeChange>;
@@ -151,7 +151,7 @@ class ChartEditorTimingToolbox extends ChartEditorBaseToolbox implements ChartEd
   {
     selectedIndex = index;
     refresh();
-    chartEditorState.selectedTimeChangeIndex = selectedIndex;
+    chartEditorState.timeChangeItems.selectIndex(selectedIndex, false);
     chartEditorState.updateSongTime();
   }
 
@@ -170,7 +170,6 @@ class ChartEditorTimingToolbox extends ChartEditorBaseToolbox implements ChartEd
     if (timeChanges.length == 0) return;
     if (selectedIndex >= timeChanges.length) selectedIndex = timeChanges.length - 1;
     if (selectedIndex < 0) selectedIndex = 0;
-    if (chartEditorState.selectedTimeChangeIndex >= timeChanges.length) chartEditorState.selectedTimeChangeIndex = selectedIndex;
 
     if (rowViews.length != timeChanges.length) rebuildList();
     else
@@ -314,7 +313,7 @@ class ChartEditorTimingToolbox extends ChartEditorBaseToolbox implements ChartEd
 
   function select(index:Int):Void
   {
-    chartEditorState.selectedTimeChangeIndex = index;
+    chartEditorState.timeChangeItems.selectIndex(index, false);
     if (index == selectedIndex) return;
     selectedIndex = index;
     refresh();

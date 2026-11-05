@@ -3,12 +3,8 @@ package funkin.ui.debug.charting.handlers.chart;
 #if FEATURE_CHART_EDITOR
 import funkin.data.song.SongData.SongEventData;
 import funkin.ui.debug.charting.commands.selection.SetItemSelectionCommand;
-import funkin.ui.debug.charting.components.grid.ChartEditorTimeChangeSelection;
 import funkin.ui.debug.charting.toolboxes.ChartEditorEventDataToolbox;
-import funkin.ui.debug.charting.toolboxes.ChartEditorTimingToolbox;
-import haxe.ui.containers.dialogs.CollapsibleDialog;
 import haxe.ui.containers.menus.MenuCheckBox;
-import haxe.ui.core.Screen;
 using Lambda;
 
 @:access(funkin.ui.debug.charting.ChartEditorState)
@@ -20,39 +16,6 @@ class ChartEditorGridInteractionHandler
   public static function handleGridDoubleClicks(state:ChartEditorState):Void
   {
     if (!FlxG.mouse.justPressed || state.isCursorOverHaxeUI) return;
-
-    var timeChangeIndex:Int = state.gridLines != null ? state.gridLines.timeChangeUnderMouse() : -1;
-    if (timeChangeIndex >= 0)
-    {
-      state.lastGridClickTarget = null;
-      if (state.pressingControl())
-      {
-        // Ctrl clicking adds or removes a tag from the picked time changes.
-        var picked:Array<Int> = state.selectedTimeChangeIndexes.copy();
-        if (!picked.remove(timeChangeIndex)) picked.push(timeChangeIndex);
-        state.selectedTimeChangeIndexes = picked;
-      }
-      else if (state.selectedTimeChangeIndexes.length == 1 && state.selectedTimeChangeIndex == timeChangeIndex)
-      {
-        state.openToolboxFromGrid(ChartEditorState.CHART_EDITOR_TOOLBOX_TIMING_LAYOUT, state.menubarItemToggleToolboxTiming);
-        var timingToolbox:Null<ChartEditorTimingToolbox> = cast state.activeToolboxes.get(ChartEditorState.CHART_EDITOR_TOOLBOX_TIMING_LAYOUT);
-        if (timingToolbox != null) timingToolbox.refreshTimeChanges(timeChangeIndex);
-      }
-      else
-      {
-        state.selectedTimeChangeIndex = timeChangeIndex;
-      }
-      state.timeChangeSelection ??= new ChartEditorTimeChangeSelection(state);
-      state.listKeyTarget = state.timeChangeSelection;
-      return;
-    }
-
-    // Ctrl keeps them, so a Ctrl selection box can add to them.
-    if (!state.pressingControl())
-    {
-      state.selectedTimeChangeIndex = -1;
-      if (state.listKeyTarget == state.timeChangeSelection) state.listKeyTarget = null;
-    }
 
     var target:Dynamic = null;
     var clickedEvent:Null<SongEventData> = null;
@@ -83,20 +46,28 @@ class ChartEditorGridInteractionHandler
     }
   }
 
+  /**
+   * Picking and dragging for every kind of selectable item. Each kind is told whether another kind's item is under the mouse,
+   * so clicking one kind lets go of the others.
+   */
+  public static function handleSelectables(state:ChartEditorState):Void
+  {
+    var hits:Array<Bool> = [for (selectable in state.selectables) selectable.hasItemUnderMouse()];
+    for (i in 0...state.selectables.length)
+    {
+      var otherHit:Bool = false;
+      for (j in 0...hits.length)
+      {
+        if (j != i && hits[j]) otherHit = true;
+      }
+      state.selectables[i].handleMouse(otherHit);
+    }
+  }
+
   public static function openToolboxFromGrid(state:ChartEditorState, id:String, menuItem:MenuCheckBox):Void
   {
     if (!menuItem.selected) menuItem.selected = true;
     state.setToolboxState(id, true);
-  }
-
-  /**
-   * The time change to box on the grid, or -1 when the Timing panel isn't on screen.
-   */
-  public static function outlinedTimeChangeIndex(state:ChartEditorState):Int
-  {
-    var toolbox:Null<CollapsibleDialog> = state.activeToolboxes.get(ChartEditorState.CHART_EDITOR_TOOLBOX_TIMING_LAYOUT);
-    if (toolbox == null || toolbox.hidden || !Screen.instance.rootComponents.contains(toolbox)) return -1;
-    return state.selectedTimeChangeIndex;
   }
 }
 #end
