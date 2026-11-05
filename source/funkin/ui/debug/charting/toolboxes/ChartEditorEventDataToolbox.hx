@@ -4,10 +4,16 @@ package funkin.ui.debug.charting.toolboxes;
 import flixel.FlxG;
 import flixel.tweens.FlxEase;
 import flixel.util.FlxTimer;
+import funkin.data.animation.AnimationData;
+import funkin.data.character.CharacterRegistry;
 import funkin.data.event.SongEventRegistry;
 import funkin.data.event.SongEventSchema;
+import funkin.data.stage.StageData.StageDataProp;
+import funkin.data.stage.StageRegistry;
+import funkin.play.event.PlayAnimationSongEvent;
 import funkin.play.event.SongEvent;
 import funkin.play.event.SongEventHelper;
+import funkin.play.stage.Stage;
 import funkin.ui.debug.charting.commands.selection.SetItemSelectionCommand;
 import funkin.ui.debug.charting.handlers.ui.ChartEditorContextMenuHandler;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
@@ -246,6 +252,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
     super.refresh();
 
     refreshChain();
+    refreshOptionLists();
 
     shouldTriggerOnEventKindChanged = false;
 
@@ -299,7 +306,9 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
             checkBox.selected = value;
           case DropDown:
             var dropDown:DropDown = cast field;
-            dropDown.value = value;
+            if (isOptionField(fieldId)) selectOption(dropDown, value);
+            else
+              dropDown.value = value;
           case TextField:
             var textField:TextField = cast field;
             textField.text = value;
@@ -313,6 +322,8 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
         trace(' WARNING '.bg_yellow().bold() + ' CHART EDITOR '.bold().bg_bright_yellow() + 'Field "${fieldId}" was not found in the form.');
       }
     }
+
+    refreshAnimationOptions();
 
     shouldTriggerOnEventKindChanged = true;
     updateEasePreview();
@@ -639,6 +650,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
     _initializing = true;
 
     lastEventKind = eventKind ?? 'unknown';
+    optionListsKey = '';
 
     // Clear the frame.
     target.removeAllComponents();
@@ -647,6 +659,132 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
 
     _initializing = false;
     fitScrollHeights();
+  }
+
+  static final SING_POSE:EReg = ~/^sing(LEFT|DOWN|UP|RIGHT)/;
+
+  function isOptionField(name:String):Bool
+  {
+    return lastEventKind == 'PlayAnimation' && (name == 'target' || name == 'anim');
+  }
+
+  function stringFieldOptions(name:String):Null<Array<EventFieldOption>>
+  {
+    if (!isOptionField(name)) return null;
+    if (name == 'target') return playAnimationTargets();
+    var target:String = chartEditorState.eventDataToPlace.get('target') ?? PlayAnimationSongEvent.DEFAULT_TARGET;
+    return playAnimationNames(target);
+  }
+
+  function playAnimationTargets():Array<EventFieldOption>
+  {
+    var characters = chartEditorState.currentSongMetadata.playData.characters;
+    var targets:Array<EventFieldOption> = [
+      {text: 'Player (${characters.player ?? 'none'})', value: 'boyfriend'},
+      {text: 'Opponent (${characters.opponent ?? 'none'})', value: 'dad'},
+      {text: 'Girlfriend (${characters.girlfriend ?? 'none'})', value: 'girlfriend'}
+    ];
+    for (prop in stageProps())
+    {
+      if (prop.name == null || prop.name == '') continue;
+      targets.push({text: 'Prop (${prop.name})', value: prop.name});
+    }
+    return targets;
+  }
+
+  function playAnimationNames(target:String):Array<EventFieldOption>
+  {
+    var characters = chartEditorState.currentSongMetadata.playData.characters;
+    var charId:Null<String> = switch (target)
+    {
+      case 'boyfriend' | 'bf' | 'player': characters.player;
+      case 'dad' | 'opponent': characters.opponent;
+      case 'girlfriend' | 'gf': characters.girlfriend;
+      default: null;
+    }
+    var animations:Array<AnimationData> = [];
+    if (charId != null) animations = CharacterRegistry.instance.fetchCharacterData(charId)?.animations ?? [];
+    else
+    {
+      for (prop in stageProps()) if (prop.name == target) animations = prop.animations ?? [];
+    }
+
+    var names:Array<EventFieldOption> = [];
+    var seen:Map<String, Bool> = [];
+    for (animation in animations)
+    {
+      var animName:Null<String> = animation.name;
+      if (animName == null || animName == '' || seen.exists(animName) || SING_POSE.match(animName)) continue;
+      seen.set(animName, true);
+      names.push({text: animName, value: animName});
+    }
+    names.sort((a, b) -> a.text < b.text ? -1 : (a.text > b.text ? 1 : 0));
+    return names;
+  }
+
+  @:privateAccess
+  function stageProps():Array<StageDataProp>
+  {
+    var stage:Null<Stage> = StageRegistry.instance.fetchEntry(chartEditorState.currentSongMetadata.playData.stage);
+    return stage?._data?.props ?? [];
+  }
+
+  var optionListsKey:String = '';
+
+  /**
+   * Rebuild the target and animation lists.
+   */
+  public function refreshOptionLists():Void
+  {
+    if (!isOptionField('target')) return;
+    var playData = chartEditorState.currentSongMetadata.playData;
+    var key:String = '${chartEditorState.currentSongId}|${chartEditorState.selectedVariation}|${playData.stage}|${playData.characters.player}|${playData.characters.opponent}|${playData.characters.girlfriend}';
+    if (key == optionListsKey) return;
+    optionListsKey = key;
+
+    var dropDown:Null<DropDown> = toolboxEventsDataBox.findComponent('target', DropDown);
+    if (dropDown != null)
+    {
+      dropDown.pauseEvent(UIEvent.CHANGE, true);
+      dropDown.dataSource.clear();
+      for (option in playAnimationTargets()) dropDown.dataSource.add(option);
+      selectOption(dropDown, chartEditorState.eventDataToPlace.get('target') ?? PlayAnimationSongEvent.DEFAULT_TARGET);
+      dropDown.resumeEvent(UIEvent.CHANGE, true, true);
+    }
+    refreshAnimationOptions();
+  }
+
+  function refreshAnimationOptions():Void
+  {
+    if (!isOptionField('anim')) return;
+    var dropDown:Null<DropDown> = toolboxEventsDataBox.findComponent('anim', DropDown);
+    if (dropDown == null) return;
+    var options:Null<Array<EventFieldOption>> = stringFieldOptions('anim');
+    if (options == null) return;
+    dropDown.pauseEvent(UIEvent.CHANGE, true);
+    dropDown.dataSource.clear();
+    for (option in options) dropDown.dataSource.add(option);
+    selectOption(dropDown, chartEditorState.eventDataToPlace.get('anim') ?? PlayAnimationSongEvent.DEFAULT_ANIM);
+    dropDown.resumeEvent(UIEvent.CHANGE, true, true);
+  }
+
+  /**
+   * Select the option with this value.
+   */
+  static function selectOption(dropDown:DropDown, value:Null<Dynamic>):Void
+  {
+    if (value == null) return;
+    var text:String = Std.string(value);
+    for (i in 0...dropDown.dataSource.size)
+    {
+      if (dropDown.dataSource.get(i).value == text)
+      {
+        if (dropDown.selectedIndex != i) dropDown.selectedIndex = i;
+        return;
+      }
+    }
+    dropDown.dataSource.add({text: text, value: text});
+    dropDown.selectedIndex = dropDown.dataSource.size - 1;
   }
 
   function recursiveChildAdd(parent:Component, schema:SongEventSchema)
@@ -729,9 +867,26 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
 
           input = dropDown;
         case STRING:
-          input = new TextField();
-          input.id = field.name;
-          if (field.defaultValue != null) input.text = field.defaultValue;
+          var options:Null<Array<EventFieldOption>> = stringFieldOptions(field.name);
+          if (options != null)
+          {
+            var dropDown:DropDown = new DropDown();
+            dropDown.id = field.name;
+            dropDown.percentWidth = 100;
+            dropDown.dropdownSize = 10;
+            dropDown.dropdownWidth = 157;
+            dropDown.searchable = true;
+            dropDown.dataSource = new ArrayDataSource();
+            for (option in options) dropDown.dataSource.add(option);
+            selectOption(dropDown, chartEditorState.eventDataToPlace.get(field.name) ?? field.defaultValue);
+            input = dropDown;
+          }
+          else
+          {
+            input = new TextField();
+            input.id = field.name;
+            if (field.defaultValue != null) input.text = field.defaultValue;
+          }
         case FRAME:
           hbox.removeComponent(label, true);
 
@@ -797,7 +952,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
         if (field.type == FRAME) return;
 
         var value:Any = event.target.value;
-        if (field.type == ENUM)
+        if (Std.isOfType(event.target, DropDown))
         {
           var drp:DropDown = cast event.target;
           value = drp.selectedItem?.value ?? field.defaultValue;
@@ -818,6 +973,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
         {
           chartEditorState.eventDataToPlace.set(event.target.id, value);
         }
+        if (field.name == 'target') refreshAnimationOptions();
 
         // Edit the event data of any existing events.
         if (!_initializing && chartEditorState.currentEventSelection.length > 0)
@@ -995,5 +1151,11 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
   {
     return new ChartEditorEventDataToolbox(chartEditorState);
   }
+}
+
+typedef EventFieldOption =
+{
+  text:String,
+  value:String
 }
 #end
