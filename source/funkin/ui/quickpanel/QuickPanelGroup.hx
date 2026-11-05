@@ -552,7 +552,9 @@ class QuickPanelGroup extends FunkinSpriteGroup
     if (paScroll != null) paScroll.onFinish = null;
     if (pullTabVisual != null) FlxTween.cancelTweensOf(pullTabVisual);
     FlxTween.cancelTweensOf(this);
-
+    paScroll.destroy();
+    paColor.destroy();
+    paHint.destroy();
     buttons = [];
 
     super.destroy();

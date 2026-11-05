@@ -1138,6 +1138,9 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
       tickSound = null;
     }
 
+    paWipe.destroy();
+    paMiddle.destroy();
+
     super.destroy();
 
     // A camera reset during a state switch may already have removed and destroyed it.
