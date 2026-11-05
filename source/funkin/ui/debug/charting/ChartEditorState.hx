@@ -4096,7 +4096,9 @@ typedef WaveformFilterResult =
    */
   var generation:Int;
 
+  #if FEATURE_CHART_EDITOR
   var waveform:ChartEditorWaveformSprite;
+  #end
   var data:Null<funkin.audio.waveform.WaveformData>;
 }
 
