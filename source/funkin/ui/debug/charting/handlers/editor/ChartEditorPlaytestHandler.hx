@@ -81,15 +81,21 @@ class ChartEditorPlaytestHandler
     }
 
     var targetSong:Song;
+
+    var listedDifficulties:Array<String> = state.currentSongMetadata.playData.difficulties;
+    var addedUnlisted:Bool = !listedDifficulties.contains(state.selectedDifficulty);
+    if (addedUnlisted) listedDifficulties.push(state.selectedDifficulty);
     try
     {
       targetSong = Song.buildRaw(state.currentSongId, state.songMetadata.values(), state.selectedVariation, state.songChartData, state.playtestSongScripts, false);
     }
     catch (e)
     {
+      if (addedUnlisted) listedDifficulties.remove(state.selectedDifficulty);
       state.error('Could Not Playtest', 'Got an error playtesting the song:\n${e}');
       return;
     }
+    if (addedUnlisted) listedDifficulties.remove(state.selectedDifficulty);
 
     PlayStatePlaylist.reset();
     var oldListener:Null<FlxSubState->Void> = playtestClosedListener;

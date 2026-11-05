@@ -2341,7 +2341,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       value = availableDifficulties[0] ?? Constants.DEFAULT_DIFFICULTY;
     }
 
-    if (!availableDifficulties.contains(value))
+    var hasChart:Bool = songChartData.get(selectedVariation)?.notes.exists(value) ?? false;
+    if (!availableDifficulties.contains(value) && !hasChart)
     {
       this.warning(
         'Invalid Difficulty',

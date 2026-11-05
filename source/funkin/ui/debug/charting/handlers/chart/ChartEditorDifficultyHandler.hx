@@ -283,6 +283,15 @@ class ChartEditorDifficultyHandler
     var currentDifficultyIndex:Int = state.availableDifficulties.indexOf(state.selectedDifficulty);
     var currentAllDifficultyIndex:Int = state.allDifficulties.indexOf(variatedDifficulty);
 
+    if (currentDifficultyIndex == -1 && state.availableDifficulties.length > 0)
+    {
+      var target:String = change < 0 ? state.availableDifficulties[state.availableDifficulties.length - 1] : state.availableDifficulties[0];
+      state.performCommand(new SwitchDifficultyCommand(state.selectedDifficulty, target, state.selectedVariation, state.selectedVariation));
+      state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
+      state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
+      return;
+    }
+
     if (currentDifficultyIndex == -1 || currentAllDifficultyIndex == -1)
     {
       trace('ERROR determining difficulty index!');
