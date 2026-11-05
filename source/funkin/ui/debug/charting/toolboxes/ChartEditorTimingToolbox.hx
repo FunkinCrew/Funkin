@@ -114,6 +114,7 @@ class ChartEditorTimingToolbox extends ChartEditorBaseToolbox implements ChartEd
       if (refreshing || event.value == null || selectedIndex == 0) return;
       var timeChange:Null<SongTimeChange> = timeChanges[selectedIndex];
       if (timeChange == null) return;
+      if (Math.abs(event.value - msToBeats(timeChange.timeStamp, selectedIndex)) < BEAT_STEP / 2) return;
       // The stepper works in beats, the metadata keeps milliseconds.
       var targetTimeStamp:Float = beatsToMs(event.value, selectedIndex);
       if (Math.abs(targetTimeStamp - timeChange.timeStamp) <= 0.0001) return;
