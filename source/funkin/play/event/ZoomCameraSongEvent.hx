@@ -127,7 +127,7 @@ class ZoomCameraSongEvent extends SongEvent
         type: SongEventFieldType.ENUM,
         keys: [
           'Linear' => 'linear',
-          'Instant (Ignores duration)' => 'INSTANT',
+          'Instant' => 'INSTANT',
           'Sine' => 'sine',
           'Quad' => 'quad',
           'Cube' => 'cube',

@@ -21,10 +21,10 @@ import openfl.display.BitmapData;
 @:xml('
 <hbox width="100%" height="100%">
   <vbox width="100%" height="100%">
-    <dropdown id="easeDropdown" text="Ease" width="140">
+    <dropdown id="easeDropdown" text="Ease" width="100">
       <data>
         <item id="linear" text="Linear" />
-        <item id="INSTANT" text="Instant (Ignores duration)" />
+        <item id="INSTANT" text="Instant" />
         <item id="sine" text="Sine" />
         <item id="quad" text="Quad" />
         <item id="cube" text="Cube" />
@@ -134,7 +134,7 @@ class EaseGraphPreview extends HBox
       // Insert CLASSIC right after INSTANT so the order matches the historical layout.
       easeDropdown.dataSource.insert(2, {
         id: 'CLASSIC',
-        text: 'Classic (Ignores duration)'
+        text: 'Classic'
       });
     }
     else

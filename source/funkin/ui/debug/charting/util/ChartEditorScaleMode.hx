@@ -33,6 +33,16 @@ class ChartEditorScaleMode extends BaseScaleMode
   }
 
   /**
+   * The largest UI scale the window can show.
+   */
+  public static function windowMaxUIScale():Float
+  {
+    var width:Int = FlxG.stage.stageWidth;
+    var height:Int = FlxG.stage.stageHeight;
+    return Math.min(MAX_UI_SCALE, Math.min(width / MIN_WIDTH, height / MIN_HEIGHT));
+  }
+
+  /**
    * Switch to the editor's scale mode, or update the scale if it's already in use.
    */
   public static function apply(uiScale:Float):Void

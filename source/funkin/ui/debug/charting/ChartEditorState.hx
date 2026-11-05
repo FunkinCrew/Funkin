@@ -3280,6 +3280,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       root.height = Screen.instance.height;
     }
     this.relayoutDialogs();
+    this.refreshUIScaleLabel();
 
     if (menuBG != null)
     {

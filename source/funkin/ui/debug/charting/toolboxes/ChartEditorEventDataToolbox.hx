@@ -700,9 +700,10 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
         case ENUM:
           var dropDown:DropDown = new DropDown();
           dropDown.id = field.name;
-          dropDown.width = 150.0;
+          var isEase:Bool = field.name == 'ease' || field.name == 'easeDir';
+          dropDown.width = isEase ? 100.0 : 150.0;
           dropDown.dropdownSize = 10;
-          dropDown.dropdownWidth = 157;
+          dropDown.dropdownWidth = isEase ? 107 : 157;
           dropDown.searchable = true;
           dropDown.dataSource = new ArrayDataSource();
 
@@ -770,6 +771,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
       {
         var units:Label = new Label();
         units.text = field.units;
+        if (field.type == INTEGER || field.type == FLOAT) input.width = 70;
         units.verticalAlign = 'center';
         inputBox.addComponent(units);
       }

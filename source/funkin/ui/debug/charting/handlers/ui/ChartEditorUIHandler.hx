@@ -33,8 +33,10 @@ import funkin.util.SortUtil;
 import haxe.ui.components.Button;
 import haxe.ui.components.Range;
 import haxe.ui.containers.dialogs.CollapsibleDialog;
+import haxe.ui.containers.menus.Menu;
 import haxe.ui.containers.menus.MenuItem;
 import haxe.ui.events.DragEvent;
+import haxe.ui.events.UIEvent;
 using Lambda;
 
 @:access(haxe.ui.tooltips.ToolTipManager)
@@ -275,6 +277,15 @@ class ChartEditorUIHandler
    */
   public static function setupUIListeners(state:ChartEditorState):Void
   {
+    // Holding Ctrl while clicking a menu item keeps the menu open.
+    for (menu in state.menubar.findComponents(null, Menu, 3))
+    {
+      menu.registerEvent(UIEvent.BEFORE_CLOSE, (event:UIEvent) ->
+      {
+        if (state.pressingControl()) event.cancel();
+      });
+    }
+
     // Add functionality to the playbar.
 
     state.playbarStart.onClick = _ -> state.playbarButtonPressed = 'playbarStart';

@@ -12,6 +12,7 @@ import funkin.ui.debug.charting.toolboxes.ChartEditorEventDataToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorMetadataToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorTimingToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorNoteDataToolbox;
+import funkin.ui.debug.charting.util.ChartEditorScaleMode;
 import funkin.ui.haxeui.components.CharacterPlayer;
 import haxe.ui.RuntimeComponentBuilder;
 import haxe.ui.components.CheckBox;
@@ -273,6 +274,27 @@ class ChartEditorToolboxHandler
   }
 
   /**
+   * The UI scale label.
+   */
+  static function uiScaleText(percent:Int):String
+  {
+    var maxPercent:Int = Math.floor(ChartEditorScaleMode.windowMaxUIScale() * 100);
+    if (percent > maxPercent) return 'UI scale - $percent% (window fits $maxPercent%)';
+    return 'UI scale - $percent%';
+  }
+
+  /**
+   * Update the UI scale label after the window changes size.
+   */
+  public static function refreshUIScaleLabel(state:ChartEditorState):Void
+  {
+    var toolbox:Null<CollapsibleDialog> = state.activeToolboxes.get(ChartEditorState.CHART_EDITOR_TOOLBOX_PREFERENCES_LAYOUT);
+    if (toolbox == null) return;
+    var uiScaleLabel:Null<Label> = toolbox.findComponent('preferencesUIScaleLabel', Label);
+    if (uiScaleLabel != null) uiScaleLabel.text = uiScaleText(Math.round(state.uiScale * 100));
+  }
+
+  /**
    * Retrieve a toolbox by its layout's asset ID.
    * @param state The ChartEditorState instance.
    * @param id The asset ID of the toolbox layout.
@@ -359,7 +381,7 @@ class ChartEditorToolboxHandler
       if (!state.preferencesListening) return;
       var percent:Int = Math.round(uiScale.pos);
       state.uiScale = percent / 100.0;
-      uiScaleLabel.text = 'UI scale - $percent%';
+      uiScaleLabel.text = uiScaleText(percent);
     };
 
     var backingOpacity:Null<Slider> = toolbox.findComponent('preferencesBackingOpacity', Slider);
@@ -530,7 +552,7 @@ class ChartEditorToolboxHandler
     var uiScaleSlider:Null<Slider> = toolbox.findComponent('preferencesUIScale', Slider);
     if (uiScaleSlider != null) uiScaleSlider.pos = uiScalePercent;
     var uiScaleLabel:Null<Label> = toolbox.findComponent('preferencesUIScaleLabel', Label);
-    if (uiScaleLabel != null) uiScaleLabel.text = 'UI scale - $uiScalePercent%';
+    if (uiScaleLabel != null) uiScaleLabel.text = uiScaleText(uiScalePercent);
     var constantScrollSpeedLabel:Null<Label> = toolbox.findComponent('preferencesConstantScrollSpeedLabel', Label);
     if (constantScrollSpeedLabel != null) constantScrollSpeedLabel.text = 'Constant scroll speed - ${formatScrollSpeed(speedPercent)}x';
 
