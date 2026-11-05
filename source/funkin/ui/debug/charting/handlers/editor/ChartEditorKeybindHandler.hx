@@ -310,7 +310,9 @@ class ChartEditorKeybindHandler
     var targetSteps:Float = Math.fround(gridSteps);
     if (state.currentScrollEase > state.scrollPositionInPixels) targetSteps = Math.fceil(gridSteps - 0.001);
     else if (state.currentScrollEase < state.scrollPositionInPixels) targetSteps = Math.ffloor(gridSteps + 0.001);
-    state.currentScrollEase += ChartEditorTimeScale.stepToPixels(targetSteps * state.noteSnapRatio) - playheadAbsolute;
+    var playheadStep:Float = ChartEditorTimeScale.pixelsToStep(playheadAbsolute);
+    var snappedStep:Float = state.snapToSubBeat(playheadStep, targetSteps * state.noteSnapRatio);
+    state.currentScrollEase += ChartEditorTimeScale.stepToPixels(snappedStep) - playheadAbsolute;
   }
 
   /**
@@ -325,7 +327,10 @@ class ChartEditorKeybindHandler
     var amountSteps:Float = amountPixels / ChartEditorTimeScale.currentStepPixels();
     var gridSteps:Float = Math.min(state.noteSnapRatio, Math.abs(amountSteps));
     if (gridSteps <= 0) return fromPixels + amountPixels;
-    var targetStep:Float = Math.fround((ChartEditorTimeScale.pixelsToStep(fromPixels) + amountSteps) / gridSteps) * gridSteps;
+    var fromStep:Float = ChartEditorTimeScale.pixelsToStep(fromPixels);
+    var targetStep:Float = Math.fround((fromStep + amountSteps) / gridSteps) * gridSteps;
+
+    targetStep = state.firstSubBeatStepBetween(fromStep, targetStep) ?? targetStep;
     return ChartEditorTimeScale.stepToPixels(targetStep);
   }
 

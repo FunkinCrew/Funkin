@@ -79,6 +79,26 @@ class ChartEditorSubBeatHandler
   }
 
   /**
+   * The first sub-beat between two steps, or `null` if there are none. The order of the steps doesn't matter.
+   * @return Its step, or `null` if the move passes none.
+   */
+  public static function firstSubBeatStepBetween(state:ChartEditorState, fromStep:Float, toStep:Float):Null<Float>
+  {
+    var subBeats:Array<Float> = state.currentSongChartData?.editorData?.subBeats ?? [];
+    if (subBeats.length == 0 || fromStep == toStep) return null;
+    var fromMs:Float = Conductor.instance.getStepTimeInMs(fromStep);
+    var toMs:Float = Conductor.instance.getStepTimeInMs(toStep);
+    var best:Null<Float> = null;
+    for (time in subBeats)
+    {
+      var ahead:Bool = (toMs > fromMs) ? (time > fromMs + 0.001 && time < toMs - 0.001) : (time < fromMs - 0.001 && time > toMs + 0.001);
+      if (!ahead) continue;
+      if (best == null || Math.abs(time - fromMs) < Math.abs(best - fromMs)) best = time;
+    }
+    return (best != null) ? Conductor.instance.getTimeInSteps(best) : null;
+  }
+
+  /**
    * Whether dragged items are shown somewhere other than where they are.
    */
   public static function isDragPreviewing(state:ChartEditorState):Bool
