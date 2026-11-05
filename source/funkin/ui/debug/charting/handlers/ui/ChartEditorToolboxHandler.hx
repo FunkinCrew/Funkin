@@ -83,8 +83,23 @@ class ChartEditorToolboxHandler
     {
       if (hasOpened)
       {
-        toolbox.left = toolbox.left;
-        toolbox.top = toolbox.top;
+        var screenWidth:Float = Screen.instance.width;
+        var screenHeight:Float = Screen.instance.height;
+        final GRAB_MARGIN:Float = 40;
+        var offScreen:Bool = toolbox.left + toolbox.width < GRAB_MARGIN
+          || toolbox.left > screenWidth - GRAB_MARGIN
+          || toolbox.top < 0
+          || toolbox.top > screenHeight - GRAB_MARGIN;
+        if (offScreen)
+        {
+          toolbox.left = Math.max(0, (screenWidth - toolbox.width) / 2);
+          toolbox.top = Math.max(0, (screenHeight - toolbox.height) / 2);
+        }
+        else
+        {
+          toolbox.left = toolbox.left;
+          toolbox.top = toolbox.top;
+        }
       }
 
       var isPreferences:Bool = id == ChartEditorState.CHART_EDITOR_TOOLBOX_PREFERENCES_LAYOUT;
