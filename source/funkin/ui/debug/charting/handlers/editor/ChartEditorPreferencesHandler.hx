@@ -61,7 +61,9 @@ class ChartEditorPreferencesHandler
     state.preferencesVolumeInstrumental.value = Std.int(save.chartEditorInstVolume.value * 100);
     state.preferencesVolumeVocalsPlayer.value = Std.int(save.chartEditorPlayerVoiceVolume.value * 100);
     state.preferencesVolumeVocalsOpponent.value = Std.int(save.chartEditorOpponentVoiceVolume.value * 100);
-    state.menubarItemPlaybackSpeed.value = Math.round(save.chartEditorPlaybackSpeed.value * 100.0);
+    var playbackSpeed:Float = save.chartEditorPlaybackSpeed.value;
+    if (Math.isNaN(playbackSpeed) || playbackSpeed < 0.05) playbackSpeed = 0.5;
+    state.setPlaybackSpeed(Math.min(playbackSpeed, 1.0) * 2.0);
   }
 
   /**
