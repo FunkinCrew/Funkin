@@ -462,7 +462,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
       var entry = chainRows[i];
       var event:Null<SongEventData> = i < chainEvents.length ? chainEvents[i] : null;
       var style:String = CHAIN_ROW_STYLE;
-      if (event != null && event == chainActive) style += CHAIN_ACTIVE_STYLE;
+      if (event != null && sameEvent(event, chainActive)) style += CHAIN_ACTIVE_STYLE;
       else if (entry.row == hoveredChainRow) style += CHAIN_HOVER_STYLE;
       if (entry.row.styleString != style) entry.row.styleString = style;
     }
@@ -492,7 +492,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
 
   function pickChainEvent(event:SongEventData):Void
   {
-    if (chainActive == event) return;
+    if (sameEvent(chainActive, event)) return;
     chainActive = event;
     chainActiveIndex = chainEvents.indexOf(event);
     loadActiveIntoForm();
@@ -615,13 +615,19 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
     refresh();
   }
 
+  static function sameEvent(a:Null<SongEventData>, b:Null<SongEventData>):Bool
+  {
+    return (a : Dynamic) == (b : Dynamic);
+  }
+
   function removeFromChain(event:SongEventData):Void
   {
-    var remaining:Array<SongEventData> = [for (other in chainEvents) if (other != event) other];
+    var remaining:Array<SongEventData> = [for (other in chainEvents) if (other != null && !sameEvent(other, event)) other];
+    var wasActive:Bool = sameEvent(chainActive, event);
     chartEditorState.performCommand(new funkin.ui.debug.charting.commands.events.RemoveEventsCommand([event]));
     // Keep the rest of the chain selected so the panel stays on it.
     chartEditorState.currentEventSelection = remaining;
-    if (chainActive == event) chainActive = remaining.length > 0 ? remaining[0] : null;
+    if (wasActive || chainActive == null) chainActive = remaining.length > 0 ? remaining[0] : null;
     if (chainActive != null) loadActiveIntoForm();
     refresh();
   }

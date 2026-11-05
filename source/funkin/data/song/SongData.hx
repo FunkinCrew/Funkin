@@ -1171,6 +1171,7 @@ abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataR
   @:op(A == B)
   public function op_equals(other:SongEventData):Bool
   {
+    if (this == null) return other == null;
     if (other == null) return false;
     return this.time == other.time && this.eventKind == other.eventKind && this.value == other.value;
   }
@@ -1185,6 +1186,8 @@ abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataR
   @:op(A != B)
   public function op_notEquals(other:SongEventData):Bool
   {
+    if (this == null) return other != null;
+    if (other == null) return true;
     return this.time != other.time || this.eventKind != other.eventKind || this.value != other.value;
   }
 

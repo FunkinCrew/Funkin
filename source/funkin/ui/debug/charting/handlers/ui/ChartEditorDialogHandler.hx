@@ -1522,8 +1522,12 @@ class ChartEditorDialogHandler
       pendingVariation.playData.stickerPack = dialogStickerPack.value.id;
       pendingVariation.timeChanges[0].bpm = dialogBPM.value;
 
-      state.songMetadata.set(pendingVariation.variation, pendingVariation);
-      state.refreshPlayDataVariations();
+      state.performDifficultyChange('Add Variation', function()
+      {
+        state.songMetadata.set(pendingVariation.variation, pendingVariation);
+        state.refreshPlayDataVariations();
+        return true;
+      });
       state.difficultySelectDirty = true; // Force the Difficulty toolbox to update.
 
       // Don't update conductor since we haven't switched to the new variation yet.
@@ -1593,7 +1597,14 @@ class ChartEditorDialogHandler
       var dialogDifficultyName:Null<TextField> = dialog.findComponent('dialogDifficultyName', TextField);
       if (dialogDifficultyName == null) throw 'Could not locate dialogDifficultyName TextField in Add Difficulty dialog';
 
-      state.createDifficulty(dialogVariation.value.id, dialogDifficultyName.text.toLowerCase(), inputScrollSpeed.value ?? 1.0);
+      var newVariation:String = dialogVariation.value.id;
+      var newDifficulty:String = dialogDifficultyName.text.toLowerCase();
+      var speed:Float = inputScrollSpeed.value ?? 1.0;
+      state.performDifficultyChange('Add Difficulty', function()
+      {
+        state.createDifficulty(newVariation, newDifficulty, speed);
+        return true;
+      });
 
       state.success('Add Difficulty', 'Added new difficulty "${dialogDifficultyName.text.toLowerCase()}"');
 
@@ -1668,13 +1679,21 @@ class ChartEditorDialogHandler
       var targetVariation:String = dialogVariation.value.id;
       var targetDifficulty:String = dialogDifficultyName.text.toLowerCase();
 
-      state.cloneDifficulty(variationToClone, difficultyToClone, targetVariation, targetDifficulty, inputScrollSpeed.value ?? 1.0);
+      var speed:Float = inputScrollSpeed.value ?? 1.0;
+      state.performDifficultyChange(deleteOriginal ? 'Move Difficulty' : 'Copy Difficulty', function()
+      {
+        state.cloneDifficulty(variationToClone, difficultyToClone, targetVariation, targetDifficulty, speed);
+        if (deleteOriginal)
+        {
+          state.removeDifficulty(variationToClone, difficultyToClone);
+          state.selectedDifficulty = targetDifficulty;
+          state.selectedVariation = targetVariation;
+        }
+        return true;
+      });
 
       if (deleteOriginal)
       {
-        state.removeDifficulty(variationToClone, difficultyToClone);
-        state.selectedDifficulty = targetDifficulty;
-        state.selectedVariation = targetVariation;
 
         state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
         state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);

@@ -103,14 +103,9 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
     {
       if (refreshingDetails) return;
       var value:Null<Float> = event.target.value;
-      chartEditorState.currentSongChartScrollSpeed = (value != null && value > 0) ? value : 1.0;
-      refreshDetails();
+      setScrollSpeed((value != null && value > 0) ? value : 1.0);
     };
-    difficultyInputScrollSpeed.onRightClick = _ ->
-    {
-      chartEditorState.currentSongChartScrollSpeed = 1.0;
-      refreshDetails();
-    };
+    difficultyInputScrollSpeed.onRightClick = _ -> setScrollSpeed(1.0);
     difficultyEstimateRating.onClick = function(_)
     {
       var rating:Null<Float> = DiffCalcUtil.calculate(chartEditorState.currentSongChartNoteData ?? [], chartEditorState.currentSongChartScrollSpeed);
@@ -119,16 +114,43 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
         chartEditorState.warning('Cannot Estimate', 'The chart needs at least two player notes.');
         return;
       }
-      chartEditorState.currentSongChartDifficultyRating = Math.round(rating);
-      refreshDetails();
+      setRating(Math.round(rating));
     };
     difficultyInputRating.onChange = function(event:UIEvent)
     {
       if (refreshingDetails || event.target.value == null) return;
-      chartEditorState.currentSongChartDifficultyRating = Std.int(event.target.value);
+      setRating(Std.int(event.target.value));
     };
 
     updateTree();
+  }
+
+  /**
+   * Change the scroll speed of the difficulty being edited, as an undoable step.
+   */
+  function setScrollSpeed(speed:Float):Void
+  {
+    if (speed == chartEditorState.currentSongChartScrollSpeed) return;
+    chartEditorState.performDifficultyChange('Set Scroll Speed', function()
+    {
+      chartEditorState.currentSongChartScrollSpeed = speed;
+      return true;
+    });
+    refreshDetails();
+  }
+
+  /**
+   * Change the rating of the difficulty being edited, as an undoable step.
+   */
+  function setRating(rating:Int):Void
+  {
+    if (rating == chartEditorState.currentSongChartDifficultyRating) return;
+    chartEditorState.performDifficultyChange('Set Difficulty Rating', function()
+    {
+      chartEditorState.currentSongChartDifficultyRating = rating;
+      return true;
+    });
+    refreshDetails();
   }
 
   /**
@@ -383,12 +405,20 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
 
     if (difficulty == null)
     {
-      chartEditorState.createDifficulty(variation, id, chartEditorState.currentSongChartScrollSpeed);
-      switchTo(variation, id);
+      var speed:Float = chartEditorState.currentSongChartScrollSpeed;
+      chartEditorState.performDifficultyChange('Add Difficulty', function()
+      {
+        chartEditorState.createDifficulty(variation, id, speed);
+        // Switched to here instead of with a command, so undo takes both back in one step.
+        chartEditorState.selectedVariation = variation;
+        chartEditorState.selectedDifficulty = id;
+        return true;
+      });
+      updateTree();
     }
     else
     {
-      chartEditorState.renameDifficulty(variation, difficulty, id);
+      chartEditorState.performDifficultyChange('Rename Difficulty', () -> chartEditorState.renameDifficulty(variation, difficulty, id));
     }
   }
 
@@ -407,7 +437,10 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
     {
       var taken:Array<String> = chartEditorState.songMetadata.get(variation)?.playData.difficulties ?? [];
       var copy:String = ChartEditorDifficultyHandler.uniqueDifficultyId('$difficulty-copy', taken);
-      if (chartEditorState.duplicateDifficulty(variation, difficulty, variation, copy)) startEditing('$variation:$copy');
+      if (chartEditorState.performDifficultyChange('Duplicate Difficulty', () -> chartEditorState.duplicateDifficulty(variation, difficulty, variation, copy)))
+      {
+        startEditing('$variation:$copy');
+      }
     });
 
     var others:Array<String> = chartEditorState.availableVariations.filter(v -> v != variation);
@@ -422,9 +455,12 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
         addMenuItem(copyMenu, target.toTitleCase(), function()
         {
           var taken:Array<String> = chartEditorState.songMetadata.get(target)?.playData.difficulties ?? [];
-          chartEditorState.duplicateDifficulty(variation, difficulty, target, ChartEditorDifficultyHandler.uniqueDifficultyId(difficulty, taken));
+          var id:String = ChartEditorDifficultyHandler.uniqueDifficultyId(difficulty, taken);
+          chartEditorState.performDifficultyChange('Copy Difficulty', () -> chartEditorState.duplicateDifficulty(variation, difficulty, target, id));
         });
-        addMenuItem(moveMenu, target.toTitleCase(), () -> { chartEditorState.moveDifficulty(variation, difficulty, target); });
+        addMenuItem(moveMenu, target.toTitleCase(), () -> {
+          chartEditorState.performDifficultyChange('Move Difficulty', () -> chartEditorState.moveDifficulty(variation, difficulty, target));
+        });
       }
       menu.addComponent(copyMenu);
       menu.addComponent(moveMenu);
@@ -448,8 +484,12 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
     if (variation != Constants.DEFAULT_VARIATION)
     {
       menu.addComponent(new MenuSeparator());
-      addMenuItem(menu, 'Delete Variation', () -> confirm('Delete the ${variation.toTitleCase()} variation and all of its difficulties? This cannot be undone.', 'Delete Variation',
-        () -> chartEditorState.removeVariation(variation)));
+      addMenuItem(menu, 'Delete Variation', () -> confirm('Delete the ${variation.toTitleCase()} variation and all of its difficulties?', 'Delete Variation',
+        () -> chartEditorState.performDifficultyChange('Delete Variation', function()
+        {
+          chartEditorState.removeVariation(variation);
+          return true;
+        })));
     }
     showMenu(menu);
   }
@@ -488,8 +528,11 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
   function confirmRemoveDifficulty(variation:String, difficulty:String):Void
   {
     if (isLastDifficulty(variation)) return;
-    confirm('Delete ${difficulty.toTitleCase()} from ${variation.toTitleCase()}? This cannot be undone.', 'Delete Difficulty',
-      () -> chartEditorState.removeDifficulty(variation, difficulty));
+    confirm('Delete ${difficulty.toTitleCase()} from ${variation.toTitleCase()}?', 'Delete Difficulty', () -> chartEditorState.performDifficultyChange('Delete Difficulty', function()
+    {
+      chartEditorState.removeDifficulty(variation, difficulty);
+      return true;
+    }));
   }
 
   /**
@@ -524,7 +567,7 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
     var taken:Array<String> = chartEditorState.songMetadata.get(target)?.playData.difficulties ?? [];
     var base:String = source.variation == target ? '${source.difficulty}-copy' : source.difficulty;
     var id:String = ChartEditorDifficultyHandler.uniqueDifficultyId(base, taken);
-    if (chartEditorState.duplicateDifficulty(source.variation, source.difficulty, target, id)) updateTree();
+    if (chartEditorState.performDifficultyChange('Paste Difficulty', () -> chartEditorState.duplicateDifficulty(source.variation, source.difficulty, target, id))) updateTree();
   }
 
   public function deleteSelection():Void
@@ -593,7 +636,11 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
         return;
       }
 
-      chartEditorState.songMetadata.set(variation, metadata);
+      chartEditorState.performDifficultyChange('Load Metadata File', function()
+      {
+        chartEditorState.songMetadata.set(variation, metadata);
+        return true;
+      });
       chartEditorState.healthIconsDirty = true;
       chartEditorState.playerPreviewDirty = true;
       chartEditorState.opponentPreviewDirty = true;
@@ -620,7 +667,11 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
         return;
       }
 
-      chartEditorState.songChartData.set(variation, chartData);
+      chartEditorState.performDifficultyChange('Load Chart File', function()
+      {
+        chartEditorState.songChartData.set(variation, chartData);
+        return true;
+      });
       if (variation == chartEditorState.selectedVariation)
       {
         chartEditorState.currentNoteSelection = [];

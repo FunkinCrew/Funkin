@@ -4,6 +4,7 @@ package funkin.ui.debug.charting.handlers.chart;
 import funkin.data.song.SongData.SongChartData;
 import funkin.data.song.SongData.SongMetadata;
 import funkin.data.song.SongData.SongNoteData;
+import funkin.ui.debug.charting.commands.song.DifficultyChangeCommand;
 import funkin.ui.debug.charting.commands.song.SwitchDifficultyCommand;
 import funkin.util.Constants;
 using Lambda;
@@ -11,6 +12,19 @@ using Lambda;
 @:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorDifficultyHandler
 {
+  /**
+   * Run a change to the variations or difficulties as one undoable step.
+   * @param label What the undo history calls this.
+   * @param action Makes the change. Returns whether anything changed.
+   * @return Whether anything changed.
+   */
+  public static function performDifficultyChange(state:ChartEditorState, label:String, action:Void->Bool):Bool
+  {
+    var command:DifficultyChangeCommand = new DifficultyChangeCommand(label, action);
+    state.performCommand(command);
+    return command.changed;
+  }
+
   public static function createDifficulty(state:ChartEditorState, variation:String, difficulty:String, scrollSpeed:Float = 1.0):Void
   {
     var variationMetadata:Null<SongMetadata> = state.songMetadata.get(variation);

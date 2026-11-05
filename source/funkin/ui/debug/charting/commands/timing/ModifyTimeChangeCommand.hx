@@ -53,7 +53,8 @@ class ModifyTimeChangeCommand implements ChartEditorCommand
       previousDenominator = timeChanges[timeChangeIndex].timeSignatureDen;
       timeChanges[timeChangeIndex].bpm = targetBPM;
       // Clamp the target timestamp to a valid value.
-      targetTimeStamp.clamp((timeChanges[timeChangeIndex - 1]?.timeStamp ?? 0) + 1, (timeChanges[timeChangeIndex + 1]?.timeStamp ?? state.songLengthInMs) - 1);
+      var previous:Null<SongTimeChange> = timeChanges[timeChangeIndex - 1];
+      targetTimeStamp = previous == null ? timeChanges[timeChangeIndex].timeStamp : targetTimeStamp.clamp(previous.timeStamp + 1, (timeChanges[timeChangeIndex + 1]?.timeStamp ?? state.songLengthInMs) - 1);
       timeChanges[timeChangeIndex].timeStamp = targetTimeStamp;
       timeChanges[timeChangeIndex].timeSignatureNum = targetNumerator;
       timeChanges[timeChangeIndex].timeSignatureDen = targetDenominator;
