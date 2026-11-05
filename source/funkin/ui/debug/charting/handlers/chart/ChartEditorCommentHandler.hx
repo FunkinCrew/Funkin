@@ -27,6 +27,8 @@ class ChartEditorCommentHandler
 
   static final COMMENT_PANEL_BORDER:Float = 1;
 
+  static final COMMENT_PANEL_FADE:Float = 24;
+
   /**
    * Space kept between a panel and the right edge of the screen.
    */
@@ -71,7 +73,7 @@ class ChartEditorCommentHandler
   static function collapsedHeight(panel:ChartEditorCommentPanel):Float
   {
     var header:Float = panel.headerContainer.height;
-    return (header != null && header > 0) ? header + COMMENT_PANEL_BORDER * 2 : COMMENT_PANEL_COLLAPSED_HEIGHT;
+    return header > 0 ? header + COMMENT_PANEL_BORDER * 2 : COMMENT_PANEL_COLLAPSED_HEIGHT;
   }
 
   /**
@@ -92,17 +94,21 @@ class ChartEditorCommentHandler
     var width:Float = Math.max(COMMENT_PANEL_MIN_WIDTH, Math.min(COMMENT_PANEL_WIDTH, FlxG.width - x - COMMENT_PANEL_MARGIN));
     var height:Float = Math.max(0, Math.min(panel.expanded ? COMMENT_PANEL_HEIGHT : collapsedHeight(panel), bottom - top));
 
-    var timeY:Float = ChartEditorTimeScale.msToPixels(comment.time) + state.renderedNotes.y;
-    var visible:Bool = height > 0 && timeY >= top - height && timeY <= bottom;
+    // Fading and shit
+    var y:Float = ChartEditorTimeScale.msToPixels(comment.time) + state.renderedNotes.y;
+    var fadeTop:Float = (y - top) / COMMENT_PANEL_FADE;
+    var fadeBottom:Float = (bottom - (y + height)) / COMMENT_PANEL_FADE;
+    var opacity:Float = Math.max(0, Math.min(1, Math.min(fadeTop, fadeBottom)));
+    var visible:Bool = height > 0 && opacity > 0;
     if (panel.hidden == visible) panel.hidden = !visible;
     if (!visible) return;
 
     // Only touched when they change, since every change makes HaxeUI lay the panel out again.
     if (panel.width != width) panel.width = width;
     if (panel.height != height) panel.height = height;
-    var y:Float = Math.max(top, Math.min(timeY, bottom - height));
     if (panel.x != x) panel.x = x;
     if (panel.y != y) panel.y = y;
+    if (panel.opacity != opacity) panel.opacity = opacity;
   }
 }
 #end
