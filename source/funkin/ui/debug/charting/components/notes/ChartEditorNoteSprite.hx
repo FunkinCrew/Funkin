@@ -76,6 +76,11 @@ class ChartEditorNoteSprite extends FlxSprite
    */
   public var kindIndicator:FlxText = new haxe.ui.backend.flixel.HiResFlxText(5, 5, 100, '*', 16);
 
+  /**
+   * The kind the indicator was last drawn for.
+   */
+  var indicatorKind:String = '';
+
   public function new(parent:ChartEditorState, isGhost:Bool = false)
   {
     super();
@@ -105,7 +110,7 @@ class ChartEditorNoteSprite extends FlxSprite
       addNoteStyleAnimations(fetchNoteStyle(entry));
     }
 
-    kindIndicator.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 24, FlxColor.YELLOW, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    kindIndicator.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 24, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
   }
 
   static var noteFrameCollection:Null<FlxFramesCollection> = null;
@@ -234,6 +239,23 @@ class ChartEditorNoteSprite extends FlxSprite
     if (!parentState.showNoteKindIndicators) return;
     if ((this.noteData?.kind ?? '').length == 0) return; // Do not render the note kind indicator if the note kind is default.
 
+    var kind:String = this.noteData?.kind ?? '';
+    if (kind != indicatorKind)
+    {
+      indicatorKind = kind;
+      kindIndicator.text = ChartEditorNoteUtil.noteKindTag(kind);
+      kindIndicator.color = ChartEditorNoteUtil.noteKindColor(kind);
+    }
+
+    var tint:FlxColor = kindIndicator.color;
+    kindIndicator.color = FlxColor.BLACK;
+    kindIndicator.alpha = 0.5;
+    kindIndicator.x = this.x + 2;
+    kindIndicator.y = this.y + 2;
+    kindIndicator.draw();
+
+    kindIndicator.color = tint;
+    kindIndicator.alpha = 1;
     kindIndicator.x = this.x;
     kindIndicator.y = this.y;
     kindIndicator.draw();

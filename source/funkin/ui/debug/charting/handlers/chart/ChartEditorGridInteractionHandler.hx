@@ -2,6 +2,7 @@ package funkin.ui.debug.charting.handlers.chart;
 
 #if FEATURE_CHART_EDITOR
 import funkin.data.song.SongData.SongEventData;
+import funkin.data.song.SongData.SongNoteData;
 import funkin.ui.debug.charting.commands.selection.SetItemSelectionCommand;
 import funkin.ui.debug.charting.toolboxes.ChartEditorEventDataToolbox;
 import haxe.ui.containers.menus.MenuCheckBox;
@@ -28,6 +29,19 @@ class ChartEditorGridInteractionHandler
         break;
       }
     }
+    var clickedNote:Null<SongNoteData> = null;
+    if (target == null)
+    {
+      for (noteSprite in state.renderedNotes.members)
+      {
+        if (noteSprite != null && noteSprite.alive && noteSprite.noteData != null && FlxG.mouse.overlaps(noteSprite))
+        {
+          clickedNote = noteSprite.noteData;
+          target = 'note:${clickedNote.time}:${clickedNote.data}';
+          break;
+        }
+      }
+    }
 
     var now:Float = haxe.Timer.stamp();
     var isDouble:Bool = target != null && target == state.lastGridClickTarget && now - state.lastGridClickTime <= ChartEditorState.DOUBLE_CLICK_SECONDS;
@@ -43,6 +57,12 @@ class ChartEditorGridInteractionHandler
       state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT);
       var eventToolbox:Null<ChartEditorEventDataToolbox> = cast state.activeToolboxes.get(ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT);
       if (eventToolbox != null) state.listKeyTarget = eventToolbox;
+    }
+    else if (clickedNote != null)
+    {
+      if (!state.currentNoteSelection.contains(clickedNote)) state.performCommand(new SetItemSelectionCommand([clickedNote], []));
+      state.openToolboxFromGrid(ChartEditorState.CHART_EDITOR_TOOLBOX_NOTE_DATA_LAYOUT, state.menubarItemToggleToolboxNoteData);
+      state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_NOTE_DATA_LAYOUT);
     }
   }
 

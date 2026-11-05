@@ -1005,9 +1005,12 @@ class ChartEditorCursorHandler
             state.performCommand(new ExtendNoteLengthCommand(highlightedHoldNote.noteData, 0));
           }
         }
-        else
+        else if (FlxG.mouse.justPressedRight && state.noteKindToPlace != null)
         {
-          // Right clicked on nothing.
+          state.noteKindToPlace = null;
+          state.noteParamsToPlace = [];
+          state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_NOTE_DATA_LAYOUT);
+          state.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/note-erase').toString());
         }
       }
 
