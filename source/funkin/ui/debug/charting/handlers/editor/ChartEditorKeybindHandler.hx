@@ -69,7 +69,7 @@ class ChartEditorKeybindHandler
     // Ctrl+Mouse Wheel = Zoom
     if (FlxG.mouse.deltaWheel.y != 0 && state.pressingControl())
     {
-      state.zoomLevelIndex += (FlxG.mouse.deltaWheel.y > 0) ? 1 : -1;
+      handleZoomWheel(state, FlxG.mouse.deltaWheel.y);
     }
     // Mouse Wheel = Scroll
     else if (FlxG.mouse.deltaWheel.y != 0)
@@ -559,6 +559,37 @@ class ChartEditorKeybindHandler
     {
       state.redoLastCommand();
     }
+  }
+
+  /**
+   * How much wheel movement makes one zoom step.
+   */
+  static final ZOOM_WHEEL_STEP:Float = 1;
+
+  /**
+   * The shortest time between zoom steps, in seconds.
+   */
+  static final ZOOM_WHEEL_COOLDOWN:Float = 0.1;
+
+  /**
+   * Wheel movement that hasn't added up to a zoom step yet.
+   */
+  static var zoomWheelAmount:Float = 0;
+
+  static var lastZoomStepTime:Float = 0;
+  static var lastZoomWheelTime:Float = 0;
+
+  static function handleZoomWheel(state:ChartEditorState, delta:Float):Void
+  {
+    var now:Float = haxe.Timer.stamp();
+    if (now - lastZoomWheelTime > 0.3 || (zoomWheelAmount != 0 && (delta > 0) != (zoomWheelAmount > 0))) zoomWheelAmount = 0;
+    lastZoomWheelTime = now;
+    zoomWheelAmount += delta;
+
+    if (Math.abs(zoomWheelAmount) < ZOOM_WHEEL_STEP || now - lastZoomStepTime < ZOOM_WHEEL_COOLDOWN) return;
+    state.zoomLevelIndex += zoomWheelAmount > 0 ? 1 : -1;
+    zoomWheelAmount = 0;
+    lastZoomStepTime = now;
   }
 
   /**
