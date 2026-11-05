@@ -465,6 +465,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
   public function showHint():Void
   {
     inactivityTimer = -1;
+    panel.active = true;
   }
 
   /**
