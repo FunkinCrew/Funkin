@@ -121,6 +121,7 @@ class ReloadAssetsDebugPlugin extends FlxBasic
         FlxG.switchState(() -> new HotReloadState(hotReloadParams));
         return;
       }
+      #end
       // Fallback to using default params.
       hotReloadParams = {
         targetState: state._constructor

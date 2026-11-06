@@ -1,5 +1,6 @@
 package funkin.util.macro;
 
+#if POLYMOD_CPPIA
 #if macro
 import haxe.macro.Compiler;
 import haxe.macro.Context;
@@ -71,3 +72,4 @@ class CppiaManifestMacro
   }
   #end
 }
+#end

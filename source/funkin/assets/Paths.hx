@@ -1,7 +1,6 @@
 package funkin.assets;
 
 import funkin.assets.Assets.AssetType;
-import funkin.util.macro.ConsoleMacro.ConsoleClass;
 import funkin.util.assets.AssetsUtil;
 import haxe.io.Path;
 
@@ -12,7 +11,7 @@ using StringTools;
  * Provides validation and more.
  */
 @:nullSafety
-class Paths implements ConsoleClass
+class Paths
 {
   /**
    * Remove a library from an asset path string.

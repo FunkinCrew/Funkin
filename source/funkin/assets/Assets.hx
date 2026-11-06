@@ -22,7 +22,6 @@ import funkin.data.stage.StageRegistry;
 import funkin.data.stickers.StickerRegistry;
 import funkin.data.story.level.LevelRegistry;
 import funkin.graphics.FunkinSprite.AtlasSpriteSettings;
-import funkin.util.macro.ConsoleMacro.ConsoleClass;
 import lime.app.Future;
 import lime.app.Promises;
 import lime.text.Font;
@@ -45,7 +44,7 @@ using funkin.graphics.framebuffer.BitmapDataUtil;
  * while providing additional Funkin-specific functions and caching.
  */
 @:nullSafety
-class Assets implements ConsoleClass
+class Assets
 {
   static var initialized:Bool = false;
   static final ASSET_TYPES:Array<Null<AssetType>> = [
