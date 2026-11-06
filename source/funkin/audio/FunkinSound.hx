@@ -214,6 +214,19 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
         @:nullSafety(Off)
         music.future.onComplete(function(partialMusic:Null<FunkinSound>)
         {
+          if (!partialQueue.contains(music))
+          {
+            if (partialMusic != null) partialMusic.destroy();
+            return;
+          }
+
+          if (partialMusic == null)
+          {
+            partialQueue.remove(music);
+            return;
+          }
+          partialQueue.remove(music);
+
           FlxG.sound.music = partialMusic;
           FlxG.sound.list.remove(FlxG.sound.music);
 
