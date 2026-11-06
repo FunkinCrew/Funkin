@@ -115,9 +115,11 @@ class ABotVis extends FlxSpriteGroup
 
     for (i in 0...Std.int(Math.min(group.members.length, analyzerCache.length)))
     {
-      var animFrame:Int = (FlxG.sound.volume == 0 || FlxG.sound.muted) ? 0 : Math.round(analyzerCache[i].value * 5);
+      var animFrame:Int = (FlxG.sound.volume == 0 || FlxG.sound.muted) ? 0 : Math.round(analyzerCache[i].value * 6);
 
       group.members[i].visible = animFrame > 0;
+
+      animFrame -= 1;
 
       animFrame = Math.floor(Math.min(5, animFrame));
       animFrame = Math.floor(Math.max(0, animFrame));
