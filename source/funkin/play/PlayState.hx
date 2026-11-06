@@ -3933,8 +3933,11 @@ class PlayState extends MusicBeatSubState
         FlxG.sound.music?.stop();
         vocals?.stop();
 
-        // TODO: Softcode this cutscene.
-        if (currentSong.id == 'eggnog')
+        var targetSong:Song = SongRegistry.instance.fetchEntry(targetSongId, {
+          variation: currentVariation
+        }) ?? throw 'Could not find a song with ID $targetSongId';
+        var targetVariation:String = currentVariation;
+        if (!targetSong.hasDifficulty(PlayStatePlaylist.campaignDifficulty, currentVariation))
         {
           var blackBG:FunkinSprite = new FunkinSprite(-FlxG.width * FlxG.camera.zoom, -FlxG.height * FlxG.camera.zoom);
           blackBG.makeSolidColor(FlxG.width * 3, FlxG.height * 3, FlxColor.BLACK);
@@ -3987,6 +3990,13 @@ class PlayState extends MusicBeatSubState
             shouldStopMusic: true,
           });
         }
+        if (currentStage != null) this.remove(currentStage);
+        LoadingState.loadPlayState({
+          targetSong: targetSong,
+          targetDifficulty: PlayStatePlaylist.campaignDifficulty,
+          targetVariation: targetVariation,
+          cameraFollowPoint: cameraFollowPoint.getPosition(),
+        });
       }
     }
     else
