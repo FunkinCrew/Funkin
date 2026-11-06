@@ -25,7 +25,6 @@ class FunkinLoadingCharacter extends FunkinSprite
   public static final DEFAULT_ANIMATION_PREFIX:String = 'run';
 
   var data:Null<LoadingCharacterData> = null;
-  var offsets:Array<Float> = [0, 0];
 
   public function new()
   {
@@ -50,8 +49,12 @@ class FunkinLoadingCharacter extends FunkinSprite
     scale.set(data.scale, data.scale);
     updateHitbox();
 
+    this.flipX = data.flipX;
+
     this.setPosition(FlxG.width - (this.width + data.offsets[0]), FlxG.height - (this.height + data.offsets[1]));
     this.animation.addByPrefix(DEFAULT_ANIMATION, DEFAULT_ANIMATION_PREFIX, 24);
     this.animation.play(DEFAULT_ANIMATION);
+
+    this.antialiasing = data.antialiasing;
   }
 }
