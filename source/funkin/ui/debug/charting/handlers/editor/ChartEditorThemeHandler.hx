@@ -98,7 +98,7 @@ class ChartEditorThemeHandler
   public static final GRID_BEAT_LINE_WIDTH:Int = 1;
   public static final GRID_BEAT_LINE_ALPHA:Float = 0.25;
   public static final GRID_SNAP_LINE_WIDTH:Int = 1;
-  public static final GRID_SNAP_LINE_ALPHA:Float = 0.1;
+  public static final GRID_SNAP_LINE_ALPHA:Float = 0.16;
 
   // Solid waveform drawn across each side's lanes.
   static final WAVEFORM_OVERLAY_COLOR_LIGHT:FlxColor = 0xFF2E4F9C;
