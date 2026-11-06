@@ -220,7 +220,11 @@ class ChartEditorTimeScale
   {
     if (CONSTANT_SCROLL) return ms;
     var line:Null<funkin.play.notes.ScrollVelocityTimeline> = velocity;
-    return (line != null) ? line.visualTime(ms) : ms;
+    if (line == null) return ms;
+    var visual:Float = line.visualTime(ms);
+    var start:Float = line.stretchStartAt(ms);
+    if (start < 0) return visual;
+    return funkin.play.notes.ScrollVelocityTimeline.scaleLag(ms, visual, gameScrollSpeedAt(start), gameScrollSpeedAt(ms));
   }
 
   public static function hasVelocityOffset(ms:Float):Bool

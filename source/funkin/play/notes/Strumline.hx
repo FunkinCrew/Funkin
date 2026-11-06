@@ -109,6 +109,9 @@ class Strumline extends FlxSpriteGroup
   public var scrollVelocity:Null<ScrollVelocityTimeline> = null;
   public var visualSongPosition(default, null):Float = 0.0;
 
+  var lagStretchStart:Float = -1;
+  var lagScrollSpeed:Float = 1.0;
+
   /**
    * Reset the scroll speed to the current chart's scroll speed.
    */
@@ -618,7 +621,21 @@ class Strumline extends FlxSpriteGroup
   public function updateNotes():Void
   {
     var velocity:Null<ScrollVelocityTimeline> = scrollVelocity;
-    visualSongPosition = (velocity != null) ? velocity.visualTime(conductorInUse.songPosition) : conductorInUse.songPosition;
+    var songTime:Float = conductorInUse.songPosition;
+    if (velocity != null)
+    {
+      var stretchStart:Float = velocity.stretchStartAt(songTime);
+      if (stretchStart != lagStretchStart)
+      {
+        lagStretchStart = stretchStart;
+        lagScrollSpeed = scrollSpeed;
+      }
+      visualSongPosition = ScrollVelocityTimeline.scaleLag(songTime, velocity.visualTime(songTime), lagScrollSpeed, scrollSpeed);
+    }
+    else
+    {
+      visualSongPosition = songTime;
+    }
 
     if (noteData.length == 0) return;
 

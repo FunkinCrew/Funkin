@@ -216,6 +216,33 @@ class ScrollVelocityTimeline
   }
 
   /**
+   * When the stretch playing at a song time started, or -1 outside of one.
+   */
+  public function stretchStartAt(time:Float):Float
+  {
+    if (!hasEvents || time <= 0) return -1;
+    for (stretch in stretches)
+    {
+      if (time < stretch.start) break;
+      if (time < stretch.end) return stretch.start;
+    }
+    return -1;
+  }
+
+  /**
+   * Keep how far the notes lag behind at the scroll speed it built up at.
+   * @param time The real song time.
+   * @param visual The visual time from `visualTime`.
+   * @param lagSpeed The scroll speed when the stretch started.
+   * @param speed The scroll speed now.
+   */
+  public static function scaleLag(time:Float, visual:Float, lagSpeed:Float, speed:Float):Float
+  {
+    if (Math.abs(speed) < NORMAL_VELOCITY_RANGE) return visual;
+    return time - (time - visual) * lagSpeed / speed;
+  }
+
+  /**
    * The song time the notes are drawn around at a real song time.
    */
   public function visualTime(time:Float):Float
