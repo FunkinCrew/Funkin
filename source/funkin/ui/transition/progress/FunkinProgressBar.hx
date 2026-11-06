@@ -168,7 +168,7 @@ class FunkinProgressBar extends FunkinSpriteGroup
     var characterData:LoadingCharacterData = FlxG.random.getObject(dataList, weights);
     var idx:Int = dataList.indexOf(characterData);
     var characterId:String = dataPaths[idx].split('/').pop().split('.')[0];
-    character.loadCharacter(characterData, '$CHARACTER_PATH$characterId/$characterId', dataModIds[idx]);
+    character.loadCharacter(characterData, characterId, dataModIds[idx]);
     character.zIndex = 300;
     add(character);
   }
