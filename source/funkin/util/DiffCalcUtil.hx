@@ -35,32 +35,37 @@ class DiffCalcUtil
   /**
    * A gap at least this long, in milliseconds, is a rest.
    */
-  static final REST_MS:Float = 303.2;
+  static final REST_MS:Float = 221.397;
 
   /**
    * Extra strain for a hit that breaks the pattern.
    */
-  static final IRREGULAR_WEIGHT:Float = 1.5;
+  static final IRREGULAR_WEIGHT:Float = 1.0818;
 
   /**
    * Extra strain per additional note in a chord.
    */
-  static final CHORD_WEIGHT:Float = 0.6271;
+  static final CHORD_WEIGHT:Float = 0.2378;
 
   /**
    * The hits per second where a chord counts fully.
    */
-  static final CHORD_FULL_SPEED:Float = 2.563;
+  static final CHORD_FULL_SPEED:Float = 2.5266;
+
+  /**
+   * Extra strain for more notes in a chord.
+   */
+  static final CHORD_FLAT_WEIGHT:Float = 1.1774;
 
   /**
    * Strain from hitting the same lane again soon.
    */
-  static final JACK_WEIGHT:Float = 0.7192;
+  static final JACK_WEIGHT:Float = 1.4172;
 
   /**
    * How much strain is left after a second.
    */
-  static final DECAY_PER_SECOND:Float = 0.0973;
+  static final DECAY_PER_SECOND:Float = 0.0561;
 
   /**
    * The length of the stretches the strain is sampled over.
@@ -70,12 +75,12 @@ class DiffCalcUtil
   /**
    * How much each next hardest stretch counts compared to the one before.
    */
-  static final SECTION_FALLOFF:Float = 0.92;
+  static final SECTION_FALLOFF:Float = 0.99;
 
   /**
    * Extra strain for a hit whose timing breaks the rhythm, instead of repeating one of the last few gaps.
    */
-  static final RHYTHM_WEIGHT:Float = 3.0049;
+  static final RHYTHM_WEIGHT:Float = 5.3504;
 
   /**
    * How close two gaps have to be, as a share of the gap, to count as the same rhythm.
@@ -90,24 +95,34 @@ class DiffCalcUtil
   /**
    * Extra strain for an anchor, where a lane comes back every other hit while the hits between it change.
    */
-  static final ANCHOR_WEIGHT:Float = 0;
+  static final ANCHOR_WEIGHT:Float = 0.3987;
 
   /**
    * The hits per second where an anchor counts fully.
    */
-  static final ANCHOR_FULL_SPEED:Float = 8;
+  static final ANCHOR_FULL_SPEED:Float = 9.4059;
+
+  /**
+   * Extra strain from how fast the anchored lane itself is hit.
+   */
+  static final ANCHOR_JACK_WEIGHT:Float = 1.1458;
+
+  /**
+   * How much an anchor counts as a pattern break.
+   */
+  static final ANCHOR_BREAK:Float = 0.0537;
 
   /**
    * Scroll speeds above this make notes harder to read, and add to the rating.
    */
-  static final SCROLL_SPEED_START:Float = 3;
+  static final SCROLL_SPEED_START:Float = 2.4;
 
-  static final RATING_PER_SCROLL_SPEED:Float = 2.7106;
+  static final RATING_PER_SCROLL_SPEED:Float = 1.7887;
 
   // The rating is a curve over the natural log of the strain, fitted to the base game's charts as rated by my own FUCKING HANDS.
-  static final RATING_SQUARED:Float = 1.8008;
-  static final RATING_LINEAR:Float = -10.4019;
-  static final RATING_CONSTANT:Float = 16.0091;
+  static final RATING_SQUARED:Float = 2.1624;
+  static final RATING_LINEAR:Float = -11.771;
+  static final RATING_CONSTANT:Float = 17.0139;
 
   /**
    * Work out how much strain the player's notes in a chart add up to.
@@ -195,7 +210,9 @@ class DiffCalcUtil
         jack = Math.max(jack, 1000 / Math.max(MIN_GAP_MS, time - lastInLane[lane]));
       }
 
+      var isAnchor:Bool = i >= 3 && lanes == hitLanes[i - 2] && hitLanes[i - 1] != hitLanes[i - 3];
       var irregular:Float = repeatsPattern(hitLanes, i) ? 0 : 1;
+      if (isAnchor) irregular = Math.max(irregular, ANCHOR_BREAK);
 
       rhythmGaps.push(gap);
       var rhythm:Float = 0;
@@ -214,16 +231,15 @@ class DiffCalcUtil
       }
       var chord:Float = (noteCount - 1) * CHORD_WEIGHT * Math.min(1, speed / CHORD_FULL_SPEED);
 
-      var anchor:Float = 0;
-      if (i >= 3 && lanes == hitLanes[i - 2] && hitLanes[i - 1] != hitLanes[i - 3]) anchor = Math.min(1, speed / ANCHOR_FULL_SPEED);
+      var anchor:Float = isAnchor ? Math.min(1, speed / ANCHOR_FULL_SPEED) : 0;
 
       // Each part of the strain this hit adds, in the order of `DiffCalcCause`.
       var parts:Array<Float> = [
         speed * (1 + ANCHOR_WEIGHT * anchor),
         speed * IRREGULAR_WEIGHT * irregular,
         speed * RHYTHM_WEIGHT * rhythm,
-        speed * chord,
-        JACK_WEIGHT * jack
+        speed * chord + (noteCount - 1) * CHORD_FLAT_WEIGHT,
+        JACK_WEIGHT * jack + (isAnchor ? ANCHOR_JACK_WEIGHT * jack : 0)
       ];
       var added:Float = 0;
       for (part in parts) added += part;
