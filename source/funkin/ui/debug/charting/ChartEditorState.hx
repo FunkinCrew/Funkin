@@ -915,6 +915,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function get_usingInstrumentalWaveform():Bool
   {
     if (showInstrumentalWaveform) return true;
+    if (audioVocalTrackGroup.length > 0) return false;
     for (waveform in audioWaveforms.members)
     {
       if (waveform != null && waveform.exists && waveform.iconId != GF) return false;

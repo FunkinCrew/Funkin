@@ -96,9 +96,10 @@ class ChartEditorThemeHandler
   public static final GRID_MEASURE_LINE_WIDTH:Int = 2;
   public static final GRID_MEASURE_LINE_ALPHA:Float = 0.75;
   public static final GRID_BEAT_LINE_WIDTH:Int = 1;
-  public static final GRID_BEAT_LINE_ALPHA:Float = 0.25;
+  public static final GRID_BEAT_LINE_ALPHA:Float = 0.4;
   public static final GRID_SNAP_LINE_WIDTH:Int = 1;
-  public static final GRID_SNAP_LINE_ALPHA:Float = 0.16;
+  public static final GRID_SNAP_LINE_ALPHA:Float = 0.12;
+  public static final GRID_HALF_SNAP_LINE_ALPHA:Float = 0.26;
 
   // Solid waveform drawn across each side's lanes.
   static final WAVEFORM_OVERLAY_COLOR_LIGHT:FlxColor = 0xFF2E4F9C;

@@ -443,7 +443,10 @@ class ChartEditorGridLines
       var measurePosition:Float = measureStart + (snapStep - start) / measureSteps;
       if (Math.abs(measurePosition - Math.round(measurePosition)) < EPSILON) continue;
       if (showBeats && Math.abs(snapStep / beatSteps - Math.round(snapStep / beatSteps)) < EPSILON) continue;
-      addLine(snapStep, ChartEditorThemeHandler.GRID_SNAP_LINE_WIDTH, ChartEditorThemeHandler.GRID_SNAP_LINE_ALPHA);
+
+      var half:Float = snapStep / (snapSteps * 2);
+      var alpha:Float = (Math.abs(half - Math.round(half)) < EPSILON) ? ChartEditorThemeHandler.GRID_HALF_SNAP_LINE_ALPHA : ChartEditorThemeHandler.GRID_SNAP_LINE_ALPHA;
+      addLine(snapStep, ChartEditorThemeHandler.GRID_SNAP_LINE_WIDTH, alpha);
     }
   }
 
