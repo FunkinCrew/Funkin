@@ -104,7 +104,12 @@ class ABotVis extends FlxSpriteGroup
   public function dumpSound():Void
   {
     snd = null;
-    analyzer = null;
+
+    if (analyzer != null)
+    {
+      analyzer.dispose();
+      analyzer = null;
+    }
   }
 
   override function draw():Void
