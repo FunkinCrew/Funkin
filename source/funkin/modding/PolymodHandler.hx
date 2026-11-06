@@ -453,6 +453,7 @@ class PolymodHandler
     Polymod.addImportAlias('funkin.ui.freeplay.dj.ScriptedMultiSparrowFreeplayDJ', funkin.ui.freeplay.dj.MultiSparrowFreeplayDJ);
     Polymod.addImportAlias('funkin.ui.freeplay.dj.ScriptedPackerFreeplayDJ', funkin.ui.freeplay.dj.PackerFreeplayDJ);
     Polymod.addImportAlias('funkin.ui.story.ScriptedLevel', funkin.ui.story.Level);
+    Polymod.addImportAlias('funkin.ui.story.ScriptedPanelEntry', funkin.ui.quickpanel.PanelEntry);
     Polymod.addImportAlias('funkin.ui.transition.stickers.ScriptedStickerPack', funkin.ui.transition.stickers.StickerPack);
     Polymod.addImportAlias('funkin.modding.module.ScriptedModule', funkin.modding.module.Module);
 

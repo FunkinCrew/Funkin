@@ -4,6 +4,7 @@ import funkin.assets.Assets;
 import funkin.assets.FunkinAssetCache;
 import funkin.assets.Paths.AssetPath;
 import funkin.data.BaseRegistry.LoadEntriesResult;
+import funkin.data.quickpanel.PanelRegistry;
 import funkin.data.character.CharacterRegistry;
 import funkin.data.dialogue.ConversationRegistry;
 import funkin.data.dialogue.DialogueBoxRegistry;
@@ -162,6 +163,7 @@ class ModReloader
     futures.push(LevelRegistry.instance.loadEntriesAsync());
     futures.push(NoteStyleRegistry.instance.loadEntriesAsync());
     futures.push(PlayerRegistry.instance.loadEntriesAsync());
+    futures.push(PanelRegistry.instance.loadEntriesAsync());
     futures.push(ConversationRegistry.instance.loadEntriesAsync());
     futures.push(DialogueBoxRegistry.instance.loadEntriesAsync());
     futures.push(SpeakerRegistry.instance.loadEntriesAsync());

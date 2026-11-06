@@ -6,6 +6,8 @@ package funkin.ui.quickpanel;
  */
 typedef QuickPanelButtonData =
 {
+  var ?id:String;
+
   /**
    * Label shown next to the icon.
    */

@@ -21,7 +21,7 @@ import funkin.graphics.FunkinSprite;
 import funkin.graphics.shaders.BoilShader;
 import funkin.input.Controls;
 import funkin.ui.UIStateMachine;
-import funkin.ui.options.OptionsSubState;
+import funkin.data.quickpanel.PanelRegistry;
 import funkin.ui.quickpanel.QuickPanelTypes;
 import funkin.ui.transition.Transition;
 import funkin.util.EaseUtil;
@@ -34,81 +34,8 @@ import funkin.util.TouchUtil;
  */
 class QuickPanelState extends FlxTypedContainer<FlxBasic>
 {
-  /**
-   * Default button data.
-   * TODO: Make this not super hardcoded.
-   */
-  public static final DEFAULT_BUTTON_DATA:Array<QuickPanelButtonData> = [
-    {
-      text: 'Exit Mod',
-      callback: () ->
-      {
-        stopMusic();
-        Transition.switchState(() -> new funkin.ui.title.TitleState(), {
-          assetQuery: funkin.ui.title.TitleState.queryAssets,
-          transition: BlackScreen(Fade(North), Fade(South))
-        });
-      },
-      icon: 'back',
-      description: 'Return to the base game\'s title screen.',
-      disabled: false
-    },
-    {
-      text: 'Mods',
-      callback: () ->
-      {
-        stopMusic();
-        Transition.switchState(() -> new funkin.ui.modmenu.ModMenuState(), {
-          assetQuery: funkin.ui.modmenu.ModMenuState.queryAssets,
-          transition: BlackScreen(Fade(North), Fade(South))
-        });
-      },
-      icon: 'mods',
-      description: 'Add, remove or install custom content for the game.',
-      disabled: false
-    },
-    {
-      text: 'Freeplay',
-      callback: () ->
-      {
-        var freeplayParams = {
-          fromCharSelect: true
-        };
-        Transition.switchState(() -> funkin.ui.freeplay.FreeplayState.build(freeplayParams), {
-          assetQuery: funkin.ui.freeplay.FreeplayState.queryAssets.bind(_, freeplayParams),
-          transition: BlackScreen(None, Fade(South))
-        });
-      },
-      icon: 'freeplay',
-      description: 'Choose and play any song you\'ve previously unlocked.',
-      disabled: false
-    },
-    {
-      text: 'Online',
-      callback: null,
-      icon: 'online',
-      description: 'Play against friends, or with people around the world.',
-      disabled: true
-    },
-    {
-      text: 'Options',
-      callback: () ->
-      {
-        // TODO: getReturnState() was computed here and discarded. Pass it to OptionsSubState once it accepts one.
-        FlxG.sound.music?.stop();
-        funkin.audio.MenuMusicGroup.instance.reset(OPTIONS_MENU);
-        Transition.switchState(() -> new OptionsSubState(), {
-          assetQuery: OptionsSubState.queryAssets,
-          transition: None,
-          shouldPurgeCache: false
-        });
-      },
-      icon: 'options',
-      description: 'Configure various gameplay and visual settings.',
-      disabled: false
-    }
-  ];
-
+  public static final DEFAULT_PANEL_ID:String = 'default';
+  static var activeButtonData:Array<QuickPanelButtonData> = [];
   public static final MAINMENU_BUTTON_DATA:Array<QuickPanelButtonData> = [
     {
       text: 'Chart Editor',
@@ -578,7 +505,8 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     buildBackdrop();
 
     pullTabEnabled = !hidePullTab;
-    panel = new QuickPanelGroup((hidePullTab) ? MAINMENU_BUTTON_DATA : DEFAULT_BUTTON_DATA, onButtonTapped, hidePullTab);
+    activeButtonData = hidePullTab ? MAINMENU_BUTTON_DATA : PanelRegistry.instance.listButtonData(DEFAULT_PANEL_ID);
+    panel = new QuickPanelGroup(activeButtonData, onButtonTapped, hidePullTab);
     add(panel);
 
     tickSound = new FunkinSound();
@@ -1576,7 +1504,6 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
 
   /**
    * Builds a NextState that recreates the current state (scripted, cppia or native).
-   * Currently unused; see the TODO in the Options button.
    */
   static function getReturnState():flixel.util.typeLimit.NextState
   {
@@ -1678,8 +1605,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
         results.push(Paths.image('ui/boil_texture'));
         results.push(Paths.image('ui/quick-panel/splash'));
         results.push(Paths.image('ui/quick-panel/panel-bg'));
-        var dataMap:Array<QuickPanelButtonData> = (pullTabEnabled) ? DEFAULT_BUTTON_DATA : MAINMENU_BUTTON_DATA;
-        for (buttonData in dataMap) results.push(Paths.image('ui/quick-panel/icons/${buttonData.icon}'));
+        for (buttonData in activeButtonData) results.push(Paths.image('ui/quick-panel/icons/${buttonData.icon}'));
 
       case XML:
         results.push(Paths.xml('ui/quick-panel/splash'));
