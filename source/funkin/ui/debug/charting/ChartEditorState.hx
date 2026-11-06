@@ -2822,6 +2822,16 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var gridCursorLine:Null<FunkinSprite> = null;
 
   /**
+   * A bar right of the event column showing how long the event being edited lasts.
+   */
+  var gridEventDurationBar:Null<FunkinSprite> = null;
+
+  /**
+   * How long the event being edited lasts, in beats, next to `gridEventDurationBar`.
+   */
+  var gridEventDurationText:Null<flixel.text.FlxText> = null;
+
+  /**
    * The measure ticks area. Includes the numbers and the background sprite.
    */
   var measureTicks:Null<ChartEditorMeasureTicks> = null;
@@ -3485,6 +3495,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     this.handleNotePreview();
     this.handleGhostPlayhead();
     this.handlePlayerView();
+    this.handleEventDurationBar();
     this.handleHealthIcons();
     this.handleWaveforms();
     this.handleWaveformFilter(elapsed);

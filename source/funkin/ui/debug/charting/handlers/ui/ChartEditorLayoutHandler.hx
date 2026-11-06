@@ -192,6 +192,18 @@ class ChartEditorLayoutHandler
     playerViewEdge.zIndex = 17;
     state.add(playerViewEdge);
     state.gridPlayerViewEdge = playerViewEdge;
+    var durationBar:FunkinSprite = new FunkinSprite().makeSolidColor(1, 1, ChartEditorGridInteractionHandler.EVENT_DURATION_COLOR);
+    durationBar.origin.set(0, 0);
+    durationBar.visible = false;
+    durationBar.zIndex = 25;
+    state.add(durationBar);
+    state.gridEventDurationBar = durationBar;
+    var durationText:flixel.text.FlxText = new flixel.text.FlxText(0, 0, 0, '', 12);
+    durationText.setBorderStyle(flixel.text.FlxText.FlxTextBorderStyle.OUTLINE, 0xFF000000, 1);
+    durationText.visible = false;
+    durationText.zIndex = 25;
+    state.add(durationText);
+    state.gridEventDurationText = durationText;
     state.add(state.gridCursorLine);
 
     state.gridGhostNote = new ChartEditorNoteSprite(state, true);

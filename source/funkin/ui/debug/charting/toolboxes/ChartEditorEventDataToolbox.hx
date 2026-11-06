@@ -8,6 +8,7 @@ import funkin.data.animation.AnimationData;
 import funkin.data.character.CharacterRegistry;
 import funkin.data.event.SongEventRegistry;
 import funkin.data.event.SongEventSchema;
+import funkin.util.Constants;
 import funkin.data.stage.StageData.StageDataProp;
 import funkin.data.stage.StageRegistry;
 import funkin.play.event.PlayAnimationSongEvent;
@@ -303,7 +304,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
         {
           case NumberStepper:
             var numberStepper:NumberStepper = cast field;
-            numberStepper.value = value;
+            numberStepper.value = beatFields.exists(fieldId) ? stepsToBeats(value) : value;
           case CheckBox:
             var checkBox:CheckBox = cast field;
             checkBox.selected = value;
@@ -336,6 +337,26 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
   var lastEventKind:String = 'unknown';
 
   /**
+   * Fields stored in steps that the form shows in beats.
+   */
+  var beatFields:Map<String, Bool> = [];
+
+  /**
+   * How much the beat steppers move by, a quarter beat being one step.
+   */
+  static final BEAT_FIELD_STEP:Float = 0.25;
+
+  static function stepsToBeats(steps:Float):Float
+  {
+    return steps / Constants.STEPS_PER_BEAT;
+  }
+
+  static function beatsToSteps(beats:Float):Float
+  {
+    return beats * Constants.STEPS_PER_BEAT;
+  }
+
+  /**
    * Put the default values of any missing fields into the form, so the user can see them and change them.
    */
   function resetMissingFields(schema:SongEventSchema):Void
@@ -357,7 +378,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
       switch (Type.getClass(component))
       {
         case NumberStepper:
-          if (value != null) cast(component, NumberStepper).value = value;
+          if (value != null) cast(component, NumberStepper).value = beatFields.exists(field.name) ? stepsToBeats(value) : value;
         case CheckBox:
           cast(component, CheckBox).selected = (value == true);
         case DropDown:
@@ -690,6 +711,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
     _initializing = true;
 
     lastEventKind = eventKind ?? 'unknown';
+    beatFields.clear();
     optionListsKey = '';
 
     // Clear the frame.
@@ -856,6 +878,16 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
       var input:Component;
       switch (field.type)
       {
+        case INTEGER | FLOAT if (field.units == 'steps'):
+          beatFields.set(field.name, true);
+          var numberStepper:NumberStepper = new NumberStepper();
+          numberStepper.id = field.name;
+          numberStepper.step = BEAT_FIELD_STEP;
+          numberStepper.precision = 2;
+          if (field.min != null) numberStepper.min = stepsToBeats(field.min);
+          if (field.max != null) numberStepper.max = stepsToBeats(field.max);
+          if (field.defaultValue != null) numberStepper.value = stepsToBeats(field.defaultValue);
+          input = numberStepper;
         case INTEGER:
           var numberStepper:NumberStepper = new NumberStepper();
           numberStepper.id = field.name;
@@ -969,7 +1001,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
       if (field.units != null && field.units != '')
       {
         var units:Label = new Label();
-        units.text = field.units;
+        units.text = beatFields.exists(field.name) ? 'beats' : field.units;
         if (field.type == INTEGER || field.type == FLOAT) input.width = 70;
         units.verticalAlign = 'center';
         inputBox.addComponent(units);
@@ -994,7 +1026,12 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
         if (field.type == FRAME) return;
 
         var value:Any = event.target.value;
-        if (Std.isOfType(event.target, DropDown))
+        if (beatFields.exists(field.name) && event.target.value != null)
+        {
+          var steps:Float = beatsToSteps(event.target.value);
+          value = (field.type == INTEGER) ? Math.round(steps) : steps;
+        }
+        else if (Std.isOfType(event.target, DropDown))
         {
           var drp:DropDown = cast event.target;
           value = drp.selectedItem?.value ?? field.defaultValue;

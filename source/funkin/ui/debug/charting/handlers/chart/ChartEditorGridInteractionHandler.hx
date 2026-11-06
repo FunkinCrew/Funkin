@@ -3,9 +3,14 @@ package funkin.ui.debug.charting.handlers.chart;
 #if FEATURE_CHART_EDITOR
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongNoteData;
+import funkin.util.Constants;
+import funkin.graphics.FunkinSprite;
+import flixel.util.FlxColor;
 import funkin.ui.debug.charting.commands.selection.SetItemSelectionCommand;
 import funkin.ui.debug.charting.toolboxes.ChartEditorEventDataToolbox;
 import funkin.ui.debug.charting.selection.ChartEditorSelectable;
+import funkin.data.event.SongEventRegistry;
+import funkin.data.event.SongEventSchema;
 import haxe.ui.containers.menus.MenuCheckBox;
 using Lambda;
 
@@ -100,6 +105,85 @@ class ChartEditorGridInteractionHandler
       state.currentEventSelection = [];
       state.noteDisplayDirty = true;
     }
+  }
+
+  public static final EVENT_DURATION_COLOR:FlxColor = 0xC0FFC34D;
+
+  /**
+   * How wide the event duration bar is, in pixels.
+   */
+  static final EVENT_DURATION_WIDTH:Int = 6;
+
+  /**
+   * Space between the grid and the duration bar, leaving room for the sub-beat tags.
+   */
+  static final EVENT_DURATION_GAP:Int = 14;
+
+  /**
+   * Which event kinds have a duration in steps, so the schema is only searched once per kind.
+   */
+  static var durationKinds:Map<String, Bool> = [];
+
+  static function hasStepsDuration(kind:String):Bool
+  {
+    var known:Null<Bool> = durationKinds.get(kind);
+    if (known != null) return known;
+    var found:Bool = false;
+    var schema:Null<SongEventSchema> = SongEventRegistry.getEventSchema(kind);
+    if (schema != null)
+    {
+      for (field in schema)
+      {
+        if (field != null && field.name == 'duration' && field.units == 'steps') found = true;
+      }
+    }
+    durationKinds.set(kind, found);
+    return found;
+  }
+
+  /**
+   * Show how long the event being edited lasts, in beats, as a bar and label to the right of the grid.
+   */
+  public static function handleEventDurationBar(state:ChartEditorState):Void
+  {
+    var bar:Null<FunkinSprite> = state.gridEventDurationBar;
+    var text:Null<flixel.text.FlxText> = state.gridEventDurationText;
+    if (bar == null || text == null) return;
+
+    var event:Null<SongEventData> = null;
+    if (state.currentEventSelection.length > 0 && state.currentNoteSelection.length == 0 && state.isOneEventChain(state.currentEventSelection))
+    {
+      for (selected in state.currentEventSelection)
+      {
+        if (selected.eventKind == state.eventKindToPlace && hasStepsDuration(selected.eventKind))
+        {
+          event = selected;
+          break;
+        }
+      }
+    }
+    var steps:Float = (event != null) ? (event.getFloat('duration') ?? 0) : 0;
+    if (event == null || steps <= 0 || state.gridTiledSprite == null)
+    {
+      bar.visible = false;
+      text.visible = false;
+      return;
+    }
+
+    var startStep:Float = event.getStepTime();
+    var top:Float = state.gridTiledSprite.y + ChartEditorTimeScale.stepToPixels(startStep);
+    var bottom:Float = state.gridTiledSprite.y + ChartEditorTimeScale.stepToPixels(startStep + steps);
+    var left:Float = state.gridTiledSprite.x + ChartEditorState.GRID_SIZE * ChartEditorThemeHandler.TOTAL_COLUMN_COUNT + EVENT_DURATION_GAP;
+    bar.visible = true;
+    bar.setPosition(left, top);
+    bar.offset.set(0, 0);
+    bar.scale.set(EVENT_DURATION_WIDTH, Math.max(1, bottom - top));
+
+    var beats:Float = Math.round(steps / Constants.STEPS_PER_BEAT * 100) / 100;
+    var label:String = '$beats ${beats == 1 ? 'beat' : 'beats'}';
+    if (text.text != label) text.text = label;
+    text.visible = true;
+    text.setPosition(left + EVENT_DURATION_WIDTH + 4, Math.max(top, bottom - text.height));
   }
 
   public static function openToolboxFromGrid(state:ChartEditorState, id:String, menuItem:MenuCheckBox):Void

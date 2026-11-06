@@ -324,13 +324,53 @@ class ChartEditorPlaybackHandler
   }
 
   /**
+   * The song time shown while playing, moved forward every frame instead of only when the audio reports a new position.
+   */
+  static var smoothSongTime:Float = 0;
+
+  /**
    * Updates the Conductor instance and checkes for time signature changes.
    */
+  static var smoothSongTimeTicks:Float = -1;
+
+  /**
+   * Further apart than this, in milliseconds, the shown time jumps to the audio's time, like after seeking.
+   */
+  static final SMOOTH_SONG_TIME_SNAP_MS:Float = 100;
+
+  /**
+   * How much of the gap to the audio's time is closed each frame.
+   */
+  static final SMOOTH_SONG_TIME_CORRECTION:Float = 0.1;
+
+  /**
+   * The song time to show.
+   */
+  static function smoothedSongTime(state:ChartEditorState):Float
+  {
+    var audioTime:Float = state.audioInstTrack.time;
+    if (!state.audioInstTrack.isPlaying)
+    {
+      smoothSongTime = audioTime;
+      return audioTime;
+    }
+
+    if (FlxG.game.ticks == smoothSongTimeTicks) return smoothSongTime;
+    smoothSongTimeTicks = FlxG.game.ticks;
+
+    var predicted:Float = smoothSongTime + FlxG.elapsed * Constants.MS_PER_SEC * state.audioInstTrack.pitch;
+    var gap:Float = audioTime - predicted;
+    if (Math.abs(gap) > SMOOTH_SONG_TIME_SNAP_MS) smoothSongTime = audioTime;
+    else
+      smoothSongTime = Math.max(smoothSongTime, predicted + gap * SMOOTH_SONG_TIME_CORRECTION);
+    return smoothSongTime;
+  }
+
   public static function updateSongTime(state:ChartEditorState):Void
   {
     var oldTimeSignatureNum:Int = Conductor.instance.timeSignatureNumerator;
     var oldTimeSignatureDen:Int = Conductor.instance.timeSignatureDenominator;
-    Conductor.instance.update(state.audioInstTrack.time, false);
+    Conductor.instance.update(smoothedSongTime(state), false);
     if (Conductor.instance.timeSignatureNumerator != oldTimeSignatureNum || Conductor.instance.timeSignatureDenominator != oldTimeSignatureDen)
     {
       state.updateTimeSignature();
