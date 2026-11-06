@@ -947,6 +947,17 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   }
 
   /**
+   * Whether to draw a dim line on every snap of the current note snap.
+   */
+  var showSnapLines(default, set):Bool = true;
+
+  function set_showSnapLines(value:Bool):Bool
+  {
+    if (value != showSnapLines) gridLinesDirty = true;
+    return showSnapLines = value;
+  }
+
+  /**
    * Whether to draw a line at the snap the cursor would place a note on.
    */
   var showCursorLine:Bool = true;

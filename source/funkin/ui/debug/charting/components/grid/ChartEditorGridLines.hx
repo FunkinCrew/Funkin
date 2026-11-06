@@ -401,20 +401,49 @@ class ChartEditorGridLines
       measureStep = start + (measure - measureStart) * measureSteps;
     }
 
-    if (!chartEditorState.showBeatLines) return;
-    if (ChartEditorTimeScale.stepToPixels(from + beatSteps) - ChartEditorTimeScale.stepToPixels(from) < ChartEditorThemeHandler.GRID_MIN_BEAT_PIXELS) return;
+    var showBeats:Bool = chartEditorState.showBeatLines
+      && ChartEditorTimeScale.stepToPixels(from + beatSteps) - ChartEditorTimeScale.stepToPixels(from) >= ChartEditorThemeHandler.GRID_MIN_BEAT_PIXELS;
 
-    // Beats are counted from the start of the segment.
-    var beat:Int = Math.ceil(from / beatSteps - EPSILON);
-    while (beat * beatSteps < to - EPSILON)
+    if (showBeats)
     {
-      var beatStep:Float = beat * beatSteps;
-      var measurePosition:Float = measureStart + (beatStep - start) / measureSteps;
-      if (Math.abs(measurePosition - Math.round(measurePosition)) >= EPSILON)
+      // Beats are counted from the start of the segment.
+      var beat:Int = Math.ceil(from / beatSteps - EPSILON);
+      while (beat * beatSteps < to - EPSILON)
       {
-        addLine(beatStep, ChartEditorThemeHandler.GRID_BEAT_LINE_WIDTH, ChartEditorThemeHandler.GRID_BEAT_LINE_ALPHA);
+        var beatStep:Float = beat * beatSteps;
+        var measurePosition:Float = measureStart + (beatStep - start) / measureSteps;
+        if (Math.abs(measurePosition - Math.round(measurePosition)) >= EPSILON)
+        {
+          addLine(beatStep, ChartEditorThemeHandler.GRID_BEAT_LINE_WIDTH, ChartEditorThemeHandler.GRID_BEAT_LINE_ALPHA);
+        }
+        beat++;
       }
-      beat++;
+    }
+
+    buildSnapLines(from, to, start, measureStart, measureSteps, showBeats);
+  }
+
+  /**
+   * Dim lines on every snap of the current note snap.
+   */
+  function buildSnapLines(from:Float, to:Float, start:Float, measureStart:Float, measureSteps:Float, showBeats:Bool):Void
+  {
+    if (!chartEditorState.showSnapLines) return;
+    var snapSteps:Float = chartEditorState.noteSnapRatio;
+    if (snapSteps <= 0) return;
+    if (ChartEditorTimeScale.stepToPixels(from + snapSteps) - ChartEditorTimeScale.stepToPixels(from) < ChartEditorThemeHandler.GRID_MIN_SNAP_PIXELS) return;
+
+    var beatSteps:Float = Constants.STEPS_PER_BEAT;
+
+    var snap:Int = Math.ceil(from / snapSteps - EPSILON);
+    while (snap * snapSteps < to - EPSILON)
+    {
+      var snapStep:Float = snap * snapSteps;
+      snap++;
+      var measurePosition:Float = measureStart + (snapStep - start) / measureSteps;
+      if (Math.abs(measurePosition - Math.round(measurePosition)) < EPSILON) continue;
+      if (showBeats && Math.abs(snapStep / beatSteps - Math.round(snapStep / beatSteps)) < EPSILON) continue;
+      addLine(snapStep, ChartEditorThemeHandler.GRID_SNAP_LINE_WIDTH, ChartEditorThemeHandler.GRID_SNAP_LINE_ALPHA);
     }
   }
 

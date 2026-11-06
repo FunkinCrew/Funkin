@@ -29,6 +29,7 @@ class ChartEditorNoteDisplayHandler
     {
       state.eventChainSnapRatio = state.noteSnapRatio;
       state.noteDisplayDirty = true;
+      state.gridLinesDirty = true;
     }
 
     if (state.noteDisplayDirty)

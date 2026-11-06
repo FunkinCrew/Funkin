@@ -97,6 +97,8 @@ class ChartEditorThemeHandler
   public static final GRID_MEASURE_LINE_ALPHA:Float = 0.75;
   public static final GRID_BEAT_LINE_WIDTH:Int = 1;
   public static final GRID_BEAT_LINE_ALPHA:Float = 0.25;
+  public static final GRID_SNAP_LINE_WIDTH:Int = 1;
+  public static final GRID_SNAP_LINE_ALPHA:Float = 0.1;
 
   // Solid waveform drawn across each side's lanes.
   static final WAVEFORM_OVERLAY_COLOR_LIGHT:FlxColor = 0xFF2E4F9C;
@@ -139,6 +141,11 @@ class ChartEditorThemeHandler
    * Beat lines closer together than this many pixels are not drawn.
    */
   public static final GRID_MIN_BEAT_PIXELS:Float = 8;
+
+  /**
+   * Snap lines closer together than this many pixels are not drawn.
+   */
+  public static final GRID_MIN_SNAP_PIXELS:Float = 6;
 
   /**
    * When the theme is changed, this function updates all of the UI elements to match the new theme.

@@ -221,6 +221,7 @@ class Save implements ConsoleClass implements ISerializable
         showNoteKinds: true,
         showDifficultyHeatmap: false,
         showBeatLines: true,
+        showSnapLines: true,
         showCursorLine: true,
         constantScroll: false,
         constantScrollSpeed: 1.0,
@@ -343,6 +344,8 @@ class Save implements ConsoleClass implements ISerializable
   public var chartEditorShowDifficultyHeatmap:SaveProperty<Bool>;
   @:saveProperty(data.optionsChartEditor.showBeatLines, true)
   public var chartEditorShowBeatLines:SaveProperty<Bool>;
+  @:saveProperty(data.optionsChartEditor.showSnapLines, true)
+  public var chartEditorShowSnapLines:SaveProperty<Bool>;
   @:saveProperty(data.optionsChartEditor.showCursorLine, true)
   public var chartEditorShowCursorLine:SaveProperty<Bool>;
   @:saveProperty(data.optionsChartEditor.constantScroll, false)
@@ -1814,6 +1817,12 @@ typedef SaveDataChartEditorOptions =
    * @default `true`
    */
   var ?showBeatLines:Bool;
+
+  /**
+   * Show a dim line on every snap of the current note snap in the Chart Editor.
+   * @default `true`
+   */
+  var ?showSnapLines:Bool;
 
   /**
    * Show a line at the cursor's snap in the Chart Editor.

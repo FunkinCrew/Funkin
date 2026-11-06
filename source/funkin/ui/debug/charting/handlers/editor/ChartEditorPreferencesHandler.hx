@@ -39,6 +39,7 @@ class ChartEditorPreferencesHandler
     state.showNoteKindIndicators = save.chartEditorShowNoteKinds.value;
     state.showDifficultyHeatmap = save.chartEditorShowDifficultyHeatmap.value;
     state.showBeatLines = save.chartEditorShowBeatLines.value;
+    state.showSnapLines = save.chartEditorShowSnapLines.value;
     state.showCursorLine = save.chartEditorShowCursorLine.value;
     state.constantScrollSpeed = save.chartEditorConstantScrollSpeed.value;
     state.uiScale = save.chartEditorUIScale.value;
@@ -94,6 +95,7 @@ class ChartEditorPreferencesHandler
     save.chartEditorShowNoteKinds.value = state.showNoteKindIndicators;
     save.chartEditorShowDifficultyHeatmap.value = state.showDifficultyHeatmap;
     save.chartEditorShowBeatLines.value = state.showBeatLines;
+    save.chartEditorShowSnapLines.value = state.showSnapLines;
     save.chartEditorShowCursorLine.value = state.showCursorLine;
     save.chartEditorConstantScroll.value = state.constantScrollEnabled;
     save.chartEditorConstantScrollSpeed.value = state.constantScrollSpeed;

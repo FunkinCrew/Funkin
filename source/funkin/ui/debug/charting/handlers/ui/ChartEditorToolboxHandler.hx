@@ -372,6 +372,10 @@ class ChartEditorToolboxHandler
     if (beatLines == null) throw 'ChartEditorToolboxHandler.buildToolboxPreferencesLayout() - Could not find preferencesBeatLines component.';
     beatLines.onClick = _ -> if (state.preferencesListening) state.showBeatLines = beatLines.selected;
 
+    var snapLines:Null<CheckBox> = toolbox.findComponent('preferencesSnapLines', CheckBox);
+    if (snapLines == null) throw 'ChartEditorToolboxHandler.buildToolboxPreferencesLayout() - Could not find preferencesSnapLines component.';
+    snapLines.onClick = _ -> if (state.preferencesListening) state.showSnapLines = snapLines.selected;
+
     var cursorLine:Null<CheckBox> = toolbox.findComponent('preferencesCursorLine', CheckBox);
     if (cursorLine == null) throw 'ChartEditorToolboxHandler.buildToolboxPreferencesLayout() - Could not find preferencesCursorLine component.';
     cursorLine.onClick = _ -> if (state.preferencesListening) state.showCursorLine = cursorLine.selected;
@@ -558,6 +562,9 @@ class ChartEditorToolboxHandler
 
     var beatLines:Null<CheckBox> = toolbox.findComponent('preferencesBeatLines', CheckBox);
     if (beatLines != null) beatLines.selected = state.showBeatLines;
+
+    var snapLines:Null<CheckBox> = toolbox.findComponent('preferencesSnapLines', CheckBox);
+    if (snapLines != null) snapLines.selected = state.showSnapLines;
 
     var cursorLine:Null<CheckBox> = toolbox.findComponent('preferencesCursorLine', CheckBox);
     if (cursorLine != null) cursorLine.selected = state.showCursorLine;
