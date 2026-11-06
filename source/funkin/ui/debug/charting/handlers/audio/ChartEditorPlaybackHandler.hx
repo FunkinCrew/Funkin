@@ -6,6 +6,7 @@ import funkin.assets.ValidatedPaths as Paths;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.data.song.SongDataUtils;
 import funkin.data.song.SongData.SongNoteData;
+import funkin.graphics.FunkinSprite;
 import funkin.play.PlayState;
 import funkin.play.notes.NoteSprite;
 import funkin.modding.events.ScriptEvent;
@@ -185,6 +186,69 @@ class ChartEditorPlaybackHandler
     state.audioVocalTrackGroup.pitch = rate;
     var rateDisplay:Float = Std.int(rate * 100) / 100; // Round to 2 decimal places.
     state.menubarLabelPlaybackSpeed.text = 'Playback Speed - ${rateDisplay}x';
+  }
+
+  /**
+   * The song time at the playhead.
+   */
+  static function playheadSongMs(state:ChartEditorState):Float
+  {
+    var playing:Bool = (state.audioInstTrack != null && state.audioInstTrack.isPlaying) || state.audioVocalTrackGroup.playing;
+    if (playing) return Conductor.instance.songPosition + Conductor.instance.instrumentalOffset;
+    return ChartEditorTimeScale.pixelsToMs(state.scrollPositionInPixels + state.playheadPositionInPixels);
+  }
+
+  /**
+   * Show the ghost playhead where Scroll Velocity events have moved the notes at the receptors to.
+   */
+  public static function handleGhostPlayhead(state:ChartEditorState):Void
+  {
+    var songMs:Float = playheadSongMs(state);
+    var visualMs:Float = ChartEditorTimeScale.visualTime(songMs);
+    var shown:Bool = Math.abs(visualMs - songMs) > 0.5;
+    var ghostPixels:Float = ChartEditorTimeScale.msToPixels(visualMs);
+
+    if (shown) shown = Math.abs(ghostPixels - (state.scrollPositionInPixels + state.playheadPositionInPixels)) >= ChartEditorState.PLAYHEAD_HEIGHT;
+    state.gridGhostPlayhead.visible = shown;
+    if (!shown) return;
+
+    state.gridGhostPlayhead.y = ghostPixels - state.scrollPositionInPixels + ChartEditorState.GRID_INITIAL_Y_POS;
+    var text:Null<flixel.text.FlxText> = state.gridGhostPlayheadText;
+    if (text != null)
+    {
+      var label:String = flixel.util.FlxStringUtil.formatTime(Math.max(0, visualMs - Conductor.instance.instrumentalOffset) / Constants.MS_PER_SEC, true);
+      if (text.text != label) text.text = label;
+    }
+  }
+
+  /**
+   * Show the player's viewport on the grid, if enabled.
+   */
+  public static function handlePlayerView(state:ChartEditorState):Void
+  {
+    var sprite:Null<flixel.FlxSprite> = state.gridPlayerView;
+    var edge:Null<flixel.FlxSprite> = state.gridPlayerViewEdge;
+    if (sprite == null || edge == null) return;
+    sprite.visible = state.showPlayerView;
+    edge.visible = state.showPlayerView;
+    if (!sprite.visible) return;
+
+    var songMs:Float = playheadSongMs(state);
+    var visualMs:Float = ChartEditorTimeScale.visualTime(songMs);
+    var endMs:Float = ChartEditorTimeScale.playerViewEnd(visualMs, songMs);
+
+    var width:Float = ChartEditorState.GRID_SIZE * ChartEditorState.STRUMLINE_SIZE;
+    var left:Float = (state.gridTiledSprite?.x ?? ChartEditorState.GRID_X_POS) + width;
+    var top:Float = (Math.abs(visualMs - songMs) > 0.5) ? ChartEditorTimeScale.msToPixels(visualMs) - state.scrollPositionInPixels
+      + ChartEditorState.GRID_INITIAL_Y_POS : state.playheadPositionInPixels + ChartEditorState.GRID_INITIAL_Y_POS;
+    var cutoff:Float = ChartEditorTimeScale.msToPixels(Math.max(0, endMs)) - state.scrollPositionInPixels + ChartEditorState.GRID_INITIAL_Y_POS;
+    sprite.setPosition(left, top);
+    sprite.offset.set(0, 0);
+    sprite.scale.set(width, Math.max(1, cutoff - top));
+    edge.visible = cutoff < FlxG.height;
+    edge.setPosition(left, cutoff - 1);
+    edge.offset.set(0, 0);
+    edge.scale.set(width, 2);
   }
 
   public static function startAudioPlayback(state:ChartEditorState):Void
@@ -392,6 +456,7 @@ class ChartEditorPlaybackHandler
 
     if (state.audioInstTrack != null) state.audioInstTrack.pause();
     state.audioVocalTrackGroup.pause();
+
     if (welcomeMusic)
     {
       state.fadeInWelcomeMusic(ChartEditorState.WELCOME_MUSIC_FADE_IN_DELAY, ChartEditorState.WELCOME_MUSIC_FADE_IN_DURATION);

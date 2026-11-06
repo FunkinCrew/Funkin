@@ -46,6 +46,7 @@ import funkin.play.event.SongEvent;
 import funkin.play.notes.NoteDirection;
 import funkin.play.notes.NoteSprite;
 import funkin.play.notes.NoteVibrationsHandler;
+import funkin.play.notes.ScrollVelocityTimeline;
 import funkin.play.notes.Strumline;
 import funkin.play.notes.SustainTrail;
 import funkin.play.notes.notekind.NoteKind;
@@ -2767,6 +2768,9 @@ class PlayState extends MusicBeatSubState
 
     playerStrumline.applyNoteData(playerNoteData);
     opponentStrumline.applyNoteData(opponentNoteData);
+
+    playerStrumline.scrollVelocity = new ScrollVelocityTimeline(songEvents, 'player');
+    opponentStrumline.scrollVelocity = new ScrollVelocityTimeline(songEvents, 'opponent');
   }
 
   function onStrumlineNoteIncoming(noteSprite:NoteSprite):Void

@@ -34,7 +34,7 @@ class ChartEditorNoteDisplayHandler
 
     if (state.noteDisplayDirty)
     {
-      if (!ChartEditorTimeScale.CONSTANT_SCROLL) state.updateGridScale(true);
+      state.updateGridScale(true);
       state.noteDisplayDirty = false;
 
       // Some optimization to cull notes -

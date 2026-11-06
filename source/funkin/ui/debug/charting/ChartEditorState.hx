@@ -963,6 +963,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   var showCursorLine:Bool = true;
 
+  var showPlayerView:Bool = false;
+  var gridPlayerView:Null<flixel.FlxSprite> = null;
+  var gridPlayerViewEdge:Null<flixel.FlxSprite> = null;
+
   /**
    * How opaque the grid backing is, from 0 to 1.
    */
@@ -2577,6 +2581,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   var menubarItemViewWaveforms:MenuCheckBox;
   var menubarItemViewDifficultyHeatmap:MenuCheckBox;
+  var menubarItemViewPlayerView:MenuCheckBox;
 
   /**
    * The `View -> Increase Difficulty` menu item.
@@ -2814,6 +2819,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * Can move around on the grid independently of the view.
    */
   var gridPlayhead:FlxSpriteGroup = new FlxSpriteGroup();
+
+  var gridGhostPlayhead:FlxSpriteGroup = new FlxSpriteGroup();
+  var gridGhostPlayheadText:Null<flixel.text.FlxText> = null;
 
   /**
    * A sprite used to indicate the note that will be placed on click.
@@ -3332,6 +3340,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     var gridX:Float = GRID_X_POS;
     gridTiledSprite.x = gridX;
     gridPlayhead.x = gridX;
+    gridGhostPlayhead.x = gridX;
 
     if (measureTicks != null) measureTicks.x = gridX - GRID_SIZE;
 
@@ -3462,6 +3471,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     this.handleToolboxes();
     this.handlePlaybar();
     this.handleNotePreview();
+    this.handleGhostPlayhead();
+    this.handlePlayerView();
     this.handleHealthIcons();
     this.handleWaveforms();
     this.handleWaveformFilter(elapsed);

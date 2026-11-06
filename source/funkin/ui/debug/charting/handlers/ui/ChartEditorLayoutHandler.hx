@@ -179,6 +179,19 @@ class ChartEditorLayoutHandler
     state.gridCursorLine = new FunkinSprite().makeSolidColor(ChartEditorState.GRID_SIZE * ChartEditorThemeHandler.TOTAL_COLUMN_COUNT, 2, ChartEditorState.CURSOR_LINE_COLOR);
     state.gridCursorLine.visible = false;
     state.gridCursorLine.zIndex = 17;
+
+    var playerView:FlxSprite = new FlxSprite().makeGraphic(1, 1, 0x3033C6FF);
+    playerView.origin.set(0, 0);
+    playerView.visible = false;
+    playerView.zIndex = 17;
+    state.add(playerView);
+    state.gridPlayerView = playerView;
+    var playerViewEdge:FlxSprite = new FlxSprite().makeGraphic(1, 1, 0xC033C6FF);
+    playerViewEdge.origin.set(0, 0);
+    playerViewEdge.visible = false;
+    playerViewEdge.zIndex = 17;
+    state.add(playerViewEdge);
+    state.gridPlayerViewEdge = playerViewEdge;
     state.add(state.gridCursorLine);
 
     state.gridGhostNote = new ChartEditorNoteSprite(state, true);
@@ -224,6 +237,20 @@ class ChartEditorLayoutHandler
     playheadBlock.x = -ChartEditorState.PLAYHEAD_SCROLL_AREA_WIDTH;
     playheadBlock.y = -ChartEditorState.PLAYHEAD_HEIGHT / 2;
     state.gridPlayhead.add(playheadBlock);
+
+    state.add(state.gridGhostPlayhead);
+    state.gridGhostPlayhead.zIndex = 29;
+    state.gridGhostPlayhead.setPosition(ChartEditorState.GRID_X_POS, playheadBaseYPos);
+    var ghostLine:FunkinSprite = new FunkinSprite().makeSolidColor(playheadWidth - ChartEditorState.PLAYHEAD_SCROLL_AREA_WIDTH, ChartEditorState.PLAYHEAD_HEIGHT,
+      ChartEditorState.PLAYHEAD_COLOR);
+    ghostLine.alpha = 0.4;
+    state.gridGhostPlayhead.add(ghostLine);
+    var ghostText:flixel.text.FlxText = new flixel.text.FlxText(0, -18, 0, '', 12);
+    ghostText.setBorderStyle(flixel.text.FlxText.FlxTextBorderStyle.OUTLINE, 0xFF000000, 1);
+    ghostText.alpha = 0.8;
+    state.gridGhostPlayhead.add(ghostText);
+    state.gridGhostPlayheadText = ghostText;
+    state.gridGhostPlayhead.visible = false;
 
     // Character icons.
     state.healthIconDad = new HealthIcon(state.currentSongMetadata.playData.characters.opponent);

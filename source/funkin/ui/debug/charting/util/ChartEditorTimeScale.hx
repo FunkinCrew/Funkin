@@ -7,6 +7,8 @@ import funkin.data.song.SongData.SongEventData;
 @:allow(funkin.ui.debug.charting.handlers.ui.ChartEditorLayoutHandler)
 class ChartEditorTimeScale
 {
+  static final GAME_HEIGHT:Float = 720;
+
   /**
    * Height of one step on the grid, in pixels. This is `GRID_SIZE` scaled by the current zoom.
    */
@@ -126,6 +128,8 @@ class ChartEditorTimeScale
    */
   static function buildScrollSpeedPoints(events:Array<SongEventData>, chartScrollSpeed:Float):Bool
   {
+    velocity = new funkin.play.notes.ScrollVelocityTimeline(events, 'player');
+
     var baseSpeed:Float = (chartScrollSpeed > 0) ? chartScrollSpeed : 1;
     var points:Array<ScrollSpeedPoint> = [{time: 0, distance: 0, speed: baseSpeed}];
 
@@ -143,6 +147,8 @@ class ChartEditorTimeScale
 
     var speedEvents:Array<SongEventData> = [for (event in events) if (event.eventKind == 'ScrollSpeed') event];
     speedEvents.sort((a, b) -> (a.time < b.time) ? -1 : ((a.time > b.time) ? 1 : 0));
+    gameSpeedBase = baseSpeed;
+    gameSpeedChanges = [];
 
     var target:Float = baseSpeed;
     for (event in speedEvents)
@@ -165,6 +171,20 @@ class ChartEditorTimeScale
         if (funkin.play.event.SongEvent.EASE_TYPE_DIR_REGEX.match(ease) || ease == 'linear') easeDir = '';
         easeFunction = Reflect.field(flixel.tweens.FlxEase, '$ease$easeDir');
       }
+
+      var changeDuration:Float = 0;
+      if (easeFunction != null)
+      {
+        var changeStep:Float = event.getStepTime();
+        changeDuration = steps * (Conductor.instance.getStepTimeInMs(changeStep + 1) - Conductor.instance.getStepTimeInMs(changeStep));
+      }
+      gameSpeedChanges.push({
+        time: time,
+        duration: changeDuration,
+        from: target,
+        to: speed,
+        ease: easeFunction
+      });
 
       if (easeFunction == null)
       {
@@ -192,6 +212,57 @@ class ChartEditorTimeScale
       if (old[i].time != points[i].time || old[i].speed != points[i].speed) return true;
     }
     return false;
+  }
+
+
+  static var velocity:Null<funkin.play.notes.ScrollVelocityTimeline> = null;
+  public static function visualTime(ms:Float):Float
+  {
+    if (CONSTANT_SCROLL) return ms;
+    var line:Null<funkin.play.notes.ScrollVelocityTimeline> = velocity;
+    return (line != null) ? line.visualTime(ms) : ms;
+  }
+
+  public static function hasVelocityOffset(ms:Float):Bool
+  {
+    return Math.abs(visualTime(ms) - ms) > 0.5;
+  }
+
+  /**
+   * The chart's scroll speed, and each Scroll Speed event as the game eases it, for the exact speed at a moment.
+   */
+  static var gameSpeedBase:Float = 1;
+
+  static var gameSpeedChanges:Array<{time:Float, duration:Float, from:Float, to:Float, ease:Null<Float->Float>}> = [];
+
+  /**
+   * The scroll speed at a song time, from the chart's Scroll Speed events, as the game plays them.
+   */
+  public static function gameScrollSpeedAt(ms:Float):Float
+  {
+    var speed:Float = gameSpeedBase;
+    for (change in gameSpeedChanges)
+    {
+      if (change.time > ms) break;
+      var ease:Null<Float->Float> = change.ease;
+      if (ease == null || change.duration <= 0 || ms >= change.time + change.duration) speed = change.to;
+      else
+        speed = change.from + (change.to - change.from) * ease((ms - change.time) / change.duration);
+    }
+    return speed;
+  }
+
+  /**
+   * The song time of the notes at the receptors, which can be different from the real song time when Scroll Velocity events have moved them.
+   * @param visualMs The song time of the notes at the receptors.
+   * @param ms The real song time, which sets the scroll speed.
+   */
+  public static function playerViewEnd(visualMs:Float, ms:Float):Float
+  {
+    var pixelsPerMs:Float = Constants.PIXELS_PER_MS * Math.max(gameScrollSpeedAt(ms), 0.0001);
+
+    var receptorY:Float = Constants.STRUMLINE_Y_OFFSET + 0.275 * funkin.play.notes.Strumline.STRUMLINE_SIZE;
+    return visualMs + (GAME_HEIGHT - receptorY) / pixelsPerMs;
   }
 
   /**

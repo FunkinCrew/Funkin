@@ -523,6 +523,8 @@ class ChartEditorUIHandler
     state.menubarItemViewWaveforms.onClick = event -> state.audioWaveforms.visible = state.menubarItemViewWaveforms.selected;
     state.menubarItemViewDifficultyHeatmap.onClick = event -> state.showDifficultyHeatmap = state.menubarItemViewDifficultyHeatmap.selected;
     state.menubarItemViewDifficultyHeatmap.selected = state.showDifficultyHeatmap;
+    state.menubarItemViewPlayerView.onClick = event -> state.showPlayerView = state.menubarItemViewPlayerView.selected;
+    state.menubarItemViewPlayerView.selected = state.showPlayerView;
     state.menubarItemViewWaveforms.selected = state.audioWaveforms.visible;
 
     state.menubarItemCommandPalette.onClick = _ -> ChartEditorCommandPalette.openPalette(state, '?');

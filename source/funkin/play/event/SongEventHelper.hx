@@ -190,6 +190,9 @@ class SongEventHelper
     if (bd == null) return null;
     var graphicName = 'easegfx_' + key;
     var gfx = FlxG.bitmap.add(bd, true, graphicName);
+
+    gfx.persist = true;
+    gfx.destroyOnNoUse = false;
     var spr = new FlxSprite();
     spr.loadGraphic(gfx);
     if (bd.width > 0 && bd.height > 0)
@@ -249,6 +252,8 @@ class SongEventHelper
       }
       var gfxName = 'ease_dot_' + key + '_' + f;
       var gfx = FlxG.bitmap.add(bd, true, gfxName);
+      gfx.persist = true;
+      gfx.destroyOnNoUse = false;
       var spr = new FlxSprite();
       spr.loadGraphic(gfx);
       sprites.push(spr);
