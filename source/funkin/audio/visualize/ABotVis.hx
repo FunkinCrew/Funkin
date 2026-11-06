@@ -17,8 +17,7 @@ class ABotVis extends FlxSpriteGroup
   public var snd:Null<FlxSound> = null;
 
   var analyzer:Null<SpectralAnalyzer> = null;
-  var analyzerCache:Array<Bar> = new Array<Bar>();
-  var volumes:Array<Float> = [];
+  var analyzerCache:Array<Bar> = [];
 
   public function new(snd:FlxSound, pixel:Bool):Void
   {
@@ -71,9 +70,6 @@ class ABotVis extends FlxSpriteGroup
 
     for (index in 1...visCount)
     {
-      // pushes initial value
-      volumes.push(0.0);
-
       // Sum the offsets up to the current index
       var sum = function(num:Float, total:Float) return total += num;
       var posX:Float = positionX.slice(0, index).fold(sum, 0);
