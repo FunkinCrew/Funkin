@@ -110,7 +110,7 @@ class SidePanelPlugin extends FlxTypedContainer<FlxBasic>
   {
     if (panelState != null) return;
 
-    panelState = new QuickPanelState();
+    panelState = new QuickPanelState(FlxG.state is funkin.ui.mainmenu.MainMenuState);
     add(panelState);
   }
 

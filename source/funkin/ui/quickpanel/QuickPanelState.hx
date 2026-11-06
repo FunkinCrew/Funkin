@@ -109,6 +109,78 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     }
   ];
 
+  public static final MAINMENU_BUTTON_DATA:Array<QuickPanelButtonData> = [
+    {
+      text: 'Chart Editor',
+      callback: () ->
+      {
+        stopMusic();
+        Transition.switchState(() -> new funkin.ui.debug.charting.ChartEditorState({
+        }), {
+          transition: Throbber,
+          assetQuery: funkin.ui.debug.charting.ChartEditorState.queryAssets.bind(_, {
+          })
+        });
+      },
+      icon: 'chart-editor',
+      description: 'Create or Edit song charts.',
+      disabled: false
+    },
+    {
+      text: 'Camera Editor',
+      callback: () ->
+      {
+        stopMusic();
+        Transition.switchState(() -> new funkin.ui.debug.cameraeditor.CameraEditorState(), {
+          transition: None,
+          assetQuery: funkin.ui.transition.Transition.NO_ASSETS
+        });
+      },
+      icon: 'camera-editor',
+      description: 'Camera song events editor.',
+      disabled: false
+    },
+    {
+      text: 'Animation Editor',
+      callback: () ->
+      {
+        stopMusic();
+        Transition.switchState(() -> new funkin.ui.debug.anim.DebugBoundingState(), {
+          transition: Throbber,
+          assetQuery: funkin.ui.transition.Transition.NO_ASSETS
+        });
+      },
+      icon: 'animation-editor',
+      description: 'Edit and manage animations for songs.',
+      disabled: false
+    },
+    {
+      text: 'Stage Editor',
+      callback: () ->
+      {
+        stopMusic();
+        Transition.switchState(() -> new funkin.ui.debug.stageeditor.StageEditorState(), {
+          transition: Throbber,
+          assetQuery: funkin.ui.transition.Transition.NO_ASSETS
+        });
+      },
+      icon: 'animation-editor',
+      description: 'Edit and manage song stages',
+      disabled: false
+    },
+    {
+      text: 'Open Crash Log Folder',
+      callback: () ->
+      {
+        funkin.util.FileUtil.openFolder(funkin.util.logging.CrashHandler.LOG_FOLDER);
+        // TODO : Not make this full screen?
+      },
+      icon: 'crash-log',
+      description: 'Zeep.. zlorp! Something went wrong?',
+      disabled: false
+    }
+  ];
+
   /**
    * Horizontal travel in pixels before a tab press turns into a drag.
    */
@@ -483,9 +555,14 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
   var panelVisualsBuilt:Bool = false;
 
   /**
+   *
+   */
+  static var pullTabEnabled:Bool = true;
+
+  /**
    * Makes a new QuickPanel.
    */
-  public function new()
+  public function new(hidePullTab:Bool = false)
   {
     super();
 
@@ -500,7 +577,8 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     createCamera();
     buildBackdrop();
 
-    panel = new QuickPanelGroup(DEFAULT_BUTTON_DATA, onButtonTapped);
+    pullTabEnabled = !hidePullTab;
+    panel = new QuickPanelGroup((hidePullTab) ? MAINMENU_BUTTON_DATA : DEFAULT_BUTTON_DATA, onButtonTapped, hidePullTab);
     add(panel);
 
     tickSound = new FunkinSound();
@@ -546,6 +624,8 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
       return;
     }
 
+    panel.showPullTab();
+
     if (!uiState.is(PanelOpen) && !uiState.transition(PanelOpen)) return;
 
     duckMusic();
@@ -568,6 +648,8 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     lock = false;
 
     closeBlocker();
+
+    if (!pullTabEnabled && instant) panel.hidePullTab();
 
     if (!uiState.is(PanelClosed)) uiState.transition(PanelClosed);
 
@@ -632,6 +714,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
       ease: FlxEase.expoOut,
       onComplete: (_) ->
       {
+        if (!pullTabEnabled) panel.hidePullTab();
         if (out && uiState.is(PanelClosed) && !hintVisible) panel.active = false;
       }
     });
@@ -1595,7 +1678,8 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
         results.push(Paths.image('ui/boil_texture'));
         results.push(Paths.image('ui/quick-panel/splash'));
         results.push(Paths.image('ui/quick-panel/panel-bg'));
-        for (buttonData in DEFAULT_BUTTON_DATA) results.push(Paths.image('ui/quick-panel/icons/${buttonData.icon}'));
+        var dataMap:Array<QuickPanelButtonData> = (pullTabEnabled) ? DEFAULT_BUTTON_DATA : MAINMENU_BUTTON_DATA;
+        for (buttonData in dataMap) results.push(Paths.image('ui/quick-panel/icons/${buttonData.icon}'));
 
       case XML:
         results.push(Paths.xml('ui/quick-panel/splash'));

@@ -312,7 +312,8 @@ class QuickPanelGroup extends FunkinSpriteGroup
    * @param onButtonTapped Forwarded to every button.
    */
   public function new(buttonData:Array<QuickPanelButtonData>,
-    onButtonTapped:QuickPanelButton->Void)
+    onButtonTapped:QuickPanelButton->Void,
+    hidePullTab:Bool = false)
   {
     super();
 
@@ -350,8 +351,23 @@ class QuickPanelGroup extends FunkinSpriteGroup
     pullTabHitbox.localY = (FlxG.height / 2) - (pullTabHitbox.height / 2);
     add(pullTabHitbox);
 
+    if (hidePullTab)
+    {
+      pullHint.visible = pullExtra.visible = pullTabVisual.visible = false;
+    }
+
     setSide(left);
     refresh();
+  }
+
+  public function showPullTab()
+  {
+    pullHint.visible = pullExtra.visible = pullTabVisual.visible = true;
+  }
+
+  public function hidePullTab()
+  {
+    pullHint.visible = pullExtra.visible = pullTabVisual.visible = false;
   }
 
   /**
