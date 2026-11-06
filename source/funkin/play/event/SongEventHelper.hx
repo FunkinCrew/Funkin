@@ -184,6 +184,13 @@ class SongEventHelper
     }
   }
 
+  public static function liveFrame(sprite:Null<FlxSprite>):Null<flixel.graphics.frames.FlxFrame>
+  {
+    if (sprite == null || !FunkinBitmapFrontend.instance.isValid(sprite.graphic)) return null;
+    var frame:Null<flixel.graphics.frames.FlxFrame> = sprite.frame;
+    return (frame != null && frame.frame != null) ? frame : null;
+  }
+
   public static function createSpriteFromKey(key:String, displayW:Int, displayH:Int):FlxSprite
   {
     var bd = getEaseBitmap(key);
@@ -213,7 +220,7 @@ class SongEventHelper
       var valid:Bool = true;
       for (spr in easeDotCache.get(key))
       {
-        if (spr == null || !FunkinBitmapFrontend.instance.isValid(spr.graphic))
+        if (liveFrame(spr) == null)
         {
           valid = false;
           break;
