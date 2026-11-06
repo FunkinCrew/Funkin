@@ -7,7 +7,9 @@ import funkin.data.song.SongData.SongTimeChange;
 import funkin.data.song.SongDataUtils;
 import funkin.play.PlayState;
 import funkin.save.Save;
+import funkin.util.MathUtil;
 import funkin.util.TimerUtil.SongSequence;
+import funkin.util.plugins.SmoothTimePlugin;
 import haxe.Timer;
 import flixel.sound.FlxSound;
 
@@ -106,8 +108,19 @@ class Conductor
    */
   public var songPosition(default, null):Float = 0;
 
-  var prevTimestamp:Float = 0;
-  var prevTime:Float = 0;
+  /**
+   * How far away the song position can drift from the audio position, in milliseconds, before it snaps back to it.
+   * Keep at or below PlayState `RESYNC_THRESHOLD` or else drift may cause vocal resyncs.
+   */
+  static final CLOCK_SNAP_THRESHOLD_MS:Float = 40;
+
+  /**
+   * How long the song position takes to close half the gap to the audio position, in milliseconds.
+   */
+  static final CLOCK_HALF_LIFE_MS:Float = 80;
+
+  var clockPosition:Float = 0;
+  var clockTimestamp:Float = 0;
 
   /**
    * Beats per minute of the current song at the current time.
@@ -431,6 +444,7 @@ class Conductor
   {
     var currentTime:Float = (FlxG.sound.music != null) ? FlxG.sound.music.time : 0.0;
     var currentLength:Float = (FlxG.sound.music != null) ? FlxG.sound.music.length : 0.0;
+    var useAudioClock:Bool = songPos == null;
 
     if (songPos == null)
     {
@@ -452,6 +466,15 @@ class Conductor
     else
     {
       this.songPosition = songPos;
+    }
+
+    if (useAudioClock)
+    {
+      this.songPosition = interpolate(this.songPosition, currentLength);
+    }
+    else
+    {
+      syncClock(this.songPosition);
     }
 
     // Set the song position we are at (for purposes of calculating note positions, etc).
@@ -507,16 +530,63 @@ class Conductor
       this.onMeasureHit.dispatch();
     }
 
-    // only update the timestamp if songPosition actually changed
-    // which it doesn't do every frame!
-    if (prevTime != this.songPosition)
+    if (this == Conductor.instance) @:privateAccess SongSequence.update.dispatch();
+  }
+
+  /**
+   * Audio only reports a new position every few milliseconds, so between these
+   * the clock runs on real time and eases towards the audio rather than jumping to each new position.
+   */
+  function interpolate(audioPosition:Float, musicLength:Float):Float
+  {
+    var music:Null<FlxSound> = FlxG.sound.music;
+    var nowMs:Float = Timer.stamp() * Constants.MS_PER_SEC;
+    var elapsedMs:Float = nowMs - clockTimestamp;
+    clockTimestamp = nowMs;
+
+    if (music == null || !music.playing)
     {
-      // Update the timestamp for use in-between frames
-      prevTime = this.songPosition;
-      prevTimestamp = Std.int(Timer.stamp() * 1000);
+      clockPosition = audioPosition;
+      return audioPosition;
     }
 
-    if (this == Conductor.instance) @:privateAccess SongSequence.update.dispatch();
+    var predicted:Float = clockPosition + elapsedMs * music.pitch;
+    if (Math.abs(audioPosition - predicted) > CLOCK_SNAP_THRESHOLD_MS) clockPosition = audioPosition;
+    else
+      clockPosition = Math.max(clockPosition, MathUtil.smoothLerpDecay(predicted, audioPosition, elapsedMs, CLOCK_HALF_LIFE_MS));
+
+    clockPosition = Math.min(clockPosition, musicLength);
+    return clockPosition;
+  }
+
+  function syncClock(position:Float):Void
+  {
+    clockPosition = position;
+    clockTimestamp = Timer.stamp() * Constants.MS_PER_SEC;
+  }
+
+  /**
+   * The song position at the moment it is called.
+   */
+  public function getPositionNow():Float
+  {
+    var music:Null<FlxSound> = FlxG.sound.music;
+    if (music == null || !music.playing) return this.songPosition;
+
+    var elapsedMs:Float = Timer.stamp() * Constants.MS_PER_SEC - clockTimestamp;
+    var position:Float = this.songPosition + elapsedMs * music.pitch;
+    if (Math.abs(music.time + combinedOffset - position) > CLOCK_SNAP_THRESHOLD_MS) return this.songPosition;
+
+    return Math.min(position, music.length);
+  }
+
+  /**
+   * The song position to draw notes at, a half frame ahead.
+   */
+  public function getVisualPosition():Float
+  {
+    var rate:Float = FlxG.sound.music?.pitch ?? 1.0;
+    return getPositionNow() + SmoothTimePlugin.getHalfFrameMs() * rate;
   }
 
   /**
@@ -537,6 +607,7 @@ class Conductor
    * @param soundToCheck Which FlxSound object to check, defaults to FlxG.sound.music if no input
    * @return Float
    */
+  @:deprecated('Use getPositionNow() instead.')
   public function getTimeWithDiff(?soundToCheck:FlxSound):Float
   {
     if (soundToCheck == null) soundToCheck = FlxG.sound.music;

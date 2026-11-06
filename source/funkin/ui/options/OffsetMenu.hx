@@ -43,9 +43,7 @@ typedef ArrowData =
 class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 {
   static final BPM:Int = 100;
-  static final CONDUCTOR_DRIFT_THRESHOLD:Float = 65;
   static final DRUMS_RESYNC_THRESHOLD_MS:Float = 20;
-  static final MUSIC_EASE_RATIO:Float = 42;
 
   // Page<OptionsState.OptionsMenuPageName> stuff
   var offsetItem:NumberPreferenceItem;
@@ -435,9 +433,6 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
   {
     if (calibrating) return;
 
-    // Set the current position for further calculation.
-    event.position = localConductor.songPosition;
-
     // Do the minimal possible work here.
     inputPressQueue.push(event);
   }
@@ -448,9 +443,6 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
   function onKeyRelease(event:PreciseInputEvent):Void
   {
     if (calibrating) return;
-
-    // Set the current position for further calculation.
-    event.position = localConductor.songPosition;
 
     // Do the minimal possible work here.
     inputReleaseQueue.push(event);
@@ -629,17 +621,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 
     if (FlxG.sound.music.playing)
     {
-      var audioDiff:Float = Math.abs(FlxG.sound.music.time - (localConductor.songPosition - localConductor.combinedOffset));
-      if (audioDiff <= CONDUCTOR_DRIFT_THRESHOLD)
-      {
-        var easeRatio:Float = 1.0 - Math.exp(-MUSIC_EASE_RATIO * elapsed);
-        localConductor.update(FlxMath.lerp(localConductor.songPosition, FlxG.sound.music.time + localConductor.combinedOffset, easeRatio), false);
-      }
-      else
-      {
-        trace('Resyncing conductor: ' + audioDiff + 'ms difference');
-        localConductor.update(FlxG.sound.music.time, true);
-      }
+      localConductor.update();
     }
     else
     {
@@ -663,11 +645,6 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       for (note in testStrumline.noteData)
       {
         if (note != null) note.time -= loopMs;
-      }
-
-      for (input in inputPressQueue)
-      {
-        if (input.position != null) input.position -= loopMs;
       }
       arrowBeat -= loopBeatCount;
       OptionsState.instance.drumsBG.pause();
@@ -715,13 +692,14 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 
       var toRemove:Array<ArrowData> = [];
       var _lastArrowBeat:Float = 0;
+      var visualPosition:Float = localConductor.getVisualPosition();
       // Update arrows
       for (i in 0...arrows.length)
       {
         var arrow:ArrowData = arrows[i];
 
         var ms:Float = arrow.beat * msPerBeat;
-        var offset:Float = GRhythmUtil.getNoteY(ms + appliedOffsetLerp, 2, false, localConductor);
+        var offset:Float = GRhythmUtil.getNoteY(ms + appliedOffsetLerp, 2, false, localConductor, visualPosition);
         arrow.sprite.y = receptor.y + offset - (arrow.sprite.height / 2);
         arrow.sprite.x = receptor.x - (arrow.sprite.width / 2);
 
@@ -767,7 +745,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
         var input:PreciseInputEvent = inputPressQueue.shift();
         var inputLatencyNs:Int64 = PreciseInputManager.getCurrentTimestamp() - input.timestamp;
         var inputLatencyMs:Float = inputLatencyNs.toFloat() / Constants.NS_PER_MS;
-        var hitPosition:Float = (input.position ?? localConductor.songPosition) - inputLatencyMs;
+        var hitPosition:Float = localConductor.getPositionNow() - inputLatencyMs;
         tapBeats.push(hitPosition / msPerBeat);
       }
       inputReleaseQueue = [];
@@ -930,15 +908,14 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     var input:PreciseInputEvent = {
       noteDirection: 1, // Doesn't matter.
       timestamp: timestamp,
-      keyCode: keyCode,
-      position: localConductor?.songPosition ?? 0.0
+      keyCode: keyCode
     }
     inputPressQueue.push(input);
   }
 
   function hitNote(note:NoteSprite, input:PreciseInputEvent):Void
   {
-    var inputPosition:Float = input.position ?? 0.0;
+    var inputPosition:Float = localConductor.getPositionNow();
     var inputLatencyNs:Int64 = PreciseInputManager.getCurrentTimestamp() - input.timestamp;
     var inputLatencyMs:Float = inputLatencyNs.toFloat() / Constants.NS_PER_MS;
 

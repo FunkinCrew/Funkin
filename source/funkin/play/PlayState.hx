@@ -738,17 +738,6 @@ class PlayState extends MusicBeatSubState
    */
   static final RESYNC_THRESHOLD:Float = 40;
 
-  /**
-   * The threshold for how much the conductor lerp can drift from the music.
-   * If the conductor song position deviate from the music by more than this amount, then a normal conductor update is triggered.
-   */
-  static final CONDUCTOR_DRIFT_THRESHOLD:Float = 65;
-
-  /**
-   * The ratio for easing the song positon for smoother notes scrolling.
-   */
-  static final MUSIC_EASE_RATIO:Float = 42;
-
   var mirrorSongData:Bool = false;
   // TODO: Refactor or document
   var generatedMusic:Bool = false;
@@ -1334,31 +1323,9 @@ class PlayState extends MusicBeatSubState
         Conductor.instance.formatOffset = 0.0;
       }
 
-      // Lime has some precision loss when getting the sound current position
-      // Since the notes scrolling is dependent on the sound time that caused it to appear "stuttery" for some people
-      // As a workaround for that, we lerp the conductor position to the music time to fill the gap in this lost precision making the scrolling smoother
-      // The previous method where it "guessed" the song position based on the elapsed time had some flaws
-      // Sometimes the songPosition would exceed the music length causing issues in other places
-      // And it was frame dependent which we don't like!!
       if (FlxG.sound.music?.playing ?? false)
       {
-        final audioDiff:Float = Math.round(Math.abs(FlxG.sound.music.time - (Conductor.instance.songPosition - Conductor.instance.combinedOffset)));
-        if (audioDiff <= CONDUCTOR_DRIFT_THRESHOLD)
-        {
-          // Only do neat & smooth lerps as long as the lerp doesn't fuck up and go WAY behind the music time triggering false resyncs
-          final easeRatio:Float = 1.0 - Math.exp(-(MUSIC_EASE_RATIO * playbackRate) * elapsed);
-          Conductor.instance.update(
-            FlxMath.lerp(Conductor.instance.songPosition, FlxG.sound.music.time + Conductor.instance.combinedOffset, easeRatio),
-            false
-          );
-        }
-        else
-        {
-          // Fallback to properly update the conductor incase the lerp messed up
-          // Shouldn't be fallen back to unless you're lagging alot
-          trace(' WARNING '.bg_yellow().bold() + ' Normal Conductor Update!! are you lagging?');
-          Conductor.instance.update();
-        }
+        Conductor.instance.update();
       }
     }
 
@@ -2977,9 +2944,6 @@ class PlayState extends MusicBeatSubState
   {
     if (isGamePaused) return;
 
-    // Set the current position for further calculation.
-    event.position = Conductor.instance.songPosition;
-
     // Do the minimal possible work here.
     inputPressQueue.push(event);
   }
@@ -2989,9 +2953,6 @@ class PlayState extends MusicBeatSubState
    */
   function onKeyRelease(event:PreciseInputEvent):Void
   {
-    // Set the current position for further calculation.
-    event.position = Conductor.instance.songPosition;
-
     // Do the minimal possible work here.
     inputReleaseQueue.push(event);
   }
@@ -3337,16 +3298,15 @@ class PlayState extends MusicBeatSubState
 
   function goodNoteHit(note:NoteSprite, input:PreciseInputEvent):Void
   {
-    var inputPosition:Float = input.position ?? 0.0;
+    var inputPosition:Float = Conductor.instance.getPositionNow();
     // Calculate the input latency (do this as late as possible).
     // trace('Compare: ${PreciseInputManager.getCurrentTimestamp()} - ${input.timestamp}');
     var inputLatencyNs:Int64 = PreciseInputManager.getCurrentTimestamp() - input.timestamp;
     var inputLatencyMs:Float = inputLatencyNs.toFloat() / Constants.NS_PER_MS;
     // trace('Input: ${daNote.noteData.getDirectionName()} pressed ${inputLatencyMs}ms ago!');
 
-    // Use the input's song position when calculating the ms difference.
-    // Also compensate for input latency.
-    var noteDiff:Int = Std.int(inputPosition - note.noteData.time - inputLatencyMs);
+    // Compensate for input latency when calculating the ms difference.
+    var noteDiff:Int = Std.int(inputPosition - note.noteData.time - inputLatencyMs * (FlxG.sound.music?.pitch ?? 1.0));
 
     var score = Scoring.scoreNote(noteDiff);
     var daRating = Scoring.judgeNote(noteDiff);
