@@ -7,12 +7,14 @@ using Lambda;
 @:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorEventChainHandler
 {
+  static final CHAIN_STEP_PRECISION:Float = 1000;
+
   /**
-   * Which snap position an event is on.
+   * Which spot an event is on
    */
   public static function eventChainKey(state:ChartEditorState, event:SongEventData):Int
   {
-    return Math.round(Conductor.instance.getTimeInSteps(event.time) / state.noteSnapRatio);
+    return Math.round(Conductor.instance.getTimeInSteps(event.time) * CHAIN_STEP_PRECISION);
   }
 
   /**

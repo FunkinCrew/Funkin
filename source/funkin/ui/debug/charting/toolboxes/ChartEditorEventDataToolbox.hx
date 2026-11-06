@@ -1081,7 +1081,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
 
     final _graphBd:BitmapData = SongEventHelper.getEaseBitmap(easeKey);
     _easeGraphSprite = SongEventHelper.createSpriteFromKey(easeKey, 100, 100);
-    easeGraphImage.resource = _easeGraphSprite?.frame;
+    easeGraphImage.resource = SongEventHelper.liveFrame(_easeGraphSprite);
     if (_graphBd == null || easeGraphImage.resource == null)
     {
       easeDotImage.resource = null;
@@ -1104,7 +1104,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
       return;
     }
     _easeDotSprites = dotSprites;
-    easeDotImage.resource = _easeDotSprites[0].frame;
+    easeDotImage.resource = SongEventHelper.liveFrame(_easeDotSprites[0]);
 
     var frameCallback:Dynamic = null;
     frameCallback = (tmr:FlxTimer) ->
@@ -1119,13 +1119,13 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
           if (easeDotImage != null && !_initializing)
           {
             _dotIndex = 0;
-            if (_easeDotSprites[0].frame != null) easeDotImage.resource = _easeDotSprites[0].frame;
+            if (SongEventHelper.liveFrame(_easeDotSprites[0]) != null) easeDotImage.resource = SongEventHelper.liveFrame(_easeDotSprites[0]);
             _dotTimer ??= new FlxTimer();
             _dotTimer.start(_dotInterval, frameCallback, 0);
           }
         }, 1);
       }
-      else if (easeDotImage != null && !_initializing && _easeDotSprites[_dotIndex].frame != null) easeDotImage.resource = _easeDotSprites[_dotIndex].frame;
+      else if (easeDotImage != null && !_initializing && SongEventHelper.liveFrame(_easeDotSprites[_dotIndex]) != null) easeDotImage.resource = SongEventHelper.liveFrame(_easeDotSprites[_dotIndex]);
     };
 
     _dotTimer ??= new FlxTimer();
