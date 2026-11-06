@@ -41,10 +41,10 @@ class ChartEditorTimeChangeItems extends ChartEditorSelectableItems<SongTimeChan
   /**
    * Pick one time change by its index, or none if it's out of range.
    */
-  public function selectIndex(index:Int, takeKeys:Bool = true):Void
+  public function selectIndex(index:Int, takeKeys:Bool = true, exclusive:Bool = true):Void
   {
     var timeChange:Null<SongTimeChange> = timeChanges[index];
-    select(timeChange != null ? [timeChange] : [], takeKeys);
+    select(timeChange != null ? [timeChange] : [], takeKeys, exclusive);
   }
 
   override function itemUnderMouse():Null<SongTimeChange>

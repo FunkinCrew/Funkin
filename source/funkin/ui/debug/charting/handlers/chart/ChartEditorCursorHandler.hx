@@ -723,6 +723,19 @@ class ChartEditorCursorHandler
         {
           dragDistanceSteps = cursorFractionalStep.clamp(0, state.lastSnappedGridStep) - state.dragStartCursorFractionalStep;
         }
+        else
+        {
+          // Snap the grabbed item itself, so it lands right on a snap or sub-beat no matter where it was grabbed.
+          var anchorStep:Null<Float> = null;
+          if (state.dragTargetNote?.noteData != null) anchorStep = state.dragTargetNote.noteData.getStepTime();
+          else if (state.dragTargetEvent?.eventData != null) anchorStep = state.dragTargetEvent.eventData.getStepTime();
+          if (anchorStep != null)
+          {
+            var rawStep:Float = anchorStep + cursorFractionalStep - state.dragStartCursorFractionalStep;
+            var gridStep:Float = Math.min(Math.max(0, Math.fround(rawStep / state.noteSnapRatio) * state.noteSnapRatio), state.lastSnappedGridStep);
+            dragDistanceSteps = state.snapToSubBeat(rawStep, gridStep) - anchorStep;
+          }
+        }
 
         var selectionEndStep:Float = 0;
         for (note in state.currentNoteSelection)
@@ -763,7 +776,8 @@ class ChartEditorCursorHandler
 
       var stepTime:Float = inline state.currentPlaceNoteData.getStepTime();
       var dragLengthSteps:Float = Conductor.instance.getTimeInSteps(cursorSnappedMs) - stepTime;
-      var dragLengthMs:Float = dragLengthSteps * Conductor.instance.stepLengthMs;
+
+      var dragLengthMs:Float = cursorSnappedMs - state.currentPlaceNoteData.time;
       var dragLengthPixels:Float = ChartEditorTimeScale.lengthToPixels(state.currentPlaceNoteData.time, cursorSnappedMs - state.currentPlaceNoteData.time, dragLengthSteps);
 
       if (state.gridGhostHoldNote != null)

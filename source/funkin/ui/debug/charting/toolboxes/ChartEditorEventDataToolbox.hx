@@ -285,6 +285,9 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
       trace('ChartEditorEventDataToolbox - Event kind not changed: ${toolboxEventsEventKind.value} == ${newDropdownElement} == ${lastEventKind}');
     }
 
+    var currentSchema:Null<SongEventSchema> = SongEventRegistry.getEventSchema(chartEditorState.eventKindToPlace);
+    if (currentSchema != null) resetMissingFields(currentSchema);
+
     for (pair in chartEditorState.eventDataToPlace.keyValueIterator())
     {
       var fieldId:String = pair.key;
@@ -331,6 +334,43 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
   }
 
   var lastEventKind:String = 'unknown';
+
+  /**
+   * Put the default values of any missing fields into the form, so the user can see them and change them.
+   */
+  function resetMissingFields(schema:SongEventSchema):Void
+  {
+    for (field in schema)
+    {
+      if (field == null) continue;
+      if (field.type == FRAME)
+      {
+        if (field.children != null) resetMissingFields(new SongEventSchema(field.children));
+        continue;
+      }
+      if (chartEditorState.eventDataToPlace.exists(field.name)) continue;
+
+      var component:Null<Component> = toolboxEventsDataBox.findComponent(field.name);
+      if (component == null) continue;
+      var value:Null<Dynamic> = field.defaultValue;
+      component.pauseEvent(UIEvent.CHANGE, true);
+      switch (Type.getClass(component))
+      {
+        case NumberStepper:
+          if (value != null) cast(component, NumberStepper).value = value;
+        case CheckBox:
+          cast(component, CheckBox).selected = (value == true);
+        case DropDown:
+          var dropDown:DropDown = cast component;
+          if (isOptionField(field.name)) selectOption(dropDown, value);
+          else if (value != null) dropDown.value = value;
+        case TextField:
+          cast(component, TextField).text = (value != null) ? Std.string(value) : '';
+        default:
+      }
+      component.resumeEvent(UIEvent.CHANGE, true, true);
+    }
+  }
 
   /**
    * The events the form edits: the picked event when looking at a chain.

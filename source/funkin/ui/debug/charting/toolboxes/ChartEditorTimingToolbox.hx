@@ -153,7 +153,8 @@ class ChartEditorTimingToolbox extends ChartEditorBaseToolbox implements ChartEd
   {
     selectedIndex = index;
     refresh();
-    chartEditorState.timeChangeItems.selectIndex(selectedIndex, false);
+
+    chartEditorState.timeChangeItems.selectIndex(selectedIndex, false, false);
     chartEditorState.updateSongTime();
   }
 

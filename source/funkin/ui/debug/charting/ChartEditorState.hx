@@ -1368,7 +1368,18 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   /**
    * The events which are currently in the user's selection.
    */
-  var currentEventSelection:Array<SongEventData> = [];
+  var currentEventSelection(default, set):Array<SongEventData> = [];
+
+  function set_currentEventSelection(value:Array<SongEventData>):Array<SongEventData>
+  {
+    currentEventSelection = value;
+    if (value.length > 0)
+    {
+      // Picking events lets go of the other kinds of items, the same as notes.
+      for (selectable in selectables) selectable.clearSelection();
+    }
+    return currentEventSelection;
+  }
 
   /**
    * The picked BPM and time signature changes.

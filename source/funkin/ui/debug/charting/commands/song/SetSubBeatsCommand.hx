@@ -1,6 +1,7 @@
 package funkin.ui.debug.charting.commands.song;
 
 #if FEATURE_CHART_EDITOR
+import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.ui.debug.charting.commands.ChartEditorCommand;
 
@@ -22,9 +23,16 @@ class SetSubBeatsCommand implements ChartEditorCommand
   var notesBefore:Array<Float>;
   var notesAfter:Array<Float>;
 
+  var events:Array<SongEventData>;
+  var eventsBefore:Array<Float>;
+  var eventsAfter:Array<Float>;
+
   public function new(before:Array<Float>, after:Array<Float>, pickAfter:Array<Float>, label:String, ?notes:Array<SongNoteData>, ?notesBefore:Array<Float>,
-      ?notesAfter:Array<Float>)
+      ?notesAfter:Array<Float>, ?events:Array<SongEventData>, ?eventsBefore:Array<Float>, ?eventsAfter:Array<Float>)
   {
+    this.events = events ?? [];
+    this.eventsBefore = eventsBefore ?? [];
+    this.eventsAfter = eventsAfter ?? [];
     this.before = before.copy();
     this.after = after.copy();
     this.pickAfter = pickAfter.copy();
@@ -43,6 +51,7 @@ class SetSubBeatsCommand implements ChartEditorCommand
   {
     apply(state, after);
     moveNotes(state, notesAfter);
+    moveEvents(state, eventsAfter);
     state.subBeatItems.selectTimes(pickAfter);
     state.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/${after.length < before.length ? 'note-erase' : 'note-place'}'));
   }
@@ -56,6 +65,7 @@ class SetSubBeatsCommand implements ChartEditorCommand
   {
     apply(state, before);
     moveNotes(state, notesBefore);
+    moveEvents(state, eventsBefore);
     state.subBeatItems.clearSelection();
     state.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/undo'));
   }
@@ -66,6 +76,19 @@ class SetSubBeatsCommand implements ChartEditorCommand
     for (i in 0...notes.length)
     {
       notes[i].time = times[i];
+    }
+    state.sortChartData();
+    state.noteDisplayDirty = true;
+    state.notePreviewDirty = true;
+    state.noteTooltipsDirty = true;
+  }
+
+  function moveEvents(state:ChartEditorState, times:Array<Float>):Void
+  {
+    if (events.length == 0) return;
+    for (i in 0...events.length)
+    {
+      events[i].time = times[i];
     }
     state.sortChartData();
     state.noteDisplayDirty = true;

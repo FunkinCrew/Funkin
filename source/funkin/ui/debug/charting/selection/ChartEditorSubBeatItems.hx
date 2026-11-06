@@ -1,6 +1,7 @@
 package funkin.ui.debug.charting.selection;
 
 #if FEATURE_CHART_EDITOR
+import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.ui.debug.charting.commands.song.SetSubBeatsCommand;
 import funkin.ui.debug.charting.handlers.chart.ChartEditorSubBeatHandler;
@@ -31,6 +32,8 @@ class ChartEditorSubBeatItems extends ChartEditorSelectableItems<Int>
 
   var attachedNotes:Array<Array<SongNoteData>> = [];
   var attachedTimes:Array<Array<Float>> = [];
+  var attachedEvents:Array<Array<SongEventData>> = [];
+  var attachedEventTimes:Array<Array<Float>> = [];
 
   var subBeats(get, never):Array<Float>;
 
@@ -50,7 +53,7 @@ class ChartEditorSubBeatItems extends ChartEditorSelectableItems<Int>
   /**
    * Pick the sub-beats at these times. Used after the list changes and the places shift.
    */
-  public function selectTimes(times:Array<Float>):Void
+  public function selectTimes(times:Array<Float>, exclusive:Bool = true):Void
   {
     var indexes:Array<Int> = [];
     for (time in times)
@@ -58,7 +61,13 @@ class ChartEditorSubBeatItems extends ChartEditorSelectableItems<Int>
       var index:Int = subBeats.indexOf(time);
       if (index >= 0 && !indexes.contains(index)) indexes.push(index);
     }
-    select(indexes);
+    select(indexes, true, exclusive);
+  }
+
+  public function new(state:ChartEditorState)
+  {
+    super(state);
+    pickedWithNotes = true;
   }
 
   /**
@@ -103,7 +112,7 @@ class ChartEditorSubBeatItems extends ChartEditorSelectableItems<Int>
   }
 
   /**
-   * Notes sitting on a dragged sub-beat come along with it.
+   * Notes and events sitting on a dragged sub-beat come along with it.
    */
   override function dragItems(item:Int):Array<Int>
   {
@@ -111,13 +120,18 @@ class ChartEditorSubBeatItems extends ChartEditorSelectableItems<Int>
     dragStartTimes = [];
     attachedNotes = [];
     attachedTimes = [];
+    attachedEvents = [];
+    attachedEventTimes = [];
     for (index in items)
     {
       var time:Float = subBeats[index];
       var notes:Array<SongNoteData> = state.currentSongChartNoteData.filter(note -> Math.abs(note.time - time) <= ATTACHED_NOTE_MS);
+      var events:Array<SongEventData> = state.currentSongChartEventData.filter(event -> Math.abs(event.time - time) <= ATTACHED_NOTE_MS);
       dragStartTimes.push(time);
       attachedNotes.push(notes);
       attachedTimes.push([for (note in notes) note.time]);
+      attachedEvents.push(events);
+      attachedEventTimes.push([for (event in events) event.time]);
     }
     return items;
   }
@@ -143,6 +157,11 @@ class ChartEditorSubBeatItems extends ChartEditorSelectableItems<Int>
         attachedNotes[i][j].time = attachedTimes[i][j] + delta;
         notesMoved = true;
       }
+      for (j in 0...attachedEvents[i].length)
+      {
+        attachedEvents[i][j].time = attachedEventTimes[i][j] + delta;
+        notesMoved = true;
+      }
     }
     state.gridLinesDirty = true;
     if (notesMoved) state.noteDisplayDirty = true;
@@ -162,6 +181,9 @@ class ChartEditorSubBeatItems extends ChartEditorSelectableItems<Int>
     var notes:Array<SongNoteData> = [];
     var notesBefore:Array<Float> = [];
     var notesAfter:Array<Float> = [];
+    var events:Array<SongEventData> = [];
+    var eventsBefore:Array<Float> = [];
+    var eventsAfter:Array<Float> = [];
     for (i in 0...items.length)
     {
       if (i >= attachedNotes.length) continue;
@@ -172,11 +194,19 @@ class ChartEditorSubBeatItems extends ChartEditorSelectableItems<Int>
         notesBefore.push(attachedTimes[i][j]);
         notesAfter.push(attachedTimes[i][j] + delta);
       }
+      for (j in 0...attachedEvents[i].length)
+      {
+        events.push(attachedEvents[i][j]);
+        eventsBefore.push(attachedEventTimes[i][j]);
+        eventsAfter.push(attachedEventTimes[i][j] + delta);
+      }
     }
     state.performCommand(new SetSubBeatsCommand(subBeats, after, targetTimes, items.length == 1 ? 'Move Sub-Beat' : 'Move Sub-Beats', notes, notesBefore,
-      notesAfter));
+      notesAfter, events, eventsBefore, eventsAfter));
     attachedNotes = [];
     attachedTimes = [];
+    attachedEvents = [];
+    attachedEventTimes = [];
     dragStartTimes = [];
   }
 

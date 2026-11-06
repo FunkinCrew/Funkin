@@ -88,7 +88,7 @@ class PasteItemsCommand implements ChartEditorCommand
       setSubBeats(state, before.concat(pastedSubBeats));
 
       var keys:Null<ChartEditorListKeyTarget> = state.listKeyTarget;
-      state.subBeatItems.selectTimes(pastedSubBeats);
+      state.subBeatItems.selectTimes(pastedSubBeats, false);
       state.listKeyTarget = keys;
     }
 

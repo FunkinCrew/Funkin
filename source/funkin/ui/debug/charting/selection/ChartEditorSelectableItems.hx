@@ -47,13 +47,17 @@ class ChartEditorSelectableItems<T> implements ChartEditorSelectable implements 
     lastCopied = null;
   }
 
+  var pickedWithNotes:Bool = false;
+
   /**
    * Replace the picked items.
    * @param takeKeys Send copy, paste and delete to these items. Off when a panel picks them and keeps the keys itself.
+   * @param exclusive Deselect every other kind of item, like notes and events, when this kind gets picked.
    */
-  public function select(items:Array<T>, takeKeys:Bool = true):Void
+  public function select(items:Array<T>, takeKeys:Bool = true, exclusive:Bool = true):Void
   {
     selected = items;
+    if (exclusive && items.length > 0) state.deselectAllExcept(this);
     if (items.length > 0 && takeKeys) state.listKeyTarget = this;
     else if (items.length == 0 && state.listKeyTarget == this) state.listKeyTarget = null;
     onSelectionChanged();
@@ -103,7 +107,8 @@ class ChartEditorSelectableItems<T> implements ChartEditorSelectable implements 
     {
       if (!picked.contains(item)) picked.push(item);
     }
-    select(picked);
+
+    select(picked, true, false);
     return true;
   }
 
@@ -132,7 +137,7 @@ class ChartEditorSelectableItems<T> implements ChartEditorSelectable implements 
     {
       var picked:Array<T> = selected.copy();
       if (!picked.remove(item)) picked.push(item);
-      select(picked);
+      select(picked, true, !pickedWithNotes);
       return;
     }
 

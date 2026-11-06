@@ -5,6 +5,7 @@ import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.ui.debug.charting.commands.selection.SetItemSelectionCommand;
 import funkin.ui.debug.charting.toolboxes.ChartEditorEventDataToolbox;
+import funkin.ui.debug.charting.selection.ChartEditorSelectable;
 import haxe.ui.containers.menus.MenuCheckBox;
 using Lambda;
 
@@ -81,6 +82,23 @@ class ChartEditorGridInteractionHandler
         if (j != i && hits[j]) otherHit = true;
       }
       state.selectables[i].handleMouse(otherHit);
+    }
+  }
+
+  /**
+   * Deselects all selectables except the one passed in.
+   */
+  public static function deselectAllExcept(state:ChartEditorState, keep:ChartEditorSelectable):Void
+  {
+    for (selectable in state.selectables)
+    {
+      if (selectable != keep) selectable.clearSelection();
+    }
+    if (state.currentNoteSelection.length > 0 || state.currentEventSelection.length > 0)
+    {
+      state.currentNoteSelection = [];
+      state.currentEventSelection = [];
+      state.noteDisplayDirty = true;
     }
   }
 
