@@ -5,6 +5,9 @@ import funkin.input.Controls;
 import funkin.input.PreciseInputManager;
 import flixel.input.gamepad.FlxGamepad;
 import flixel.util.FlxSignal.FlxTypedSignal;
+#if FEATURE_NEWGROUNDS
+import funkin.api.newgrounds.NewgroundsClient;
+#end
 
 /**
  * A core class which represents the current player(s) and their controls and other configuration.
@@ -180,5 +183,9 @@ class PlayerSettings
         Save.instance.setControls(id, Gamepad(controls.gamepadsAdded[0]), padData);
       }
     }
+
+    #if FEATURE_NEWGROUNDS
+    NewgroundsClient.instance.autoSyncSavesToNewgrounds();
+    #end
   }
 }

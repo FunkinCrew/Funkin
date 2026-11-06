@@ -24,6 +24,7 @@ import thx.semver.Version;
 import flixel.util.FlxSave.SaveFailureType;
 import flixel.util.FlxSave.LoadFailureType;
 #if FEATURE_NEWGROUNDS
+import funkin.api.newgrounds.NewgroundsClient;
 import funkin.api.newgrounds.Medals;
 import funkin.api.newgrounds.Leaderboards;
 #end
@@ -161,6 +162,7 @@ class Save implements ConsoleClass implements ISerializable
         audioVisualOffset: 0,
         unlockedFramerate: false,
         enabledDiscordRPC: true,
+        autoSync: false,
         screenshot: {
           shouldHideMouse: true,
           fancyPreview: true,
@@ -683,6 +685,10 @@ class Save implements ConsoleClass implements ISerializable
     }
     song.set(difficultyId, score);
     Save.system.flush();
+
+    #if FEATURE_NEWGROUNDS
+    NewgroundsClient.instance.autoSyncSavesToNewgrounds();
+    #end
   }
 
   /**
@@ -927,6 +933,10 @@ class Save implements ConsoleClass implements ISerializable
     {
       data.favoriteSongs.push(id);
       Save.system.flush();
+
+      #if FEATURE_NEWGROUNDS
+      NewgroundsClient.instance.autoSyncSavesToNewgrounds();
+      #end
     }
   }
 
@@ -940,6 +950,10 @@ class Save implements ConsoleClass implements ISerializable
     {
       data.favoriteSongs.remove(id);
       Save.system.flush();
+
+      #if FEATURE_NEWGROUNDS
+      NewgroundsClient.instance.autoSyncSavesToNewgrounds();
+      #end
     }
   }
 
@@ -1234,11 +1248,11 @@ class Save implements ConsoleClass implements ISerializable
   /**
    * Save the current save data to the cloud on Newgrounds.
    */
-  public static function saveToNewgrounds():Void
+  public static function saveToNewgrounds(?onSuccess:Void->Void, ?onError:Void->Void):Void
   {
     if (_instance == null) return;
     trace('[SAVE] Saving Save Data to Newgrounds...');
-    funkin.api.newgrounds.NGSaveSlot.instance.save(_instance.data);
+    funkin.api.newgrounds.NGSaveSlot.instance.save(_instance.data, onSuccess, onError);
   }
 
   /**
@@ -1572,6 +1586,12 @@ typedef SaveDataOptions =
    * @default `true`
    */
   var enabledDiscordRPC:Bool;
+
+  /**
+   * If files are synced automatically from NG
+   * @default `false`
+   */
+  var autoSync:Bool;
 
   /**
    * Screenshot options
