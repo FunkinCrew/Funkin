@@ -972,7 +972,7 @@ class PolymodHandler
 
   static function get_enabledModIds():Array<String>
   {
-    #if sys
+    #if desktop
     if (!FileUtil.fileExists(ENABLED_MODS_PATH)) return [];
 
     var content:String = FileUtil.readStringFromPath(ENABLED_MODS_PATH);
@@ -984,7 +984,7 @@ class PolymodHandler
 
   static function set_enabledModIds(value:Array<String>):Array<String>
   {
-    #if sys
+    #if desktop
     var content:String = value.join('\n');
     FileUtil.writeStringToPath(ENABLED_MODS_PATH, content, Force);
     #else
