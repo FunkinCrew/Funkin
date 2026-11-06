@@ -8,23 +8,23 @@ import funkin.data.song.SongData.SongMetadata;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongDataUtils;
 import funkin.play.character.BaseCharacter.CharacterType;
-import funkin.ui.debug.charting.commands.items.CutItemsCommand;
-import funkin.ui.debug.charting.commands.selection.DeselectAllItemsCommand;
-import funkin.ui.debug.charting.commands.notes.FlipNotesCommand;
-import funkin.ui.debug.charting.commands.selection.InvertSelectedItemsCommand;
-import funkin.ui.debug.charting.commands.notes.MirrorNotesCommand;
-import funkin.ui.debug.charting.commands.items.PasteItemsCommand;
-import funkin.ui.debug.charting.selection.ChartEditorSelectableItems;
 import funkin.ui.debug.charting.commands.events.RemoveEventsCommand;
+import funkin.ui.debug.charting.commands.items.CutItemsCommand;
+import funkin.ui.debug.charting.commands.items.PasteItemsCommand;
 import funkin.ui.debug.charting.commands.items.RemoveItemsCommand;
+import funkin.ui.debug.charting.commands.notes.FlipNotesCommand;
+import funkin.ui.debug.charting.commands.notes.MirrorNotesCommand;
 import funkin.ui.debug.charting.commands.notes.RemoveNotesCommand;
 import funkin.ui.debug.charting.commands.notes.RemoveStackedNotesCommand;
+import funkin.ui.debug.charting.commands.selection.DeselectAllItemsCommand;
+import funkin.ui.debug.charting.commands.selection.InvertSelectedItemsCommand;
 import funkin.ui.debug.charting.commands.selection.SelectAllItemsBetweenTimeCommand;
 import funkin.ui.debug.charting.commands.selection.SelectAllItemsCommand;
 import funkin.ui.debug.charting.commands.selection.SelectItemsCommand;
 import funkin.ui.debug.charting.commands.selection.SetItemSelectionCommand;
 import funkin.ui.debug.charting.components.palette.ChartEditorCommandPalette;
 import funkin.ui.debug.charting.components.playbar.ChartEditorPlaybarHead;
+import funkin.ui.debug.charting.selection.ChartEditorSelectableItems;
 import funkin.ui.debug.charting.toolboxes.ChartEditorDifficultyToolbox;
 import funkin.ui.haxeui.components.CharacterPlayer;
 import funkin.util.Constants;
@@ -1104,6 +1104,14 @@ class ChartEditorUIHandler
       state.buttonSelectDummy.destroy();
       state.buttonSelectDummy = null;
     }
+
+    // Force dispose existing dialogs.
+    for (toolbox in state.activeToolboxes)
+    {
+      if (toolbox == null) continue;
+      toolbox.disposeComponent();
+    }
+    state.activeToolboxes.clear();
   }
 
   /**

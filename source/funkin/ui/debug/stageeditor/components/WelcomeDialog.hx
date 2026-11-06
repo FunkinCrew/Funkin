@@ -158,9 +158,14 @@ class WelcomeDialog extends Dialog
     stageEditorState.updateDialog(StageEditorDialogType.CHARACTER);
     stageEditorState.updateDialog(StageEditorDialogType.STAGE);
 
-    FlxG.stage.window.onDropFile.remove(loadFromFilePath);
     hide();
     destroy();
+  }
+
+  override public function onDestroy():Void
+  {
+    FlxG.stage.window.onDropFile.remove(loadFromFilePath);
+    super.onDestroy();
   }
 }
 #end

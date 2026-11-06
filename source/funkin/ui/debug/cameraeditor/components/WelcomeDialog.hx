@@ -37,7 +37,6 @@ class WelcomeDialog extends Dialog
     this.closable = this.defaultClosable;
 
     this.destroyOnClose = true;
-    this.onDialogClosed = event -> onClose(event);
 
     // Add items to the Recent Charts list
     #if sys
@@ -110,8 +109,9 @@ class WelcomeDialog extends Dialog
   /**
    * Called when the welcome dialog is closed.
    */
-  function onClose(_:DialogEvent):Void
+  override function onDestroy():Void
   {
+    super.onDestroy();
     for (dropTarget in dropHandlers)
     {
       CameraEditorFileDropHandler.removeDropHandler(dropTarget);

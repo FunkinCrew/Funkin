@@ -32,7 +32,6 @@ class UploadChartDialog extends Dialog
     this.dialogCancel.onClick = (_) -> this.hideDialog(DialogButton.CANCEL);
 
     this.destroyOnClose = true;
-    this.onDialogClosed = event -> onClose(event);
 
     this.chartBox.onMouseOver = (_) ->
     {
@@ -82,8 +81,9 @@ class UploadChartDialog extends Dialog
   /**
    * Called when the upload chart dialog is closed.
    */
-  public function onClose(_:DialogEvent):Void
+  override public function onDestroy():Void
   {
+    super.onDestroy();
     for (dropTarget in dropHandlers)
     {
       CameraEditorFileDropHandler.removeDropHandler(dropTarget);

@@ -2758,6 +2758,14 @@ class CameraEditorState extends UIState implements ConsoleClass
   function destroyHaxeUIComponents():Void
   {
     this.clearNotifications();
+
+    // Force dispose existing dialogs.
+    if (aboutDialog != null) aboutDialog.disposeComponent();
+    if (exitConfirmDialog != null) exitConfirmDialog.disposeComponent();
+    if (userGuideDialog != null) userGuideDialog.disposeComponent();
+    if (deleteLayerConfirmDialog != null) deleteLayerConfirmDialog.disposeComponent();
+    if (autoSortLayersDialog != null) autoSortLayersDialog.disposeComponent();
+    if (welcomeDialog != null) welcomeDialog.disposeComponent();
   }
 
   override public function destroy():Void
@@ -2802,6 +2810,9 @@ class CameraEditorState extends UIState implements ConsoleClass
     chart.savedChanged.remove(onChartSavedChanged);
     chart.workingFileChanged.remove(onChartWorkingFileChanged);
     chart.recentsChanged.remove(onChartRecentsChanged);
+
+    CameraEditorPropertiesPanelHandler.cleanup();
+    CameraEditorState.instance = null;
   }
 
   function updateUndoRedoMenuItems():Void

@@ -1,6 +1,5 @@
 package funkin.ui.debug.charting;
 
-import funkin.ui.transition.Transition;
 #if FEATURE_CHART_EDITOR
 import flixel.FlxBasic;
 import flixel.FlxCamera;
@@ -59,59 +58,60 @@ import funkin.play.stage.Stage;
 import funkin.save.Save;
 import funkin.ui.debug.FunkinDebugDisplay.DebugDisplayMode;
 import funkin.ui.debug.cameraeditor.CameraEditorState;
+import funkin.ui.debug.charting.commands.ChartEditorCommand;
 import funkin.ui.debug.charting.commands.comments.AddCommentCommand;
 import funkin.ui.debug.charting.commands.events.AddEventsCommand;
-import funkin.ui.debug.charting.commands.timing.AddNewTimeChangeCommand;
-import funkin.ui.debug.charting.commands.notes.AddNotesCommand;
-import funkin.ui.debug.charting.commands.ChartEditorCommand;
-import funkin.ui.debug.charting.util.ChartEditorScaleMode;
+import funkin.ui.debug.charting.commands.events.MoveEventsCommand;
+import funkin.ui.debug.charting.commands.events.RemoveEventsCommand;
 import funkin.ui.debug.charting.commands.items.CopyItemsCommand;
 import funkin.ui.debug.charting.commands.items.CutItemsCommand;
+import funkin.ui.debug.charting.commands.items.MoveItemsCommand;
+import funkin.ui.debug.charting.commands.items.PasteItemsCommand;
+import funkin.ui.debug.charting.commands.items.RemoveItemsCommand;
+import funkin.ui.debug.charting.commands.notes.AddNotesCommand;
+import funkin.ui.debug.charting.commands.notes.ExtendNoteLengthCommand;
+import funkin.ui.debug.charting.commands.notes.FlipNotesCommand;
+import funkin.ui.debug.charting.commands.notes.MirrorNotesCommand;
+import funkin.ui.debug.charting.commands.notes.MoveNotesCommand;
+import funkin.ui.debug.charting.commands.notes.RemoveNotesCommand;
+import funkin.ui.debug.charting.commands.notes.RemoveStackedNotesCommand;
 import funkin.ui.debug.charting.commands.selection.DeselectAllItemsBetweenTimeCommand;
 import funkin.ui.debug.charting.commands.selection.DeselectAllItemsCommand;
 import funkin.ui.debug.charting.commands.selection.DeselectItemsCommand;
-import funkin.ui.debug.charting.commands.notes.ExtendNoteLengthCommand;
-import funkin.ui.debug.charting.commands.notes.FlipNotesCommand;
 import funkin.ui.debug.charting.commands.selection.InvertSelectedItemsCommand;
-import funkin.ui.debug.charting.commands.notes.MirrorNotesCommand;
-import funkin.ui.debug.charting.commands.events.MoveEventsCommand;
-import funkin.ui.debug.charting.commands.items.MoveItemsCommand;
-import funkin.ui.debug.charting.commands.notes.MoveNotesCommand;
-import funkin.ui.debug.charting.commands.items.PasteItemsCommand;
-import funkin.ui.debug.charting.commands.events.RemoveEventsCommand;
-import funkin.ui.debug.charting.commands.items.RemoveItemsCommand;
-import funkin.ui.debug.charting.commands.notes.RemoveNotesCommand;
-import funkin.ui.debug.charting.commands.notes.RemoveStackedNotesCommand;
 import funkin.ui.debug.charting.commands.selection.SelectAllItemsBetweenTimeCommand;
 import funkin.ui.debug.charting.commands.selection.SelectAllItemsCommand;
 import funkin.ui.debug.charting.commands.selection.SelectItemsCommand;
 import funkin.ui.debug.charting.commands.selection.SetItemSelectionCommand;
 import funkin.ui.debug.charting.commands.song.SwitchDifficultyCommand;
-import funkin.ui.debug.charting.components.palette.ChartEditorCommandPalette;
+import funkin.ui.debug.charting.commands.timing.AddNewTimeChangeCommand;
 import funkin.ui.debug.charting.components.comments.ChartEditorCommentPanel;
 import funkin.ui.debug.charting.components.comments.ChartEditorCommentPinSprite;
+import funkin.ui.debug.charting.components.grid.ChartEditorDifficultyHeatmap;
+import funkin.ui.debug.charting.components.grid.ChartEditorGridLines;
+import funkin.ui.debug.charting.components.grid.ChartEditorMeasureTicks;
+import funkin.ui.debug.charting.components.grid.ChartEditorSelectionSquareSprite;
+import funkin.ui.debug.charting.components.grid.ChartEditorWaveformSprite;
 import funkin.ui.debug.charting.components.notes.ChartEditorEventSprite;
 import funkin.ui.debug.charting.components.notes.ChartEditorHoldNoteSprite;
-import funkin.ui.debug.charting.components.grid.ChartEditorGridLines;
-import funkin.ui.debug.charting.components.grid.ChartEditorWaveformSprite;
-import funkin.ui.debug.charting.components.grid.ChartEditorMeasureTicks;
-import funkin.ui.debug.charting.components.grid.ChartEditorDifficultyHeatmap;
+import funkin.ui.debug.charting.components.notes.ChartEditorNoteSprite;
+import funkin.ui.debug.charting.components.palette.ChartEditorCommandPalette;
+import funkin.ui.debug.charting.components.playbar.ChartEditorNotePreview;
+import funkin.ui.debug.charting.components.playbar.ChartEditorPlaybarHead;
+import funkin.ui.debug.charting.handlers.ui.ChartEditorToolboxHandler;
 import funkin.ui.debug.charting.selection.ChartEditorCommentItems;
 import funkin.ui.debug.charting.selection.ChartEditorSelectable;
 import funkin.ui.debug.charting.selection.ChartEditorSelectableItems;
 import funkin.ui.debug.charting.selection.ChartEditorSubBeatItems;
 import funkin.ui.debug.charting.selection.ChartEditorTimeChangeItems;
-import funkin.ui.debug.charting.components.playbar.ChartEditorNotePreview;
-import funkin.ui.debug.charting.components.notes.ChartEditorNoteSprite;
-import funkin.ui.debug.charting.components.playbar.ChartEditorPlaybarHead;
-import funkin.ui.debug.charting.components.grid.ChartEditorSelectionSquareSprite;
-import funkin.ui.debug.charting.handlers.ui.ChartEditorToolboxHandler;
 import funkin.ui.debug.charting.toolboxes.ChartEditorDifficultyToolbox;
-import funkin.ui.debug.charting.toolboxes.ChartEditorListKeyTarget;
 import funkin.ui.debug.charting.toolboxes.ChartEditorEventDataToolbox;
+import funkin.ui.debug.charting.toolboxes.ChartEditorListKeyTarget;
 import funkin.ui.debug.charting.toolboxes.ChartEditorTimingToolbox;
+import funkin.ui.debug.charting.util.ChartEditorScaleMode;
 import funkin.ui.haxeui.components.CharacterPlayer;
 import funkin.ui.mainmenu.MainMenuState;
+import funkin.ui.transition.Transition;
 import funkin.ui.transition.preload.hotreload.HotReloadState.HotReloadStateParams;
 import funkin.util.Constants;
 import funkin.util.FileUtil;
@@ -3826,16 +3826,59 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     @:privateAccess
     ChartEditorEventSprite.eventFrames = null;
 
-    for (toolbox in activeToolboxes)
-    {
-      if (toolbox == null) continue;
-      if (haxe.ui.core.Screen.instance.rootComponents.indexOf(toolbox) != -1) haxe.ui.core.Screen.instance.removeComponent(toolbox, true);
-      else
-        toolbox.disposeComponent();
-    }
+    ChartEditorPlaytestHandler.cleanup(this);
+    ChartEditorSelectableItems.lastCopied = null;
+
+    this.clearDropHandlers();
     activeToolboxes.clear();
 
     criticalFailure = true;
+  }
+
+  /**
+   * Called when the Chart Editor intercepts a crash, to save a backup of the chart.
+   * Registered in `ChartEditorAutoSaveHandler`.
+   *
+   * @param message The error message for the crash.
+   */
+  public function onWindowCrash(message:String):Void
+  {
+    // Callbacks MUST be placed in ChartEditorState, rather than a static extension,
+    // otherwise Haxe won't let you unregister them!
+
+    trace('Chart editor intercepted crash:');
+    trace('${message}');
+
+    trace('Should save chart? ${this.saveDataDirty}');
+
+    var needsAutoSave:Bool = this.saveDataDirty;
+
+    this.writePreferences(needsAutoSave);
+
+    if (needsAutoSave)
+    {
+      this.exportCurrentChartToFNFC(true, null);
+    }
+  }
+
+  /**
+   * Called when the window was closed, to save a backup of the chart.
+   *
+   * @param exitCode The exit code of the window. We use `-1` when calling the function due to a game crash.
+   */
+  public function onWindowClose(exitCode:Int):Void
+  {
+    trace('Window exited with exit code: $exitCode');
+    trace('Should save chart? ${this.saveDataDirty}');
+
+    var needsAutoSave:Bool = this.saveDataDirty;
+
+    this.writePreferences(needsAutoSave);
+
+    if (needsAutoSave)
+    {
+      this.exportCurrentChartToFNFC(true, null);
+    }
   }
 
   @:nullSafety(Off)

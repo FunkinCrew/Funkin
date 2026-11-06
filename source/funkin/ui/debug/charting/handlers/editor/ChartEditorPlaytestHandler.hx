@@ -342,5 +342,11 @@ class ChartEditorPlaytestHandler
       });
     }
   }
+
+  public static function cleanup(state:ChartEditorState):Void
+  {
+    state.subStateClosed.remove(playtestClosedListener);
+    playtestClosedListener = null;
+  }
 }
 #end
