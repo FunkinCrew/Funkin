@@ -58,7 +58,7 @@ class ScrollVelocityTimeline
       while (segments.length > 1 && segments[segments.length - 1].time > time)
         segments.pop();
 
-      var from:Float = velocityAt(time);
+      var from:Float = (event.getBool('useStart') ?? false) ? (event.getFloat('startVelocity') ?? velocityAt(time)) : velocityAt(time);
 
       // Below 0 the notes move back up, away from the strums.
       var velocity:Float = event.getFloat('velocity') ?? ScrollVelocityEvent.DEFAULT_VELOCITY;

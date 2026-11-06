@@ -117,6 +117,21 @@ class ScrollVelocityEvent extends SongEvent
         collapsible: true,
         children: [
           {
+            name: 'useStart',
+            title: 'Use Start Velocity',
+            defaultValue: false,
+            type: SongEventFieldType.BOOL,
+          },
+          {
+            name: 'startVelocity',
+            title: 'Start Velocity',
+            defaultValue: DEFAULT_VELOCITY,
+            min: -10,
+            step: 0.1,
+            type: SongEventFieldType.FLOAT,
+            units: 'x'
+          },
+          {
             name: 'strumline',
             title: 'Target Strumline',
             defaultValue: DEFAULT_STRUMLINE,
