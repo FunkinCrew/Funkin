@@ -11,7 +11,6 @@ import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongDataUtils;
 import funkin.input.Cursor;
 import funkin.play.notes.notekind.NoteKindManager;
-import funkin.ui.debug.charting.commands.comments.AddCommentCommand;
 import funkin.ui.debug.charting.toolboxes.ChartEditorListKeyTarget;
 import funkin.ui.debug.charting.commands.events.AddEventsCommand;
 import funkin.ui.debug.charting.commands.notes.AddNotesCommand;
@@ -222,22 +221,6 @@ class ChartEditorCursorHandler
       {
         state.releaseScrollAnchor();
         Screen.instance.setCursor('default');
-      }
-    }
-
-    if (FlxG.mouse.justPressedRight)
-    {
-      if (state.gridPlayhead != null && FlxG.mouse.overlaps(state.gridPlayhead) && !state.isCursorOverHaxeUI)
-      {
-        var playheadPosMs:Float = state.scrollPositionInMs + state.playheadPositionInMs;
-
-        // Add a new comment at the grid playhead's position.
-        state.performCommand(new AddCommentCommand({
-          time: playheadPosMs,
-          text: 'New Comment',
-          color: state.commentColorToPlace,
-        }));
-        state.success('New Comment', 'Added a comment at the playhead position.');
       }
     }
 
