@@ -1129,7 +1129,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     var button = currentButton;
     if (button == null) return;
 
-    if (button.data.disabled == true)
+    if (button.data?.disabled ?? true)
     {
       lock = true;
       panel.playDeny(() -> lock = false);
