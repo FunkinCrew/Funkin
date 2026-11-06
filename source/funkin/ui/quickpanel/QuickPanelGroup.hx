@@ -452,14 +452,15 @@ class QuickPanelGroup extends FunkinSpriteGroup
     var count:Int = buttons.length;
     if (count == 0 || panelSprite == null) return;
 
-    var angleStep:Float = count > 1 ? (BUTTON_ANGLE_RANGE * 2) / (count - 1) : 0;
+    var angleStep:Float = BUTTON_ANGLE_RANGE / 2;
+    var centerIndex:Float = (count - 1) / 2;
     var fullHeight:Float = (QuickPanelButton.ITEM_HEIGHT * count) + (BUTTON_PADDING * (count - 1));
     var startY:Float = (FlxG.height / 2) - (fullHeight / 2);
     var baseX:Float = left ? -panelSprite.width + 58 : 98;
 
     for (index => button in buttons)
     {
-      var targetAngle:Float = BUTTON_ANGLE_RANGE - (angleStep * index);
+      var targetAngle:Float = angleStep * (centerIndex - index);
       var dist:Float = Math.abs(Math.cos(targetAngle) * BUTTON_ANGLE_DISTANCE);
 
       button.localX = left ? baseX + dist : baseX - dist;
@@ -491,12 +492,12 @@ class QuickPanelGroup extends FunkinSpriteGroup
 
     for (i => button in buttons) if (i == index || button.selected) button.selected = (i == index);
 
-    var count:Int = buttons.length;
-    var step:Float = count > 1 ? (SLICE_ANGLE_RANGE * 2) / (count - 1) : 0;
+    var step:Float = SLICE_ANGLE_RANGE / 2;
+    var centerIndex:Float = (buttons.length - 1) / 2;
 
     panelShader.sliceVisible = true;
     panelShader.doLerp = true;
-    panelShader.dir = -90 + (SLICE_ANGLE_RANGE - (step * index));
+    panelShader.dir = -90 + step * (centerIndex - index);
     panelShader.sliceColorStart = disabled ? QuickPanelShader.START_COLOR_DISABLED : QuickPanelShader.START_COLOR_NORMAL;
     panelShader.sliceColorEnd = disabled ? QuickPanelShader.END_COLOR_DISABLED : QuickPanelShader.END_COLOR_NORMAL;
     startBreathe();
