@@ -206,6 +206,8 @@ class QuickPanelGroup extends FunkinSpriteGroup
    */
   public var buttons(default, null):Array<QuickPanelButton> = [];
 
+  public var bodyActive(default, set):Bool = true;
+
   /**
    * Whether the panel background and buttons have been built.
    */
@@ -376,6 +378,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
     panelSprite.scrollFactor.set(0, 0);
     panelSprite.localY = 0;
     panelSprite.zIndex = Z_BELOW;
+    panelSprite.active = bodyActive;
     add(panelSprite);
 
     panelShader = new QuickPanelShader();
@@ -385,7 +388,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
 
     grpButtons = new FunkinGroup<QuickPanelButton>();
     grpButtons.zIndex = Z_BUTTONS;
-    grpButtons.active = active;
+    grpButtons.active = bodyActive;
     add(grpButtons);
 
     for (index => data in buttonData)
@@ -438,11 +441,12 @@ class QuickPanelGroup extends FunkinSpriteGroup
    * Fans the buttons along the panel's curved edge.
    * @param snap Jump straight to the targets instead of gliding there.
    */
+  function layoutButtons(snap:Bool = false):Void
   {
-    if (count == 0 || panelSprite == null) return;
     if (buttons.length == 0 || panelSprite == null) return;
 
     var slots:Int = visibleSlots;
+    var centerSlot:Float = (slots - 1) / 2;
     var angleStep:Float = BUTTON_ANGLE_RANGE / 2;
     var fullHeight:Float = (QuickPanelButton.ITEM_HEIGHT * slots) + (BUTTON_PADDING * (slots - 1));
     var startY:Float = (FlxG.height / 2) - (fullHeight / 2);
@@ -457,7 +461,6 @@ class QuickPanelGroup extends FunkinSpriteGroup
       var targetAngle:Float = angleStep * (centerSlot - edgeSlot);
       var dist:Float = Math.abs(Math.cos(targetAngle) * BUTTON_ANGLE_DISTANCE);
 
-      button.localX = left ? baseX + dist : baseX - dist;
       var target:ButtonTarget = buttonTargets[index];
       target.x = left ? baseX + dist : baseX - dist;
       target.y = startY + ((QuickPanelButton.ITEM_HEIGHT + BUTTON_PADDING) * slot);
@@ -704,10 +707,16 @@ class QuickPanelGroup extends FunkinSpriteGroup
     super.destroy();
   }
 
-  override function set_active(v:Bool):Bool
+  function set_bodyActive(value:Bool):Bool
   {
-    if (grpButtons != null) grpButtons.active = v;
-    return super.set_active(v);
+    if (grpButtons != null) grpButtons.active = value;
+    if (panelSprite != null) panelSprite.active = value;
+    return bodyActive = value;
+  }
+
+  function get_visibleSlots():Int
+  {
+    return buttons.length < VISIBLE_COUNT ? buttons.length : VISIBLE_COUNT;
   }
 
   // Helpers
