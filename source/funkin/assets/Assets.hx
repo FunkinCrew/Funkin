@@ -552,6 +552,28 @@ class Assets implements ConsoleClass
   }
 
   /**
+   * Retrieves a streamed Sound from the given asset path.
+   * @param assetPath The asset path to load from.
+   * @return The loaded sound.
+   */
+  public static function getMusic(assetPath:AssetPath):openfl.media.Sound
+  {
+    TracyMacro.addText(assetPath);
+    if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.sound()?';
+
+    if (!assetPath.exists())
+    {
+      #if VERBOSE_ASSET_CACHE
+      trace(' ASSETS '.bold().bg_lime() + ' Sound file does not exist: ${assetPath.toString()}');
+      funkin.util.DebugUtil.printCallStack();
+      #end
+      throw 'Sound file does not exist: ${assetPath.toString()}';
+    }
+
+    return OpenFLAssets.getMusic(assetPath.toString());
+  }
+
+  /**
    * Get a Font, if it exists in the cache.
    * @param id The asset id of the Font.
    * @throws error If the Font does not exist in the cache and strict asset caching is enabled.
@@ -670,6 +692,19 @@ class Assets implements ConsoleClass
     if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.sound()?';
 
     return FunkinAssetCache.instance.fetchSound(assetPath);
+  }
+
+  /**
+   * Load a streamed Sound file from the given asset path, asynchronously.
+   *
+   * @param assetPath The asset path to load from.
+   * @return A future which promises to return the loaded sound.
+   */
+  public static function loadMusic(assetPath:AssetPath):Future<openfl.media.Sound>
+  {
+    if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.sound()?';
+
+    return FunkinAssetCache.instance.fetchMusic(assetPath);
   }
 
   /**

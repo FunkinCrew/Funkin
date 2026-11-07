@@ -379,6 +379,12 @@ class Project extends HXProject
   static final FEATURE_LAG_ADJUSTMENT:FeatureFlag = "FEATURE_LAG_ADJUSTMENT";
 
   /**
+   * `-DFEATURE_STREAMED_AUDIO`
+   * If this flag is enabled, large sound files wont be fully loaded when played resulting in faster loading times.
+   */
+  static final FEATURE_STREAMED_AUDIO:FeatureFlag = "FEATURE_STREAMED_AUDIO";
+
+  /**
    * `-DFEATURE_HIGH_DPI`
    * If this flag is enabled, the game will use high dpi which improves the quality by alot.
    */
@@ -1060,6 +1066,9 @@ class Project extends HXProject
 
     // Should be true except on web builds (some asset stuff breaks it)
     FEATURE_LAG_ADJUSTMENT.apply(this, !isWeb());
+
+    // Should be true except on web builds as this isnt supported there yet.
+    FEATURE_STREAMED_AUDIO.apply(this, !isWeb());
 
     // Multithreaded task parallelization is supported on all platforms but web.
     // NOTE: Async stuff still works on web, just not multithreading specifically.

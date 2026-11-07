@@ -851,6 +851,17 @@ class FunkinAssetCache implements OpenFLIAssetCache
   }
 
   /**
+   * Fetch a streamed Sound asynchronously and return it.
+   *
+   * @param assetPath The path of the asset to fetch.
+   * @return The Sound, if fetched.
+   */
+  public function fetchMusic(assetPath:AssetPath):Future<Sound>
+  {
+    return OpenFLAssets.loadMusic(assetPath.toString());
+  }
+
+  /**
    * Fetch text from a file asynchronously and return it.
    *
    * @param assetPath The path of the asset to fetch.
