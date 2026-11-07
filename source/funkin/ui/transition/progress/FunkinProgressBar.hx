@@ -15,7 +15,7 @@ import polymod.PolymodAssets;
 /**
  * A FunkinGroup that holds a progress bar and a a loading character on top.
  */
-// @:nullSafety
+@:nullSafety
 class FunkinProgressBar extends FunkinSpriteGroup
 {
   /**
@@ -47,10 +47,14 @@ class FunkinProgressBar extends FunkinSpriteGroup
    */
   public var barTargetX:Float = 0;
 
-  var dataList:Array<LoadingCharacterData> = [];
-  var dataPaths:Array<String> = [];
-  var dataModIds:Array<String> = [];
+  /**
+   * The loading bar.
+   */
   var bar:FunkinSprite;
+
+  /**
+   * The mic stand sprite.
+   */
   var micStand:FunkinSprite;
 
   public function new()
@@ -75,20 +79,31 @@ class FunkinProgressBar extends FunkinSpriteGroup
   {
     var results:Array<AssetPath> = [];
 
+    // Assets for each character.
+    var entries = loadEntries();
+    for (entry in entries)
+    {
+      switch (type)
+      {
+        case IMAGE:
+          results.push(funkin.assets.Paths.image(entry.path));
+
+        case XML:
+          results.push(funkin.assets.Paths.xml(entry.path));
+
+        case JSON:
+          results.push(funkin.assets.Paths.json(entry.path));
+
+        default:
+          // No assets.
+      }
+    }
+
+    // Additional shared assets.
     switch (type)
     {
       case IMAGE:
         results.push(funkin.assets.Paths.image('ui/loading/mic-stand'));
-        results.push(funkin.assets.Paths.image('ui/loading/characters/bf/bf'));
-        results.push(funkin.assets.Paths.image('ui/loading/characters/gf/gf'));
-
-      case XML:
-        results.push(funkin.assets.Paths.xml('ui/loading/characters/bf/bf'));
-        results.push(funkin.assets.Paths.xml('ui/loading/characters/gf/gf'));
-
-      case JSON:
-        results.push(funkin.assets.Paths.json('ui/loading/characters/bf/bf'));
-        results.push(funkin.assets.Paths.json('ui/loading/characters/gf/gf'));
 
       default:
         // No assets.
@@ -129,104 +144,27 @@ class FunkinProgressBar extends FunkinSpriteGroup
   /**
    * Loads the loading screen character from the available list of characters.
    * This will randomly select a character based on their weights.
+   *
+   * NOTE: We need custom logic using PolymodAssets to load characters,
+   * because this screen gets used during hot reloads when mods aren't enabled yet.
    */
   public function loadCharacter():Void
   {
-    var enabledModIds:Array<String> = PolymodHandler.enabledModIds.copy();
-    var dataFolderPaths:Array<String> = BASE_GAME_CHARACTER_PATHS.copy();
-    // Parallel to dataFolderPaths. '' -> base game
-    var dataFolderModIds:Array<String> = [for (_ in dataFolderPaths) ''];
+    var entries:Array<CharacterEntry> = loadEntries();
+    if (entries.length == 0) return;
 
-    for (modId in enabledModIds)
-    {
-      if (modId == '') continue;
+    // Select a random character by weights.
+    var entry:CharacterEntry = FlxG.random.getObject(entries, entries.map((entry) -> entry.data.weight));
 
-      // TODO: I know, I hate this too.
-      var assets:Array<String> = PolymodAssets.listInMod(modId);
-
-      for (asset in assets)
-      {
-        if (!asset.startsWith(CHARACTER_PATH) || !asset.endsWith('.json')) continue;
-        dataFolderPaths.push(asset);
-        dataFolderModIds.push(modId);
-      }
-    }
-
-    dataList = [];
-    dataPaths = [];
-    dataModIds = [];
-    loadDataFromPaths(dataFolderPaths, dataFolderModIds);
-
-    if (dataList.length == 0) return;
-
-    var weights:Array<Float> = [];
-    for (data in dataList)
-    {
-      weights.push(data.weight);
-    }
-
-    var characterData:LoadingCharacterData = FlxG.random.getObject(dataList, weights);
-    var idx:Int = dataList.indexOf(characterData);
-    var characterId:String = dataPaths[idx].split('/').pop().split('.')[0];
-    character.loadCharacter(characterData, '$CHARACTER_PATH$characterId/$characterId', dataModIds[idx]);
+    // Load the character.
+    character.loadCharacter(entry.data, entry.path, entry.modId);
     character.zIndex = 300;
     add(character);
   }
 
   /**
-   * Loads the character data from the specified paths.
-   * @param paths The paths to load character data from.
-   * @param modIds The IDs of the mods that the character data belongs to.
-   */
-  public function loadDataFromPaths(paths:Array<String>, modIds:Array<String>):Void
-  {
-    for (i in 0...paths.length)
-    {
-      var path:String = paths[i];
-      var modId:String = modIds[i];
-      if (modId == 'basegame') modId = '';
-
-      var jsonString:Null<String> = null;
-
-      #if html5
-      if (modId == '')
-      {
-        if (!lime.utils.Assets.isLocal(path, lime.utils.AssetType.TEXT)) continue;
-
-        jsonString = lime.utils.Assets.getText(path);
-      }
-      else
-      {
-        jsonString = PolymodAssets.getTextFromMod(path, modId);
-      }
-      #else
-      @:privateAccess
-      jsonString = Polymod.assetLibrary.getTextDirectly(path, modId);
-      #end
-
-      if (jsonString == null || jsonString == '') continue;
-
-      var parser:JsonParser<LoadingCharacterData> = new JsonParser<LoadingCharacterData>({
-        ignoreUnknownVariables: false
-      });
-      parser.fromJson(jsonString, path);
-
-      if (parser.errors.length > 0)
-      {
-        trace(' LOADING SCREEN '.bold().bg_orange() + ' Failed to parse character data! (asset path: $path)');
-        for (error in parser.errors) funkin.data.DataError.printError(error);
-      }
-      else
-      {
-        dataList.push(parser.value);
-        dataPaths.push(path);
-        dataModIds.push(modId);
-      }
-    }
-  }
-
-  /**
    * Update the visuals for the progress bar.
+   * Call this when progress changes.
    *
    * @param loaded The number of items that have been loaded so far.
    * @param total The total number of items that need to be loaded.
@@ -248,4 +186,95 @@ class FunkinProgressBar extends FunkinSpriteGroup
 
     bar.x = MathUtil.smoothLerpPrecision(bar.x, barTargetX, elapsed, 0.2);
   }
+
+  /**
+   * Load character data so that
+   */
+  static function loadEntries():Array<CharacterEntry>
+  {
+    var characterData:Array<CharacterEntry> = [];
+
+    // Load base game characters.
+    for (path in BASE_GAME_CHARACTER_PATHS)
+    {
+      #if html5
+      if (!lime.utils.Assets.isLocal(path, lime.utils.AssetType.TEXT)) continue;
+      var jsonString = lime.utils.Assets.getText(path);
+      #else
+      // TODO: getTextDirectly doesn't work on HTML5, that should probably get fixed upstream...
+      var jsonString = PolymodAssets.getTextDirectly(path);
+      #end
+
+      var data:Null<LoadingCharacterData> = parseEntry(jsonString, path);
+      if (data != null)
+      {
+        var basePath = haxe.io.Path.withoutExtension(path);
+        characterData.push({
+          path: basePath,
+          data: cast data, // Cast from Null<LoadingCharacterData> to LoadingCharacterData.
+          modId: ''
+        });
+      }
+    }
+
+    // Load modded characters.
+    var enabledModIds:Array<String> = PolymodHandler.enabledModIds.copy();
+    for (modId in enabledModIds)
+    {
+      var paths:Array<String> = PolymodAssets.listInMod(modId);
+      var filteredPaths = paths.filter((assetPath) ->
+      {
+        return assetPath.startsWith(CHARACTER_PATH) && assetPath.endsWith('.json');
+      });
+
+      for (path in filteredPaths)
+      {
+        var jsonString = PolymodAssets.getTextFromMod(path, modId);
+
+        var data:Null<LoadingCharacterData> = parseEntry(jsonString, path);
+        if (data != null)
+        {
+          var basePath = haxe.io.Path.withoutExtension(path);
+          characterData.push({
+            path: basePath,
+            data: cast data, // Cast from Null<LoadingCharacterData> to LoadingCharacterData.
+            modId: modId
+          });
+        }
+      }
+    }
+
+    return characterData;
+  }
+
+  static function parseEntry(jsonString:Null<String>, path:String):Null<LoadingCharacterData>
+  {
+    if (jsonString == null || jsonString == '') return null;
+
+    var parser:JsonParser<LoadingCharacterData> = new JsonParser<LoadingCharacterData>({
+      ignoreUnknownVariables: false
+    });
+    parser.fromJson(jsonString, path);
+
+    if (parser.errors.length > 0)
+    {
+      trace(' LOADING SCREEN '.bold().bg_orange() + ' Failed to parse character data! (asset path: $path)');
+      for (error in parser.errors) funkin.data.DataError.printError(error);
+      return null;
+    }
+    else
+    {
+      return parser.value;
+    }
+  }
+}
+
+/**
+ * The data for a single loading screen character, along with its ID, path, and the mod it's from.
+ */
+typedef CharacterEntry =
+{
+  var path:String;
+  var data:LoadingCharacterData;
+  var modId:String;
 }
