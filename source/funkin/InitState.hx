@@ -259,6 +259,7 @@ class InitState extends FlxState
       funkin.touch.input.ControlsHandler.initInputTrackers();
       #end
       funkin.util.plugins.SidePanelPlugin.initialize();
+      funkin.util.plugins.SmoothTimePlugin.initialize();
 
       _coreInitialized = true;
     }

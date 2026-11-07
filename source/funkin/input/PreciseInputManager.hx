@@ -518,10 +518,4 @@ typedef PreciseInputEvent =
    * Used to distinguish between multiple inputs for the same direction.
    */
   keyCode:Int,
-
-  /**
-   * The current position of the Conductor for this event.
-   * Used to help calculate the note timing for the exact time.
-   */
-  ?position:Float,
 };
