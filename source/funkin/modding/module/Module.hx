@@ -114,6 +114,13 @@ class Module implements IPlayStateScriptedClass implements IStateChangingScripte
   }
 
   /**
+   * Custom event that is completely up to modders.
+   */
+  public function onCustom(event:CustomScriptEvent):Void
+  {
+  }
+
+  /**
    * Called when the game is paused.
    */
   public function onPause(event:PauseScriptEvent)
