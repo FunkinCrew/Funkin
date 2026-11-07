@@ -3253,35 +3253,32 @@ class FreeplayState extends MusicBeatSubState
         });
       }
       #end
-      funnyCam.fade(FlxColor.BLACK, 0.2, false, () ->
-      {
-        criticalFailure = true;
+      criticalFailure = true;
 
-        clearPreviews();
-        FlxG.sound.music?.stop();
+      clearPreviews();
+      FlxG.sound.music?.stop();
 
-        funkin.ui.transition.Transition.openPlayState({
-          targetSong: targetSong,
-          targetDifficulty: currentDifficulty,
-          targetVariation: currentVariation,
-          targetInstrumental: targetInstId,
-          practiceMode: false,
-          minimalMode: false,
+      funkin.ui.transition.Transition.openPlayState({
+        targetSong: targetSong,
+        targetDifficulty: currentDifficulty,
+        targetVariation: currentVariation,
+        targetInstrumental: targetInstId,
+        practiceMode: false,
+        minimalMode: false,
 
-          #if FEATURE_DEBUG_FUNCTIONS
-          botPlayMode: FlxG.keys.pressed.SHIFT, mirrored: FlxG.keys.pressed.CONTROL,
-          #else
-          botPlayMode: false,
-          #end
-          // TODO: Make these an option! It's currently only accessible via chart editor.
-          // startTimestamp: 0.0,
-          // playbackRate: 0.5,
-          // botPlayMode: true,
-        }, {
-          transition: LoadingScreen(None, Fade(South)),
-          shouldStopMusic: true
-        }, false);
-      });
+        #if FEATURE_DEBUG_FUNCTIONS
+        botPlayMode: FlxG.keys.pressed.SHIFT, mirrored: FlxG.keys.pressed.CONTROL,
+        #else
+        botPlayMode: false,
+        #end
+        // TODO: Make these an option! It's currently only accessible via chart editor.
+        // startTimestamp: 0.0,
+        // playbackRate: 0.5,
+        // botPlayMode: true,
+      }, {
+        transition: LoadingScreen(Fade(North), Fade(South)),
+        shouldStopMusic: true
+      }, false);
     });
   }
 
