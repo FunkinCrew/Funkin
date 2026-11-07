@@ -198,8 +198,9 @@ class ChartEditorGenerateDifficultyDialog extends Dialog
   function updatePreview():Void
   {
     var notes:Array<SongNoteData> = generateNotes();
-    var before:Null<Float> = DiffCalcUtil.calculate(sourceNotes, scrollSpeed);
-    var after:Null<Float> = DiffCalcUtil.calculate(notes, scrollSpeed);
+    var opponentShown:Bool = DiffCalcUtil.opponentShownFor(chartEditorState.currentSongId);
+    var before:Null<Float> = DiffCalcUtil.calculate(sourceNotes, scrollSpeed, opponentShown);
+    var after:Null<Float> = DiffCalcUtil.calculate(notes, scrollSpeed, opponentShown);
     labelPreview.text = 'Notes: ${sourceNotes.length} -> ${notes.length}\nEstimate: ${formatRating(before)} -> ${formatRating(after)}';
   }
 
@@ -219,7 +220,7 @@ class ChartEditorGenerateDifficultyDialog extends Dialog
     }
 
     var notes:Array<SongNoteData> = generateNotes();
-    var rating:Null<Float> = DiffCalcUtil.calculate(notes, scrollSpeed);
+    var rating:Null<Float> = DiffCalcUtil.calculate(notes, scrollSpeed, DiffCalcUtil.opponentShownFor(chartEditorState.currentSongId));
     var source:String = difficulty;
     var target:String = variation;
     chartEditorState.performDifficultyChange('Generate Difficulty', function()

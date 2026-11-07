@@ -75,11 +75,11 @@ class ChartEditorDifficultyHeatmap extends FlxTypedGroup<FlxSprite>
   /**
    * Work out the strain for a chart.
    */
-  public function setChart(notes:Array<SongNoteData>, scrollSpeed:Float):Void
+  public function setChart(notes:Array<SongNoteData>, scrollSpeed:Float, opponentShown:Bool = true):Void
   {
     var conductor:Conductor = Conductor.instance;
     sections = DiffCalcUtil.sectionStrains(notes, time -> Math.floor(conductor.getTimeInSteps(time) / Constants.STEPS_PER_BEAT + 0.001),
-      beat -> conductor.getBeatTimeInMs(beat)) ?? [];
+      beat -> conductor.getBeatTimeInMs(beat), opponentShown) ?? [];
     ratings = [for (section in sections) DiffCalcUtil.strainToRating(section.strain, scrollSpeed)];
 
     // The hardest spots, kept apart so the labels spread over the song.

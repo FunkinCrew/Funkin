@@ -511,7 +511,8 @@ class ChartEditorLayoutHandler
       if (state.difficultyHeatmapDirty)
       {
         state.difficultyHeatmapDirty = false;
-        state.difficultyHeatmap.setChart(state.currentSongChartNoteData, state.currentSongChartScrollSpeed);
+        state.difficultyHeatmap.setChart(state.currentSongChartNoteData, state.currentSongChartScrollSpeed,
+          funkin.util.DiffCalcUtil.opponentShownFor(state.currentSongId));
       }
       state.difficultyHeatmap.refresh(state.gridTiledSprite.x, state.gridTiledSprite.y, ChartEditorState.MENU_BAR_HEIGHT, FlxG.height - ChartEditorState.PLAYBAR_HEIGHT);
     }

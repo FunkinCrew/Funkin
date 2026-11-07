@@ -110,7 +110,8 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
     difficultyInputScrollSpeed.onRightClick = _ -> setScrollSpeed(1.0);
     difficultyEstimateRating.onClick = function(_)
     {
-      var rating:Null<Float> = DiffCalcUtil.calculate(chartEditorState.currentSongChartNoteData ?? [], chartEditorState.currentSongChartScrollSpeed);
+      var rating:Null<Float> = DiffCalcUtil.calculate(chartEditorState.currentSongChartNoteData ?? [], chartEditorState.currentSongChartScrollSpeed,
+        DiffCalcUtil.opponentShownFor(chartEditorState.currentSongId));
       if (rating == null)
       {
         chartEditorState.warning('Cannot Estimate', 'The chart needs at least two player notes.');
