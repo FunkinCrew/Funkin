@@ -42,16 +42,39 @@ class FunkinLoadingCharacter extends FunkinSprite
   {
     data = newData;
 
-    loadSparrow(graphicPath, modId);
-    // Hacky fix for modded characters not being cached properly
+    visible = false;
+    var onAtlasLoaded = () ->
+    {
+      if (this.graphic != null) FunkinAssetCache.instance.permaCacheFlxGraphic(graphicPath, this.graphic);
+      scale.set(data.scale, data.scale);
+      updateHitbox();
 
-    if (this.graphic != null) FunkinAssetCache.instance.permaCacheFlxGraphic(graphicPath, this.graphic);
+      visible = true;
 
-    scale.set(data.scale, data.scale);
-    updateHitbox();
+      this.setPosition(FlxG.width - (this.width + data.offsets[0]), FlxG.height - (this.height + data.offsets[1]));
+      this.animation.addByPrefix(DEFAULT_ANIMATION, DEFAULT_ANIMATION_PREFIX, 24);
+      this.animation.play(DEFAULT_ANIMATION);
+    }
 
-    this.setPosition(FlxG.width - (this.width + data.offsets[0]), FlxG.height - (this.height + data.offsets[1]));
-    this.animation.addByPrefix(DEFAULT_ANIMATION, DEFAULT_ANIMATION_PREFIX, 24);
-    this.animation.play(DEFAULT_ANIMATION);
+    #if html5
+    loadAtlasAsync(graphicPath, 'sparrow', null, modId).onComplete((_sprite:FunkinSprite) -> onAtlasLoaded()).onError((error:Dynamic) ->
+    {
+      trace(' FUNKIN LOADING CHARACTER '.bold().bg_orange() + ' Failed to load $graphicPath from mod $modId: $error');
+      loadSparrow('ui/loading/characters/bf/bf', '');
+      onAtlasLoaded();
+    });
+    #else
+    try
+    {
+      loadSparrow(graphicPath, modId);
+    }
+    catch (error:Dynamic)
+    {
+      trace(' FUNKIN LOADING CHARACTER '.bold().bg_orange() + ' Failed to load $graphicPath from mod $modId: ${Std.string(error)}');
+      loadSparrow('ui/loading/characters/bf/bf', '');
+    }
+
+    onAtlasLoaded();
+    #end
   }
 }
