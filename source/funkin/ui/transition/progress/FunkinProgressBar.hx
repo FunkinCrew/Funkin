@@ -146,7 +146,7 @@ class FunkinProgressBar extends FunkinSpriteGroup
 
       for (asset in assets)
       {
-        if (!asset.startsWith(CHARACTER_PATH) && !asset.endsWith('.json')) continue;
+        if (!asset.startsWith(CHARACTER_PATH) || !asset.endsWith('.json')) continue;
         dataFolderPaths.push(asset);
         dataFolderModIds.push(modId);
       }
