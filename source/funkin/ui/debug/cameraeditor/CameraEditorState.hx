@@ -1748,6 +1748,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       camGame.flashSprite.scaleX = camGame.flashSprite.scaleY = 1.0;
       camRelative.y = 0;
       camGame.y = 0;
+      cameraRect.fitViewportScale = 1.0;
 
       return;
     }
@@ -1764,6 +1765,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       camGame.flashSprite.scaleX = camGame.flashSprite.scaleY = scale;
       camRelative.y = offset;
       camGame.y = offset;
+      cameraRect.fitViewportScale = scale;
     }
   }
 
