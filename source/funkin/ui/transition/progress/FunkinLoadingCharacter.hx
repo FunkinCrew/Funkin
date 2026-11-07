@@ -56,11 +56,25 @@ class FunkinLoadingCharacter extends FunkinSprite
       this.animation.play(DEFAULT_ANIMATION);
     }
 
+    #if html5
     loadAtlasAsync(graphicPath, 'sparrow', null, modId).onComplete((_sprite:FunkinSprite) -> onAtlasLoaded()).onError((error:Dynamic) ->
     {
       trace(' FUNKIN LOADING CHARACTER '.bold().bg_orange() + ' Failed to load $graphicPath from mod $modId: $error');
       loadSparrow('ui/loading/characters/bf/bf', '');
       onAtlasLoaded();
     });
+    #else
+    try
+    {
+      loadSparrow(graphicPath, modId);
+    }
+    catch (error:Dynamic)
+    {
+      trace(' FUNKIN LOADING CHARACTER '.bold().bg_orange() + ' Failed to load $graphicPath from mod $modId: ${Std.string(error)}');
+      loadSparrow('ui/loading/characters/bf/bf', '');
+    }
+
+    onAtlasLoaded();
+    #end
   }
 }
