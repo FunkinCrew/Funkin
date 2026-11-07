@@ -1665,7 +1665,7 @@ class FileUtilSandboxed
     return FileUtil.getFileSize(sanitizePath(path));
   }
 
-  public static function getFileStat(path:String):Int
+  public static function getFileStat(path:String):sys.FileStat
   {
     return FileUtil.getFileStat(sanitizePath(path));
   }
