@@ -34,6 +34,8 @@ class SidePanelPlugin extends FlxTypedContainer<FlxBasic>
    */
   public static var showGrabber(default, set):Bool = false;
 
+  public static var forceCreate:Bool = false;
+
   /**
    * The live panel, if any.
    */
@@ -98,7 +100,7 @@ class SidePanelPlugin extends FlxTypedContainer<FlxBasic>
    */
   function syncPanel():Void
   {
-    if (showGrabber && FlxG.state != null) createPanel();
+    if ((showGrabber && FlxG.state != null) || forceCreate) createPanel();
     else
       destroyPanel();
   }
@@ -110,7 +112,12 @@ class SidePanelPlugin extends FlxTypedContainer<FlxBasic>
   {
     if (panelState != null) return;
 
-    panelState = new QuickPanelState(FlxG.state is funkin.ui.mainmenu.MainMenuState);
+    forceCreate = false;
+    #if FEATURE_DEBUG_MENU
+    panelState = new QuickPanelState((FlxG.state is funkin.ui.mainmenu.MainMenuState) ? 'mainmenu' : 'default'); // TODO:
+    #else
+    panelState = new QuickPanelState(); // TODO:
+    #end
     add(panelState);
   }
 

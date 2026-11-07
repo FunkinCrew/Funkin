@@ -12,7 +12,8 @@ class PanelActions
     'exitToTitle' => exitToTitle,
     'mods' => openMods,
     'freeplay' => openFreeplay,
-    'options' => openOptions
+    'options' => openOptions,
+    'crash' => openCrashLog
   ];
 
   public static function register(id:String, action:Void->Void):Void
@@ -78,5 +79,10 @@ class PanelActions
       transition: None,
       shouldPurgeCache: false
     });
+  }
+
+  static function openCrashLog():Void
+  {
+    funkin.util.FileUtil.openFolder(funkin.util.logging.CrashHandler.LOG_FOLDER);
   }
 }

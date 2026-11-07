@@ -18,4 +18,6 @@ typedef PanelData =
   var disabled:Bool;
   @:default(true) @:optional
   var visible:Bool;
+  @:default(true) @:optional
+  var transitioning:Bool;
 }

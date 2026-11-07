@@ -36,77 +36,6 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
 {
   public static final DEFAULT_PANEL_ID:String = 'default';
   static var activeButtonData:Array<QuickPanelButtonData> = [];
-  public static final MAINMENU_BUTTON_DATA:Array<QuickPanelButtonData> = [
-    {
-      text: 'Chart Editor',
-      callback: () ->
-      {
-        stopMusic();
-        Transition.switchState(() -> new funkin.ui.debug.charting.ChartEditorState({
-        }), {
-          transition: Throbber,
-          assetQuery: funkin.ui.debug.charting.ChartEditorState.queryAssets.bind(_, {
-          })
-        });
-      },
-      icon: 'chart-editor',
-      description: 'Create or Edit song charts.',
-      disabled: false
-    },
-    {
-      text: 'Camera Editor',
-      callback: () ->
-      {
-        stopMusic();
-        Transition.switchState(() -> new funkin.ui.debug.cameraeditor.CameraEditorState(), {
-          transition: None,
-          assetQuery: funkin.ui.transition.Transition.NO_ASSETS
-        });
-      },
-      icon: 'camera-editor',
-      description: 'Camera song events editor.',
-      disabled: false
-    },
-    {
-      text: 'Animation Editor',
-      callback: () ->
-      {
-        stopMusic();
-        Transition.switchState(() -> new funkin.ui.debug.anim.DebugBoundingState(), {
-          transition: Throbber,
-          assetQuery: funkin.ui.transition.Transition.NO_ASSETS
-        });
-      },
-      icon: 'animation-editor',
-      description: 'Edit and manage animations for songs.',
-      disabled: false
-    },
-    {
-      text: 'Stage Editor',
-      callback: () ->
-      {
-        stopMusic();
-        Transition.switchState(() -> new funkin.ui.debug.stageeditor.StageEditorState(), {
-          transition: Throbber,
-          assetQuery: funkin.ui.transition.Transition.NO_ASSETS
-        });
-      },
-      icon: 'animation-editor',
-      description: 'Edit and manage song stages',
-      disabled: false
-    },
-    {
-      text: 'Open Crash Log Folder',
-      callback: () ->
-      {
-        funkin.util.FileUtil.openFolder(funkin.util.logging.CrashHandler.LOG_FOLDER);
-        // TODO : Not make this full screen?
-      },
-      icon: 'crash-log',
-      description: 'Zeep.. zlorp! Something went wrong?',
-      disabled: false
-    }
-  ];
 
   /**
    * Horizontal travel in pixels before a tab press turns into a drag.
@@ -486,12 +415,16 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
    */
   static var pullTabEnabled:Bool = true;
 
+  public static var currentPanelId:String = DEFAULT_PANEL_ID;
+
   /**
    * Makes a new QuickPanel.
    */
-  public function new(hidePullTab:Bool = false)
+  public function new(panelId:String = 'default')
   {
     super();
+
+    currentPanelId = panelId;
 
     uiState = new UIStateMachine('QuickPanel', [
       PanelClosed => [PanelLoading, PanelDragging, PanelOpen],
@@ -504,9 +437,9 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     createCamera();
     buildBackdrop();
 
-    pullTabEnabled = !hidePullTab;
-    activeButtonData = hidePullTab ? MAINMENU_BUTTON_DATA : PanelRegistry.instance.listButtonData(DEFAULT_PANEL_ID);
-    panel = new QuickPanelGroup(activeButtonData, onButtonTapped, hidePullTab);
+    pullTabEnabled = (panelId != 'mainmenu'); // Todo: Probably make this in the registry instead or something..
+    activeButtonData = PanelRegistry.instance.listButtonData(panelId);
+    panel = new QuickPanelGroup(activeButtonData, onButtonTapped, !pullTabEnabled);
     add(panel);
 
     tickSound = new FunkinSound();
@@ -552,8 +485,6 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
       return;
     }
 
-    panel.showPullTab();
-
     if (!uiState.is(PanelOpen) && !uiState.transition(PanelOpen)) return;
 
     duckMusic();
@@ -576,8 +507,6 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     lock = false;
 
     closeBlocker();
-
-    if (!pullTabEnabled && instant) panel.hidePullTab();
 
     if (!uiState.is(PanelClosed)) uiState.transition(PanelClosed);
 
@@ -608,7 +537,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
   {
     FlxTween.cancelTweensOf(panel.pullTabVisual);
     FlxTween.tween(panel.pullTabVisual, {
-      alpha: targetAlpha
+      localAlpha: targetAlpha
     }, duration, {
       ease: FlxEase.expoOut
     });
@@ -624,6 +553,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     FlxTween.cancelTweensOf(descriptionPanel);
     FlxTween.cancelTweensOf(descriptionText);
 
+    if (!pullTabEnabled) fadeTab(out ? 0 : 1);
     FlxTween.tween(bg, {
       alpha: out ? 0.0 : BG_ALPHA
     }, 0.3, {
@@ -642,7 +572,6 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
       ease: FlxEase.expoOut,
       onComplete: (_) ->
       {
-        if (!pullTabEnabled) panel.hidePullTab();
         if (out && uiState.is(PanelClosed) && !hintVisible) panel.active = false;
       }
     });
@@ -746,7 +675,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
    */
   function updateHint(elapsed:Float):Void
   {
-    if (inactivityTimer > 0 && !inactivityHintUsed) inactivityTimer -= elapsed;
+    if (inactivityTimer > 0 && !inactivityHintUsed && pullTabEnabled) inactivityTimer -= elapsed;
 
     if (userIsActive())
     {
@@ -798,13 +727,15 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
    */
   function updateTabFade(elapsed:Float):Void
   {
+    if (!pullTabEnabled) return;
+
     var tab = panel.pullTabVisual;
 
     #if FEATURE_TOUCH_CONTROLS
     if (tracking)
     {
       tabFadeTimer = 0;
-      tab.alpha = 1.0;
+      tab.localAlpha = 1.0;
       return;
     }
     #end
@@ -813,7 +744,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
 
     tabFadeTimer += elapsed;
     var progress:Float = FlxMath.bound((tabFadeTimer - TAB_FADE_DELAY) / TAB_FADE_DURATION, 0, 1);
-    tab.alpha = FlxMath.lerp(1.0, QuickPanelGroup.TAB_MIN_ALPHA, progress);
+    tab.localAlpha = FlxMath.lerp(1.0, QuickPanelGroup.TAB_MIN_ALPHA, progress);
   }
 
   /**
@@ -840,7 +771,8 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     switch (curState)
     {
       case PanelClosed | PanelOpen:
-        if (FlxG.keys.justPressed.TAB)
+        var _tabPressed:Bool = (pullTabEnabled && FlxG.keys.justPressed.TAB) || (!pullTabEnabled && controls.DEBUG_MENU);
+        if (_tabPressed)
         {
           resetTabFade();
           if (uiState.is(PanelClosed))
@@ -1129,7 +1061,10 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     var button = currentButton;
     if (button == null) return;
 
-    if (button.data?.disabled ?? true)
+    final isTransitioning:Bool = button.data?.transitioning ?? true;
+    final isDisabled:Bool = button.data?.disabled ?? true;
+
+    if (isDisabled)
     {
       lock = true;
       panel.playDeny(() -> lock = false);
@@ -1137,9 +1072,22 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
       return;
     }
 
+    if (!isTransitioning)
+    {
+      lock = true;
+      afterFrames(6, () ->
+      {
+        lock = false;
+        if (button.data != null && button.data.callback != null) button.data.callback();
+      });
+      panel.playAccept(curSelected, isTransitioning);
+      FunkinSound.playOnce(Paths.sound('ui/main-menu/confirm-menu').toFlxSoundAsset());
+      return;
+    }
+
     if (!uiState.transition(PanelConfirming)) return;
 
-    panel.playAccept(curSelected);
+    panel.playAccept(curSelected, isTransitioning);
     FunkinSound.playOnce(Paths.sound('ui/main-menu/confirm-menu').toFlxSoundAsset());
 
     startTransition(button.data);
@@ -1599,13 +1547,13 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
   {
     var results = [];
 
+    // results.append(funkin.data.quickpanel.PanelRegistry.queryPanelAssets(type, currentPanelId));
     switch (type)
     {
       case IMAGE:
         results.push(Paths.image('ui/boil_texture'));
         results.push(Paths.image('ui/quick-panel/splash'));
         results.push(Paths.image('ui/quick-panel/panel-bg'));
-        for (buttonData in activeButtonData) results.push(Paths.image('ui/quick-panel/icons/${buttonData.icon}'));
 
       case XML:
         results.push(Paths.xml('ui/quick-panel/splash'));

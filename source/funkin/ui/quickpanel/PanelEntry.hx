@@ -75,6 +75,11 @@ class PanelEntry implements IRegistryEntry<PanelData>
     return _data?.visible ?? true;
   }
 
+  public function isTransitioning():Bool
+  {
+    return _data?.transitioning ?? true;
+  }
+
   public function onAccept():Void
   {
     PanelActions.run(getAction());
@@ -88,7 +93,8 @@ class PanelEntry implements IRegistryEntry<PanelData>
       icon: getIcon(),
       description: getDescription(),
       disabled: isDisabled(),
-      callback: onAccept
+      callback: onAccept,
+      transitioning: isTransitioning()
     };
   }
 }

@@ -32,6 +32,11 @@ typedef QuickPanelButtonData =
    * Button Description.
    */
   var description:Null<String>;
+
+  /**
+   *
+   */
+  var transitioning:Null<Bool>;
 }
 
 /**

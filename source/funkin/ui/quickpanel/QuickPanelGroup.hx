@@ -337,7 +337,11 @@ class QuickPanelGroup extends FunkinSpriteGroup
     pullHint.localAlpha = 0;
     add(pullHint);
 
-    pullTabVisual = new QuickPanelPullTab(0, 0, #if FEATURE_TOUCH_CONTROLS false #else true #end);
+    var _tabKey:Bool = !hidePullTab;
+    #if FEATURE_TOUCH_CONTROLS
+    _tabKey = false;
+    #end
+    pullTabVisual = new QuickPanelPullTab(0, 0, _tabKey);
     pullTabVisual.localY = (FlxG.height / 2) - (pullTabVisual.height / 2);
     pullTabVisual.playIdle(PanelClosed);
     pullTabVisual.zIndex = Z_ABOVE;
@@ -350,11 +354,6 @@ class QuickPanelGroup extends FunkinSpriteGroup
     pullTabHitbox.zIndex = Z_HITBOX;
     pullTabHitbox.localY = (FlxG.height / 2) - (pullTabHitbox.height / 2);
     add(pullTabHitbox);
-
-    if (hidePullTab)
-    {
-      pullHint.visible = pullExtra.visible = pullTabVisual.visible = false;
-    }
 
     setSide(left);
     refresh();
@@ -577,7 +576,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
    * Widens and flickers the slice, bumps the accepted button and fades the rest.
    * @param selectedIndex The index
    */
-  public function playAccept(selectedIndex:Int):Void
+  public function playAccept(selectedIndex:Int, transitioning:Bool = true):Void
   {
     if (!bodyBuilt) return;
 
@@ -599,8 +598,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
     for (i => button in buttons)
     {
       if (i == selectedIndex) button.playBump(true);
-      else
-        button.fadeOut();
+      else if (transitioning) button.fadeOut();
     }
   }
 
