@@ -35,7 +35,6 @@ import funkin.util.TouchUtil;
 class QuickPanelState extends FlxTypedContainer<FlxBasic>
 {
   public static final DEFAULT_PANEL_ID:String = 'default';
-  static var activeButtonData:Array<QuickPanelButtonData> = [];
 
   /**
    * Horizontal travel in pixels before a tab press turns into a drag.
@@ -413,18 +412,20 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
   /**
    *
    */
-  static var pullTabEnabled:Bool = true;
+  public var panelId(default, null):String;
+  public var pullTabEnabled(default, null):Bool;
 
-  public static var currentPanelId:String = DEFAULT_PANEL_ID;
+  var buttonData:Array<QuickPanelButtonData> = [];
 
   /**
    * Makes a new QuickPanel.
    */
-  public function new(panelId:String = 'default')
+  public function new(panelId:String = 'default', showPullTab:Bool = true)
   {
     super();
 
-    currentPanelId = panelId;
+    this.panelId = panelId;
+    this.pullTabEnabled = showPullTab;
 
     uiState = new UIStateMachine('QuickPanel', [
       PanelClosed => [PanelLoading, PanelDragging, PanelOpen],
@@ -437,9 +438,8 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     createCamera();
     buildBackdrop();
 
-    pullTabEnabled = (panelId != 'mainmenu'); // Todo: Probably make this in the registry instead or something..
-    activeButtonData = PanelRegistry.instance.listButtonData(panelId);
-    panel = new QuickPanelGroup(activeButtonData, onButtonTapped, !pullTabEnabled);
+    buttonData = PanelRegistry.instance.listButtonData(panelId);
+    panel = new QuickPanelGroup(buttonData, onButtonTapped, !pullTabEnabled);
     add(panel);
 
     tickSound = new FunkinSound();
@@ -493,9 +493,9 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     panel.setTabOnTop(true);
     panel.pullTabVisual.release(curState);
 
+    panel.bodyActive = true;
     changeSelection();
-    panel.active = true;
-    fadeScreen(false);
+    fadeScreen(false, instant);
   }
 
   /**
@@ -517,7 +517,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     panel.pullTabVisual.playIdle(curState);
     panel.clearSelection();
 
-    fadeScreen(true);
+    fadeScreen(true, instant);
   }
 
   /**
@@ -525,6 +525,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
    */
   public function showHint():Void
   {
+    if (!pullTabEnabled) return;
     inactivityTimer = -1;
   }
 
@@ -536,6 +537,11 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
   public function fadeTab(targetAlpha:Float, duration:Float = 0.3):Void
   {
     FlxTween.cancelTweensOf(panel.pullTabVisual);
+    if (duration <= 0)
+    {
+      panel.pullTabVisual.localAlpha = targetAlpha;
+      return;
+    }
     FlxTween.tween(panel.pullTabVisual, {
       localAlpha: targetAlpha
     }, duration, {
@@ -547,20 +553,32 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
    * Fades the dim background and description bar in or out.
    * @param out Are we going in or out
    */
-  public function fadeScreen(out:Bool = false):Void
+  public function fadeScreen(out:Bool = false, instant:Bool = false):Void
   {
     FlxTween.cancelTweensOf(bg);
     FlxTween.cancelTweensOf(descriptionPanel);
     FlxTween.cancelTweensOf(descriptionText);
 
-    if (!pullTabEnabled) fadeTab(out ? 0 : 1);
+    if (!pullTabEnabled) fadeTab(out ? 0 : 1, instant ? 0 : 0.3);
+
+    var bgAlpha:Float = out ? 0.0 : BG_ALPHA;
+    var offset:Float = out ? DESCRIPTION_OFFSET : 0;
+
+    if (instant)
+    {
+      bg.alpha = bgAlpha;
+      descriptionPanel.y = descriptionPanelY + offset;
+      descriptionText.y = descriptionTextY + offset;
+      if (out && uiState.is(PanelClosed)) panel.bodyActive = false;
+
+      return;
+    }
+
     FlxTween.tween(bg, {
-      alpha: out ? 0.0 : BG_ALPHA
+      alpha: bgAlpha
     }, 0.3, {
       ease: FlxEase.expoOut
     });
-
-    var offset:Float = out ? DESCRIPTION_OFFSET : 0;
     FlxTween.tween(descriptionPanel, {
       y: descriptionPanelY + offset
     }, 0.4, {
@@ -572,7 +590,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
       ease: FlxEase.expoOut,
       onComplete: (_) ->
       {
-        if (out && uiState.is(PanelClosed) && !hintVisible) panel.active = false;
+        if (out && uiState.is(PanelClosed)) panel.bodyActive = false;
       }
     });
   }
@@ -693,8 +711,6 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
       inactivityHintUsed = true;
       hintVisible = true;
       resetTabFade();
-
-      panel.active = true;
       panel.showHint(uiState.is(PanelOpen), canPull);
     }
 
@@ -771,8 +787,14 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     switch (curState)
     {
       case PanelClosed | PanelOpen:
-        var _tabPressed:Bool = (pullTabEnabled && FlxG.keys.justPressed.TAB) || (!pullTabEnabled && controls.DEBUG_MENU);
-        if (_tabPressed)
+        if (uiState.is(PanelOpen) && controls.BACK_P)
+        {
+          closePanel();
+          FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/close-tab-click').toFlxSoundAsset());
+          return;
+        }
+
+        if (pullTabEnabled ? FlxG.keys.justPressed.TAB : controls.DEBUG_MENU)
         {
           resetTabFade();
           if (uiState.is(PanelClosed))
@@ -977,6 +999,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
 
     // Stop any open/close tween so it doesn't fight the finger.
     cancelMoveTween();
+    panel.bodyActive = true;
 
     dragCurrent = panel.opennessOf(panel.x);
     dragTarget = dragCurrent;
@@ -1062,7 +1085,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     if (button == null) return;
 
     final isTransitioning:Bool = button.data?.transitioning ?? true;
-    final isDisabled:Bool = button.data?.disabled ?? true;
+    final isDisabled:Bool = button.data?.disabled ?? false;
 
     if (isDisabled)
     {
@@ -1075,13 +1098,15 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     if (!isTransitioning)
     {
       lock = true;
-      afterFrames(6, () ->
-      {
-        lock = false;
-        if (button.data != null && button.data.callback != null) button.data.callback();
-      });
-      panel.playAccept(curSelected, isTransitioning);
+      panel.playAccept(curSelected, false);
       FunkinSound.playOnce(Paths.sound('ui/main-menu/confirm-menu').toFlxSoundAsset());
+
+      afterFrames(6, () -> button.doCallback());
+      afterFrames(10, () ->
+      {
+        panel.settleAccept();
+        lock = false;
+      });
       return;
     }
 
@@ -1311,7 +1336,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     var requestId:Int = ++blockerRequest;
 
     Transition.openSubState(() -> new PanelBlockerSubState(), {
-      assetQuery: queryPanelAssets,
+      assetQuery: queryPanelAssets.bind(_, buttonData),
       transition: Throbber,
       shouldPurgeCache: false,
       onConstruct: (subState) ->
@@ -1508,12 +1533,15 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
   {
     var results = [];
 
-    var tabAtlas = #if FEATURE_TOUCH_CONTROLS 'ui/quick-panel/tabSquare' #else 'ui/quick-panel/tabSquareKeyboard' #end;
+    var tabAtlases:Array<String> = ['ui/quick-panel/tabSquare'];
+    #if !FEATURE_TOUCH_CONTROLS
+    tabAtlases.push('ui/quick-panel/tabSquareKeyboard');
+    #end
 
     switch (type)
     {
       case IMAGE:
-        results.append(Paths.animateAtlas(tabAtlas).image());
+        for (atlas in tabAtlases) results.append(Paths.animateAtlas(atlas).image());
 
       case SOUND:
         results.push(Paths.sound('ui/quick-panel/sounds/tab-pull'));
@@ -1527,7 +1555,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
         #end
 
       case JSON:
-        results.append(Paths.animateAtlas(tabAtlas).json());
+        for (atlas in tabAtlases) results.append(Paths.animateAtlas(atlas).json());
 
       default:
         // No assets.
@@ -1543,7 +1571,8 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
    * @param type The type of AssetPath to return a list of paths for.
    * @return A list of AssetPaths of that type that the interface will use.
    */
-  public static function queryPanelAssets(type:AssetType):Array<AssetPath>
+  public static function queryPanelAssets(type:AssetType,
+    ?buttonData:Array<QuickPanelButtonData>):Array<AssetPath>
   {
     var results = [];
 
@@ -1554,6 +1583,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
         results.push(Paths.image('ui/boil_texture'));
         results.push(Paths.image('ui/quick-panel/splash'));
         results.push(Paths.image('ui/quick-panel/panel-bg'));
+        if (buttonData != null) for (data in buttonData) results.push(Paths.image('ui/quick-panel/icons/${data.icon}'));
 
       case XML:
         results.push(Paths.xml('ui/quick-panel/splash'));

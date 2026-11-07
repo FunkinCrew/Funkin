@@ -345,6 +345,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
     pullTabVisual.localY = (FlxG.height / 2) - (pullTabVisual.height / 2);
     pullTabVisual.playIdle(PanelClosed);
     pullTabVisual.zIndex = Z_ABOVE;
+    if (hidePullTab) pullTabVisual.localAlpha = 0;
     add(pullTabVisual);
 
     pullTabHitbox = new FlxSprite().makeGraphic(200, 280, 0xFFFF9191);
@@ -357,16 +358,6 @@ class QuickPanelGroup extends FunkinSpriteGroup
 
     setSide(left);
     refresh();
-  }
-
-  public function showPullTab()
-  {
-    pullHint.visible = pullExtra.visible = pullTabVisual.visible = true;
-  }
-
-  public function hidePullTab()
-  {
-    pullHint.visible = pullExtra.visible = pullTabVisual.visible = false;
   }
 
   /**
@@ -440,33 +431,60 @@ class QuickPanelGroup extends FunkinSpriteGroup
     pullHint.localX = left ? 135 : -135 - pullHint.width;
     pullHint.alignment = left ? LEFT : RIGHT;
 
-    layoutButtons();
+    layoutButtons(true);
   }
 
   /**
    * Fans the buttons along the panel's curved edge.
+   * @param snap Jump straight to the targets instead of gliding there.
    */
-  function layoutButtons():Void
   {
-    var count:Int = buttons.length;
     if (count == 0 || panelSprite == null) return;
+    if (buttons.length == 0 || panelSprite == null) return;
 
+    var slots:Int = visibleSlots;
     var angleStep:Float = BUTTON_ANGLE_RANGE / 2;
-    var centerIndex:Float = (count - 1) / 2;
-    var fullHeight:Float = (QuickPanelButton.ITEM_HEIGHT * count) + (BUTTON_PADDING * (count - 1));
+    var fullHeight:Float = (QuickPanelButton.ITEM_HEIGHT * slots) + (BUTTON_PADDING * (slots - 1));
     var startY:Float = (FlxG.height / 2) - (fullHeight / 2);
     var baseX:Float = left ? -panelSprite.width + 58 : 98;
 
     for (index => button in buttons)
     {
-      var targetAngle:Float = angleStep * (centerIndex - index);
+      var slot:Int = index - windowStart;
+      var inView:Bool = slot >= 0 && slot < slots;
+
+      var edgeSlot:Int = Std.int(FlxMath.bound(slot, 0, slots - 1));
+      var targetAngle:Float = angleStep * (centerSlot - edgeSlot);
       var dist:Float = Math.abs(Math.cos(targetAngle) * BUTTON_ANGLE_DISTANCE);
 
       button.localX = left ? baseX + dist : baseX - dist;
-      button.localY = startY + ((QuickPanelButton.ITEM_HEIGHT + BUTTON_PADDING) * index);
-      button.localAngle = left ? -targetAngle : targetAngle;
+      var target:ButtonTarget = buttonTargets[index];
+      target.x = left ? baseX + dist : baseX - dist;
+      target.y = startY + ((QuickPanelButton.ITEM_HEIGHT + BUTTON_PADDING) * slot);
+      target.angle = left ? -targetAngle : targetAngle;
+      target.alpha = inView ? 1 : 0;
+
+      button.inView = inView;
       button.repositionSide(left);
+
+      if (snap) moveButton(button, target, 1);
     }
+  }
+
+
+  /**
+   * Moves the button a fraction of the way to its target, then hides it.
+   * @param button The button to move
+   * @param target The button target
+   * @param t Fraction
+   */
+  function moveButton(button:QuickPanelButton, target:ButtonTarget, t:Float):Void
+  {
+    button.localX = FlxMath.lerp(button.localX, target.x, t);
+    button.localY = FlxMath.lerp(button.localY, target.y, t);
+    button.localAngle = FlxMath.lerp(button.localAngle, target.angle, t);
+    button.viewAlpha = FlxMath.lerp(button.viewAlpha, target.alpha, t);
+    button.visible = button.viewAlpha > 0.01;
   }
 
   /**
@@ -492,11 +510,11 @@ class QuickPanelGroup extends FunkinSpriteGroup
     for (i => button in buttons) if (i == index || button.selected) button.selected = (i == index);
 
     var step:Float = SLICE_ANGLE_RANGE / 2;
-    var centerIndex:Float = (buttons.length - 1) / 2;
+    var centerSlot:Float = (visibleSlots - 1) / 2;
 
     panelShader.sliceVisible = true;
     panelShader.doLerp = true;
-    panelShader.dir = -90 + step * (centerIndex - index);
+    panelShader.dir = -90 + step * (centerSlot - (index - windowStart));
     panelShader.sliceColorStart = disabled ? QuickPanelShader.START_COLOR_DISABLED : QuickPanelShader.START_COLOR_NORMAL;
     panelShader.sliceColorEnd = disabled ? QuickPanelShader.END_COLOR_DISABLED : QuickPanelShader.END_COLOR_NORMAL;
     startBreathe();
@@ -768,4 +786,12 @@ class QuickPanelGroup extends FunkinSpriteGroup
    * Inverse of xForOpenness.
    */
   public inline function opennessOf(groupX:Float):Float return (groupX - closedX) * (left ? 1 : -1);
+}
+
+typedef ButtonTarget =
+{
+  var x:Float;
+  var y:Float;
+  var angle:Float;
+  var alpha:Float;
 }

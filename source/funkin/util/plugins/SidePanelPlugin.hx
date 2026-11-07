@@ -32,9 +32,10 @@ class SidePanelPlugin extends FlxTypedContainer<FlxBasic>
   /**
    * Whether the panel should exist for the current state.
    */
-  public static var showGrabber(default, set):Bool = false;
+  public static var showGrabber(get, set):Bool;
 
-  public static var forceCreate:Bool = false;
+  public static var requestedPanelId(default, null):Null<String> = null;
+  static var requestedPullTab:Bool = true;
 
   /**
    * The live panel, if any.
@@ -51,6 +52,8 @@ class SidePanelPlugin extends FlxTypedContainer<FlxBasic>
    */
   var firstRunHintTimer:Float = 0;
 
+  var switchingState:Bool = false;
+
   /**
    * Registers the plugin. Safe to call more than once.
    */
@@ -58,6 +61,14 @@ class SidePanelPlugin extends FlxTypedContainer<FlxBasic>
   {
     if (_instance != null) return;
     FlxG.plugins.addPlugin(new SidePanelPlugin());
+  }
+
+  public static function requestPanel(panelId:Null<String>, showPullTab:Bool = true):Void
+  {
+    requestedPanelId = panelId;
+    requestedPullTab = showPullTab;
+
+    if (_instance != null && !_instance.switchingState) _instance.syncPanel();
   }
 
   /**
@@ -100,9 +111,15 @@ class SidePanelPlugin extends FlxTypedContainer<FlxBasic>
    */
   function syncPanel():Void
   {
-    if ((showGrabber && FlxG.state != null) || forceCreate) createPanel();
-    else
+    if (requestedPanelId == null || FlxG.state == null)
+    {
       destroyPanel();
+      return;
+    }
+
+    if (panelState != null && (panelState.panelId != requestedPanelId || panelState.pullTabEnabled != requestedPullTab)) destroyPanel();
+
+    createPanel();
   }
 
   /**
@@ -110,14 +127,9 @@ class SidePanelPlugin extends FlxTypedContainer<FlxBasic>
    */
   function createPanel():Void
   {
-    if (panelState != null) return;
+    if (panelState != null || requestedPanelId == null) return;
 
-    forceCreate = false;
-    #if FEATURE_DEBUG_MENU
-    panelState = new QuickPanelState((FlxG.state is funkin.ui.mainmenu.MainMenuState) ? 'mainmenu' : 'default'); // TODO:
-    #else
-    panelState = new QuickPanelState(); // TODO:
-    #end
+    panelState = new QuickPanelState(requestedPanelId, requestedPullTab);
     add(panelState);
   }
 
@@ -138,7 +150,10 @@ class SidePanelPlugin extends FlxTypedContainer<FlxBasic>
    */
   function onPreStateSwitch():Void
   {
+    switchingState = true;
     destroyPanel();
+    requestedPanelId = null;
+    requestedPullTab = true;
   }
 
   /**
@@ -146,7 +161,9 @@ class SidePanelPlugin extends FlxTypedContainer<FlxBasic>
    */
   function onPostStateSwitch():Void
   {
-    showGrabber = isScriptedState();
+    switchingState = false;
+    if (requestedPanelId == null && isScriptedState()) requestedPanelId = QuickPanelState.DEFAULT_PANEL_ID;
+    syncPanel();
   }
 
   /**
@@ -155,7 +172,7 @@ class SidePanelPlugin extends FlxTypedContainer<FlxBasic>
    */
   function updateFirstRunHint(elapsed:Float):Void
   {
-    if (!firstRunHintPending || panelState == null) return;
+    if (!firstRunHintPending || panelState == null || !panelState.pullTabEnabled) return;
 
     firstRunHintTimer += elapsed;
     if (firstRunHintTimer < FIRST_RUN_HINT_DELAY || panelState.isOpen) return;
@@ -182,10 +199,11 @@ class SidePanelPlugin extends FlxTypedContainer<FlxBasic>
 
   static function get_instance():Null<SidePanelPlugin> return _instance;
 
+  static function get_showGrabber():Bool return requestedPanelId != null;
+
   static function set_showGrabber(value:Bool):Bool
   {
-    showGrabber = value;
-    if (_instance != null) _instance.syncPanel();
+    requestPanel(value ? QuickPanelState.DEFAULT_PANEL_ID : null);
     return value;
   }
 }
