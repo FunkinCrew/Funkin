@@ -765,9 +765,25 @@ class FileUtil
   public static function getFileSize(path:String):Int
   {
     #if sys
-    return sys.FileSystem.stat(path).size;
+    return getFileStat(path).size;
     #else
     throw 'File size calculation is not supported on this platform.';
+    #end
+  }
+
+  /**
+   * Get a file's stat info.
+   * Only works on native.
+   *
+   * @param path The path to the file.
+   * @return The FileStat object.
+   */
+  public static function getFileStat(path:String):sys.FileStat
+  {
+    #if sys
+    return sys.FileSystem.stat(path);
+    #else
+    throw 'File stat retrieval is not supported on this platform.';
     #end
   }
 
@@ -1647,6 +1663,11 @@ class FileUtilSandboxed
   public static function getFileSize(path:String):Int
   {
     return FileUtil.getFileSize(sanitizePath(path));
+  }
+
+  public static function getFileStat(path:String):Int
+  {
+    return FileUtil.getFileStat(sanitizePath(path));
   }
 
   public static function pathExists(path:String):Bool
