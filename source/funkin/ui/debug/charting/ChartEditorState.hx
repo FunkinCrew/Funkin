@@ -1155,12 +1155,44 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   /**
    * Whether the `Audio -> Mute Metronome` toggle is on. Kept separate from the volume, so unmuting brings it back as it was.
    */
-  var metronomeMuted:Bool = false;
+  var metronomeMuted(default, set):Bool = false;
+
+  function set_metronomeMuted(value:Bool):Bool
+  {
+    var wasMuted:Bool = metronomeMuted;
+    metronomeMuted = value;
+    if (wasMuted && !value)
+    {
+      restoreAudioVolume(metronomeVolume, preferencesVolumeMetronome, preferencesLabelVolumeMetronome, 'Metronome', () -> metronomeVolume = 1.0);
+    }
+    return metronomeMuted;
+  }
 
   /**
    * Whether the `Audio -> Mute Hitsounds` toggle is on, for both sides. Kept separate from the volumes, so unmuting brings them back as they were.
    */
-  var hitsoundsMuted:Bool = false;
+  var hitsoundsMuted(default, set):Bool = false;
+
+  function set_hitsoundsMuted(value:Bool):Bool
+  {
+    var wasMuted:Bool = hitsoundsMuted;
+    hitsoundsMuted = value;
+    if (wasMuted && !value)
+    {
+      restoreAudioVolume(hitsoundVolumePlayer, preferencesVolumeHitsoundPlayer, preferencesLabelVolumeHitsoundPlayer, 'Player', () -> hitsoundVolumePlayer = 1.0);
+      restoreAudioVolume(hitsoundVolumeOpponent, preferencesVolumeHitsoundOpponent, preferencesLabelVolumeHitsoundOpponent, 'Opponent', () -> hitsoundVolumeOpponent = 1.0);
+    }
+    return hitsoundsMuted;
+  }
+
+  function restoreAudioVolume(volume:Float, slider:Slider, label:Label, labelPrefix:String, applyVolume:Void->Void):Void
+  {
+    if (volume > 0.0) return;
+
+    applyVolume();
+    slider.value = 100.0;
+    label.text = '$labelPrefix - 100%';
+  }
 
   var stretchySound1:Null<FunkinSound> = null;
   var stretchySound2:Null<FunkinSound> = null;
@@ -3955,7 +3987,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function set_playerVocalsMuted(value:Bool):Bool
   {
+    var wasMuted:Bool = playerVocalsMuted;
     playerVocalsMuted = value;
+    if (wasMuted && !value)
+    {
+      restoreAudioVolume(audioVocalTrackGroup.playerVolume, preferencesVolumeVocalsPlayer, preferencesLabelVolumeVocalsPlayer, 'Player', () -> audioVocalTrackGroup.playerVolume = 1.0);
+    }
     this.applyVocalMutes();
     return playerVocalsMuted;
   }
@@ -3967,7 +4004,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function set_opponentVocalsMuted(value:Bool):Bool
   {
+    var wasMuted:Bool = opponentVocalsMuted;
     opponentVocalsMuted = value;
+    if (wasMuted && !value)
+    {
+      restoreAudioVolume(audioVocalTrackGroup.opponentVolume, preferencesVolumeVocalsOpponent, preferencesLabelVolumeVocalsOpponent, 'Opponent', () -> audioVocalTrackGroup.opponentVolume = 1.0);
+    }
     this.applyVocalMutes();
     return opponentVocalsMuted;
   }
@@ -3979,7 +4021,15 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function set_instrumentalMuted(value:Bool):Bool
   {
+    var wasMuted:Bool = instrumentalMuted;
     instrumentalMuted = value;
+    if (wasMuted && !value)
+    {
+      restoreAudioVolume(preferencesVolumeInstrumental.value / 100.0, preferencesVolumeInstrumental, preferencesLabelVolumeInstrumental, 'Instrumental', () ->
+      {
+        if (audioInstTrack != null) audioInstTrack.volume = 1.0;
+      });
+    }
     if (audioInstTrack != null) audioInstTrack.muted = instrumentalMuted;
     return instrumentalMuted;
   }
