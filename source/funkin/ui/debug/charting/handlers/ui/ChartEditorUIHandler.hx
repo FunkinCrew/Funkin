@@ -576,6 +576,11 @@ class ChartEditorUIHandler
     {
       var volume:Float = event.value.toFloat() / 100.0;
       state.metronomeVolume = volume;
+      if (volume <= 0.0)
+      {
+        state.metronomeMuted = true;
+        state.menubarItemMuteMetronome.selected = true;
+      }
       state.preferencesLabelVolumeMetronome.text = 'Metronome - ${Math.round(event.value)}%';
     };
     state.preferencesVolumeMetronome.onRightClick = _ ->
@@ -590,6 +595,8 @@ class ChartEditorUIHandler
       {
         state.metronomeVolume = 0.0;
         state.preferencesVolumeMetronome.value = 0.0;
+        state.metronomeMuted = true;
+        state.menubarItemMuteMetronome.selected = true;
         state.preferencesLabelVolumeMetronome.text = 'Metronome - 0%';
       }
     }
@@ -600,6 +607,11 @@ class ChartEditorUIHandler
     {
       var volume:Float = event.value.toFloat() / 100.0;
       state.hitsoundVolumePlayer = volume;
+      if (state.hitsoundVolumePlayer <= 0.0 && state.hitsoundVolumeOpponent <= 0.0)
+      {
+        state.hitsoundsMuted = true;
+        state.menubarItemMuteHitsounds.selected = true;
+      }
       state.preferencesLabelVolumeHitsoundPlayer.text = 'Player - ${Math.round(event.value)}%';
     };
     state.preferencesVolumeHitsoundPlayer.onRightClick = _ ->
@@ -614,6 +626,11 @@ class ChartEditorUIHandler
       {
         state.hitsoundVolumePlayer = 0.0;
         state.preferencesVolumeHitsoundPlayer.value = 0.0;
+        if (state.hitsoundVolumeOpponent <= 0.0)
+        {
+          state.hitsoundsMuted = true;
+          state.menubarItemMuteHitsounds.selected = true;
+        }
         state.preferencesLabelVolumeHitsoundPlayer.text = 'Player - 0%';
       }
     }
@@ -624,6 +641,11 @@ class ChartEditorUIHandler
     {
       var volume:Float = event.value.toFloat() / 100.0;
       state.hitsoundVolumeOpponent = volume;
+      if (state.hitsoundVolumePlayer <= 0.0 && state.hitsoundVolumeOpponent <= 0.0)
+      {
+        state.hitsoundsMuted = true;
+        state.menubarItemMuteHitsounds.selected = true;
+      }
       state.preferencesLabelVolumeHitsoundOpponent.text = 'Opponent - ${Math.round(event.value)}%';
     };
     state.preferencesVolumeHitsoundOpponent.onRightClick = _ ->
@@ -638,6 +660,11 @@ class ChartEditorUIHandler
       {
         state.hitsoundVolumeOpponent = 0.0;
         state.preferencesVolumeHitsoundOpponent.value = 0.0;
+        if (state.hitsoundVolumePlayer <= 0.0)
+        {
+          state.hitsoundsMuted = true;
+          state.menubarItemMuteHitsounds.selected = true;
+        }
         state.preferencesLabelVolumeHitsoundOpponent.text = 'Opponent - 0%';
       }
     }
@@ -648,6 +675,11 @@ class ChartEditorUIHandler
     {
       var volume:Float = event.value.toFloat() / 100.0;
       if (state.audioInstTrack != null) state.audioInstTrack.volume = volume;
+      if (volume <= 0.0)
+      {
+        state.instrumentalMuted = true;
+        state.menubarItemMuteInstrumental.selected = true;
+      }
       state.preferencesLabelVolumeInstrumental.text = 'Instrumental - ${Math.round(event.value)}%';
     };
     state.preferencesVolumeInstrumental.onRightClick = _ ->
@@ -662,6 +694,8 @@ class ChartEditorUIHandler
       {
         if (state.audioInstTrack != null) state.audioInstTrack.volume = 0.0;
         state.preferencesVolumeInstrumental.value = 0.0;
+        state.instrumentalMuted = true;
+        state.menubarItemMuteInstrumental.selected = true;
         state.preferencesLabelVolumeInstrumental.text = 'Instrumental - 0%';
       }
     }
@@ -671,6 +705,11 @@ class ChartEditorUIHandler
     {
       var volume:Float = event.value.toFloat() / 100.0;
       state.audioVocalTrackGroup.playerVolume = volume;
+      if (volume <= 0.0)
+      {
+        state.playerVocalsMuted = true;
+        state.menubarItemMutePlayerVocals.selected = true;
+      }
       state.preferencesLabelVolumeVocalsPlayer.text = 'Player - ${Math.round(event.value)}%';
     };
     state.preferencesVolumeVocalsPlayer.onRightClick = _ ->
@@ -685,6 +724,8 @@ class ChartEditorUIHandler
       {
         state.audioVocalTrackGroup.playerVolume = 0.0;
         state.preferencesVolumeVocalsPlayer.value = 0.0;
+        state.playerVocalsMuted = true;
+        state.menubarItemMutePlayerVocals.selected = true;
         state.preferencesLabelVolumeVocalsPlayer.text = 'Player - 0%';
       }
     }
@@ -694,6 +735,11 @@ class ChartEditorUIHandler
     {
       var volume:Float = event.value.toFloat() / 100.0;
       state.audioVocalTrackGroup.opponentVolume = volume;
+      if (volume <= 0.0)
+      {
+        state.opponentVocalsMuted = true;
+        state.menubarItemMuteOpponentVocals.selected = true;
+      }
       state.preferencesLabelVolumeVocalsOpponent.text = 'Opponent - ${Math.round(event.value)}%';
     };
     state.preferencesVolumeVocalsOpponent.onRightClick = _ ->
@@ -708,6 +754,8 @@ class ChartEditorUIHandler
       {
         state.audioVocalTrackGroup.opponentVolume = 0.0;
         state.preferencesVolumeVocalsOpponent.value = 0.0;
+        state.opponentVocalsMuted = true;
+        state.menubarItemMuteOpponentVocals.selected = true;
         state.preferencesLabelVolumeVocalsOpponent.text = 'Opponent - 0%';
       }
     }
