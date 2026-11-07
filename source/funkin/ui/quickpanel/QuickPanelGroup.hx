@@ -2,6 +2,7 @@ package funkin.ui.quickpanel;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
+import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -49,6 +50,22 @@ class QuickPanelGroup extends FunkinSpriteGroup
    * The slice angle distance
    */
   static final SLICE_ANGLE_RANGE:Float = 4.45;
+
+  /**
+   * How many buttons fit in the panel at once. With more than this, the panel scrolls.
+   */
+  public static final VISIBLE_COUNT:Int = 5;
+
+  /**
+   * At this many buttons or more, the panel flips a whole page of VISIBLE_COUNT at a time
+   * instead of scrolling one button at a time.
+   */
+  public static final PAGING_THRESHOLD:Int = VISIBLE_COUNT * 2;
+
+  /**
+   * Roughly how long a button takes to glide into a new slot when the view scrolls or flips.
+   */
+  static final BUTTON_SLIDE_DURATION:Float = 0.25;
 
   /**
    * Z-index for background
@@ -206,6 +223,11 @@ class QuickPanelGroup extends FunkinSpriteGroup
    */
   public var buttons(default, null):Array<QuickPanelButton> = [];
 
+  /**
+   * Index of the first button in the scroll window.
+   */
+  public var windowStart(default, null):Int = 0;
+
   public var bodyActive(default, set):Bool = true;
 
   /**
@@ -257,6 +279,16 @@ class QuickPanelGroup extends FunkinSpriteGroup
    * Gets called when a button gets tapped.
    */
   var onButtonTapped:QuickPanelButton->Void;
+
+  /**
+   * Where each button is gliding to, in order.
+   */
+  var buttonTargets:Array<ButtonTarget> = [];
+
+  /**
+   * Slots in the scroll window: the button count when they all fit, VISIBLE_COUNT otherwise.
+   */
+  var visibleSlots(get, never):Int;
 
   /**
    * Helper tween variable for the hint flair
@@ -398,6 +430,12 @@ class QuickPanelGroup extends FunkinSpriteGroup
       button.onTapped = onButtonTapped;
       grpButtons.add(button);
       buttons.push(button);
+      buttonTargets.push({
+        x: 0,
+        y: 0,
+        angle: 0,
+        alpha: 1
+      });
     }
 
     defaultDirExtra = panelShader.dirExtra;
@@ -474,6 +512,33 @@ class QuickPanelGroup extends FunkinSpriteGroup
     }
   }
 
+  /**
+   * Moves the scroll window so the button at the given index is inside it.
+   * @param index The index associated to the button we want.
+   * @return Whether the window moved.
+   */
+  function scrollTo(index:Int):Bool
+  {
+    var count:Int = buttons.length;
+    var previousStart:Int = windowStart;
+
+    if (count <= VISIBLE_COUNT) windowStart = 0;
+    else if (count >= PAGING_THRESHOLD) windowStart = Std.int(index / VISIBLE_COUNT) * VISIBLE_COUNT;
+    else if (index < windowStart) windowStart = index;
+    else if (index >= windowStart + VISIBLE_COUNT) windowStart = index - VISIBLE_COUNT + 1;
+
+    return windowStart != previousStart;
+  }
+
+  /**
+   * Glides every button toward its target.
+   * @param elapsed Elapsed.
+   */
+  function updateButtonSlide(elapsed:Float):Void
+  {
+    var t:Float = 1 - Math.pow(0.01, elapsed / BUTTON_SLIDE_DURATION);
+    for (index => button in buttons) moveButton(button, buttonTargets[index], t);
+  }
 
   /**
    * Moves the button a fraction of the way to its target, then hides it.
@@ -509,6 +574,8 @@ class QuickPanelGroup extends FunkinSpriteGroup
   public function showSelection(index:Int, disabled:Bool):Void
   {
     if (!bodyBuilt) return;
+
+    if (scrollTo(index)) layoutButtons();
 
     for (i => button in buttons) if (i == index || button.selected) button.selected = (i == index);
 
@@ -623,6 +690,14 @@ class QuickPanelGroup extends FunkinSpriteGroup
     }
   }
 
+  public function settleAccept():Void
+  {
+    if (!bodyBuilt) return;
+
+    stopScroll();
+    panelShader.doLerp = true;
+  }
+
   /**
    * Slides the hint in next to the tab.
    * @param open Whether the panel is open.
@@ -676,8 +751,10 @@ class QuickPanelGroup extends FunkinSpriteGroup
   {
     super.update(elapsed);
 
-    if (bodyBuilt)
+    if (bodyBuilt && bodyActive)
     {
+      updateButtonSlide(elapsed);
+
       panelBoilTimer -= elapsed;
       if (panelBoilTimer <= 0)
       {
@@ -703,6 +780,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
     if (pullTabVisual != null) FlxTween.cancelTweensOf(pullTabVisual);
     FlxTween.cancelTweensOf(this);
     buttons = [];
+    buttonTargets = [];
 
     super.destroy();
   }

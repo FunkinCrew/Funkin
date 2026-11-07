@@ -168,6 +168,18 @@ class QuickPanelButton extends FunkinSpriteGroup
   public var onTapped:Null<QuickPanelButton->Void> = null;
 
   /**
+   * Whether this button is inside the panel's scroll window. Buttons outside it ignore touches.
+   */
+  public var inView:Bool = true;
+
+  /**
+   * Alpha from the panel's scrolling, multiplied with the fade and disabled alpha.
+   */
+  public var viewAlpha(default, set):Float = 1;
+
+  var fadeAlpha:Float = 1;
+
+  /**
    * Boil shader for the icon
    */
   var boilShaderIcon:BoilShader;
@@ -291,10 +303,14 @@ class QuickPanelButton extends FunkinSpriteGroup
   public function fadeOut():Void
   {
     cancelFade();
-    fadeTween = FlxTween.num(localAlpha, 0, FADE_DURATION, {
+    fadeTween = FlxTween.num(fadeAlpha, 0, FADE_DURATION, {
       ease: FlxEase.cubeOut,
       onComplete: (_) -> fadeTween = null
-    }, (a:Float) -> localAlpha = a);
+    }, (a:Float) ->
+      {
+        fadeAlpha = a;
+        applyAlpha();
+      });
   }
 
   /**
@@ -357,6 +373,16 @@ class QuickPanelButton extends FunkinSpriteGroup
    */
   function updateTouch():Void
   {
+    if (!inView)
+    {
+      if (touchHeld)
+      {
+        touchHeld = false;
+        setFadeAlpha(1.0);
+      }
+      return;
+    }
+
     if (TouchUtil.justPressed && TouchUtil.overlaps(this))
     {
       touchHeld = true;
@@ -425,7 +451,13 @@ class QuickPanelButton extends FunkinSpriteGroup
   function setFadeAlpha(alpha:Float):Void
   {
     cancelFade();
-    localAlpha = alpha * alphaMultiplier;
+    fadeAlpha = alpha;
+    applyAlpha();
+  }
+
+  function applyAlpha():Void
+  {
+    localAlpha = fadeAlpha * alphaMultiplier * viewAlpha;
   }
 
   /**
@@ -447,6 +479,13 @@ class QuickPanelButton extends FunkinSpriteGroup
     FlxTween.cancelTweensOf(this);
 
     super.destroy();
+  }
+
+  function set_viewAlpha(value:Float):Float
+  {
+    viewAlpha = value;
+    applyAlpha();
+    return viewAlpha;
   }
 
   function set_selected(value:Bool):Bool
