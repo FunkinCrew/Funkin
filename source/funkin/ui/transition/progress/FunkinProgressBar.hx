@@ -8,6 +8,7 @@ import funkin.graphics.FunkinSprite;
 import funkin.group.FunkinGroup.FunkinSpriteGroup;
 import funkin.modding.PolymodHandler;
 import funkin.util.MathUtil;
+import haxe.io.Path;
 import json2object.JsonParser;
 import polymod.Polymod;
 import polymod.PolymodAssets;
@@ -19,7 +20,7 @@ import polymod.PolymodAssets;
 class FunkinProgressBar extends FunkinSpriteGroup
 {
   /**
-   * The default path that a loading character is loaded from.
+   * The default path for loading characters.
    */
   public static final CHARACTER_PATH:String = 'ui/loading/characters/';
 
@@ -27,8 +28,8 @@ class FunkinProgressBar extends FunkinSpriteGroup
    * The default paths for base game characters.
    */
   public static final BASE_GAME_CHARACTER_PATHS:Array<String> = [
-    Paths.json('ui/loading/characters/bf/bf').toString(),
-    Paths.json('ui/loading/characters/gf/gf').toString()
+    Paths.json('ui/loading/characters/bf/bf', false).toString(),
+    Paths.json('ui/loading/characters/gf/gf', false).toString()
   ];
 
   /**
@@ -80,19 +81,18 @@ class FunkinProgressBar extends FunkinSpriteGroup
     var results:Array<AssetPath> = [];
 
     // Assets for each character.
-    var entries = loadEntries();
-    for (entry in entries)
+    for (entry in getCharacterEntries())
     {
       switch (type)
       {
         case IMAGE:
-          results.push(funkin.assets.Paths.image(entry.path));
+          results.push(Paths.image(entry.path, false));
 
         case XML:
-          results.push(funkin.assets.Paths.xml(entry.path));
+          results.push(Paths.xml(entry.path, false));
 
         case JSON:
-          results.push(funkin.assets.Paths.json(entry.path));
+          results.push(Paths.json(entry.path, false));
 
         default:
           // No assets.
@@ -150,16 +150,20 @@ class FunkinProgressBar extends FunkinSpriteGroup
    */
   public function loadCharacter():Void
   {
-    var entries:Array<CharacterEntry> = loadEntries();
-    if (entries.length == 0) return;
+    loadEntries((entries:Array<CharacterEntry>) ->
+    {
+      if (entries.length == 0) return;
 
-    // Select a random character by weights.
-    var entry:CharacterEntry = FlxG.random.getObject(entries, entries.map((entry) -> entry.data.weight));
+      // Select a random character by weights.
+      var entry:Null<CharacterEntry> = FlxG.random.getObject(entries, entries.map((entry) -> entry?.data?.weight));
+      if (entry == null) return;
 
-    // Load the character.
-    character.loadCharacter(entry.data, entry.path, entry.modId);
-    character.zIndex = 300;
-    add(character);
+      // Load the character.
+      var data:LoadingCharacterData = cast entry.data;
+      character.loadCharacter(data, entry.path, entry.modId);
+      character.zIndex = 300;
+      add(character);
+    });
   }
 
   /**
@@ -171,6 +175,8 @@ class FunkinProgressBar extends FunkinSpriteGroup
    */
   public function updateProgress(loaded:Int, total:Int):Void
   {
+    if (total <= 0) return;
+
     var currentProgress:Float = (loaded / total).clamp(0, 1);
     barTargetX += (bar.width * currentProgress - BAR_PAD - BAR_PAD) + BAR_PAD;
   }
@@ -190,61 +196,142 @@ class FunkinProgressBar extends FunkinSpriteGroup
   /**
    * Load character data so that
    */
-  static function loadEntries():Array<CharacterEntry>
+  static function loadEntries(onComplete:Array<CharacterEntry>->Void):Void
   {
-    var characterData:Array<CharacterEntry> = [];
+    var entries:Array<CharacterEntry> = getCharacterEntries();
+    if (entries.length == 0)
+    {
+      onComplete([]);
+      return;
+    }
+
+    var pending:Int = entries.length;
+    var onEntryLoaded:(CharacterEntry, Null<String>) -> Void = (entry, jsonString) ->
+    {
+      entry.data = parseEntry(jsonString, '${entry.path}.json');
+
+      pending--;
+      if (pending == 0)
+      {
+        onComplete(entries.filter((entry) -> entry.data != null));
+      }
+    };
+
+    for (entry in entries)
+    {
+      var assetPath:AssetPath = Paths.json(entry.path, false);
+      #if html5
+      var dataFuture = entry.modId != '' ? PolymodAssets.loadTextFromMod(assetPath.toString(), entry.modId) : funkin.assets.Assets.loadText(assetPath);
+      dataFuture.onComplete((jsonString:String) ->
+      {
+        onEntryLoaded(entry, jsonString);
+      }).onError((error:Dynamic) ->
+        {
+          trace(' LOADING SCREEN '.bold().bg_orange() + ' Could not load character data "${assetPath}": ${Std.string(error)}');
+          onEntryLoaded(entry, null);
+        });
+      #else
+      var jsonString:Null<String> = null;
+
+      if (entry.modId == '')
+      {
+        @:privateAccess
+        jsonString = Polymod.assetLibrary.getTextDirectly(assetPath.toString(), '');
+
+        if (jsonString == null || jsonString == '')
+        {
+          if (assetPath.exists())
+          {
+            try
+            {
+              jsonString = funkin.assets.Assets.getText(assetPath);
+            }
+            catch (error:Dynamic)
+            {
+              trace(' LOADING SCREEN '.bold().bg_orange() + ' Could not read base character data "${assetPath}": ${Std.string(error)}');
+            }
+          }
+        }
+      }
+      else
+      {
+        @:privateAccess
+        jsonString = Polymod.assetLibrary.getTextDirectly(assetPath.toString(), entry.modId);
+      }
+
+      onEntryLoaded(entry, jsonString);
+      #end
+    }
+  }
+
+  static function getCharacterEntries():Array<CharacterEntry>
+  {
+    var entries:Array<CharacterEntry> = [];
 
     // Load base game characters.
     for (path in BASE_GAME_CHARACTER_PATHS)
     {
-      #if html5
-      if (!lime.utils.Assets.isLocal(path, lime.utils.AssetType.TEXT)) continue;
-      var jsonString = lime.utils.Assets.getText(path);
-      #else
-      // TODO: getTextDirectly doesn't work on HTML5, that should probably get fixed upstream...
-      var jsonString = PolymodAssets.getTextDirectly(path);
-      #end
-
-      var data:Null<LoadingCharacterData> = parseEntry(jsonString, path);
-      if (data != null)
-      {
-        var basePath = haxe.io.Path.withoutExtension(path);
-        characterData.push({
-          path: basePath,
-          data: cast data, // Cast from Null<LoadingCharacterData> to LoadingCharacterData.
-          modId: ''
-        });
-      }
+      entries.push({
+        path: Path.withoutExtension(normalizeAssetPath(path)),
+        data: null,
+        modId: ''
+      });
     }
 
     // Load modded characters.
-    var enabledModIds:Array<String> = PolymodHandler.enabledModIds.copy();
-    for (modId in enabledModIds)
+    for (modId in PolymodHandler.loadedModIds)
     {
+      if (modId == null || modId == '' || modId == 'basegame') continue;
+
       var paths:Array<String> = PolymodAssets.listInMod(modId);
-      var filteredPaths = paths.filter((assetPath) ->
+      var filteredPaths:Array<String> = paths.filter((assetPath) ->
       {
-        return assetPath.startsWith(CHARACTER_PATH) && assetPath.endsWith('.json');
+        var path:String = normalizeAssetPath(assetPath);
+        return path.startsWith(CHARACTER_PATH) && path.endsWith('.json');
       });
 
-      for (path in filteredPaths)
+      for (assetPath in filteredPaths)
       {
-        var jsonString = PolymodAssets.getTextFromMod(path, modId);
+        var path:String = normalizeAssetPath(assetPath);
+        var entryPath:String = Path.withoutExtension(path);
+        var existing:Null<CharacterEntry> = entries.find((entry) -> entry.path == entryPath);
 
-        var data:Null<LoadingCharacterData> = parseEntry(jsonString, path);
-        if (data != null)
+        if (existing != null)
         {
-          var basePath = haxe.io.Path.withoutExtension(path);
-          characterData.push({
-            path: basePath,
-            data: cast data, // Cast from Null<LoadingCharacterData> to LoadingCharacterData.
+          existing.modId = modId;
+        }
+        else
+        {
+          entries.push({
+            path: entryPath,
+            data: null,
             modId: modId
           });
         }
       }
     }
 
-    return characterData;
+    return entries;
+  }
+
+  /**
+   * Normalize asset path to a path relative to the assets folder.
+   */
+  static function normalizeAssetPath(path:String):String
+  {
+    var normalized:String = StringTools.replace(path, '\\', '/');
+
+    while (normalized.startsWith('/'))
+    {
+      normalized = normalized.substr(1);
+    }
+
+    if (normalized.startsWith('assets/'))
+    {
+      normalized = normalized.substr('assets/'.length);
+    }
+
+    return normalized;
   }
 
   static function parseEntry(jsonString:Null<String>, path:String):Null<LoadingCharacterData>
@@ -262,10 +349,8 @@ class FunkinProgressBar extends FunkinSpriteGroup
       for (error in parser.errors) funkin.data.DataError.printError(error);
       return null;
     }
-    else
-    {
-      return parser.value;
-    }
+
+    return parser.value;
   }
 }
 
@@ -275,6 +360,6 @@ class FunkinProgressBar extends FunkinSpriteGroup
 typedef CharacterEntry =
 {
   var path:String;
-  var data:LoadingCharacterData;
+  var data:Null<LoadingCharacterData>;
   var modId:String;
 }
