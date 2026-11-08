@@ -172,6 +172,13 @@ class ChartEditorTimeScale
         easeFunction = Reflect.field(flixel.tweens.FlxEase, '$ease$easeDir');
       }
 
+      var from:Float = target;
+      if (easeFunction != null && (event.getBool('useStart') ?? false))
+      {
+        from = event.getFloat('startScroll') ?? 1;
+        if (!(event.getBool('absolute') ?? false)) from *= baseSpeed;
+      }
+
       var changeDuration:Float = 0;
       if (easeFunction != null)
       {
@@ -181,7 +188,7 @@ class ChartEditorTimeScale
       gameSpeedChanges.push({
         time: time,
         duration: changeDuration,
-        from: target,
+        from: from,
         to: speed,
         ease: easeFunction
       });
@@ -197,7 +204,7 @@ class ChartEditorTimeScale
         for (i in 0...SCROLL_SPEED_EASE_PIECES)
         {
           var progress:Float = easeFunction((i + 0.5) / SCROLL_SPEED_EASE_PIECES);
-          addPoint(time + durationMs * i / SCROLL_SPEED_EASE_PIECES, target + (speed - target) * progress);
+          addPoint(time + durationMs * i / SCROLL_SPEED_EASE_PIECES, from + (speed - from) * progress);
         }
         addPoint(time + durationMs, speed);
       }

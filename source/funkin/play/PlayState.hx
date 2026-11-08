@@ -4382,7 +4382,11 @@ class PlayState extends MusicBeatSubState
   /**
    * The magical function that shall tween the scroll speed.
    */
-  public function tweenScrollSpeed(?speed:Float, duration:Float = 0, ?ease:Null<Float->Float>, strumlines:Array<String>):Void
+  /**
+   * Tween the scroll speed of some strumlines.
+   * @param startSpeed If set, the strumlines jump to this speed first and ease from it, instead of from their current speed.
+   */
+  public function tweenScrollSpeed(?speed:Float, duration:Float = 0, ?ease:Null<Float->Float>, strumlines:Array<String>, ?startSpeed:Float):Void
   {
     // Cancel the current tween if it's active.
     cancelScrollSpeedTweens();
@@ -4409,6 +4413,7 @@ class PlayState extends MusicBeatSubState
       }
       else
       {
+        if (startSpeed != null) strum.scrollSpeed = startSpeed;
         var adjustedDuration:Float = duration / playbackRate;
 
         scrollSpeedTweens.push(FlxTween.tween(strum, {

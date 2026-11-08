@@ -90,6 +90,8 @@ class ChartEditorLayoutHandler
     state.commentDisplayDirty = true;
     state.gridLinesDirty = true;
     state.waveformsDirty = true;
+    if (layoutChanged || oldConstantScroll != ChartEditorTimeScale.CONSTANT_SCROLL) state.notePreviewDirty = true;
+    state.notePreviewViewportBoundsDirty = true;
   }
 
   /**
