@@ -35,6 +35,7 @@ import funkin.util.TouchUtil;
  */
 class QuickPanelState extends FlxTypedContainer<FlxBasic>
 {
+  public static var instance:QuickPanelState;
   public static final DEFAULT_PANEL_ID:String = 'default';
 
   /**
@@ -366,6 +367,13 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
   {
     super();
 
+    if (instance != null)
+    {
+      FlxG.log.warn('WARNING: QuickPanelState instance already exists. This should not happen.');
+    }
+
+    instance = this;
+
     this.panelId = panelId;
     this.pullTabEnabled = showPullTab;
 
@@ -557,10 +565,11 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
 
     var prevSelected:Int = curSelected;
     var lastIndex:Int = panel.buttons.length - 1;
-
     curSelected = snap ? Std.int(FlxMath.bound(change, 0, lastIndex)) : FlxMath.wrap(curSelected + change, 0, lastIndex);
 
     if (snap || change != 0) FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/menu-scroll').toFlxSoundAsset());
+
+    if (panel.buttons[prevSelected] != null && panel.buttons[prevSelected] != currentButton) panel.buttons[prevSelected].doUnselectCallback();
 
     var data:QuickPanelButtonData = currentButton.data;
     panel.showSelection(curSelected, data.disabled == true);
@@ -574,6 +583,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
 
     var direction:Int = if (snap) (prevSelected > curSelected ? -1 : 1); else if (prevSelected == curSelected) 0; else (change < 0 ? -1 : 1);
     panel.playScrollBump(direction);
+    currentButton.doSelectCallback();
   }
 
   /**

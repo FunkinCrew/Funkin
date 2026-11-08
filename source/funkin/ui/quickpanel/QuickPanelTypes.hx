@@ -20,6 +20,16 @@ typedef QuickPanelButtonData =
   var callback:Null<Void->Void>;
 
   /**
+   *
+   */
+  var callbackSelect:Null<Void->Void>;
+
+  /**
+   *
+   */
+  var callbackUnselect:Null<Void->Void>;
+
+  /**
    * Icon name.
    */
   var icon:Null<String>;

@@ -387,6 +387,16 @@ class QuickPanelButton extends FunkinSpriteGroup
     if (data.callback != null) data.callback();
   }
 
+  public function doSelectCallback():Void
+  {
+    if (data.callbackSelect != null) data.callbackSelect();
+  }
+
+  public function doUnselectCallback():Void
+  {
+    if (data.callbackUnselect != null) data.callbackUnselect();
+  }
+
   override function update(elapsed:Float):Void
   {
     super.update(elapsed);

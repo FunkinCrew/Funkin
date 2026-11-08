@@ -99,6 +99,14 @@ class PanelEntry implements IRegistryEntry<PanelData>
     PanelActions.run(getAction());
   }
 
+  public function onSelect():Void
+  {
+  }
+
+  public function onUnSelect():Void
+  {
+  }
+
   /**
    * TODO: Probably just use panelData instead
    */
@@ -111,6 +119,8 @@ class PanelEntry implements IRegistryEntry<PanelData>
       description: getDescription(),
       disabled: isDisabled(),
       callback: onAccept,
+      callbackSelect: onSelect,
+      callbackUnselect: onUnSelect,
       transitioning: isTransitioning(),
       buttonAnim: getPanelAnim()
     };
