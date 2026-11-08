@@ -235,7 +235,14 @@ class ChartEditorPlaybackHandler
 
     var songMs:Float = playheadSongMs(state);
     var visualMs:Float = ChartEditorTimeScale.visualTime(songMs);
-    var endMs:Float = ChartEditorTimeScale.playerViewEnd(visualMs, songMs);
+    var downscroll:Bool = Preferences.downscroll;
+    var strumlineOffsetY:Float = 0;
+    if (downscroll)
+    {
+      var style:Null<funkin.play.notes.notestyle.NoteStyle> = funkin.data.notestyle.NoteStyleRegistry.instance.fetchEntry(state.currentSongNoteStyle);
+      strumlineOffsetY = style?.getStrumlineOffsets()[1] ?? 0;
+    }
+    var endMs:Float = ChartEditorTimeScale.playerViewEnd(visualMs, songMs, downscroll, strumlineOffsetY);
 
     var width:Float = ChartEditorState.GRID_SIZE * ChartEditorState.STRUMLINE_SIZE;
     var left:Float = (state.gridTiledSprite?.x ?? ChartEditorState.GRID_X_POS) + width;

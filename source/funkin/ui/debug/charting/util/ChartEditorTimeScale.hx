@@ -218,7 +218,8 @@ class ChartEditorTimeScale
   static var velocity:Null<funkin.play.notes.ScrollVelocityTimeline> = null;
   public static function visualTime(ms:Float):Float
   {
-    if (CONSTANT_SCROLL) return ms;
+    // Disabled to allow for constant scroll speed to show visual time
+    // if (CONSTANT_SCROLL) return ms;
     var line:Null<funkin.play.notes.ScrollVelocityTimeline> = velocity;
     if (line == null) return ms;
     var visual:Float = line.visualTime(ms);
@@ -260,13 +261,17 @@ class ChartEditorTimeScale
    * The song time of the notes at the receptors, which can be different from the real song time when Scroll Velocity events have moved them.
    * @param visualMs The song time of the notes at the receptors.
    * @param ms The real song time, which sets the scroll speed.
+   * @param downscroll Whether the game is played on downscroll.
+   * @param strumlineOffsetY The note style's vertical strumline offset, which only moves the strumline on downscroll.
    */
-  public static function playerViewEnd(visualMs:Float, ms:Float):Float
+  public static function playerViewEnd(visualMs:Float, ms:Float, downscroll:Bool = false, strumlineOffsetY:Float = 0):Float
   {
     var pixelsPerMs:Float = Constants.PIXELS_PER_MS * Math.max(gameScrollSpeedAt(ms), 0.0001);
-
-    var receptorY:Float = Constants.STRUMLINE_Y_OFFSET + 0.275 * funkin.play.notes.Strumline.STRUMLINE_SIZE;
-    return visualMs + (GAME_HEIGHT - receptorY) / pixelsPerMs;
+    var size:Float = funkin.play.notes.Strumline.STRUMLINE_SIZE;
+    var receptorOffset:Float = 0.275 * size;
+    var distance:Float = downscroll ? (GAME_HEIGHT - size - Constants.STRUMLINE_Y_OFFSET - strumlineOffsetY + receptorOffset) + size : GAME_HEIGHT
+      - (Constants.STRUMLINE_Y_OFFSET + receptorOffset);
+    return visualMs + distance / pixelsPerMs;
   }
 
   /**
