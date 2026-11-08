@@ -12,6 +12,7 @@ import funkin.ui.quickpanel.QuickPanelTypes;
 import funkin.util.EaseUtil;
 import funkin.util.TouchUtil;
 import funkin.data.quickpanel.PanelData.PanelButtonAnim;
+import funkin.util.assets.FlxAnimationUtil;
 
 /**
  * One entry in the quick panel.
@@ -293,13 +294,41 @@ class QuickPanelButton extends FunkinSpriteGroup
         isAnimated = true;
         // TODO: Framerate, looping, etc. in data json, plus make this more flexible.
         icon.loadSparrow('ui/quick-panel/icons/${data.icon}');
-        icon.animation.addByIndices(animData.idleName ?? "idle" + '-deselected', animData.idlePrefix ?? "idle0", [0], '', 24, true);
+        icon.animation.addByIndices((animData.idleName ?? "idle") + '-deselected', animData.idlePrefix ?? "idle0", [0], '', 24, true);
         icon.animation.addByPrefix(animData.idleName ?? "idle", animData.idlePrefix ?? "idle0", 24, true);
         icon.animation.addByPrefix(animData.acceptName ?? "accept", animData.acceptPrefix ?? "accept0", 24);
         icon.animation.play('idle-deselected');
 
       case ANIMATE_ATLAS:
-        // TODO:
+        // TODO: make this better... Im honestly too tired to do it -MOon.
+        icon.loadTextureAtlas('ui/quick-panel/icons/${data.icon}');
+
+        FlxAnimationUtil.addTextureAtlasAnimation(icon, {
+          name: (animData.idleName ?? "idle") + 'deselected',
+          prefix: animData.idlePrefix ?? "symbol0",
+          frameRate: 24,
+          looped: true,
+          animType: 'symbol',
+          frameIndices: [0]
+        });
+
+        FlxAnimationUtil.addTextureAtlasAnimation(icon, {
+          name: animData.idleName ?? "idle",
+          prefix: animData.idlePrefix ?? "symbol0",
+          frameRate: 24,
+          looped: true,
+          animType: 'symbol'
+        });
+
+        FlxAnimationUtil.addTextureAtlasAnimation(icon, {
+          name: animData.acceptName ?? "accept",
+          prefix: animData.acceptPrefix ?? "symbol0",
+          frameRate: 24,
+          animType: 'symbol'
+        });
+
+        icon.animation.play('idle-deselected');
+
       default:
         icon.loadGraphic(Paths.image('ui/quick-panel/icons/${data.icon}'));
     }
