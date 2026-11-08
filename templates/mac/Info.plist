@@ -7,9 +7,9 @@
 	<key>CFBundleExecutable</key>
 	<string>::APP_FILE::</string>
 	<key>CFBundleIconFile</key>
-	<string>icon.icns</string>
+	<string>::APP_BUNDLE_ICON_NAME::.icns</string>
 	<key>CFBundleIconName</key>
-	<string>icon</string>
+	<string>::APP_BUNDLE_ICON_NAME::</string>
 	<key>CFBundleIdentifier</key>
 	<string>::APP_PACKAGE::</string>
 	<key>CFBundleInfoDictionaryVersion</key>
