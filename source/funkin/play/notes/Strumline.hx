@@ -110,7 +110,9 @@ class Strumline extends FlxSpriteGroup
   public var visualSongPosition(default, null):Float = 0.0;
 
   var lagStretchStart:Float = -1;
-  var lagScrollSpeed:Float = 1.0;
+  var lagPixels:Float = 0;
+  var lagPrevious:Float = 0;
+  var lagSongTime:Float = 0;
 
   /**
    * Reset the scroll speed to the current chart's scroll speed.
@@ -625,12 +627,19 @@ class Strumline extends FlxSpriteGroup
     if (velocity != null)
     {
       var stretchStart:Float = velocity.stretchStartAt(songTime);
-      if (stretchStart != lagStretchStart)
+      var lag:Float = songTime - velocity.visualTime(songTime);
+      if (stretchStart != lagStretchStart || songTime < lagSongTime)
       {
         lagStretchStart = stretchStart;
-        lagScrollSpeed = scrollSpeed;
+        lagPixels = lag * scrollSpeed;
       }
-      visualSongPosition = ScrollVelocityTimeline.scaleLag(songTime, velocity.visualTime(songTime), lagScrollSpeed, scrollSpeed);
+      else
+      {
+        lagPixels = ScrollVelocityTimeline.stepLag(lagPixels, lagPrevious, lag, scrollSpeed);
+      }
+      lagPrevious = lag;
+      lagSongTime = songTime;
+      visualSongPosition = (stretchStart < 0) ? songTime - lag : ScrollVelocityTimeline.lagToVisual(songTime, lagPixels, lag, scrollSpeed);
     }
     else
     {

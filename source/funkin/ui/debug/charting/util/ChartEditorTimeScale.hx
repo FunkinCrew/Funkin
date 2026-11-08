@@ -232,8 +232,21 @@ class ChartEditorTimeScale
     var visual:Float = line.visualTime(ms);
     var start:Float = line.stretchStartAt(ms);
     if (start < 0) return visual;
-    return funkin.play.notes.ScrollVelocityTimeline.scaleLag(ms, visual, gameScrollSpeedAt(start), gameScrollSpeedAt(ms));
+    var slices:Int = Std.int(Math.min(LAG_MAX_SLICES, Math.max(1, Math.ceil((ms - start) / LAG_SLICE_MS))));
+    var previous:Float = start - line.visualTime(start);
+    var lagPixels:Float = previous * gameScrollSpeedAt(start);
+    for (i in 1...slices + 1)
+    {
+      var time:Float = start + (ms - start) * i / slices;
+      var lag:Float = time - line.visualTime(time);
+      lagPixels = funkin.play.notes.ScrollVelocityTimeline.stepLag(lagPixels, previous, lag, gameScrollSpeedAt(time));
+      previous = lag;
+    }
+    return funkin.play.notes.ScrollVelocityTimeline.lagToVisual(ms, lagPixels, previous, gameScrollSpeedAt(ms));
   }
+
+  static final LAG_SLICE_MS:Float = 20;
+  static final LAG_MAX_SLICES:Int = 512;
 
   public static function hasVelocityOffset(ms:Float):Bool
   {

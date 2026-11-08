@@ -121,8 +121,8 @@ class ScrollVelocityTimeline
       }
 
       var start:Float = segments[index].time;
-      var back:Int = index + 1;
-      while (back < segments.length && isAway(segments[back]))
+      var back:Int = index;
+      while (back < segments.length && !isNormal(segments[back].to))
         back++;
 
       if (back >= segments.length)
@@ -237,16 +237,29 @@ class ScrollVelocityTimeline
   }
 
   /**
-   * Keep how far the notes lag behind at the scroll speed it built up at.
-   * @param time The real song time.
-   * @param visual The visual time from `visualTime`.
-   * @param lagSpeed The scroll speed when the stretch started.
+   * Catch up lag proportionally, or add new lag at the current speed.
+   * @param lagPixels The lag so far.
+   * @param previousLag `time - visual` last time.
+   * @param lag `time - visual` now.
    * @param speed The scroll speed now.
    */
-  public static function scaleLag(time:Float, visual:Float, lagSpeed:Float, speed:Float):Float
+  public static function stepLag(lagPixels:Float, previousLag:Float, lag:Float, speed:Float):Float
   {
-    if (Math.abs(speed) < NORMAL_VELOCITY_RANGE) return visual;
-    return time - (time - visual) * lagSpeed / speed;
+    if (Math.abs(lag) < Math.abs(previousLag)) return lagPixels * lag / previousLag;
+    return lagPixels + (lag - previousLag) * speed;
+  }
+
+  /**
+   * The song time the notes are drawn around, from the lag built by `stepLag`.
+   * @param time The real song time.
+   * @param lagPixels The lag from `stepLag`.
+   * @param lag `time - visual` now, used when the scroll speed is 0.
+   * @param speed The scroll speed now.
+   */
+  public static function lagToVisual(time:Float, lagPixels:Float, lag:Float, speed:Float):Float
+  {
+    if (Math.abs(speed) < NORMAL_VELOCITY_RANGE) return time - lag;
+    return time - lagPixels / speed;
   }
 
   /**
