@@ -125,6 +125,17 @@ class LoadingState extends MusicBeatSubState
     close();
   }
 
+  override public function destroy():Void
+  {
+    if (!completionStarted && !transitionCancelled)
+    {
+      transitionCancelled = true;
+      FunkinAssetCache.instance.cancelPurgeCycle();
+    }
+
+    super.destroy();
+  }
+
   function startAssetLoading():Void
   {
     trace('[LOADING] Starting asset loading...');
