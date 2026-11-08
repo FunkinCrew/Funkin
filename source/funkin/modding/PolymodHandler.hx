@@ -462,6 +462,8 @@ class PolymodHandler
 
     // 'ControlsHandler' was moved to the 'funkin.touch.input' package.
     Polymod.addImportAlias('funkin.mobile.input.ControlsHandler', funkin.touch.input.ControlsHandler);
+
+    Polymod.addImportAlias('funkin.mobile.ui.FunkinBackButton', funkin.touch.ui.FunkinBackButton);
   }
 
   /**
