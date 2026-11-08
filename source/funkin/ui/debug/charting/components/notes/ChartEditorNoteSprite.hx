@@ -74,7 +74,7 @@ class ChartEditorNoteSprite extends FlxSprite
   /**
    * An indicator if the note is a note kind different than Default ("").
    */
-  public var kindIndicator:FlxText = new haxe.ui.backend.flixel.HiResFlxText(5, 5, 100, '*', 16);
+  public var kindIndicator:Null<FlxText> = null;
 
   /**
    * The kind the indicator was last drawn for.
@@ -114,8 +114,24 @@ class ChartEditorNoteSprite extends FlxSprite
     {
       addNoteStyleAnimations(fetchNoteStyle(entry));
     }
+  }
 
-    kindIndicator.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 24, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+  function getKindIndicator():FlxText
+  {
+    var text:Null<FlxText> = kindIndicator;
+    if (text != null) return text;
+    text = new haxe.ui.backend.flixel.HiResFlxText(5, 5, 100, '*', 16);
+    text.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 24, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    kindIndicator = text;
+    indicatorKind = '';
+    return text;
+  }
+
+  override public function destroy():Void
+  {
+    kindIndicator?.destroy();
+    kindIndicator = null;
+    super.destroy();
   }
 
   static var noteFrameCollection:Null<FlxFramesCollection> = null;
@@ -245,6 +261,7 @@ class ChartEditorNoteSprite extends FlxSprite
     if ((this.noteData?.kind ?? '').length == 0) return; // Do not render the note kind indicator if the note kind is default.
 
     var kind:String = this.noteData?.kind ?? '';
+    var kindIndicator:FlxText = getKindIndicator();
     if (kind != indicatorKind)
     {
       indicatorKind = kind;
@@ -265,6 +282,7 @@ class ChartEditorNoteSprite extends FlxSprite
 
   function setIndicatorTint(red:Float, green:Float, blue:Float, alpha:Float):Void
   {
+    if (kindIndicator == null) return;
     var transform = kindIndicator.colorTransform;
     transform.redMultiplier = red;
     transform.greenMultiplier = green;

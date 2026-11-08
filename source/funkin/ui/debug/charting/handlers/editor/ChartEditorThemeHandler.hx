@@ -211,6 +211,7 @@ class ChartEditorThemeHandler
 
     var ticksWidth:Int = Std.int(ChartEditorState.GRID_SIZE * Conductor.instance.stepsPerMeasure); // 10 minor ticks wide.
     var ticksHeight:Int = Std.int(ChartEditorState.GRID_SIZE); // 1 grid squares tall.
+    state.offsetTickBitmap?.dispose();
     state.offsetTickBitmap = new BitmapData(ticksWidth, ticksHeight, true);
     state.offsetTickBitmap.fillRect(new Rectangle(0, 0, ticksWidth, ticksHeight), 0xFFC4C4C4);
 
@@ -293,6 +294,13 @@ class ChartEditorThemeHandler
     selectionSquareGraphic.persist = true;
     selectionSquareGraphic.destroyOnNoUse = false;
     state.selectionSquareGraphic = selectionSquareGraphic;
+
+    if (state.selectionBoxSprite != null)
+    {
+      state.selectionBoxSprite.loadGraphic(squareBitmap);
+      state.setSelectionBoxBounds();
+      return;
+    }
 
     state.selectionBoxSprite = new FlxSliceSprite(
       state.selectionSquareBitmap,

@@ -26,6 +26,13 @@ class ChartEditorPlaytestHandler
 {
   static var playtestClosedListener:Null<FlxSubState->Void> = null;
 
+  public static function clearPlaytestListener(state:ChartEditorState):Void
+  {
+    var listener:Null<FlxSubState->Void> = playtestClosedListener;
+    if (listener != null) state.subStateClosed.remove(listener);
+    playtestClosedListener = null;
+  }
+
   /**
    * Transitions to the Play State to test the song
    */

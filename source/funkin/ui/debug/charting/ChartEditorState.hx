@@ -98,6 +98,7 @@ import funkin.ui.debug.charting.components.grid.ChartEditorMeasureTicks;
 import funkin.ui.debug.charting.components.grid.ChartEditorDifficultyHeatmap;
 import funkin.ui.debug.charting.selection.ChartEditorCommentItems;
 import funkin.ui.debug.charting.selection.ChartEditorSelectable;
+import funkin.ui.debug.charting.selection.ChartEditorSelectableItems;
 import funkin.ui.debug.charting.selection.ChartEditorSubBeatItems;
 import funkin.ui.debug.charting.selection.ChartEditorTimeChangeItems;
 import funkin.ui.debug.charting.components.playbar.ChartEditorNotePreview;
@@ -1444,6 +1445,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * The list of command previously performed. Used for undoing previous actions.
    */
   var undoHistory:Array<ChartEditorCommand> = [];
+
+  /**
+   * How many commands can be undone.
+   */
+  static final MAX_UNDO_HISTORY:Int = 250;
 
   /**
    * The list of commands that have been undone. Used for redoing previous actions.
@@ -3727,8 +3733,24 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     @:privateAccess
     ChartEditorNoteSprite.noteFrameCollection = null;
     @:privateAccess
+    var eventFrames:Null<flixel.graphics.frames.FlxFramesCollection> = ChartEditorEventSprite.eventFrames;
+    if (eventFrames != null)
+    {
+      for (frame in eventFrames.frames)
+      {
+        if (frame?.parent != null) frame.parent.persist = false;
+      }
+    }
+    @:privateAccess
     ChartEditorEventSprite.eventFrames = null;
 
+    for (toolbox in activeToolboxes)
+    {
+      if (toolbox == null) continue;
+      if (haxe.ui.core.Screen.instance.rootComponents.indexOf(toolbox) != -1) haxe.ui.core.Screen.instance.removeComponent(toolbox, true);
+      else
+        toolbox.disposeComponent();
+    }
     activeToolboxes.clear();
 
     criticalFailure = true;
@@ -3851,6 +3873,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (command.shouldAddToHistory(this))
     {
       undoHistory.push(command);
+      if (undoHistory.length > MAX_UNDO_HISTORY) undoHistory.splice(0, undoHistory.length - MAX_UNDO_HISTORY);
       commandHistoryDirty = true;
     }
     if (purgeRedoStack) redoHistory = [];
@@ -4070,6 +4093,17 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     this.cleanupAutoSave();
 
     this.closeExistingMenu();
+
+    ChartEditorDialogHandler.clearDropHandlers(this);
+    ChartEditorPlaytestHandler.clearPlaytestListener(this);
+    ChartEditorSelectableItems.lastCopied = null;
+    audioInstTrackData.clear();
+    audioVocalTrackData.clear();
+    audioWaveformDataCache.clear();
+    undoHistory = [];
+    redoHistory = [];
+    instrumentalWaveform = null;
+    instrumentalWaveformTrack = null;
 
     // Hide the mouse cursor on other states.
     Cursor.hide();

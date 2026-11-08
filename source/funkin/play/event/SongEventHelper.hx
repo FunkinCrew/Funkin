@@ -8,7 +8,6 @@ import funkin.assets.FunkinBitmapFrontend;
 class SongEventHelper
 {
   public static var EASE_CANVAS_SIZE:Int = 200;
-  public static var easeBitmapMap:Map<String, BitmapData> = new Map<String, BitmapData>();
 
   /**
    * A list of all the easing functions available to song events.
@@ -32,36 +31,6 @@ class SongEventHelper
   public static final EASE_DIRS:Array<String> = ['In', 'Out', 'InOut'];
   public static var easeDotCache:Map<String, Array<FlxSprite>> = new Map<String, Array<FlxSprite>>();
 
-  public static function generateEaseGraphsBitmaps():Void
-  {
-    for (ease in EASE_TYPES)
-    {
-      for (dir in EASE_DIRS)
-      {
-        var func = getEaseFunc(ease, dir);
-        if (func == null) continue;
-        var key = ease + dir;
-        if (!easeBitmapMap.exists(key))
-        {
-          var bd = createBitmapFromFunc(func, key);
-          if (bd != null) easeBitmapMap.set(key, bd);
-        }
-      }
-    }
-    var k = 'INSTANT';
-    if (!easeBitmapMap.exists(k))
-    {
-      var bd = createBitmapFromFunc(null, k);
-      if (bd != null) easeBitmapMap.set(k, bd);
-    }
-    k = 'linear';
-    if (!easeBitmapMap.exists(k))
-    {
-      var bd = createBitmapFromFunc(FlxEase.linear, k);
-      if (bd != null) easeBitmapMap.set(k, bd);
-    }
-  }
-
   static function getEaseFunc(base:String, dir:String):Dynamic
   {
     var f = Reflect.field(FlxEase, base + dir);
@@ -69,10 +38,44 @@ class SongEventHelper
     return FlxEase.linear;
   }
 
-  public static function getEaseBitmap(key:String):BitmapData
+  /**
+   * The key a graph is drawn under, or null if the ease has no graph.
+   */
+  static function graphKey(key:String):Null<String>
   {
-    if (key == 'linearIn' || key == 'linearInOut' || key == 'linearOut') key = 'linear';
-    return easeBitmapMap.get(key);
+    if (key == 'linearIn' || key == 'linearInOut' || key == 'linearOut') return 'linear';
+    if (key == 'linear' || key == 'INSTANT') return key;
+    for (ease in EASE_TYPES)
+    {
+      for (dir in EASE_DIRS)
+      {
+        if (key == ease + dir) return key;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * The graph for an ease.
+   */
+  static function easeGraphic(key:String):Null<flixel.graphics.FlxGraphic>
+  {
+    var drawKey:Null<String> = graphKey(key);
+    if (drawKey == null) return null;
+    var name:String = 'easegfx_' + drawKey;
+    var gfx:Null<flixel.graphics.FlxGraphic> = FlxG.bitmap.get(name);
+    if (gfx != null && FunkinBitmapFrontend.instance.isValid(gfx)) return gfx;
+    var func:Dynamic = (drawKey == 'INSTANT') ? null : resolveEaseFuncForKey(drawKey);
+    var bd:Null<BitmapData> = createBitmapFromFunc(func, drawKey);
+    if (bd == null) return null;
+    gfx = flixel.graphics.FlxGraphic.fromBitmapData(bd, false, name);
+    gfx.destroyOnNoUse = false;
+    return gfx;
+  }
+
+  public static function getEaseBitmap(key:String):Null<BitmapData>
+  {
+    return easeGraphic(key)?.bitmap;
   }
 
   static function getEaseRange(func:Dynamic, samples:Int):
@@ -193,32 +196,18 @@ class SongEventHelper
 
   static var easeGraphCache:Map<String, FlxSprite> = new Map<String, FlxSprite>();
 
-  /**
-   * Get a persistent graphic by name, only copying the bitmap when it isn't cached yet.
-   */
-  static function persistentGraphic(bd:BitmapData, name:String):flixel.graphics.FlxGraphic
-  {
-    var gfx:Null<flixel.graphics.FlxGraphic> = FlxG.bitmap.get(name);
-    if (gfx == null || !FunkinBitmapFrontend.instance.isValid(gfx)) gfx = flixel.graphics.FlxGraphic.fromBitmapData(bd.clone(), false, name);
-    gfx.persist = true;
-  }
-
   public static function createSpriteFromKey(key:String, displayW:Int, displayH:Int):FlxSprite
   {
     var cacheKey:String = '$key:${displayW}x$displayH';
     var cached:Null<FlxSprite> = easeGraphCache.get(cacheKey);
     if (cached != null && liveFrame(cached) != null) return cached;
-    var bd = getEaseBitmap(key);
-    if (bd == null) return null;
-    var gfx = persistentGraphic(bd, 'easegfx_' + key);
+    if (cached != null) cached.destroy();
+    easeGraphCache.remove(cacheKey);
+    var gfx:Null<flixel.graphics.FlxGraphic> = easeGraphic(key);
+    if (gfx == null) return null;
     var spr = new FlxSprite();
     spr.loadGraphic(gfx);
-    if (bd.width > 0 && bd.height > 0)
-    {
-      var sx = displayW / bd.width;
-      var sy = displayH / bd.height;
-      spr.scale.set(sx, sy);
-    }
+    if (gfx.width > 0 && gfx.height > 0) spr.scale.set(displayW / gfx.width, displayH / gfx.height);
     spr.updateHitbox();
     spr.antialiasing = false;
     easeGraphCache.set(cacheKey, spr);
@@ -239,12 +228,13 @@ class SongEventHelper
         }
       }
       if (valid) return easeDotCache.get(key);
+      for (spr in easeDotCache.get(key))
+        spr.destroy();
       easeDotCache.remove(key);
     }
-    var baseBd:BitmapData = getEaseBitmap(key);
-    if (baseBd == null) return null;
+    if (graphKey(key) == null) return null;
     var easeFunc:Dynamic = resolveEaseFuncForKey(key);
-    var sizeH:Int = baseBd.height;
+    var sizeH:Int = EASE_CANVAS_SIZE;
     var range = getEaseRange(easeFunc, sizeH);
     var sprites:Array<FlxSprite> = [];
     for (f in 0...frameCount)
@@ -261,19 +251,20 @@ class SongEventHelper
       }
       if (Math.isNaN(raw)) raw = 0.0;
       var y:Int = getEaseY(raw, sizeH, range);
-      var bd:BitmapData = new BitmapData(dotWidth, sizeH, false, 0xFF202223);
-      var centerX:Int = Std.int(dotWidth / 2);
-      for (dx in -dotRadius...dotRadius + 1) for (dy in -dotRadius...dotRadius + 1)
+      var gfxName:String = 'ease_dot_' + key + '_' + f;
+      var gfx:Null<flixel.graphics.FlxGraphic> = FlxG.bitmap.get(gfxName);
+      if (gfx == null || !FunkinBitmapFrontend.instance.isValid(gfx))
       {
-        var px = centerX + dx;
-        var py = y + dy;
-        if (px >= 0 && px < dotWidth && py >= 0 && py < sizeH) if (dx * dx + dy * dy <= dotRadius * dotRadius) bd.setPixel32(px, py, 0xFFFFFFFF);
+        var bd:BitmapData = new BitmapData(dotWidth, sizeH, false, 0xFF202223);
+        var centerX:Int = Std.int(dotWidth / 2);
+        for (dx in -dotRadius...dotRadius + 1) for (dy in -dotRadius...dotRadius + 1)
+        {
+          var px = centerX + dx;
+          var py = y + dy;
+          if (px >= 0 && px < dotWidth && py >= 0 && py < sizeH) if (dx * dx + dy * dy <= dotRadius * dotRadius) bd.setPixel32(px, py, 0xFFFFFFFF);
+        }
+        gfx = flixel.graphics.FlxGraphic.fromBitmapData(bd, false, gfxName);
       }
-      var gfx:Null<flixel.graphics.FlxGraphic> = FlxG.bitmap.get('ease_dot_' + key + '_' + f);
-      if (gfx == null || !FunkinBitmapFrontend.instance.isValid(gfx)) gfx = flixel.graphics.FlxGraphic.fromBitmapData(bd, false, 'ease_dot_' + key + '_' + f);
-      else
-        bd.dispose();
-      gfx.persist = true;
       gfx.destroyOnNoUse = false;
       var spr = new FlxSprite();
       spr.loadGraphic(gfx);

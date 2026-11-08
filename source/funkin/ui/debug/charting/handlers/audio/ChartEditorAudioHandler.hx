@@ -324,7 +324,14 @@ class ChartEditorAudioHandler
 
   public static function stopExistingVocals(state:ChartEditorState):Void
   {
+    var oldVoices:Array<FunkinSound> = state.audioVocalTrackGroup.members.copy();
     state.audioVocalTrackGroup.clear();
+    for (voice in oldVoices)
+    {
+      if (voice == null) continue;
+      FlxG.sound.list.remove(voice, true);
+      voice.destroy();
+    }
     if (state.audioWaveforms != null)
     {
       for (waveform in state.audioWaveforms.members)

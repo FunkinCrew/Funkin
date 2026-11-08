@@ -551,11 +551,9 @@ class ChartEditorUIHandler
     state.menubarItemLoadInstrumental.onClick = _ ->
     {
       var dialog = state.openUploadInstDialog(true);
-      // Ensure instrumental and vocals are reloaded properly.
       dialog.onDialogClosed = function(_)
       {
         state.isHaxeUIDialogOpen = false;
-        state.switchToCurrentInstrumental();
         state.postLoadInstrumental();
       }
     };

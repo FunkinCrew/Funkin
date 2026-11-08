@@ -230,6 +230,13 @@ class ChartEditorEventSprite extends FlxSprite
    */
   var chainCountText:Null<FlxText> = null;
 
+  override public function destroy():Void
+  {
+    chainCountText?.destroy();
+    chainCountText = null;
+    super.destroy();
+  }
+
   override public function draw():Void
   {
     super.draw();

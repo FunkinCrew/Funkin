@@ -152,8 +152,6 @@ class InitState extends FlxState
       funkin.util.mobile.FNFLoaderProvider.init();
       #end
 
-      SongEventHelper.generateEaseGraphsBitmaps();
-
       // This ain't a pixel art game! (most of the time)
       FlxSprite.defaultAntialiasing = true;
 

@@ -1788,6 +1788,7 @@ class ChartEditorDialogHandler
     #if (desktop || (js && html5))
     if (!FlxG.stage.window.onDropFile.has(onDropFile)) FlxG.stage.window.onDropFile.add(onDropFile);
 
+    pruneDropHandlers();
     dropHandlers.push(dropTarget);
     #else
     trace('addDropHandler not implemented for this platform');
@@ -1816,6 +1817,16 @@ class ChartEditorDialogHandler
     #end
   }
 
+  /**
+   * Prune drop handlers whose component was disposed.
+   */
+  static function pruneDropHandlers():Void
+  {
+    #if (desktop || (js && html5))
+    dropHandlers = dropHandlers.filter(target -> @:privateAccess !target.component._isDisposed);
+    #end
+  }
+
   static final EPSILON:Float = 0.01;
 
   static function onDropFile(file:lime.utils.DroppedFile, state:String, x:Float, y:Float):Void
@@ -1823,6 +1834,7 @@ class ChartEditorDialogHandler
     // a VERY short timer to wait for the mouse position to update
     new FlxTimer().start(EPSILON, function(_)
     {
+      pruneDropHandlers();
       for (handler in dropHandlers)
       {
         if (handler.component.hitTest(FlxG.mouse.viewX, FlxG.mouse.viewY))
