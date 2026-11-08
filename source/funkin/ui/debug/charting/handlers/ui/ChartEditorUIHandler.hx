@@ -576,11 +576,8 @@ class ChartEditorUIHandler
     {
       var volume:Float = event.value.toFloat() / 100.0;
       state.metronomeVolume = volume;
-      if (volume <= 0.0)
-      {
-        state.metronomeMuted = true;
-        state.menubarItemMuteMetronome.selected = true;
-      }
+      state.metronomeMuted = volume <= 0.0;
+      state.menubarItemMuteMetronome.selected = state.metronomeMuted;
       state.preferencesLabelVolumeMetronome.text = 'Metronome - ${Math.round(event.value)}%';
     };
     state.preferencesVolumeMetronome.onRightClick = _ ->
@@ -589,6 +586,8 @@ class ChartEditorUIHandler
       {
         state.metronomeVolume = 1.0;
         state.preferencesVolumeMetronome.value = 100.0;
+        state.metronomeMuted = false;
+        state.menubarItemMuteMetronome.selected = false;
         state.preferencesLabelVolumeMetronome.text = 'Metronome - 100%';
       }
       else
@@ -607,11 +606,8 @@ class ChartEditorUIHandler
     {
       var volume:Float = event.value.toFloat() / 100.0;
       state.hitsoundVolumePlayer = volume;
-      if (state.hitsoundVolumePlayer <= 0.0 && state.hitsoundVolumeOpponent <= 0.0)
-      {
-        state.hitsoundsMuted = true;
-        state.menubarItemMuteHitsounds.selected = true;
-      }
+      state.hitsoundsMuted = state.hitsoundVolumePlayer <= 0.0 && state.hitsoundVolumeOpponent <= 0.0;
+      state.menubarItemMuteHitsounds.selected = state.hitsoundsMuted;
       state.preferencesLabelVolumeHitsoundPlayer.text = 'Player - ${Math.round(event.value)}%';
     };
     state.preferencesVolumeHitsoundPlayer.onRightClick = _ ->
@@ -620,17 +616,16 @@ class ChartEditorUIHandler
       {
         state.hitsoundVolumePlayer = 1.0;
         state.preferencesVolumeHitsoundPlayer.value = 100.0;
+        state.hitsoundsMuted = false;
+        state.menubarItemMuteHitsounds.selected = false;
         state.preferencesLabelVolumeHitsoundPlayer.text = 'Player - 100%';
       }
       else
       {
         state.hitsoundVolumePlayer = 0.0;
         state.preferencesVolumeHitsoundPlayer.value = 0.0;
-        if (state.hitsoundVolumeOpponent <= 0.0)
-        {
-          state.hitsoundsMuted = true;
-          state.menubarItemMuteHitsounds.selected = true;
-        }
+        state.hitsoundsMuted = state.hitsoundVolumeOpponent <= 0.0;
+        state.menubarItemMuteHitsounds.selected = state.hitsoundsMuted;
         state.preferencesLabelVolumeHitsoundPlayer.text = 'Player - 0%';
       }
     }
@@ -641,11 +636,8 @@ class ChartEditorUIHandler
     {
       var volume:Float = event.value.toFloat() / 100.0;
       state.hitsoundVolumeOpponent = volume;
-      if (state.hitsoundVolumePlayer <= 0.0 && state.hitsoundVolumeOpponent <= 0.0)
-      {
-        state.hitsoundsMuted = true;
-        state.menubarItemMuteHitsounds.selected = true;
-      }
+      state.hitsoundsMuted = state.hitsoundVolumePlayer <= 0.0 && state.hitsoundVolumeOpponent <= 0.0;
+      state.menubarItemMuteHitsounds.selected = state.hitsoundsMuted;
       state.preferencesLabelVolumeHitsoundOpponent.text = 'Opponent - ${Math.round(event.value)}%';
     };
     state.preferencesVolumeHitsoundOpponent.onRightClick = _ ->
@@ -654,17 +646,16 @@ class ChartEditorUIHandler
       {
         state.hitsoundVolumeOpponent = 1.0;
         state.preferencesVolumeHitsoundOpponent.value = 100.0;
+        state.hitsoundsMuted = false;
+        state.menubarItemMuteHitsounds.selected = false;
         state.preferencesLabelVolumeHitsoundOpponent.text = 'Opponent - 100%';
       }
       else
       {
         state.hitsoundVolumeOpponent = 0.0;
         state.preferencesVolumeHitsoundOpponent.value = 0.0;
-        if (state.hitsoundVolumePlayer <= 0.0)
-        {
-          state.hitsoundsMuted = true;
-          state.menubarItemMuteHitsounds.selected = true;
-        }
+        state.hitsoundsMuted = state.hitsoundVolumePlayer <= 0.0;
+        state.menubarItemMuteHitsounds.selected = state.hitsoundsMuted;
         state.preferencesLabelVolumeHitsoundOpponent.text = 'Opponent - 0%';
       }
     }
@@ -675,11 +666,8 @@ class ChartEditorUIHandler
     {
       var volume:Float = event.value.toFloat() / 100.0;
       if (state.audioInstTrack != null) state.audioInstTrack.volume = volume;
-      if (volume <= 0.0)
-      {
-        state.instrumentalMuted = true;
-        state.menubarItemMuteInstrumental.selected = true;
-      }
+      state.instrumentalMuted = volume <= 0.0;
+      state.menubarItemMuteInstrumental.selected = state.instrumentalMuted;
       state.preferencesLabelVolumeInstrumental.text = 'Instrumental - ${Math.round(event.value)}%';
     };
     state.preferencesVolumeInstrumental.onRightClick = _ ->
@@ -688,6 +676,8 @@ class ChartEditorUIHandler
       {
         if (state.audioInstTrack != null) state.audioInstTrack.volume = 1.0;
         state.preferencesVolumeInstrumental.value = 100.0;
+        state.instrumentalMuted = false;
+        state.menubarItemMuteInstrumental.selected = false;
         state.preferencesLabelVolumeInstrumental.text = 'Instrumental - 100%';
       }
       else
@@ -705,11 +695,8 @@ class ChartEditorUIHandler
     {
       var volume:Float = event.value.toFloat() / 100.0;
       state.audioVocalTrackGroup.playerVolume = volume;
-      if (volume <= 0.0)
-      {
-        state.playerVocalsMuted = true;
-        state.menubarItemMutePlayerVocals.selected = true;
-      }
+      state.playerVocalsMuted = volume <= 0.0;
+      state.menubarItemMutePlayerVocals.selected = state.playerVocalsMuted;
       state.preferencesLabelVolumeVocalsPlayer.text = 'Player - ${Math.round(event.value)}%';
     };
     state.preferencesVolumeVocalsPlayer.onRightClick = _ ->
@@ -718,6 +705,8 @@ class ChartEditorUIHandler
       {
         state.audioVocalTrackGroup.playerVolume = 1.0;
         state.preferencesVolumeVocalsPlayer.value = 100.0;
+        state.playerVocalsMuted = false;
+        state.menubarItemMutePlayerVocals.selected = false;
         state.preferencesLabelVolumeVocalsPlayer.text = 'Player - 100%';
       }
       else
@@ -735,11 +724,8 @@ class ChartEditorUIHandler
     {
       var volume:Float = event.value.toFloat() / 100.0;
       state.audioVocalTrackGroup.opponentVolume = volume;
-      if (volume <= 0.0)
-      {
-        state.opponentVocalsMuted = true;
-        state.menubarItemMuteOpponentVocals.selected = true;
-      }
+      state.opponentVocalsMuted = volume <= 0.0;
+      state.menubarItemMuteOpponentVocals.selected = state.opponentVocalsMuted;
       state.preferencesLabelVolumeVocalsOpponent.text = 'Opponent - ${Math.round(event.value)}%';
     };
     state.preferencesVolumeVocalsOpponent.onRightClick = _ ->
@@ -748,6 +734,8 @@ class ChartEditorUIHandler
       {
         state.audioVocalTrackGroup.opponentVolume = 1.0;
         state.preferencesVolumeVocalsOpponent.value = 100.0;
+        state.opponentVocalsMuted = false;
+        state.menubarItemMuteOpponentVocals.selected = false;
         state.preferencesLabelVolumeVocalsOpponent.text = 'Opponent - 100%';
       }
       else

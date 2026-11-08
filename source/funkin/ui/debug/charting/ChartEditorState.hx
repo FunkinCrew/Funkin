@@ -1177,7 +1177,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     var wasMuted:Bool = hitsoundsMuted;
     hitsoundsMuted = value;
-    if (wasMuted && !value)
+    if (wasMuted && !value && hitsoundVolumePlayer <= 0.0 && hitsoundVolumeOpponent <= 0.0)
     {
       restoreAudioVolume(hitsoundVolumePlayer, preferencesVolumeHitsoundPlayer, preferencesLabelVolumeHitsoundPlayer, 'Player', () -> hitsoundVolumePlayer = 1.0);
       restoreAudioVolume(hitsoundVolumeOpponent, preferencesVolumeHitsoundOpponent, preferencesLabelVolumeHitsoundOpponent, 'Opponent', () -> hitsoundVolumeOpponent = 1.0);
