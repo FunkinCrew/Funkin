@@ -282,8 +282,9 @@ class ChartEditorNoteSprite extends FlxSprite
 
   function setIndicatorTint(red:Float, green:Float, blue:Float, alpha:Float):Void
   {
-    if (kindIndicator == null) return;
-    var transform = kindIndicator.colorTransform;
+    var indicator:Null<FlxText> = kindIndicator;
+    if (indicator == null) return;
+    var transform = indicator.colorTransform;
     transform.redMultiplier = red;
     transform.greenMultiplier = green;
     transform.blueMultiplier = blue;
