@@ -4077,6 +4077,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     ChartEditorScaleMode.restore();
     ChartEditorCommandPalette.instance?.close();
     funkin.util.plugins.VolumePlugin.ignoreWithControl = false;
+    ChartEditorPlaytestHandler.clearPlaytestListener(this);
     super.destroy();
 
     performCleanup();
@@ -4087,7 +4088,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     this.closeExistingMenu();
 
     ChartEditorDialogHandler.clearDropHandlers(this);
-    ChartEditorPlaytestHandler.clearPlaytestListener(this);
     ChartEditorSelectableItems.lastCopied = null;
     audioInstTrackData.clear();
     audioVocalTrackData.clear();
