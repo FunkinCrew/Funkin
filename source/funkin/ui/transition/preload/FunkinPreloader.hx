@@ -740,6 +740,9 @@ class FunkinPreloader extends FlxBasePreloader
         if (completeTime <= 0)
         {
           completeTime = elapsed;
+
+          // Show popups for any registry errors or script errors we encountered during that.
+          funkin.modding.PolymodErrorHandler.printQueuedErrors();
         }
 
         return 1.0;
