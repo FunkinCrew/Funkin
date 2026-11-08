@@ -40,7 +40,8 @@ class ScrollVelocityTimeline
         from: 1,
         to: 1,
         duration: 0,
-        ease: null
+        ease: null,
+        setStart: false
       }
     ];
 
@@ -79,7 +80,8 @@ class ScrollVelocityTimeline
         from: from,
         to: velocity,
         duration: duration,
-        ease: (duration > 0) ? easeFunction : null
+        ease: (duration > 0) ? easeFunction : null,
+        setStart: (event.getBool('useStart') ?? false) && duration > 0
       });
     }
 
@@ -98,6 +100,11 @@ class ScrollVelocityTimeline
     return Math.abs(velocity - 1) <= NORMAL_VELOCITY_RANGE;
   }
 
+  static function isAway(segment:ScrollVelocitySegment):Bool
+  {
+    return !isNormal(segment.to) || (segment.setStart && !isNormal(segment.from));
+  }
+
   /**
    * Find each stretch away from 1x and how far off the notes would be at its end.
    */
@@ -107,7 +114,7 @@ class ScrollVelocityTimeline
     var index:Int = 1;
     while (index < segments.length)
     {
-      if (isNormal(segments[index].to))
+      if (!isAway(segments[index]))
       {
         index++;
         continue;
@@ -115,7 +122,7 @@ class ScrollVelocityTimeline
 
       var start:Float = segments[index].time;
       var back:Int = index + 1;
-      while (back < segments.length && !isNormal(segments[back].to))
+      while (back < segments.length && isAway(segments[back]))
         back++;
 
       if (back >= segments.length)
@@ -277,6 +284,8 @@ typedef ScrollVelocitySegment =
   var to:Float;
   var duration:Float;
   var ease:Null<Float->Float>;
+
+  var setStart:Bool;
 }
 
 /**
