@@ -35,6 +35,7 @@ import haxe.ui.components.Range;
 import haxe.ui.containers.dialogs.CollapsibleDialog;
 import haxe.ui.containers.menus.Menu;
 import haxe.ui.containers.menus.MenuItem;
+import haxe.ui.core.Screen;
 import haxe.ui.events.DragEvent;
 import haxe.ui.events.UIEvent;
 using Lambda;
@@ -131,6 +132,7 @@ class ChartEditorUIHandler
     state.playbarHeadLayout.playbarHead.onDragEnd = function(_:DragEvent)
     {
       state.playbarHeadDragging = false;
+      @:privateAccess Screen.instance.checkResetCursor();
 
       // If we were dragging the playhead while the song was playing, resume playing.
       if (state.playbarHeadDraggingWasPlaying)
