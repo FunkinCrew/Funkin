@@ -629,7 +629,7 @@ class ChartEditorKeybindHandler
       {
         var targetMs:Float = state.scrollPositionInMs + state.playheadPositionInMs;
         var targetStep:Float = Conductor.instance.getTimeInSteps(targetMs);
-        var targetSnappedStep:Float = Math.floor(targetStep / state.noteSnapRatio) * state.noteSnapRatio;
+        var targetSnappedStep:Float = Math.round(targetStep / state.noteSnapRatio) * state.noteSnapRatio;
         var targetSnappedMs:Float = Conductor.instance.getStepTimeInMs(targetSnappedStep);
         targetSnappedMs;
       }

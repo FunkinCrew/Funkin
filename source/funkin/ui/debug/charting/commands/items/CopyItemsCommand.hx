@@ -53,12 +53,7 @@ class CopyItemsCommand implements ChartEditorCommand
     for (event in events) if (event.time < earliest) earliest = event.time;
     for (time in subBeats) if (time < earliest) earliest = time;
 
-    var timeOffset:Float = 0;
-    if (earliest != Math.POSITIVE_INFINITY)
-    {
-      var step:Float = Conductor.instance.getTimeInSteps(earliest);
-      timeOffset = Conductor.instance.getStepTimeInMs(Math.floor(step / state.noteSnapRatio + 0.0001) * state.noteSnapRatio);
-    }
+    var timeOffset:Float = (earliest != Math.POSITIVE_INFINITY) ? earliest : 0;
 
     var sortedSubBeats:Array<Float> = subBeats.copy();
     sortedSubBeats.sort((a, b) -> a < b ? -1 : (a > b ? 1 : 0));

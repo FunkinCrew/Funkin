@@ -243,7 +243,7 @@ class ChartEditorCommandPaletteCommands
     if (!snapped) return targetMs;
 
     var targetStep:Float = Conductor.instance.getTimeInSteps(targetMs);
-    var targetSnappedStep:Float = Math.floor(targetStep / state.noteSnapRatio) * state.noteSnapRatio;
+    var targetSnappedStep:Float = Math.round(targetStep / state.noteSnapRatio) * state.noteSnapRatio;
     return Conductor.instance.getStepTimeInMs(targetSnappedStep);
   }
 
