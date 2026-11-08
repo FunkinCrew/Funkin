@@ -24,6 +24,7 @@ import haxe.ui.containers.dialogs.CollapsibleDialog;
 import haxe.ui.containers.menus.MenuCheckBox;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialog.DialogEvent;
+import haxe.ui.core.Component;
 import haxe.ui.core.Screen;
 import haxe.ui.events.DragEvent;
 import haxe.ui.focus.FocusManager;
@@ -188,20 +189,28 @@ class ChartEditorToolboxHandler
     }
   }
 
+  /**
+   * Whether a toolbox is open.
+   */
+  public static function isToolboxOnScreen(toolbox:Null<Component>):Bool
+  {
+    return toolbox != null && Screen.instance.rootComponents.indexOf(toolbox) != -1;
+  }
+
   public static function refreshToolbox(state:ChartEditorState, id:String):Void
   {
     if (id == ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT)
     {
       var eventDataToolbox:Null<ChartEditorEventDataToolbox> = cast state.activeToolboxes.get(ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT);
-      if (eventDataToolbox != null) eventDataToolbox.refreshOptionLists();
+      if (isToolboxOnScreen(eventDataToolbox)) eventDataToolbox.refreshOptionLists();
       refreshToolbox(state, ChartEditorState.CHART_EDITOR_TOOLBOX_TIMING_LAYOUT);
       var difficultyToolbox:Null<ChartEditorDifficultyToolbox> = cast state.activeToolboxes.get(ChartEditorState.CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
-      if (difficultyToolbox != null) difficultyToolbox.refreshDetails();
+      if (isToolboxOnScreen(difficultyToolbox)) difficultyToolbox.refreshDetails();
     }
 
     var toolbox:Null<ChartEditorBaseToolbox> = cast state.activeToolboxes.get(id);
 
-    if (toolbox == null) return;
+    if (!isToolboxOnScreen(toolbox)) return;
 
     if (toolbox != null)
     {

@@ -856,6 +856,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
     // Ensure we have a cleared preview reference for rebuilt form
     easeGraphImage = null;
     easeDotImage = null;
+    _lastEaseKey = null;
     var _needEasePreview:Bool = false;
 
     for (field in schema)
@@ -1035,7 +1036,6 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
         {
           var drp:DropDown = cast event.target;
           value = drp.selectedItem?.value ?? field.defaultValue;
-          updateEasePreview();
         }
         else if (field.type == BOOL)
         {
@@ -1113,6 +1113,8 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
 
   var currentEaseHBox:HBox = null;
 
+  var _lastEaseKey:Null<String> = null;
+
   function updateEasePreview():Void
   {
     if (easeGraphImage == null || easeDotImage == null) return;
@@ -1124,6 +1126,8 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
     var easeDir:String = easeDirStr ?? SongEventHelper.resolveEaseDirFromKey(easeStr);
 
     var easeKey:String = '$easeType$easeDir';
+    if (easeKey == _lastEaseKey) return;
+    _lastEaseKey = easeKey;
 
     // Hide preview when easing indicates a non-visual/legacy type such as "CLASSIC"
     if (easeType != null && (easeType == 'CLASSIC' || easeType == 'INSTANT'))
@@ -1214,11 +1218,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
     // Hardcoded behavior for a specific field lmao
     var easeDirField:Component = toolboxEventsDataBox.findComponent('containereaseDir');
 
-    if (easeDirField != null)
-    {
-      trace('Toggling easeDir visibility: ${visible}');
-      easeDirField.hidden = !visible;
-    }
+    if (easeDirField != null && easeDirField.hidden == visible) easeDirField.hidden = !visible;
   }
 
   /**

@@ -191,15 +191,26 @@ class SongEventHelper
     return (frame != null && frame.frame != null) ? frame : null;
   }
 
+  static var easeGraphCache:Map<String, FlxSprite> = new Map<String, FlxSprite>();
+
+  /**
+   * Get a persistent graphic by name, only copying the bitmap when it isn't cached yet.
+   */
+  static function persistentGraphic(bd:BitmapData, name:String):flixel.graphics.FlxGraphic
+  {
+    var gfx:Null<flixel.graphics.FlxGraphic> = FlxG.bitmap.get(name);
+    if (gfx == null || !FunkinBitmapFrontend.instance.isValid(gfx)) gfx = flixel.graphics.FlxGraphic.fromBitmapData(bd.clone(), false, name);
+    gfx.persist = true;
+  }
+
   public static function createSpriteFromKey(key:String, displayW:Int, displayH:Int):FlxSprite
   {
+    var cacheKey:String = '$key:${displayW}x$displayH';
+    var cached:Null<FlxSprite> = easeGraphCache.get(cacheKey);
+    if (cached != null && liveFrame(cached) != null) return cached;
     var bd = getEaseBitmap(key);
     if (bd == null) return null;
-    var graphicName = 'easegfx_' + key;
-    var gfx = FlxG.bitmap.add(bd, true, graphicName);
-
-    gfx.persist = true;
-    gfx.destroyOnNoUse = false;
+    var gfx = persistentGraphic(bd, 'easegfx_' + key);
     var spr = new FlxSprite();
     spr.loadGraphic(gfx);
     if (bd.width > 0 && bd.height > 0)
@@ -210,6 +221,7 @@ class SongEventHelper
     }
     spr.updateHitbox();
     spr.antialiasing = false;
+    easeGraphCache.set(cacheKey, spr);
     return spr;
   }
 
@@ -257,8 +269,10 @@ class SongEventHelper
         var py = y + dy;
         if (px >= 0 && px < dotWidth && py >= 0 && py < sizeH) if (dx * dx + dy * dy <= dotRadius * dotRadius) bd.setPixel32(px, py, 0xFFFFFFFF);
       }
-      var gfxName = 'ease_dot_' + key + '_' + f;
-      var gfx = FlxG.bitmap.add(bd, true, gfxName);
+      var gfx:Null<flixel.graphics.FlxGraphic> = FlxG.bitmap.get('ease_dot_' + key + '_' + f);
+      if (gfx == null || !FunkinBitmapFrontend.instance.isValid(gfx)) gfx = flixel.graphics.FlxGraphic.fromBitmapData(bd, false, 'ease_dot_' + key + '_' + f);
+      else
+        bd.dispose();
       gfx.persist = true;
       gfx.destroyOnNoUse = false;
       var spr = new FlxSprite();

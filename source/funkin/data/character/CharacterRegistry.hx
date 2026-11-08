@@ -141,7 +141,24 @@ class CharacterRegistry extends BaseRegistry<BaseCharacter, CharacterData, Chara
    * Returns the idle frame of a character.
    * TODO: Too similar to the other function in PixellatedIcon and really needs a damn rewrite.
    */
+  static var pixelIconCache:Map<String, Null<FlxFrame>> = new Map<String, Null<FlxFrame>>();
+
+  /**
+   * Cached version of `findCharPixelIconAsset`.
+   */
   public static function getCharPixelIconAsset(char:String):Null<FlxFrame>
+  {
+    if (pixelIconCache.exists(char))
+    {
+      var cached:Null<FlxFrame> = pixelIconCache.get(char);
+      if (cached == null || (cached.parent != null && funkin.assets.FunkinBitmapFrontend.instance.isValid(cached.parent))) return cached;
+    }
+    var frame:Null<FlxFrame> = findCharPixelIconAsset(char);
+    pixelIconCache.set(char, frame);
+    return frame;
+  }
+
+  static function findCharPixelIconAsset(char:String):Null<FlxFrame>
   {
     var charPath:String = 'ui/freeplay/characters/';
 
@@ -199,6 +216,7 @@ class CharacterRegistry extends BaseRegistry<BaseCharacter, CharacterData, Chara
   public override function loadEntries():Void
   {
     // Instead of loading the entries, we load the character data.
+    pixelIconCache.clear();
     log(' INFO '.info() + 'Parsing all entries...');
 
     var charIdList:Array<String> = fetchEntryIdsFromFiles();

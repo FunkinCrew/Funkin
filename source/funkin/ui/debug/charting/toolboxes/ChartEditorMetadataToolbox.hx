@@ -267,6 +267,17 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     if (stepper.value != value) stepper.value = value;
   }
 
+  var lastCharSignature:Null<String> = null;
+
+  /**
+   * Select a dropdown item only when it isn't already selected.
+   */
+  static function selectIfChanged(dropDown:DropDown, item:{id:String, text:String}):Void
+  {
+    if (dropDown.selectedItem?.id == item.id) return;
+    dropDown.value = item;
+  }
+
   override public function refresh():Void
   {
     super.refresh();
@@ -275,9 +286,6 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     inputSongName.value = chartEditorState.currentSongMetadata.songName;
     inputSongArtist.value = chartEditorState.currentSongMetadata.artist;
     inputSongCharter.value = chartEditorState.currentSongMetadata.charter;
-    inputStage.value = chartEditorState.currentSongMetadata.playData.stage;
-    inputNoteStyle.value = chartEditorState.currentSongMetadata.playData.noteStyle;
-    inputAlbum.value = chartEditorState.currentSongMetadata.playData.album;
 
     refreshingAudio = true;
     setStepper(inputAudioOffset, msToSeconds(chartEditorState.currentInstrumentalOffset));
@@ -290,42 +298,48 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     var stage:Null<Stage> = StageRegistry.instance.fetchEntry(stageId);
     if (inputStage != null)
     {
-      inputStage.value = (stage != null) ? {
+      selectIfChanged(inputStage, (stage != null) ? {
         id: stage.id,
         text: stage.stageName
       } : {
         id: 'mainStage',
         text: 'Main Stage'
-        };
+        });
     }
 
     var noteStyleId:String = chartEditorState.currentSongNoteStyle;
     var noteStyle:Null<NoteStyle> = NoteStyleRegistry.instance.fetchEntry(noteStyleId);
     if (inputNoteStyle != null)
     {
-      inputNoteStyle.value = (noteStyle != null) ? {
+      selectIfChanged(inputNoteStyle, (noteStyle != null) ? {
         id: noteStyle.id,
         text: noteStyle.getName()
       } : {
         id: 'Funkin',
         text: "Funkin'"
-        };
+        });
     }
 
     var albumId:String = chartEditorState.currentSongAlbum;
     var album:Null<Album> = AlbumRegistry.instance.fetchEntry(albumId);
     if (inputAlbum != null)
     {
-      inputAlbum.value = (album != null) ? {
+      selectIfChanged(inputAlbum, (album != null) ? {
         id: album.id,
         text: album.getAlbumName()
       } : {
         id: 'volume1',
         text: 'Volume 1'
-        };
+        });
     }
 
     var LIMIT = 6;
+
+    var characters = chartEditorState.currentSongMetadata.playData.characters;
+    var charSignature:String = '${characters.opponent}|${characters.girlfriend}|${characters.player}';
+
+    if (charSignature == lastCharSignature) return;
+    lastCharSignature = charSignature;
 
     var charDataOpponent:Null<CharacterData> = CharacterRegistry.instance.fetchCharacterData(
       chartEditorState.currentSongMetadata.playData.characters.opponent

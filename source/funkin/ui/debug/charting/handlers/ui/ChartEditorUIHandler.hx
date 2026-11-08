@@ -805,8 +805,12 @@ class ChartEditorUIHandler
   public static function handlePlayerPreviewToolbox(state:ChartEditorState):Void
   {
     // Manage the Select Difficulty tree view.
-    var charPreviewToolbox:Null<CollapsibleDialog> = state.getToolboxUnCast(ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT);
-    if (charPreviewToolbox == null) return;
+    var charPreviewToolbox:Null<CollapsibleDialog> = state.activeToolboxes.get(ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT);
+    if (!ChartEditorToolboxHandler.isToolboxOnScreen(charPreviewToolbox))
+    {
+      state.currentPlayerCharacterPlayer = null;
+      return;
+    }
     // TODO: Re-enable the player preview once we figure out the performance issues.
     var charPlayer:Null<CharacterPlayer> = charPreviewToolbox.findComponent('charPlayer');
     if (charPlayer == null) return;
@@ -841,8 +845,12 @@ class ChartEditorUIHandler
   public static function handleOpponentPreviewToolbox(state:ChartEditorState):Void
   {
     // Manage the Select Difficulty tree view.
-    var charPreviewToolbox:Null<CollapsibleDialog> = state.getToolboxUnCast(ChartEditorState.CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT);
-    if (charPreviewToolbox == null) return;
+    var charPreviewToolbox:Null<CollapsibleDialog> = state.activeToolboxes.get(ChartEditorState.CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT);
+    if (!ChartEditorToolboxHandler.isToolboxOnScreen(charPreviewToolbox))
+    {
+      state.currentOpponentCharacterPlayer = null;
+      return;
+    }
 
     // TODO: Re-enable the player preview once we figure out the performance issues.
     var charPlayer:Null<CharacterPlayer> = charPreviewToolbox.findComponent('charOpponent');

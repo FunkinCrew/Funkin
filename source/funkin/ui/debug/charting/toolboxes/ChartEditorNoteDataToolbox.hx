@@ -485,7 +485,10 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
     }
     if (target == hoveredRow) return;
     hoveredRow = target;
-    refresh();
+
+    var active:Null<String> = activeKind();
+    for (view in rowViews)
+      styleRow(view.row, view.kind == active || (view.kind == CUSTOM_ROW && !toolboxNotesCustomBox.hidden));
   }
 
   static function setText(label:Label, text:String):Void
