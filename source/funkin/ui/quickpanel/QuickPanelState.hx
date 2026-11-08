@@ -22,6 +22,7 @@ import funkin.graphics.shaders.BoilShader;
 import funkin.input.Controls;
 import funkin.ui.UIStateMachine;
 import funkin.data.quickpanel.PanelRegistry;
+import funkin.data.quickpanel.PanelData.PanelButtonAnim;
 import funkin.ui.quickpanel.QuickPanelTypes;
 import funkin.ui.transition.Transition;
 import funkin.util.EaseUtil;
@@ -413,6 +414,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
    *
    */
   public var panelId(default, null):String;
+
   public var pullTabEnabled(default, null):Bool;
 
   var buttonData:Array<QuickPanelButtonData> = [];
@@ -640,7 +642,23 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
    */
   public function startTransition(data:QuickPanelButtonData):Void
   {
-    selectedIcon.loadGraphic(Paths.image('ui/quick-panel/icons/${data.icon}').toFlxGraphicAsset());
+    var animData:PanelButtonAnim = data.buttonAnim ?? PanelEntry.DEFAULT_ANIM_DATA;
+    var acceptAnimName:Null<String> = null;
+
+    switch (animData.animType)
+    {
+      case SPARROW_ATLAS:
+        selectedIcon.loadSparrow('ui/quick-panel/icons/${data.icon}');
+        acceptAnimName = animData.acceptName ?? "accept";
+        selectedIcon.animation.addByPrefix(acceptAnimName, animData.acceptPrefix ?? "accept0", 24, false);
+        // Hold on the first frame until the icon pops in at the center.
+        selectedIcon.animation.play(acceptAnimName, true);
+        selectedIcon.animation.pause();
+
+      default:
+        selectedIcon.loadGraphic(Paths.image('ui/quick-panel/icons/${data.icon}').toFlxGraphicAsset());
+    }
+
     selectedIcon.scale.set(ICON_SCALE_START, ICON_SCALE_START);
     selectedIcon.antialiasing = true;
     selectedIcon.updateHitbox();
@@ -651,6 +669,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     afterFrames(8, () ->
     {
       selectedIcon.visible = true;
+      if (acceptAnimName != null) selectedIcon.animation.play(acceptAnimName, true);
       playIconBump();
 
       selectedSplash.visible = true;

@@ -11,6 +11,7 @@ import funkin.ui.quickpanel.QuickPanelState;
 import funkin.ui.quickpanel.QuickPanelTypes;
 import funkin.util.EaseUtil;
 import funkin.util.TouchUtil;
+import funkin.data.quickpanel.PanelData.PanelButtonAnim;
 
 /**
  * One entry in the quick panel.
@@ -177,6 +178,13 @@ class QuickPanelButton extends FunkinSpriteGroup
    */
   public var viewAlpha(default, set):Float = 1;
 
+  public var isAnimated:Bool = false;
+
+  /**
+   * The animation data this button's icon was built with.
+   */
+  public var animData(default, null):PanelButtonAnim;
+
   var fadeAlpha:Float = 1;
 
   /**
@@ -259,17 +267,7 @@ class QuickPanelButton extends FunkinSpriteGroup
     buttonText.offset.y = -6;
     add(buttonText);
 
-    icon = new FunkinSprite(0, 0);
-    icon.loadGraphic(Paths.image('ui/quick-panel/icons/${data.icon}'));
-    icon.antialiasing = true;
-    icon.setGraphicSize(ICON_WIDTH, ICON_WIDTH);
-    add(icon);
-
-    baseIconScaleX = icon.scale.x;
-    baseIconScaleY = icon.scale.y;
-    icon.localScale.x = baseIconScaleX;
-    icon.localScale.y = baseIconScaleY;
-    icon.updateHitbox();
+    buildIcon(data.buttonAnim ?? funkin.ui.quickpanel.PanelEntry.DEFAULT_ANIM_DATA);
 
     boilShaderIcon = new BoilShader();
     boilShaderIcon.bumpTimer();
@@ -282,6 +280,39 @@ class QuickPanelButton extends FunkinSpriteGroup
     resetOrigin();
     updateSelected();
     setFadeAlpha(1.0);
+  }
+
+  function buildIcon(animData:PanelButtonAnim)
+  {
+    this.animData = animData;
+    icon = new FunkinSprite(0, 0);
+
+    switch (animData.animType)
+    {
+      case SPARROW_ATLAS:
+        isAnimated = true;
+        // TODO: Framerate, looping, etc. in data json, plus make this more flexible.
+        icon.loadSparrow('ui/quick-panel/icons/${data.icon}');
+        icon.animation.addByIndices(animData.idleName ?? "idle" + '-deselected', animData.idlePrefix ?? "idle0", [0], '', 24, true);
+        icon.animation.addByPrefix(animData.idleName ?? "idle", animData.idlePrefix ?? "idle0", 24, true);
+        icon.animation.addByPrefix(animData.acceptName ?? "accept", animData.acceptPrefix ?? "accept0", 24);
+        icon.animation.play('idle-deselected');
+
+      case ANIMATE_ATLAS:
+        // TODO:
+      default:
+        icon.loadGraphic(Paths.image('ui/quick-panel/icons/${data.icon}'));
+    }
+
+    icon.antialiasing = true;
+    icon.setGraphicSize(ICON_WIDTH, ICON_WIDTH);
+    add(icon);
+
+    baseIconScaleX = icon.scale.x;
+    baseIconScaleY = icon.scale.y;
+    icon.localScale.x = baseIconScaleX;
+    icon.localScale.y = baseIconScaleY;
+    icon.updateHitbox();
   }
 
   /**
@@ -416,9 +447,22 @@ class QuickPanelButton extends FunkinSpriteGroup
     boilShaderText.amount = boilAmount;
     boilInterval = selected ? BOIL_INTERVAL_SELECTED : BOIL_INTERVAL_IDLE;
 
+    updateIconAnim();
+
     if (selected) playBump();
     else
       stopBump();
+  }
+
+  /**
+   * Plays the looping idle animation while selected, and the single-frame deselected one otherwise.
+   */
+  function updateIconAnim():Void
+  {
+    if (!isAnimated || icon == null || animData == null) return;
+
+    var animName:String = selected ? (animData.idleName ?? "idle") : (animData.idleName ?? "idle" + '-deselected');
+    if (icon.animation.exists(animName)) icon.animation.play(animName, true);
   }
 
   /**

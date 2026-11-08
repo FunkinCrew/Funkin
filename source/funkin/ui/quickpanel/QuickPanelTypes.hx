@@ -1,8 +1,9 @@
 package funkin.ui.quickpanel;
 
+import funkin.data.quickpanel.PanelData.PanelButtonAnim;
+
 /**
  * The data behind one quick panel button.
- * TODO: Make this more flexible.
  */
 typedef QuickPanelButtonData =
 {
@@ -37,6 +38,11 @@ typedef QuickPanelButtonData =
    *
    */
   var transitioning:Null<Bool>;
+
+  /**
+   * Button anim params
+   */
+  var ?buttonAnim:PanelButtonAnim;
 }
 
 /**

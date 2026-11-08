@@ -3,6 +3,7 @@ package funkin.ui.quickpanel;
 import funkin.assets.Paths;
 import funkin.data.IRegistryEntry;
 import funkin.data.quickpanel.PanelData;
+import funkin.data.quickpanel.PanelData.PanelButtonAnim;
 import funkin.data.quickpanel.PanelRegistry;
 import funkin.data.quickpanel.PanelRegistry.PanelEntryParams;
 import funkin.ui.quickpanel.QuickPanelTypes.QuickPanelButtonData;
@@ -10,6 +11,14 @@ import funkin.ui.quickpanel.QuickPanelTypes.QuickPanelButtonData;
 @:nullSafety
 class PanelEntry implements IRegistryEntry<PanelData>
 {
+  public static final DEFAULT_ANIM_DATA:PanelButtonAnim = {
+    animType: NONE,
+    idleName: '',
+    idlePrefix: '',
+    acceptName: '',
+    acceptPrefix: ''
+  };
+
   public function new(id:String, ?params:Dynamic)
   {
     this.id = id;
@@ -80,11 +89,19 @@ class PanelEntry implements IRegistryEntry<PanelData>
     return _data?.transitioning ?? true;
   }
 
+  public function getPanelAnim():PanelButtonAnim
+  {
+    return _data?.buttonAnim ?? DEFAULT_ANIM_DATA;
+  }
+
   public function onAccept():Void
   {
     PanelActions.run(getAction());
   }
 
+  /**
+   * TODO: Probably just use panelData instead
+   */
   public function toButtonData():QuickPanelButtonData
   {
     return {
@@ -94,7 +111,8 @@ class PanelEntry implements IRegistryEntry<PanelData>
       description: getDescription(),
       disabled: isDisabled(),
       callback: onAccept,
-      transitioning: isTransitioning()
+      transitioning: isTransitioning(),
+      buttonAnim: getPanelAnim()
     };
   }
 }

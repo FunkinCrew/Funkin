@@ -20,4 +20,22 @@ typedef PanelData =
   var visible:Bool;
   @:default(true) @:optional
   var transitioning:Bool;
+  @:optional
+  var buttonAnim:PanelButtonAnim;
+}
+
+typedef PanelButtonAnim =
+{
+  var animType:ButtonAnimType;
+  var idleName:String;
+  var idlePrefix:String;
+  var acceptName:String;
+  var acceptPrefix:String;
+}
+
+enum abstract ButtonAnimType(String) from String to String
+{
+  var ANIMATE_ATLAS:String = 'animate';
+  var SPARROW_ATLAS:String = 'sparrow';
+  var NONE:String = 'none';
 }
