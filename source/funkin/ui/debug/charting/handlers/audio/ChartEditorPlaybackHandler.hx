@@ -393,8 +393,23 @@ class ChartEditorPlaybackHandler
     state.measureTicks?.updateMeasureNumbers(true);
   }
 
+  /**
+   * Tick the metronome when playback crosses a beat (chart time).
+   */
+  static function handleMetronome(state:ChartEditorState, oldSongPosition:Float, newSongPosition:Float):Void
+  {
+    if (state.metronomeVolume <= 0.0 || state.metronomeMuted || state.isPlaytesting) return;
+    if (newSongPosition <= oldSongPosition || newSongPosition < 0) return;
+    var oldBeat:Int = Math.floor(Conductor.instance.getTimeInSteps(Math.max(0, oldSongPosition)) / Constants.STEPS_PER_BEAT);
+    var newBeat:Int = Math.floor(Conductor.instance.getTimeInSteps(newSongPosition) / Constants.STEPS_PER_BEAT);
+    if (oldSongPosition >= 0 && newBeat <= oldBeat) return;
+    var measure:Float = Conductor.instance.getTimeInMeasures(Conductor.instance.getBeatTimeInMs(newBeat));
+    state.playMetronomeTick(Math.abs(measure - Math.round(measure)) < 0.01);
+  }
+
   public static function handleMusicPositionUpdate(state:ChartEditorState, oldSongPosition:Float, newSongPosition:Float):Void
   {
+    handleMetronome(state, oldSongPosition, newSongPosition);
     state._currentEvents = SongDataUtils.getEventsInTimeRange(state.currentSongChartEventData, oldSongPosition, newSongPosition);
     state._allowedEvents = SongDataUtils.getEventsWithKind(state._currentEvents, ChartEditorState._allowedEventsNames);
 
