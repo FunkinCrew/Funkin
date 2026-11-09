@@ -9,7 +9,9 @@ import funkin.ui.quickpanel.QuickPanelGroup;
 import funkin.ui.quickpanel.QuickPanelState;
 import funkin.ui.quickpanel.QuickPanelTypes;
 import funkin.util.PropertyAnimator;
+#if FEATURE_TOUCH_CONTROLS
 import funkin.util.TouchUtil;
+#end
 import funkin.data.quickpanel.PanelData.PanelButtonAnim;
 import funkin.util.assets.FlxAnimationUtil;
 

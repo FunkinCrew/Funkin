@@ -28,10 +28,15 @@ import funkin.ui.transition.Transition;
 import funkin.util.MathUtil;
 import funkin.util.PropertyAnimator;
 import funkin.util.StateUtil;
+#if FEATURE_TOUCH_CONTROLS
 import funkin.util.TouchUtil;
+#end
 
 /**
  * The quick panel side menu.
+ * TODO: Final one I promise, but please add comments to anything that doesn't have it + make sure theyre comprehensive
+ * Like abnormal said, NO BLUE LINES! So no undocumented stuff!!
+ * #sorry for getting lazy been fighting this for a while -Moon
  */
 class QuickPanelState extends FlxTypedContainer<FlxBasic>
 {
@@ -153,6 +158,8 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
    */
   public var lock:Bool = false;
 
+  public var allowOpen:Bool = true;
+
   /**
    * Whether the tab can be dragged
    */
@@ -259,11 +266,6 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
   var inactivityTimer:Float = 0;
 
   var hintVisible:Bool = false;
-
-  /**
-   * Cached so the panel doesn't react while the host state is transitioning.
-   */
-  var hostState:Null<MusicBeatState> = null;
 
   /**
    * Is a press happening on the tab right now
@@ -431,6 +433,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
   {
     if (blocker == null)
     {
+      if (!canOpen()) return;
       requestBlocker(instant);
       return;
     }
@@ -706,7 +709,10 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     keyPressed = keyPressed && !FlxG.keys.pressed.B;
     #end
 
-    var touchPressed:Bool = TouchUtil.touch != null && TouchUtil.touch.pressed;
+    var touchPressed:Bool = false;
+    #if FEATURE_TOUCH_CONTROLS
+    touchPressed = TouchUtil.touch != null && TouchUtil.touch.pressed;
+    #end
     return keyPressed || touchPressed;
   }
 
@@ -757,6 +763,8 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     updateTracking(elapsed);
     #end
 
+    if (uiState.is(PanelClosed) && !canOpen()) return;
+
     switch (curState)
     {
       case PanelClosed | PanelOpen:
@@ -797,13 +805,22 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     }
   }
 
+  // Yeah
+
+  public function canOpen():Bool
+  {
+    if (!allowOpen) return false;
+    if (isHostTransitioning()) return false;
+    if (FlxG.state != null && FlxG.state.subState != null) return false;
+    return true;
+  }
+
   /**
    * Checks whether the current state is transitioning or not.
    */
   function isHostTransitioning():Bool
   {
-    if (hostState == null && Std.isOfType(FlxG.state, MusicBeatState)) hostState = cast FlxG.state;
-    return hostState != null && hostState.default_trans_isTransitioning;
+    return Transition.isTransitionActive();
   }
 
   /**
@@ -862,6 +879,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
    * Updates the pull-tab tracking
    * @param elapsed Elapsed.
    */
+  #if FEATURE_TOUCH_CONTROLS
   function updateTracking(elapsed:Float):Void
   {
     if (TouchUtil.justReleased) tracking = false;
@@ -952,6 +970,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
 
     FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/tab-press').toFlxSoundAsset());
   }
+  #end
 
   /**
    * Cancels the current tab press.
@@ -986,6 +1005,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
    * Updates the dragging for pulling the pulltab.
    * @param elapsed Elapsedx
    */
+  #if FEATURE_TOUCH_CONTROLS
   function updateDrag(elapsed:Float):Void
   {
     var touch = TouchUtil.touch;
@@ -1023,6 +1043,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
       }
     }
   }
+  #end
 
   /**
    * Plays the drag ticking sound.
