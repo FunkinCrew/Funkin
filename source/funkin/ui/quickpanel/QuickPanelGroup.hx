@@ -218,6 +218,8 @@ class QuickPanelGroup extends FunkinSpriteGroup
    */
   var panelBoilTimer:Float = 0;
 
+  var bodyRevealFrames:Int = 0;
+
   /**
    * Callback of the deny animation that is currently playing, if any.
    */
@@ -295,6 +297,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
     panelSprite.localY = 0;
     panelSprite.zIndex = Z_BELOW;
     panelSprite.active = bodyActive;
+    panelSprite.visible = false; // show after brames
     add(panelSprite);
 
     panelShader = new QuickPanelShader();
@@ -305,6 +308,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
     grpButtons = new FunkinGroup<QuickPanelButton>();
     grpButtons.zIndex = Z_BUTTONS;
     grpButtons.active = bodyActive;
+    grpButtons.visible = false; // show after brames
     add(grpButtons);
 
     for (index => data in buttonData)
@@ -324,7 +328,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
 
     setupBodyAnims();
 
-    pullExtra.visible = true;
+    bodyRevealFrames = 2;
     setSide(left);
     refresh();
   }
@@ -751,6 +755,8 @@ class QuickPanelGroup extends FunkinSpriteGroup
   {
     super.update(elapsed);
 
+    if (bodyRevealFrames > 0 && --bodyRevealFrames == 0) revealBody();
+
     if (bodyBuilt && bodyActive)
     {
       updateButtonSlide(elapsed);
@@ -784,6 +790,16 @@ class QuickPanelGroup extends FunkinSpriteGroup
     buttonTargets = [];
 
     super.destroy();
+  }
+
+  /**
+   * duuuddeeee im soooo fucked rnnn i made the group reveal its body brroooo fuuucckkk
+   */
+  function revealBody():Void
+  {
+    panelSprite.visible = true;
+    grpButtons.visible = true;
+    pullExtra.visible = true;
   }
 
   function set_bodyActive(value:Bool):Bool
