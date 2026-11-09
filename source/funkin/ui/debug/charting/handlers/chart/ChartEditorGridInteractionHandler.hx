@@ -31,7 +31,7 @@ class ChartEditorGridInteractionHandler
       if (eventSprite != null && eventSprite.alive && eventSprite.eventData != null && FlxG.mouse.overlaps(eventSprite))
       {
         clickedEvent = eventSprite.eventData;
-        target = clickedEvent;
+        target = 'event:${clickedEvent.time}:${clickedEvent.eventKind}';
         break;
       }
     }
@@ -190,6 +190,8 @@ class ChartEditorGridInteractionHandler
   {
     if (!menuItem.selected) menuItem.selected = true;
     state.setToolboxState(id, true);
+    var toolbox:Null<haxe.ui.containers.dialogs.CollapsibleDialog> = state.activeToolboxes.get(id);
+    if (toolbox != null && toolbox.minimized) toolbox.minimized = false;
   }
 }
 #end
