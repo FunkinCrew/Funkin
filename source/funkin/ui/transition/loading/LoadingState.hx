@@ -38,7 +38,9 @@ class LoadingState extends MusicBeatSubState
   var target:TransitionTarget;
   var params:TransitionParams;
   var loadingStagesDone:Int = 0;
+
   public var currentProgress(default, null):Float = 0.0; // [0.0, 1.0]
+
   var completionStarted:Bool = false;
   var transitionCancelled:Bool = false;
   var previousPersistentUpdate:Bool = true;
@@ -518,6 +520,9 @@ class LoadingState extends MusicBeatSubState
         FlxG.sound.music = null;
       }
     }
+
+    // Kill any camera flash from the previous state.
+    FlxG.camera.stopFlash();
 
     switch (target)
     {
