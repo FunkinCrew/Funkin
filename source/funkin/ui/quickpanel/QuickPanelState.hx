@@ -25,8 +25,8 @@ import funkin.data.quickpanel.PanelRegistry;
 import funkin.data.quickpanel.PanelData.PanelButtonAnim;
 import funkin.ui.quickpanel.QuickPanelTypes;
 import funkin.ui.transition.Transition;
-import funkin.util.EaseUtil;
 import funkin.util.MathUtil;
+import funkin.util.PropertyAnimator;
 import funkin.util.StateUtil;
 import funkin.util.TouchUtil;
 
@@ -101,71 +101,6 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
    * How far below the screen the description bar sits while hidden.
    */
   static final DESCRIPTION_OFFSET:Float = 100;
-
-  /**
-   * Starting radius for the wipe flair
-   */
-  static final WIPE_RADIUS_START:Float = 3.1;
-
-  /**
-   * Ending radius for the wipe flair.
-   */
-  static final WIPE_RADIUS_END:Float = 4.8;
-
-  /**
-   * Radius that covers the whole screen for the wipe flair.
-   */
-  static final WIPE_RADIUS_FULL:Float = 10.0;
-
-  /**
-   * Wipe flair frame interval
-   */
-  static final WIPE_FRAMES:Int = 4;
-
-  /**
-   * Duration for the icon pop bump animation
-   */
-  static final ICON_POP_DURATION:Float = 2 / 24;
-
-  /**
-   * How long to wait before starting the icon bump settling
-   */
-  static final ICON_SETTLE_DELAY:Float = 4 / 24;
-
-  /**
-   * Duration for the icon bump settling animation
-   */
-  static final ICON_SETTLE_DURATION:Float = 6 / 24;
-
-  /**
-   * The icon scale at the start of a bump
-   */
-  static final ICON_SCALE_START:Float = 1.4;
-
-  /**
-   * The biggest the icon scale can be during a bump
-   */
-  static final ICON_SCALE_PEAK:Float = 1.6;
-
-  /**
-   * The icon scale at the end of a bump
-   */
-  static final ICON_SCALE_END:Float = 1.2;
-
-  /**
-   * How far to overshoot the icon scal during a bump
-   */
-  static final ICON_SCALE_OVERSHOOT:Float = 3.0;
-
-  /**
-   * The starting icon angle
-   */
-  static final ICON_ANGLE_START:Float = 2.0;
-
-  /**
-   * The furtherest the icon angle can be
-   */
-  static final ICON_ANGLE_PEAK:Float = 2.2;
 
   /**
    * Frames to wait after requesting the blocker before checking whether its load was cancelled.
@@ -248,6 +183,16 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
   public var selectedSplash(default, null):FunkinSprite;
 
   /**
+   * The circle wipe animation.
+   */
+  public var paWipe(default, null):PropertyAnimator;
+
+  /**
+   * The center icon bump animation.
+   */
+  public var paMiddle(default, null):PropertyAnimator;
+
+  /**
    * Controls
    */
   var controls(get, never):Controls;
@@ -291,11 +236,6 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
    * Accept transition timers
    */
   var transitionTimers:Array<FlxTimer> = [];
-
-  /**
-   * Accept transition tweens
-   */
-  var transitionTweens:Array<FlxTween> = [];
 
   /**
    * Currently selected index
@@ -659,18 +599,22 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
         selectedIcon.loadGraphic(Paths.image('ui/quick-panel/icons/${data.icon}').toFlxGraphicAsset());
     }
 
-    selectedIcon.scale.set(ICON_SCALE_START, ICON_SCALE_START);
+    selectedIcon.scale.set(1.4, 1.4);
     selectedIcon.antialiasing = true;
     selectedIcon.updateHitbox();
     selectedIcon.screenCenter();
 
-    afterFrames(6, playWipe);
+    afterFrames(6, () ->
+    {
+      wipeSprite.visible = true;
+      paWipe.playAnimation('wipe', true);
+    });
 
     afterFrames(8, () ->
     {
       selectedIcon.visible = true;
       if (acceptAnimName != null) selectedIcon.animation.play(acceptAnimName, true);
-      playIconBump();
+      paMiddle.playAnimation('bump', true);
 
       selectedSplash.visible = true;
       selectedSplash.animation.play('splash');
@@ -1191,6 +1135,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     panel.buildBody();
 
     buildTransitionVisuals();
+    setupTransitionAnims();
     wipeSprite.flipX = left;
 
     panel.cameras = [panelCam];
@@ -1230,46 +1175,54 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
   }
 
   /**
-   * Plays the wiping screen flair.
+   * Sets up the circle wipe and center icon animations.
    */
-  function playWipe():Void
+  function setupTransitionAnims():Void
   {
-    wipeSprite.visible = true;
-    circleWipe.circleRadius = WIPE_RADIUS_START;
+    paWipe = new PropertyAnimator(circleWipe);
+    paWipe.addAnimationByName('wipe', 24, false);
+    paWipe.addProperty('wipe', 'circleRadius', [
+      3.1,
+      3.8,
+      4.3,
+      4.6,
+      4.8,
+      10.0
+    ]);
+    paWipe.setDefaultProperties();
 
-    transitionTweens.push(FlxTween.num(WIPE_RADIUS_START, WIPE_RADIUS_END, WIPE_FRAMES / 24, {
-      ease: FlxEase.sineOut
-    }, (r:Float) -> circleWipe.circleRadius = r));
+    final bumpScale = [
+      1.4,
+      1.4,
+      1.6,
+      1.6,
+      1.55,
+      1.55,
+      1.1,
+      1.1,
+      1.17,
+      1.17,
+      1.2
+    ];
 
-    afterFrames(WIPE_FRAMES + 1, () -> circleWipe.circleRadius = WIPE_RADIUS_FULL);
-  }
-
-  /**
-   * Bumps the icon
-   */
-  function playIconBump():Void
-  {
-    selectedIcon.scale.set(ICON_SCALE_START, ICON_SCALE_START);
-    selectedIcon.angle = ICON_ANGLE_START;
-
-    transitionTweens.push(FlxTween.num(0, 1, ICON_POP_DURATION, {
-      ease: FlxEase.quadOut
-    }, (p:Float) ->
-      {
-        var s:Float = FlxMath.lerp(ICON_SCALE_START, ICON_SCALE_PEAK, p);
-        selectedIcon.scale.set(s, s);
-        selectedIcon.angle = FlxMath.lerp(ICON_ANGLE_START, ICON_ANGLE_PEAK, p);
-      }));
-
-    transitionTweens.push(FlxTween.num(ICON_SCALE_PEAK, ICON_SCALE_END, ICON_SETTLE_DURATION, {
-      startDelay: ICON_SETTLE_DELAY,
-      ease: EaseUtil.backOut(ICON_SCALE_OVERSHOOT)
-    }, (s:Float) -> selectedIcon.scale.set(s, s)));
-
-    transitionTweens.push(FlxTween.num(ICON_ANGLE_PEAK, 0, ICON_SETTLE_DURATION, {
-      startDelay: ICON_SETTLE_DELAY,
-      ease: FlxEase.quartOut
-    }, (a:Float) -> selectedIcon.angle = a));
+    paMiddle = new PropertyAnimator(selectedIcon);
+    paMiddle.addAnimationByName('bump', 24, false);
+    paMiddle.addProperty('bump', 'scale.x', bumpScale.copy());
+    paMiddle.addProperty('bump', 'scale.y', bumpScale.copy());
+    paMiddle.addProperty('bump', 'angle', [
+      2.0,
+      2.0,
+      2.2,
+      2.2,
+      1.9,
+      1.9,
+      0.5,
+      0.5,
+      0.1,
+      0.1,
+      0.0
+    ]);
+    paMiddle.setDefaultProperties();
   }
 
   /**
@@ -1456,8 +1409,6 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
   {
     for (timer in transitionTimers) if (timer != null) timer.cancel();
     transitionTimers = [];
-    for (tween in transitionTweens) if (tween != null) tween.cancel();
-    transitionTweens = [];
 
     cancelMoveTween();
 
@@ -1476,6 +1427,9 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
       tickSound.destroy();
       tickSound = null;
     }
+
+    if (paWipe != null) paWipe.destroy();
+    if (paMiddle != null) paMiddle.destroy();
 
     super.destroy();
 
