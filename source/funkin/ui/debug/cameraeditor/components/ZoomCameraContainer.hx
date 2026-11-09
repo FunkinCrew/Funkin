@@ -20,6 +20,7 @@ class ZoomCameraContainer extends BaseEventContainer
     bindFloatField(zoomCameraDuration, 'duration');
     bindFloatField(zoomCameraWidescreenScaleX, 'widescreenScaleX');
     bindFloatField(zoomCameraWidescreenScaleY, 'widescreenScaleY');
+    bindFormula(zoomCameraZoomLevel, 'zoom');
 
     zoomCameraEaseFrame.easeGraphPreview.registerEvent(UIEvent.CHANGE, function(_:UIEvent):Void
     {

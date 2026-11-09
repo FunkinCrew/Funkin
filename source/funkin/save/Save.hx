@@ -249,6 +249,7 @@ class Save implements ConsoleClass implements ISerializable
         previousFiles: [],
         theme: ChartEditorTheme.Light,
         zoomToPlayhead: false,
+        fitCameraToViewport: false,
       },
       optionsQuickMenu: {
         firstRun: false
@@ -484,6 +485,8 @@ class Save implements ConsoleClass implements ISerializable
   public var cameraEditorHasBackup:SaveProperty<Bool>;
   @:saveProperty(data.optionsCameraEditor.zoomToPlayhead, false)
   public var cameraEditorZoomToPlayhead:SaveProperty<Bool>;
+  @:saveProperty(data.optionsCameraEditor.fitCameraToViewport, false)
+  public var cameraEditorFitCameraToViewport:SaveProperty<Bool>;
 
   /// UTIL FUNCTIONS
 
@@ -2037,6 +2040,12 @@ typedef SaveDataCameraEditorOptions =
    * @default `false`
    */
   var ?zoomToPlayhead:Bool;
+
+  /**
+   * Whether the camera preview is fitted to the viewport.
+   * @default `false`
+   */
+  var ?fitCameraToViewport:Bool;
 }
 
 typedef SaveDataQuickMenuOptions =

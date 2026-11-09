@@ -11,6 +11,8 @@ import haxe.ui.components.TextField;
 import haxe.ui.containers.VBox;
 import haxe.ui.core.Component;
 import funkin.ui.haxeui.components.editors.timeline.TimelineUtil;
+import haxe.ui.constants.Priority;
+import haxe.ui.events.FocusEvent;
 import haxe.ui.events.UIEvent;
 
 /**
@@ -318,6 +320,9 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
   override public function destroy():Void
   {
     super.destroy();
+    FlxG.stage.removeEventListener(openfl.events.KeyboardEvent.KEY_DOWN, onFormulaKey);
+    listeningForEnter = false;
+    formulaFields = [];
     final preview:Null<EaseGraphPreview> = getEasePreview();
     if (preview != null) preview.cleanup();
   }
@@ -480,6 +485,7 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
    */
   function bindFloatField(stepper:NumberStepper, fieldName:String):Void
   {
+    bindFormula(stepper, fieldName);
     stepper.registerEvent(UIEvent.CHANGE, function(_:UIEvent):Void
     {
       if (primaryEvent == null || stepper.disabled) return;
@@ -488,6 +494,102 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
       updateCameraPreview();
       if (fieldAffectsBlockVisuals(fieldName)) updateBlockVisuals();
     });
+  }
+
+  var formulaStart:Map<Component, String> = new Map();
+
+  /**
+   * Math for a number field.
+   */
+  function bindFormula(stepper:NumberStepper, fieldName:String, isInt:Bool = false):Void
+  {
+    var inner:Null<TextField> = stepper.findComponent('value', TextField);
+    if (inner == null) return;
+    inner.restrictChars = '0-9\\-\\.\\,\\+\\*/\\(\\) ';
+    inner.registerEvent(UIEvent.CHANGE, function(event:UIEvent):Void
+    {
+      // Don't let the stepper read half-typed math as a number.
+      if (NumberFormula.isFormula(inner.text)) event.cancel();
+      else formulaStart.set(stepper, inner.text);
+      showFormula(inner);
+    }, Priority.HIGHEST);
+    stepper.registerEvent(FocusEvent.FOCUS_IN, function(_:FocusEvent):Void
+    {
+      formulaStart.set(stepper, inner.text);
+    });
+    stepper.registerEvent(FocusEvent.FOCUS_OUT, function(_:FocusEvent):Void
+    {
+      applyFormula(stepper, inner, fieldName, isInt);
+    });
+    // The stepper holds the focus and not its text field, so the text field never sends SUBMIT.
+    if (!listeningForEnter)
+    {
+      FlxG.stage.addEventListener(openfl.events.KeyboardEvent.KEY_DOWN, onFormulaKey);
+      listeningForEnter = true;
+    }
+    formulaFields.push(() -> if (hasFocusWithin(stepper)) applyFormula(stepper, inner, fieldName, isInt));
+  }
+
+  /**
+   * Applies the math in whichever number field has the focus, one per bound field.
+   */
+  var formulaFields:Array<Void->Void> = [];
+
+  var listeningForEnter:Bool = false;
+
+  function onFormulaKey(event:openfl.events.KeyboardEvent):Void
+  {
+    if (event.keyCode != openfl.ui.Keyboard.ENTER && event.keyCode != openfl.ui.Keyboard.NUMPAD_ENTER) return;
+    for (apply in formulaFields) apply();
+  }
+
+  function applyFormula(stepper:NumberStepper, inner:TextField, fieldName:String, isInt:Bool):Void
+  {
+    if (primaryEvent == null || stepper.disabled) return;
+    var text:String = inner.text;
+    var start:String = formulaStart.get(stepper) ?? '';
+    if (text == start || !NumberFormula.isFormula(text)) return;
+
+    var tail:Null<String> = NumberFormula.relativePart(text, start);
+    var whole:Float = tail == null ? NumberFormula.evaluate(text) : Math.NaN;
+    for (event in editedEvents)
+    {
+      var value:Float = tail == null ? whole : NumberFormula.evaluateOn(numberOf(event, fieldName), tail);
+      if (Math.isNaN(value)) continue;
+      if (stepper.min != null) value = Math.max(value, stepper.min);
+      if (stepper.max != null) value = Math.min(value, stepper.max);
+      if (isInt) event.set(fieldName, Math.round(value));
+      else event.set(fieldName, value);
+    }
+
+    updateCameraPreview();
+    if (fieldAffectsBlockVisuals(fieldName)) updateBlockVisuals();
+    reload();
+    formulaStart.set(stepper, inner.text);
+    showFormula(inner);
+  }
+
+  /**
+   * The box goes dark blue while math is typed in it.
+   */
+  static inline var FORMULA_COLOR:Int = 0x1C2B4A;
+
+  function showFormula(inner:TextField):Void
+  {
+    if (inner.text != MIXED_TEXT && NumberFormula.isFormula(inner.text)) inner.backgroundColor = FORMULA_COLOR;
+    else
+      inner.backgroundColor = null;
+  }
+
+  /**
+   * An event's number for the field, falling back to the field's default if not set.
+   */
+  function numberOf(event:SongEventData, fieldName:String):Float
+  {
+    var value:Null<Float> = event.getFloat(fieldName);
+    if (value != null) return value;
+    var fallback:Dynamic = event.getSchema()?.getByName(fieldName)?.defaultValue;
+    return fallback != null ? (fallback : Float) : 0;
   }
 
   /**

@@ -88,11 +88,11 @@ class VirtualCameraRectangle extends FlxSpriteGroup
   {
     if (!isRelative)
     {
-      mainView.setGraphicSize(FlxG.width / zoom, FlxG.height / zoom);
+      mainView.setGraphicSize(CameraEditorState.gameplayWidth / zoom, CameraEditorState.gameplayHeight / zoom);
     }
     else
     {
-      mainView.setGraphicSize(FlxG.width, FlxG.height);
+      mainView.setGraphicSize(CameraEditorState.gameplayWidth, CameraEditorState.gameplayHeight);
     }
     mainView.updateHitbox();
     camSlice.width = mainView.width;
@@ -539,7 +539,6 @@ class VirtualCameraRectangle extends FlxSpriteGroup
 
     add(mainView);
 
-    pieceSize = ((FlxG.width / 16 * FullScreenScaleMode.maxAspectRatio.x) - FlxG.width) / 2;
 
     leftExt = new FunkinSliceSprite(Paths.image('ui/editors/camera-editor/vcam/vcam_slice_left'), new FlxRect(30, 30, 30, 30), 0, 0);
     leftExt.vcamPoint = vcamPoint;
@@ -724,7 +723,7 @@ class VirtualCameraRectangle extends FlxSpriteGroup
       hudZoom = FlxMath.lerp(defaultHUDCameraZoom, _hitHudZoom, decayFactor);
     }
 
-    scrollTarget.set(cameraFollowPoint.x - (FlxG.width / 2), cameraFollowPoint.y - (FlxG.height / 2));
+    scrollTarget.set(cameraFollowPoint.x - (CameraEditorState.gameplayWidth / 2), cameraFollowPoint.y - (CameraEditorState.gameplayHeight / 2));
 
     if (forceNextFocus)
     {
@@ -794,11 +793,15 @@ class VirtualCameraRectangle extends FlxSpriteGroup
 
   function updateVisuals():Void
   {
-    mainView.x = (vcamPoint.x + (FlxG.width / 2)) - mainView.width / 2;
-    mainView.y = (vcamPoint.y + (FlxG.height / 2)) - mainView.height / 2;
+    var gameWidth:Float = CameraEditorState.gameplayWidth;
+    var gameHeight:Float = CameraEditorState.gameplayHeight;
+    pieceSize = ((gameWidth / 16 * FullScreenScaleMode.maxAspectRatio.x) - gameWidth) / 2;
 
-    camSlice.x = (vcamPoint.x + (FlxG.width / 2)) - camSlice.width / 2;
-    camSlice.y = (vcamPoint.y + (FlxG.height / 2)) - camSlice.height / 2;
+    mainView.x = (vcamPoint.x + (gameWidth / 2)) - mainView.width / 2;
+    mainView.y = (vcamPoint.y + (gameHeight / 2)) - mainView.height / 2;
+
+    camSlice.x = (vcamPoint.x + (gameWidth / 2)) - camSlice.width / 2;
+    camSlice.y = (vcamPoint.y + (gameHeight / 2)) - camSlice.height / 2;
 
     cornerTL.setPosition(mainView.x, mainView.y);
     cornerBR.setPosition(mainView.x + mainView.width - cornerBR.width, mainView.y + mainView.height - cornerBR.height);
@@ -840,7 +843,8 @@ class VirtualCameraRectangle extends FlxSpriteGroup
 
     if (!showPassepartout) return;
 
-    var scaleAmt:Float = ((Math.abs(FlxG.camera.scroll.x - vcamPoint.x) * 2) + FlxG.width) / FlxG.camera.zoom;
+    var coverWidth:Float = FlxG.camera.width + Math.abs(FlxG.camera.width - gameWidth);
+    var scaleAmt:Float = ((Math.abs(FlxG.camera.scroll.x - vcamPoint.x) * 2) + coverWidth) / FlxG.camera.zoom;
     var extraSize:Float = showExtendedBounds ? pieceSize / zoom : 0;
 
     if (isRelative)
@@ -849,7 +853,7 @@ class VirtualCameraRectangle extends FlxSpriteGroup
       var zoomFactor:Float = FlxG.camera.zoom / safeRelativeZoom;
       var compensatedScrollX:Float = FlxG.camera.scroll.x * zoomFactor;
 
-      scaleAmt = ((Math.abs(compensatedScrollX - vcamPoint.x) * 2) + FlxG.width) / safeRelativeZoom;
+      scaleAmt = ((Math.abs(compensatedScrollX - vcamPoint.x) * 2) + coverWidth) / safeRelativeZoom;
       extraSize = showExtendedBounds ? pieceSize : 0;
     }
 

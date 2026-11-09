@@ -61,6 +61,7 @@ import funkin.ui.debug.cameraeditor.components.AutoSortLayersConfirmDialog.AutoS
 import funkin.ui.debug.cameraeditor.components.AutoSortLayersConfirmDialog.AutoSortPreviewRow;
 import funkin.ui.debug.cameraeditor.components.BackupAvailableDialog;
 import funkin.ui.debug.cameraeditor.components.DeleteLayerConfirmDialog;
+import funkin.ui.debug.cameraeditor.components.PreferencesDialog;
 import funkin.ui.debug.cameraeditor.components.UploadChartDialog;
 import funkin.ui.debug.cameraeditor.components.UserGuideDialog;
 import funkin.ui.debug.cameraeditor.components.VirtualCameraRectangle;
@@ -70,6 +71,7 @@ import funkin.ui.debug.cameraeditor.handlers.CameraEditorImportExportHandler;
 import funkin.ui.debug.cameraeditor.handlers.CameraEditorNotificationHandler;
 import funkin.ui.debug.charting.ChartEditorState;
 import funkin.ui.debug.charting.handlers.chart.ChartEditorImportExportHandler;
+import funkin.ui.debug.charting.util.ChartEditorScaleMode;
 import funkin.ui.debug.stageeditor.handlers.AssetDataHandler;
 import funkin.ui.haxeui.components.editors.camera.CameraViewportEvent;
 import funkin.ui.haxeui.components.editors.timeline.TimelineEvent;
@@ -199,6 +201,59 @@ class CameraEditorState extends UIState implements ConsoleClass
    * The currently playing vocal tracks for this chart.
    */
   public var currentVocals:Array<FunkinSound> = [];
+
+  /**
+   * The vocal tracks of `currentVocals` that belong to the player.
+   */
+  var playerVocals:Array<FunkinSound> = [];
+
+  // Preferences, shared with the Chart Editor.
+
+  /**
+   * How large the editor is drawn.
+   */
+  public var uiScale(default, set):Float = 1.45;
+
+  var uiScaleDirty:Bool = false;
+
+  function set_uiScale(value:Float):Float
+  {
+    value = FlxMath.bound(value, ChartEditorScaleMode.MIN_UI_SCALE, ChartEditorScaleMode.MAX_UI_SCALE);
+    if (value != uiScale) uiScaleDirty = true;
+    return uiScale = value;
+  }
+
+  /**
+   * Whether the theme music plays while no song is loaded.
+   */
+  public var playThemeMusic(default, set):Bool = true;
+
+  function set_playThemeMusic(value:Bool):Bool
+  {
+    playThemeMusic = value;
+    if (FlxG.sound.music != null && FlxG.sound.music.playing && FlxG.sound.music != currentInstrumental)
+    {
+      FlxG.sound.music.fadeTween?.cancel();
+      if (value) FlxG.sound.music.fadeIn(1, FlxG.sound.music.volume, 1);
+      else
+        FlxG.sound.music.volume = 0;
+    }
+    return value;
+  }
+
+  public var instrumentalVolume:Float = 1.0;
+  public var playerVocalVolume:Float = 1.0;
+  public var opponentVocalVolume:Float = 1.0;
+
+  public static var gameplayWidth:Float = 1280;
+  public static var gameplayHeight:Float = 720;
+
+  var preferencesDialog:Null<PreferencesDialog> = null;
+
+  /**
+   * The game size the dialogs were last placed for.
+   */
+  var dialogLayoutSize:FlxPoint = new FlxPoint();
 
   /**
    * The currently selected difficulty.
@@ -470,7 +525,6 @@ class CameraEditorState extends UIState implements ConsoleClass
   /**
    * Whether the timeline zooms around the playhead rather than the cursor. Remembered between sessions.
    */
-  @:bind(menubarItemZoomToPlayhead.selected)
   public var zoomToPlayhead(default, set):Bool = false;
 
   function set_zoomToPlayhead(val:Bool):Bool
@@ -478,6 +532,24 @@ class CameraEditorState extends UIState implements ConsoleClass
     zoomToPlayhead = val;
     if (timeline != null && timeline.viewport != null) timeline.viewport.zoomToPlayhead = val;
     if (Save.instance.cameraEditorZoomToPlayhead.value != val) Save.instance.cameraEditorZoomToPlayhead.value = val;
+    return val;
+  }
+
+  /**
+   * Whether the cameras are fitted above the timeline, showing exactly what the gameplay camera would. Remembered between sessions.
+   */
+  public var fitCameraToViewport(default, set):Bool = false;
+
+  function set_fitCameraToViewport(val:Bool):Bool
+  {
+    var changed:Bool = val != fitCameraToViewport;
+    fitCameraToViewport = val;
+    if (Save.instance.cameraEditorFitCameraToViewport.value != val) Save.instance.cameraEditorFitCameraToViewport.value = val;
+    if (changed && camRelative != null)
+    {
+      applyCameraViewportScale();
+      onResetCameraScroll(null);
+    }
     return val;
   }
 
@@ -702,6 +774,13 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     loadPreferences();
 
+    gameplayWidth = FlxG.width;
+    gameplayHeight = FlxG.height;
+    ChartEditorScaleMode.apply(uiScale);
+    uiScaleDirty = false;
+    dialogLayoutSize.set(FlxG.width, FlxG.height);
+    FlxG.signals.preStateSwitch.add(restoreScaleMode);
+
     // NOTE: Always use `FunkinCamera` instead of `FlxCamera` when manually instantiating cameras.
     // This allows the blend mode shader used on some devices to work properly.
     camGame = new FunkinCamera();
@@ -739,13 +818,14 @@ class CameraEditorState extends UIState implements ConsoleClass
     FunkinSound.playMusic('ui/editors/chart-editor/artistic-expression/artistic-expression', {
       startingVolume: 0.0
     });
-    FlxG.sound.music.fadeIn(10, 0, 1);
+    if (playThemeMusic) FlxG.sound.music.fadeIn(10, 0, 1);
 
     populateLoadVariationMenu();
     populateOpenRecentMenu();
 
-    menubarItemZoomToPlayhead.selected = Save.instance.cameraEditorZoomToPlayhead.value;
-    timeline.viewport.zoomToPlayhead = menubarItemZoomToPlayhead.selected;
+    zoomToPlayhead = Save.instance.cameraEditorZoomToPlayhead.value;
+    timeline.viewport.zoomToPlayhead = zoomToPlayhead;
+    fitCameraToViewport = Save.instance.cameraEditorFitCameraToViewport.value;
 
     registerTimelineEvents();
 
@@ -1124,6 +1204,12 @@ class CameraEditorState extends UIState implements ConsoleClass
     }
     if (criticalFailure) return;
 
+    if (uiScaleDirty && !FlxG.mouse.pressed)
+    {
+      uiScaleDirty = false;
+      ChartEditorScaleMode.apply(uiScale);
+    }
+
     Preferences.debugDisplay == DebugDisplayMode.Off ? menubar.paddingLeft = null : menubar.paddingLeft = 256;
 
     if (autoSeek)
@@ -1228,10 +1314,16 @@ class CameraEditorState extends UIState implements ConsoleClass
       camGame.scroll.copyFrom(_cameraTarget);
     }
 
+    for (camera in [FlxG.camera, camGame])
+    {
+      camera.scroll.x += (gameplayWidth - camera.width) / 2;
+      camera.scroll.y += (gameplayHeight - camera.height) / 2;
+    }
+
     if (_shouldResetCameraPosition)
     {
       _shouldResetCameraPosition = false;
-      if (menubarItemFitCameraToViewport.selected)
+      if (fitCameraToViewport)
       {
         applyCameraViewportScale();
       }
@@ -1358,7 +1450,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     funkin.modding.ScriptGuard.run(currentStage, 'a stage reset', currentStage.resetStage);
     currentStage.refresh();
 
-    if (!menubarItemFitCameraToViewport.selected)
+    if (!fitCameraToViewport)
     {
       goToPoint.x = 0;
       goToPoint.y = 0;
@@ -1581,6 +1673,12 @@ class CameraEditorState extends UIState implements ConsoleClass
     {
       previousWorkingFilePaths = [currentWorkingFilePath].concat(save.cameraEditorPreviousFiles.value);
     }
+
+    uiScale = save.chartEditorUIScale.value;
+    playThemeMusic = save.chartEditorThemeMusic.value;
+    instrumentalVolume = save.chartEditorInstVolume.value;
+    playerVocalVolume = save.chartEditorPlayerVoiceVolume.value;
+    opponentVocalVolume = save.chartEditorOpponentVoiceVolume.value;
   }
 
   /**
@@ -1603,6 +1701,12 @@ class CameraEditorState extends UIState implements ConsoleClass
     trace(save.cameraEditorHasBackup.value);
 
     // save.cameraEditorTheme.value = currentTheme;
+
+    save.chartEditorUIScale.value = uiScale;
+    save.chartEditorThemeMusic.value = playThemeMusic;
+    save.chartEditorInstVolume.value = instrumentalVolume;
+    save.chartEditorPlayerVoiceVolume.value = playerVocalVolume;
+    save.chartEditorOpponentVoiceVolume.value = opponentVocalVolume;
   }
 
   /**
@@ -1733,21 +1837,17 @@ class CameraEditorState extends UIState implements ConsoleClass
     return false;
   }
 
-  @:bind(menubarItemFitCameraToViewport, UIEvent.CHANGE)
-  function onFitCameraToViewportToggle(_:UIEvent):Void
-  {
-    applyCameraViewportScale();
-    onResetCameraScroll(null);
-  }
-
   function applyCameraViewportScale():Void
   {
-    if (!menubarItemFitCameraToViewport.selected)
+    if (!fitCameraToViewport)
     {
-      camRelative.flashSprite.scaleX = camRelative.flashSprite.scaleY = 1.0;
-      camGame.flashSprite.scaleX = camGame.flashSprite.scaleY = 1.0;
-      camRelative.y = 0;
-      camGame.y = 0;
+      for (camera in [camRelative, camGame])
+      {
+        camera.setSize(FlxG.width, FlxG.height);
+        camera.flashSprite.scaleX = camera.flashSprite.scaleY = 1.0;
+        camera.x = 0;
+        camera.y = 0;
+      }
 
       return;
     }
@@ -1758,12 +1858,16 @@ class CameraEditorState extends UIState implements ConsoleClass
 
       var freeHeight:Float = FlxG.height - menubar.height - timelineHeight;
       var offset:Float = (menubar.height - timelineHeight) / 2;
-      var scale:Float = freeHeight / FlxG.height;
+      var scale:Float = freeHeight / gameplayHeight;
 
-      camRelative.flashSprite.scaleX = camRelative.flashSprite.scaleY = scale;
-      camGame.flashSprite.scaleX = camGame.flashSprite.scaleY = scale;
-      camRelative.y = offset;
-      camGame.y = offset;
+      // Fitted, the cameras show exactly what the gameplay camera would.
+      for (camera in [camRelative, camGame])
+      {
+        camera.setSize(Std.int(gameplayWidth), Std.int(gameplayHeight));
+        camera.flashSprite.scaleX = camera.flashSprite.scaleY = scale;
+        camera.x = (FlxG.width - gameplayWidth) / 2;
+        camera.y = offset + (FlxG.height - gameplayHeight) / 2;
+      }
     }
   }
 
@@ -1895,6 +1999,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     if (audioInstTrackData.get(currentVariation) == null) return;
 
     currentInstrumental?.stop();
+    timeline.isPlaying = false;
     currentInstrumental?.destroy();
     currentInstrumental = null;
 
@@ -1905,12 +2010,14 @@ class CameraEditorState extends UIState implements ConsoleClass
     }
 
     currentVocals = [];
+    playerVocals = [];
 
     var instData:Null<Bytes> = audioInstTrackData.get(currentVariation);
     if (instData != null) currentInstrumental = SoundUtil.buildSoundFromBytes(instData);
 
     currentInstrumental.onComplete = function()
     {
+      timeline.isPlaying = false;
       shouldResetScroll = true;
       invalidateCameraReplay();
       cachedEventIndex = 0;
@@ -1930,7 +2037,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       ];
     };
 
-    var buildVocal:Null<Array<String>>->Void = (voiceIds:Null<Array<String>>) ->
+    var buildVocal:(Null<Array<String>>, Bool) -> Void = (voiceIds:Null<Array<String>>, isPlayer:Bool) ->
     {
       for (voiceId in voiceIds)
       {
@@ -1943,6 +2050,7 @@ class CameraEditorState extends UIState implements ConsoleClass
         {
           var vocalSound = SoundUtil.buildSoundFromBytes(vocalData);
           currentVocals.push(vocalSound);
+          if (isPlayer) playerVocals.push(vocalSound);
         }
         else
         {
@@ -1953,12 +2061,13 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     var currentCharactersData:SongCharacterData = currentSongMetadata.playData.characters;
     // Default to the character ID if the array is null, but NOT if the array is empty.
-    buildVocal(currentCharactersData.playerVocals ?? [currentCharactersData.player]);
-    buildVocal(currentCharactersData.opponentVocals ?? [currentCharactersData.opponent]);
+    buildVocal(currentCharactersData.playerVocals ?? [currentCharactersData.player], true);
+    buildVocal(currentCharactersData.opponentVocals ?? [currentCharactersData.opponent], false);
     if (currentVocals.length == 0) // Try to load legacy vocals if none are loaded
     {
-      buildVocal(['']);
+      buildVocal([''], true);
     }
+    applyAudioVolumes();
 
     trace('    Instrumental:' + (currentInstrumental != null ? ' Loaded' : ' Missing'));
     trace('    Vocals: ' + currentVocals.length + ' loaded');
@@ -2474,6 +2583,8 @@ class CameraEditorState extends UIState implements ConsoleClass
     Cursor.hide();
     FlxG?.sound?.music?.stop();
 
+    restoreScaleMode();
+
     chart.savedChanged.remove(onChartSavedChanged);
     chart.workingFileChanged.remove(onChartWorkingFileChanged);
     chart.recentsChanged.remove(onChartRecentsChanged);
@@ -2757,8 +2868,8 @@ class CameraEditorState extends UIState implements ConsoleClass
   {
     if (mainView == null || mainView.width <= 0 || mainView.height <= 0) return defaultStageZoom * 0.8;
 
-    var fitW:Float = (mainView.width * VIEWPORT_FIT_MARGIN) * defaultStageZoom / FlxG.width;
-    var fitH:Float = (mainView.height * VIEWPORT_FIT_MARGIN) * defaultStageZoom / FlxG.height;
+    var fitW:Float = (mainView.width * VIEWPORT_FIT_MARGIN) * defaultStageZoom / gameplayWidth;
+    var fitH:Float = (mainView.height * VIEWPORT_FIT_MARGIN) * defaultStageZoom / gameplayHeight;
     return Math.min(fitW, fitH);
   }
 
@@ -2766,7 +2877,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   {
     // The fit camera to viewport logic does something similar to this just a bit more robust to what it actually aims for
     // So there's no need to have both together
-    if (menubarItemFitCameraToViewport.selected) return FlxPoint.get(0, 0);
+    if (fitCameraToViewport) return FlxPoint.get(0, 0);
 
     if (mainView == null || mainView.width <= 0 || mainView.height <= 0) return FlxPoint.get(0, 0);
 
@@ -2865,6 +2976,68 @@ class CameraEditorState extends UIState implements ConsoleClass
     var absoluteBackupsPath:String = haxe.io.Path.join([Sys.getCwd(), BACKUPS_PATH]);
     FileUtil.openFolder(absoluteBackupsPath);
     #end
+  }
+
+  @:bind(menubarItemPreferences, MouseEvent.CLICK)
+  function onPreferences(_)
+  {
+    if (preferencesDialog != null) return;
+
+    preferencesDialog = new PreferencesDialog(this);
+    preferencesDialog.showDialog(false);
+
+    preferencesDialog.onDialogClosed = (_) -> preferencesDialog = null;
+  }
+
+  /**
+   * Sets the song's volumes from the preferences.
+   */
+  public function applyAudioVolumes():Void
+  {
+    if (currentInstrumental != null) currentInstrumental.volume = instrumentalVolume;
+    for (vocal in currentVocals) vocal.volume = playerVocals.contains(vocal) ? playerVocalVolume : opponentVocalVolume;
+  }
+
+  function restoreScaleMode():Void
+  {
+    FlxG.signals.preStateSwitch.remove(restoreScaleMode);
+    ChartEditorScaleMode.restore();
+  }
+
+  override public function onResize(width:Int, height:Int):Void
+  {
+    super.onResize(width, height);
+    if (criticalFailure || camHUD == null) return;
+
+    camHUD.setSize(FlxG.width, FlxG.height);
+    if (root != null)
+    {
+      root.width = Screen.instance.width;
+      root.height = Screen.instance.height;
+    }
+    applyCameraViewportScale();
+    relayoutDialogs();
+    preferencesDialog?.refreshUIScaleLabel();
+  }
+
+  function relayoutDialogs():Void
+  {
+    var ratioX:Float = FlxG.width / dialogLayoutSize.x;
+    var ratioY:Float = FlxG.height / dialogLayoutSize.y;
+    dialogLayoutSize.set(FlxG.width, FlxG.height);
+    if (ratioX == 1 && ratioY == 1) return;
+
+    for (component in Screen.instance.rootComponents)
+    {
+      if (!(component is Dialog)) continue;
+      var dialog:Dialog = cast component;
+      var centerX:Float = (dialog.left + dialog.width / 2) * ratioX;
+      var centerY:Float = (dialog.top + dialog.height / 2) * ratioY;
+      var maxLeft:Float = Math.max(0, FlxG.width - dialog.width);
+      var maxTop:Float = Math.max(menubar.height, FlxG.height - dialog.height);
+      dialog.left = FlxMath.bound(centerX - dialog.width / 2, 0, maxLeft);
+      dialog.top = FlxMath.bound(centerY - dialog.height / 2, menubar.height, maxTop);
+    }
   }
 
   @:bind(menubarItemAbout, MouseEvent.CLICK)

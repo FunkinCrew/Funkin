@@ -119,6 +119,7 @@ class SharedPropertiesContainer extends BaseEventContainer
     loadedTexts.clear();
     loadedBools.clear();
     checkboxLabels.clear();
+    formulaFields = [];
 
     if (fields.length == 0)
     {
@@ -167,6 +168,7 @@ class SharedPropertiesContainer extends BaseEventContainer
           setOnAll(field.name, field.type == INTEGER ? Std.int(value) : value);
           afterEdit(field.name);
         });
+        bindFormula(stepper, field.name, field.type == INTEGER);
         return stepper;
 
       case BOOL:
