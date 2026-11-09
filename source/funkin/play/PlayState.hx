@@ -2729,6 +2729,12 @@ class PlayState extends MusicBeatSubState
 
     songEvents = builtEventData;
     SongEventRegistry.resetEvents(songEvents);
+    for (songEvent in songEvents)
+    {
+      if (songEvent.eventKind != 'RenderDistance') continue;
+      funkin.play.event.RenderDistanceEvent.resetStrumlines();
+      break;
+    }
 
     if (!hadSongEvents) SongEventRegistry.callEvent(event);
 
