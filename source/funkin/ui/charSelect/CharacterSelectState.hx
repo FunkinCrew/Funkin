@@ -527,7 +527,7 @@ class CharacterSelectState extends MusicBeatSubState
     bg.scrollFactor.set(0.1, 0.1);
     add(bg);
 
-    var crowd:FunkinSprite = new FunkinSprite(CUTOUT_SIZE, 0).loadTextureAtlas('ui/character-select/interface/crowd', {
+    var crowd:FunkinSprite = new FunkinSprite(CUTOUT_SIZE + 28, 0).loadTextureAtlas('ui/character-select/interface/crowd', {
       applyStageMatrix: true
     });
     crowd.anim.addBySymbol('wholeTimeline', crowd.getDefaultSymbol(), crowd.library.frameRate);
