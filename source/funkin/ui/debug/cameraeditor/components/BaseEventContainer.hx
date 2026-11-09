@@ -505,7 +505,7 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
   {
     var inner:Null<TextField> = stepper.findComponent('value', TextField);
     if (inner == null) return;
-    inner.restrictChars = '0-9\\-\\.\\,\\+\\*/\\(\\) ';
+    inner.restrictChars = '0-9\\-\\.\\,\\+\\*/\\^\\(\\) ';
     inner.registerEvent(UIEvent.CHANGE, function(event:UIEvent):Void
     {
       // Don't let the stepper read half-typed math as a number.

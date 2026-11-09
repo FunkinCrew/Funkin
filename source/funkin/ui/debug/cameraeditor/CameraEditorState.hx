@@ -1196,6 +1196,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   override public function update(elapsed:Float):Void
   {
     editSoundPlayed = false;
+    funkin.util.HaxeUITextHistory.update();
 
     if (cameraReplayPending)
     {
@@ -2617,7 +2618,15 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   function onScreenKeyDown(event:KeyboardEvent):Void
   {
-    if (isHaxeUIFocused) return;
+    if (isHaxeUIFocused)
+    {
+      if (event.ctrlKey && !event.altKey)
+      {
+        if (event.keyCode == FlxKey.Z && !event.shiftKey) funkin.util.HaxeUITextHistory.undo();
+        else if (event.keyCode == FlxKey.Y || (event.keyCode == FlxKey.Z && event.shiftKey)) funkin.util.HaxeUITextHistory.redo();
+      }
+      return;
+    }
 
     // @formatter:off
 

@@ -20,7 +20,7 @@ class NumberFormula
     for (i in 0...s.length)
     {
       var c:String = s.charAt(i);
-      if (c == '+' || c == '*' || c == '/' || c == '(' || c == ')') return true;
+      if (c == '+' || c == '*' || c == '/' || c == '^' || c == '(' || c == ')') return true;
       if (c == '-' && i > 0) return true;
     }
     return false;
@@ -37,12 +37,12 @@ class NumberFormula
     if (o != '' && s.length > o.length && s.substr(0, o.length) == o)
     {
       var next:String = s.charAt(o.length);
-      if (next == '+' || next == '-' || next == '*' || next == '/') return s.substr(o.length);
+      if (next == '+' || next == '-' || next == '*' || next == '/' || next == '^') return s.substr(o.length);
     }
 
     // negative
     var first:String = s.charAt(0);
-    if (first == '+' || first == '*' || first == '/') return s;
+    if (first == '+' || first == '*' || first == '/' || first == '^') return s;
 
     return null;
   }
@@ -124,7 +124,18 @@ class NumberFormula
         return signed();
       }
     }
-    return single();
+    return powered();
+  }
+
+  static function powered():Float
+  {
+    var v:Float = single();
+    if (at < line.length && line.charAt(at) == '^')
+    {
+      at++;
+      v = Math.pow(v, signed());
+    }
+    return v;
   }
 
   static function single():Float

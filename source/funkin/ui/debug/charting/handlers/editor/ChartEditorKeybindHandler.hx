@@ -553,16 +553,18 @@ class ChartEditorKeybindHandler
    */
   public static function handleUndoRedoKeybinds(state:ChartEditorState):Void
   {
+    funkin.util.HaxeUITextHistory.update();
+
     // CTRL + Z = Undo
     if (state.undoKeyHandler.activated)
     {
-      state.undoLastCommand();
+      if (!funkin.util.HaxeUITextHistory.undo()) state.undoLastCommand();
     }
 
     // CTRL + Y = Redo
     if (state.redoKeyHandler.activated)
     {
-      state.redoLastCommand();
+      if (!funkin.util.HaxeUITextHistory.redo()) state.redoLastCommand();
     }
   }
 
