@@ -472,7 +472,17 @@
       "props": {
         "ignoreExtern": true,
         "format": "^[a-z][_a-zA-Z0-9]*$",
-        "tokens": [],
+        "tokens": ["PUBLIC"],
+        "severity": "INFO"
+      },
+      "type": "MethodName"
+    },
+    {
+      "comment": "Specifies a specific naming format for method names.",
+      "props": {
+        "ignoreExtern": true,
+        "format": "^[_a-z][_a-zA-Z0-9]*$",
+        "tokens": ["PRIVATE"],
         "severity": "INFO"
       },
       "type": "MethodName"
