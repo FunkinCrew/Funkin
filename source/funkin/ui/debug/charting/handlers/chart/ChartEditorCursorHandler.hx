@@ -712,7 +712,7 @@ class ChartEditorCursorHandler
           var anchorStep:Null<Float> = null;
           if (state.dragTargetNote?.noteData != null) anchorStep = state.dragTargetNote.noteData.getStepTime();
           else if (state.dragTargetEvent?.eventData != null) anchorStep = state.dragTargetEvent.eventData.getStepTime();
-          if (anchorStep != null)
+          if (anchorStep != null && dragDistanceSteps != 0)
           {
             var rawStep:Float = anchorStep + cursorFractionalStep - state.dragStartCursorFractionalStep;
             var gridStep:Float = Math.min(Math.max(0, Math.fround(rawStep / state.noteSnapRatio) * state.noteSnapRatio), state.lastSnappedGridStep);
