@@ -2,12 +2,24 @@ package funkin.data.stickers;
 
 import funkin.data.stickers.StickerData;
 import funkin.ui.transition.stickers.StickerPack;
-import funkin.util.tools.ISingleton;
 import funkin.data.DefaultRegistryImpl;
 
 @:nullSafety
-class StickerRegistry extends BaseRegistry<StickerPack, StickerData, StickerEntryParams> implements ISingleton implements DefaultRegistryImpl
+class StickerRegistry extends BaseRegistry<StickerPack, StickerData, StickerEntryParams> implements DefaultRegistryImpl
 {
+  static var _instance:Null<StickerRegistry>;
+
+  public static var instance(get, never):StickerRegistry;
+
+  static function get_instance():StickerRegistry
+  {
+    if (_instance == null)
+    {
+      _instance = new StickerRegistry();
+    }
+    return _instance;
+  }
+
   /**
    * The current version string for the sticker pack data format.
    * Handle breaking changes by incrementing this value

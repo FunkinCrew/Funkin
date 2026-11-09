@@ -16,7 +16,6 @@ import funkin.ui.debug.charting.ChartEditorState.ChartEditorWaveformPos;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorTheme;
 import funkin.ui.debug.stageeditor.StageEditorState.StageEditorTheme;
 import funkin.util.FileUtil;
-import funkin.util.macro.ConsoleMacro;
 import funkin.util.macro.SaveMacro;
 import funkin.util.SerializerUtil;
 import funkin.touch.ui.FunkinHitbox;
@@ -30,7 +29,7 @@ import funkin.api.newgrounds.Leaderboards;
 
 @:nullSafety
 @:build(funkin.util.macro.SaveMacro.buildSaveProperties())
-class Save implements ConsoleClass implements ISerializable
+class Save implements ISerializable
 {
   /**
    * The current version of the save data schema.

@@ -1,12 +1,24 @@
 package funkin.data.stage;
 
 import funkin.play.stage.Stage;
-import funkin.util.tools.ISingleton;
 import funkin.data.DefaultRegistryImpl;
 
 @:nullSafety
-class StageRegistry extends BaseRegistry<Stage, StageData, StageEntryParams> implements ISingleton implements DefaultRegistryImpl
+class StageRegistry extends BaseRegistry<Stage, StageData, StageEntryParams> implements DefaultRegistryImpl
 {
+  static var _instance:Null<StageRegistry>;
+
+  public static var instance(get, never):StageRegistry;
+
+  static function get_instance():StageRegistry
+  {
+    if (_instance == null)
+    {
+      _instance = new StageRegistry();
+    }
+    return _instance;
+  }
+
   /**
    * The current version string for the stage data format.
    * Handle breaking changes by incrementing this value
