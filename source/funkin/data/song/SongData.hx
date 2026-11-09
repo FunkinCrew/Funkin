@@ -671,13 +671,17 @@ class SongChartData implements ICloneable<SongChartData> implements ISerializabl
   {
     // Update generatedBy and version before writing.
     updateVersionToLatest();
-    removeEmptyDifficulties();
+
+    // Clone the object to make potentially breaking edits before serializing,
+    // such as removing invalid data.
+    var sanitizedOutput = this.clone();
+    sanitizedOutput.removeEmptyDifficulties();
 
     var writer = new json2object.JsonWriter<SongChartData>(params ?? {
       ignoreNullOptionals: true,
       ignoreDefaults: true
     });
-    return writer.write(this, pretty ? ' ' : null);
+    return writer.write(sanitizedOutput, pretty ? ' ' : null);
   }
 
   public function updateVersionToLatest():Void
