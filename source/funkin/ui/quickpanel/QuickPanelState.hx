@@ -14,7 +14,9 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import funkin.assets.Assets;
+import funkin.assets.Assets.AssetType;
 import funkin.assets.ValidatedPaths as Paths;
+import funkin.assets.Paths.AssetPath;
 import funkin.audio.FunkinSound;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
@@ -1611,7 +1613,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
 
   // Getters
 
-  inline function get_controls():Controls return PlayerSettings.controls;
+  inline function get_controls():Controls return PlayerSettings.player1.controls;
 
   inline function get_curState():UIState return uiState.currentState;
 

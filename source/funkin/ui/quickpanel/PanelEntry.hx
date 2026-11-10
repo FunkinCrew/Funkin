@@ -1,6 +1,8 @@
 package funkin.ui.quickpanel;
 
+import funkin.assets.Assets.AssetType;
 import funkin.assets.Paths;
+import funkin.assets.Paths.AssetPath;
 import funkin.data.IRegistryEntry;
 import funkin.data.quickpanel.PanelData;
 import funkin.data.quickpanel.PanelData.PanelButtonAnim;

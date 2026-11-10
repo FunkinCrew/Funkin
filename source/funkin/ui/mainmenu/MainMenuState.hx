@@ -325,18 +325,28 @@ class MainMenuState extends MusicBeatState
 
     backButton?.onConfirmStart.add(() ->
     {
+      #if FEATURE_DEBUG_MENU
+      if (QuickPanelState.instance != null) QuickPanelState.instance.allowOpen = false;
+      #end
       uiStateMachine.transition(Interacting);
       trace('BACK: Interact Start');
     });
 
     optionsButton?.onConfirmStart.add(() ->
     {
+      #if FEATURE_DEBUG_MENU
+      if (QuickPanelState.instance != null) QuickPanelState.instance.allowOpen = false;
+      #end
       uiStateMachine.transition(Interacting);
       trace('OPTIONS: Interact Start');
     });
     #end
 
     super.create();
+
+    #if FEATURE_DEBUG_MENU
+    funkin.util.plugins.SidePanelPlugin.requestPanel('mainmenu', false);
+    #end
 
     // This has to come AFTER!
     initLeftWatermarkText();
@@ -381,7 +391,7 @@ class MainMenuState extends MusicBeatState
   {
     if (menuItems == null) return;
 
-    var item:AtlasMenuItem = new AtlasMenuItem(name, Assets.getSparrowAtlas(Paths.image(atlas)), callback);
+    var item:AtlasMenuItem = new AtlasMenuItem(0, 0, name, Assets.getSparrowAtlas(Paths.image(atlas)), callback);
     item.fireInstantly = fireInstantly;
     item.ID = menuItems.length;
     item.scrollFactor.set();
@@ -422,6 +432,10 @@ class MainMenuState extends MusicBeatState
       optionsButton?.animation.play('idle');
       optionsButton?.resetCallbacks();
       #end
+
+      #if FEATURE_DEBUG_MENU
+      if (QuickPanelState.instance != null) QuickPanelState.instance.allowOpen = true;
+      #end
     }
 
     super.closeSubState();
@@ -439,12 +453,16 @@ class MainMenuState extends MusicBeatState
   function selectDonate()
   {
     WindowUtil.openURL(Constants.URL_ITCH);
+    #if FEATURE_DEBUG_MENU
+    if (QuickPanelState.instance != null) QuickPanelState.instance.allowOpen = true;
+    #end
   }
 
   function selectMerch()
   {
     Referral.doMerchReferral();
     uiStateMachine.transition(Idle);
+    #if FEATURE_DEBUG_MENU if (QuickPanelState.instance != null) QuickPanelState.instance.allowOpen = true; #end
   }
   #end
 
@@ -553,21 +571,6 @@ class MainMenuState extends MusicBeatState
   function handleInputs():Void
   {
     if (!canInteract) return;
-
-    #if FEATURE_DEBUG_MENU
-    // Open the debug menu, defaults to ` / ~
-    // This includes stuff like the Chart Editor, so it should be present on all builds.
-    if (controls.DEBUG_MENU)
-    {
-      persistentUpdate = false;
-      uiStateMachine.transition(Interacting);
-
-      // Cancel the currently flickering menu item because it's about to call a state switch
-      if (menuItems != null && menuItems.busy) menuItems.cancelAccept();
-
-      FlxG.state.openSubState(new DebugMenuSubState());
-    }
-    #end
 
     #if FEATURE_DEBUG_FUNCTIONS
     // Ctrl+Alt+Shift+P = Character Unlock screen

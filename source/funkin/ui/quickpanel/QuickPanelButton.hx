@@ -4,6 +4,8 @@ import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import funkin.ui.quickpanel.QuickPanelState;
+import funkin.graphics.FunkinSprite;
+import funkin.graphics.shaders.BoilShader;
 import funkin.group.FunkinGroup;
 import funkin.ui.quickpanel.QuickPanelGroup;
 import funkin.ui.quickpanel.QuickPanelState;

@@ -160,7 +160,7 @@ class OptionsState extends MusicBeatState
     backState = null;
     if (targetState != null)
     {
-      funkin.ui.quickpanel.QuickPanelGroup.stopMusic();
+      funkin.ui.quickpanel.QuickPanelState.stopMusic();
       var isCompiled:Bool = funkin.modding.CppiaScripts.exists(targetState);
       var state:MusicBeatState = isCompiled ? cast funkin.modding.CppiaScripts.create(targetState) : MusicBeatState.scriptInit(targetState);
       var queryAssetsFunc = MusicBeatState.scriptStaticHasFunc(
@@ -297,7 +297,6 @@ class OptionsMenu extends Page<OptionsMenuPageName>
       InAppPurchasesUtil.restorePurchases();
     });
     #end
-    #if (FEATURE_TOUCH_CONTROLS || web)
     createItem('OPEN MOD MENU', function()
     {
       funkin.ui.transition.Transition.switchState(() -> new funkin.ui.modmenu.ModMenuState(), {
@@ -305,7 +304,6 @@ class OptionsMenu extends Page<OptionsMenuPageName>
         transition: Throbber
       });
     });
-    #end
     #if FEATURE_NEWGROUNDS
     if (NewgroundsClient.instance.isLoggedIn())
     {
