@@ -414,7 +414,7 @@ class ChartEditorGridLines
         var measurePosition:Float = measureStart + (beatStep - start) / measureSteps;
         if (Math.abs(measurePosition - Math.round(measurePosition)) >= EPSILON)
         {
-          addLine(beatStep, ChartEditorThemeHandler.GRID_BEAT_LINE_WIDTH, ChartEditorThemeHandler.GRID_BEAT_LINE_ALPHA);
+          addLine(beatStep, ChartEditorThemeHandler.GRID_BEAT_LINE_WIDTH, ChartEditorThemeHandler.getBeatLineAlpha(chartEditorState.currentTheme));
         }
         beat++;
       }
@@ -435,6 +435,10 @@ class ChartEditorGridLines
 
     var beatSteps:Float = Constants.STEPS_PER_BEAT;
 
+    var maxDepth:Int = 0;
+    while (snapSteps * Math.pow(2, maxDepth + 1) < beatSteps - EPSILON)
+      maxDepth++;
+
     var snap:Int = Math.ceil(from / snapSteps - EPSILON);
     while (snap * snapSteps < to - EPSILON)
     {
@@ -444,8 +448,15 @@ class ChartEditorGridLines
       if (Math.abs(measurePosition - Math.round(measurePosition)) < EPSILON) continue;
       if (showBeats && Math.abs(snapStep / beatSteps - Math.round(snapStep / beatSteps)) < EPSILON) continue;
 
-      var half:Float = snapStep / (snapSteps * 2);
-      var alpha:Float = (Math.abs(half - Math.round(half)) < EPSILON) ? ChartEditorThemeHandler.GRID_HALF_SNAP_LINE_ALPHA : ChartEditorThemeHandler.GRID_SNAP_LINE_ALPHA;
+      var depth:Int = 0;
+      while (depth < maxDepth)
+      {
+        var coarser:Float = snapStep / (snapSteps * Math.pow(2, depth + 1));
+        if (Math.abs(coarser - Math.round(coarser)) >= EPSILON) break;
+        depth++;
+      }
+      var strength:Float = maxDepth > 0 ? depth / maxDepth : 1;
+      var alpha:Float = ChartEditorThemeHandler.getSnapLineAlpha(chartEditorState.currentTheme, strength);
       addLine(snapStep, ChartEditorThemeHandler.GRID_SNAP_LINE_WIDTH, alpha);
     }
   }

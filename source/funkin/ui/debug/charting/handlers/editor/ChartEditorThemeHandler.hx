@@ -94,12 +94,32 @@ class ChartEditorThemeHandler
   static final GRID_LINE_COLOR_DARK:FlxColor = 0xFFD0D0D8;
 
   public static final GRID_MEASURE_LINE_WIDTH:Int = 2;
-  public static final GRID_MEASURE_LINE_ALPHA:Float = 0.75;
+  public static final GRID_MEASURE_LINE_ALPHA:Float = 1.0;
   public static final GRID_BEAT_LINE_WIDTH:Int = 1;
-  public static final GRID_BEAT_LINE_ALPHA:Float = 0.4;
+  static final GRID_BEAT_LINE_ALPHA_LIGHT:Float = 0.95;
+  static final GRID_BEAT_LINE_ALPHA_DARK:Float = 0.88;
   public static final GRID_SNAP_LINE_WIDTH:Int = 1;
-  public static final GRID_SNAP_LINE_ALPHA:Float = 0.12;
-  public static final GRID_HALF_SNAP_LINE_ALPHA:Float = 0.26;
+
+  // Faded snap lines.
+  static final GRID_SNAP_LINE_ALPHA_MIN_LIGHT:Float = 0.42;
+  static final GRID_SNAP_LINE_ALPHA_MAX_LIGHT:Float = 0.82;
+  static final GRID_SNAP_LINE_ALPHA_MIN_DARK:Float = 0.42;
+  static final GRID_SNAP_LINE_ALPHA_MAX_DARK:Float = 0.72;
+
+  public static function getBeatLineAlpha(theme:ChartEditorTheme):Float
+  {
+    return (theme == Dark) ? GRID_BEAT_LINE_ALPHA_DARK : GRID_BEAT_LINE_ALPHA_LIGHT;
+  }
+
+  /**
+   * How transparent a snap line is, `strength` goes from 0 on the finest snap to 1 on half beats.
+   */
+  public static function getSnapLineAlpha(theme:ChartEditorTheme, strength:Float):Float
+  {
+    var min:Float = (theme == Dark) ? GRID_SNAP_LINE_ALPHA_MIN_DARK : GRID_SNAP_LINE_ALPHA_MIN_LIGHT;
+    var max:Float = (theme == Dark) ? GRID_SNAP_LINE_ALPHA_MAX_DARK : GRID_SNAP_LINE_ALPHA_MAX_LIGHT;
+    return min + (max - min) * strength;
+  }
 
   // Solid waveform drawn across each side's lanes.
   static final WAVEFORM_OVERLAY_COLOR_LIGHT:FlxColor = 0xFF2E4F9C;

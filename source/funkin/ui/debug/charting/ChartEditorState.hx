@@ -994,6 +994,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     currentTheme = value;
     this.updateTheme();
     waveformsDirty = true;
+    gridLinesDirty = true;
     return value;
   }
 
