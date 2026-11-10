@@ -6,6 +6,7 @@ import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.modding.module.Module;
 import funkin.util.SortUtil;
+import funkin.util.StateUtil;
 import funkin.util.tasks.TaskHandler;
 import lime.app.Future;
 import lime.app.Promise;
@@ -306,7 +307,11 @@ class ModuleHandler
   {
     if (stateToFind == null) return true;
 
-    return FlxG.state != null;
+    for (state in StateUtil.getAllStates(FlxG.state))
+    {
+      if (Std.isOfType(state, stateToFind)) return true;
+    }
+    return false;
   }
 
   public static inline function callOnCreate():Void
