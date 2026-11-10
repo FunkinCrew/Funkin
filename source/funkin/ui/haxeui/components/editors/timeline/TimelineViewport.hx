@@ -44,7 +44,7 @@ class TimelineViewport extends Box
   // Durations are rounded to this many parts of a step.
   public static inline var DURATION_PRECISION:Float = 1000;
   public static inline var PIXELS_PER_STEP_BASE:Float = 12.0;
-  public static inline var MIN_ZOOM:Float = 0.1;
+  public static inline var MIN_ZOOM:Float = 0.02;
   public static inline var MAX_ZOOM:Float = 10.0;
   public static inline var ZOOM_WHEEL_IN:Float = 1.25;
   public static inline var ZOOM_WHEEL_OUT:Float = 0.8;

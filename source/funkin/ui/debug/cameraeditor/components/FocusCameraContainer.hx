@@ -3,6 +3,8 @@ package funkin.ui.debug.cameraeditor.components;
 #if FEATURE_CAMERA_EDITOR
 import funkin.play.event.FocusCameraSongEvent;
 import funkin.play.event.SongEvent;
+import funkin.ui.haxeui.components.LabeledRow;
+import funkin.ui.haxeui.components.editors.timeline.TimelineUtil;
 import funkin.ui.haxeui.components.editors.camera.EaseGraphPreview;
 import haxe.ui.events.UIEvent;
 
@@ -26,7 +28,20 @@ class FocusCameraContainer extends BaseEventContainer
     focusCameraEaseFrame.easeGraphPreview.registerEvent(UIEvent.CHANGE, function(_:UIEvent):Void
     {
       onEasePreviewChange();
+      showDuration();
     });
+  }
+
+  function showDuration():Void
+  {
+    var row:Null<LabeledRow> = focusCameraDuration.findAncestor(null, LabeledRow);
+    if (row == null) return;
+    var used:Bool = false;
+    for (event in editedEvents)
+    {
+      if (!TimelineUtil.isFixedDuration(event)) used = true;
+    }
+    row.hidden = !used;
   }
 
   override function getEasePreview():Null<EaseGraphPreview>
@@ -53,6 +68,7 @@ class FocusCameraContainer extends BaseEventContainer
     loadFloatField(focusCameraXPos, 'x', FocusCameraSongEvent.DEFAULT_X_POSITION);
     loadFloatField(focusCameraYPos, 'y', FocusCameraSongEvent.DEFAULT_Y_POSITION);
     loadFloatField(focusCameraDuration, 'duration', FocusCameraSongEvent.DEFAULT_DURATION);
+    showDuration();
 
     markShared(focusCameraEaseFrame, allMatch('ease', FocusCameraSongEvent.DEFAULT_CAMERA_EASE) && allMatch('easeDir', SongEvent.DEFAULT_EASE_DIR));
     focusCameraEaseFrame.easeGraphPreview.event = primaryEvent;

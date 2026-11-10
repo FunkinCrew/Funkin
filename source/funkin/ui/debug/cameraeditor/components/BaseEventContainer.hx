@@ -323,6 +323,8 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
     FlxG.stage.removeEventListener(openfl.events.KeyboardEvent.KEY_DOWN, onFormulaKey);
     listeningForEnter = false;
     formulaFields = [];
+    formulaSteppers = [];
+    typedFields = [];
     final preview:Null<EaseGraphPreview> = getEasePreview();
     if (preview != null) preview.cleanup();
   }
@@ -357,6 +359,11 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
   var loadingNumber:Bool = false;
 
   /**
+   * Number fields typed in since they were last loaded.
+   */
+  var typedFields:Array<Component> = [];
+
+  /**
    * Fills a number field without the change counting as an edit.
    */
   function loadNumber(field:Component, value:Float):Void
@@ -365,6 +372,7 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
     field.value = value;
     loadingNumber = false;
     loadedNumbers.set(field, field.value);
+    typedFields.remove(field);
   }
 
   /**
@@ -373,7 +381,8 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
   function isUserNumberChange(field:Component, value:Float):Bool
   {
     if (loadingNumber) return false;
-    if (loadedNumbers.exists(field) && loadedNumbers.get(field) == value && !(mixedFields.contains(field) && hasFocusWithin(field))) return false;
+    var typedOverMixed:Bool = mixedFields.contains(field) && hasFocusWithin(field) && typedFields.contains(field);
+    if (loadedNumbers.exists(field) && loadedNumbers.get(field) == value && !typedOverMixed) return false;
     loadedNumbers.set(field, value);
     return true;
   }
@@ -528,6 +537,7 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
       listeningForEnter = true;
     }
     formulaFields.push(() -> if (hasFocusWithin(stepper)) applyFormula(stepper, inner, fieldName, isInt));
+    formulaSteppers.push(stepper);
   }
 
   /**
@@ -535,11 +545,20 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
    */
   var formulaFields:Array<Void->Void> = [];
 
+  var formulaSteppers:Array<Component> = [];
+
   var listeningForEnter:Bool = false;
 
   function onFormulaKey(event:openfl.events.KeyboardEvent):Void
   {
-    if (event.keyCode != openfl.ui.Keyboard.ENTER && event.keyCode != openfl.ui.Keyboard.NUMPAD_ENTER) return;
+    if (event.keyCode != openfl.ui.Keyboard.ENTER && event.keyCode != openfl.ui.Keyboard.NUMPAD_ENTER)
+    {
+      for (stepper in formulaSteppers)
+      {
+        if (hasFocusWithin(stepper) && !typedFields.contains(stepper)) typedFields.push(stepper);
+      }
+      return;
+    }
     for (apply in formulaFields) apply();
   }
 

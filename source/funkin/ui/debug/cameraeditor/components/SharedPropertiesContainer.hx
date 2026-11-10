@@ -22,7 +22,7 @@ class SharedPropertiesContainer extends BaseEventContainer
   /**
    * Which fields the current controls were built for, so the same set is not built twice.
    */
-  var builtKey:String = '';
+  var builtKey:Null<String> = null;
 
   var fields:Array<SongEventSchemaField> = [];
   var controls:Array<Component> = [];
@@ -120,11 +120,13 @@ class SharedPropertiesContainer extends BaseEventContainer
     loadedBools.clear();
     checkboxLabels.clear();
     formulaFields = [];
+    formulaSteppers = [];
+    typedFields = [];
 
     if (fields.length == 0)
     {
       emptyLabel = new Label();
-      emptyLabel.text = 'The selected events have no properties in common.';
+      emptyLabel.text = 'No shared parameters';
       addComponent(emptyLabel);
       return;
     }
