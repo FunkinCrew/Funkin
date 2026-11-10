@@ -189,6 +189,7 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
   {
     //
     if (graphic != null && graphic.persist && FunkinAssetCache.instance.isPurgeCycleActive) return;
+    if (graphic != null && stagedFlxGraphic.permanent.get(graphic.key) == graphic) return;
 
     if (graphic != null)
     {
