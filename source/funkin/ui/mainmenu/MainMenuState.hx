@@ -72,6 +72,16 @@ class MainMenuState extends MusicBeatState
   var overrideMusic:Bool = false;
   var uiStateMachine:UIStateMachine = new UIStateMachine();
   var canInteract(get, never):Bool;
+  // Temp bandaid
+  var ignoreFrames:Int = 0;
+
+  // this menu sucks dude
+
+  function samplePanelOpen():Void
+  {
+    if (QuickPanelState.instance?.isOpen ?? false) ignoreFrames = 3;
+    else if (ignoreFrames > 0) ignoreFrames--;
+  }
 
   function get_canInteract():Bool
   {
@@ -347,6 +357,8 @@ class MainMenuState extends MusicBeatState
     #if FEATURE_DEBUG_MENU
     funkin.util.plugins.SidePanelPlugin.requestPanel('mainmenu', false);
     #end
+
+    FlxG.signals.postUpdate.add(samplePanelOpen);
 
     // This has to come AFTER!
     initLeftWatermarkText();
@@ -670,7 +682,8 @@ class MainMenuState extends MusicBeatState
     }
     #end
 
-    if (controls.BACK_P) goBack();
+    if (controls.BACK_P) trace('MENU back, ignoreFrames=$ignoreFrames');
+    if (controls.BACK_P && ignoreFrames == 0) goBack();
   }
 
   function goOptions():Void
@@ -741,5 +754,11 @@ class MainMenuState extends MusicBeatState
       default:
     }
     return results;
+  }
+
+  override function destroy():Void
+  {
+    FlxG.signals.postUpdate.remove(samplePanelOpen);
+    super.destroy();
   }
 }
