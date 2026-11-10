@@ -129,6 +129,7 @@ class ChartEditorTimeScale
   static function buildScrollSpeedPoints(events:Array<SongEventData>, chartScrollSpeed:Float):Bool
   {
     velocity = new funkin.play.notes.ScrollVelocityTimeline(events, 'player');
+    opponentVelocity = new funkin.play.notes.ScrollVelocityTimeline(events, 'opponent');
 
     var baseSpeed:Float = (chartScrollSpeed > 0) ? chartScrollSpeed : 1;
     var points:Array<ScrollSpeedPoint> = [{time: 0, distance: 0, speed: baseSpeed}];
@@ -223,11 +224,17 @@ class ChartEditorTimeScale
 
 
   static var velocity:Null<funkin.play.notes.ScrollVelocityTimeline> = null;
-  public static function visualTime(ms:Float):Float
+  static var opponentVelocity:Null<funkin.play.notes.ScrollVelocityTimeline> = null;
+
+  /**
+   * The song time of the notes at a strumline's receptors, after Scroll Velocity events.
+   * @param opponent Whether to use the opponent's Scroll Velocity events instead of the player's.
+   */
+  public static function visualTime(ms:Float, opponent:Bool = false):Float
   {
     // Disabled to allow for constant scroll speed to show visual time
     // if (CONSTANT_SCROLL) return ms;
-    var line:Null<funkin.play.notes.ScrollVelocityTimeline> = velocity;
+    var line:Null<funkin.play.notes.ScrollVelocityTimeline> = opponent ? opponentVelocity : velocity;
     if (line == null) return ms;
     var visual:Float = line.visualTime(ms);
     var start:Float = line.stretchStartAt(ms);

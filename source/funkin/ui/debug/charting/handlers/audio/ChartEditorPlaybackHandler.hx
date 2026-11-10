@@ -199,53 +199,80 @@ class ChartEditorPlaybackHandler
   }
 
   /**
-   * Show the ghost playhead where Scroll Velocity events have moved the notes at the receptors to.
+   * Show the ghost playheads where Scroll Velocity events have moved the notes at the receptors to.
    */
   public static function handleGhostPlayhead(state:ChartEditorState):Void
   {
     var songMs:Float = playheadSongMs(state);
-    var visualMs:Float = ChartEditorTimeScale.visualTime(songMs);
-    var shown:Bool = Math.abs(visualMs - songMs) > 0.5;
-    var ghostPixels:Float = ChartEditorTimeScale.msToPixels(visualMs);
+    var playerMs:Float = ChartEditorTimeScale.visualTime(songMs);
+    var opponentMs:Float = ChartEditorTimeScale.visualTime(songMs, true);
+    var playerShown:Bool = ghostShown(state, songMs, playerMs);
+    var opponentShown:Bool = ghostShown(state, songMs, opponentMs);
+    var shared:Bool = playerShown && opponentShown && Math.abs(playerMs - opponentMs) <= 0.5;
+    var sideWidth:Float = ChartEditorState.GRID_SIZE * ChartEditorState.STRUMLINE_SIZE;
 
-    if (shown) shown = Math.abs(ghostPixels - (state.scrollPositionInPixels + state.playheadPositionInPixels)) >= ChartEditorState.PLAYHEAD_HEIGHT;
-    state.gridGhostPlayhead.visible = shown;
-    if (!shown) return;
-
-    state.gridGhostPlayhead.y = ghostPixels - state.scrollPositionInPixels + ChartEditorState.GRID_INITIAL_Y_POS;
-    var text:Null<flixel.text.FlxText> = state.gridGhostPlayheadText;
-    if (text != null)
+    state.gridGhostPlayhead.visible = playerShown;
+    if (playerShown)
     {
-      var label:String = flixel.util.FlxStringUtil.formatTime(Math.max(0, visualMs - Conductor.instance.instrumentalOffset) / Constants.MS_PER_SEC, true);
-      if (text.text != label) text.text = label;
+      var opponentPart:Null<flixel.FlxSprite> = state.gridGhostPlayheadOpponentPart;
+      if (opponentPart != null) opponentPart.visible = shared;
+      var eventPart:Null<flixel.FlxSprite> = state.gridGhostPlayheadEventPart;
+      if (eventPart != null) eventPart.visible = shared;
+      placeGhost(state.gridGhostPlayhead, state.gridGhostPlayheadText, state, playerMs, shared ? 0 : sideWidth);
     }
+
+    state.gridGhostPlayheadOpponent.visible = opponentShown && !shared;
+    if (opponentShown && !shared) placeGhost(state.gridGhostPlayheadOpponent, state.gridGhostPlayheadOpponentText, state, opponentMs, 0);
   }
 
   /**
-   * Show the player's viewport on the grid, if enabled.
+   * Whether a strumline's receptors are far enough from the real playhead to need a ghost.
+   */
+  static function ghostShown(state:ChartEditorState, songMs:Float, visualMs:Float):Bool
+  {
+    if (Math.abs(visualMs - songMs) <= 0.5) return false;
+    return Math.abs(ChartEditorTimeScale.msToPixels(visualMs) - (state.scrollPositionInPixels + state.playheadPositionInPixels)) >= ChartEditorState.PLAYHEAD_HEIGHT;
+  }
+
+  static function placeGhost(ghost:flixel.group.FlxSpriteGroup, text:Null<flixel.text.FlxText>, state:ChartEditorState, visualMs:Float, textX:Float):Void
+  {
+    ghost.y = ChartEditorTimeScale.msToPixels(visualMs) - state.scrollPositionInPixels + ChartEditorState.GRID_INITIAL_Y_POS;
+    if (text == null) return;
+    text.x = ghost.x + textX;
+    var label:String = flixel.util.FlxStringUtil.formatTime(Math.max(0, visualMs - Conductor.instance.instrumentalOffset) / Constants.MS_PER_SEC, true);
+    if (text.text != label) text.text = label;
+  }
+
+  /**
+   * Show what each strumline can see on the grid, if enabled.
    */
   public static function handlePlayerView(state:ChartEditorState):Void
   {
-    var sprite:Null<flixel.FlxSprite> = state.gridPlayerView;
-    var edge:Null<flixel.FlxSprite> = state.gridPlayerViewEdge;
+    var songMs:Float = playheadSongMs(state);
+    var width:Float = ChartEditorState.GRID_SIZE * ChartEditorState.STRUMLINE_SIZE;
+    var gridX:Float = state.gridTiledSprite?.x ?? ChartEditorState.GRID_X_POS;
+    var downscroll:Bool = Preferences.downscroll;
+    var strumlineOffsetY:Float = 0;
+    if (state.showPlayerView && downscroll)
+    {
+      var style:Null<funkin.play.notes.notestyle.NoteStyle> = funkin.data.notestyle.NoteStyleRegistry.instance.fetchEntry(state.currentSongNoteStyle);
+      strumlineOffsetY = style?.getStrumlineOffsets()[1] ?? 0;
+    }
+    placeView(state, state.gridPlayerView, state.gridPlayerViewEdge, gridX + width, width, songMs, ChartEditorTimeScale.visualTime(songMs), downscroll,
+      strumlineOffsetY);
+    placeView(state, state.gridOpponentView, state.gridOpponentViewEdge, gridX, width, songMs, ChartEditorTimeScale.visualTime(songMs, true), downscroll,
+      strumlineOffsetY);
+  }
+
+  static function placeView(state:ChartEditorState, sprite:Null<flixel.FlxSprite>, edge:Null<flixel.FlxSprite>, left:Float, width:Float, songMs:Float,
+      visualMs:Float, downscroll:Bool, strumlineOffsetY:Float):Void
+  {
     if (sprite == null || edge == null) return;
     sprite.visible = state.showPlayerView;
     edge.visible = state.showPlayerView;
     if (!sprite.visible) return;
 
-    var songMs:Float = playheadSongMs(state);
-    var visualMs:Float = ChartEditorTimeScale.visualTime(songMs);
-    var downscroll:Bool = Preferences.downscroll;
-    var strumlineOffsetY:Float = 0;
-    if (downscroll)
-    {
-      var style:Null<funkin.play.notes.notestyle.NoteStyle> = funkin.data.notestyle.NoteStyleRegistry.instance.fetchEntry(state.currentSongNoteStyle);
-      strumlineOffsetY = style?.getStrumlineOffsets()[1] ?? 0;
-    }
     var endMs:Float = ChartEditorTimeScale.playerViewEnd(visualMs, songMs, downscroll, strumlineOffsetY);
-
-    var width:Float = ChartEditorState.GRID_SIZE * ChartEditorState.STRUMLINE_SIZE;
-    var left:Float = (state.gridTiledSprite?.x ?? ChartEditorState.GRID_X_POS) + width;
     var top:Float = (Math.abs(visualMs - songMs) > 0.5) ? ChartEditorTimeScale.msToPixels(visualMs) - state.scrollPositionInPixels
       + ChartEditorState.GRID_INITIAL_Y_POS : state.playheadPositionInPixels + ChartEditorState.GRID_INITIAL_Y_POS;
     var cutoff:Float = ChartEditorTimeScale.msToPixels(Math.max(0, endMs)) - state.scrollPositionInPixels + ChartEditorState.GRID_INITIAL_Y_POS;

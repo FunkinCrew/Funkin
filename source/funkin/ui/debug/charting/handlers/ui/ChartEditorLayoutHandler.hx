@@ -194,6 +194,18 @@ class ChartEditorLayoutHandler
     playerViewEdge.zIndex = 17;
     state.add(playerViewEdge);
     state.gridPlayerViewEdge = playerViewEdge;
+    var opponentView:FlxSprite = new FlxSprite().makeGraphic(1, 1, 0x3033C6FF);
+    opponentView.origin.set(0, 0);
+    opponentView.visible = false;
+    opponentView.zIndex = 17;
+    state.add(opponentView);
+    state.gridOpponentView = opponentView;
+    var opponentViewEdge:FlxSprite = new FlxSprite().makeGraphic(1, 1, 0xC033C6FF);
+    opponentViewEdge.origin.set(0, 0);
+    opponentViewEdge.visible = false;
+    opponentViewEdge.zIndex = 17;
+    state.add(opponentViewEdge);
+    state.gridOpponentViewEdge = opponentViewEdge;
     var durationBar:FunkinSprite = new FunkinSprite().makeSolidColor(1, 1, ChartEditorGridInteractionHandler.EVENT_DURATION_COLOR);
     durationBar.origin.set(0, 0);
     durationBar.visible = false;
@@ -255,16 +267,24 @@ class ChartEditorLayoutHandler
     state.add(state.gridGhostPlayhead);
     state.gridGhostPlayhead.zIndex = 29;
     state.gridGhostPlayhead.setPosition(ChartEditorState.GRID_X_POS, playheadBaseYPos);
-    var ghostLine:FunkinSprite = new FunkinSprite().makeSolidColor(playheadWidth - ChartEditorState.PLAYHEAD_SCROLL_AREA_WIDTH, ChartEditorState.PLAYHEAD_HEIGHT,
-      ChartEditorState.PLAYHEAD_COLOR);
-    ghostLine.alpha = 0.4;
-    state.gridGhostPlayhead.add(ghostLine);
-    var ghostText:flixel.text.FlxText = new flixel.text.FlxText(0, -18, 0, '', 12);
-    ghostText.setBorderStyle(flixel.text.FlxText.FlxTextBorderStyle.OUTLINE, 0xFF000000, 1);
-    ghostText.alpha = 0.8;
+    var sideWidth:Int = ChartEditorState.GRID_SIZE * ChartEditorState.STRUMLINE_SIZE;
+
+    state.gridGhostPlayheadOpponentPart = state.gridGhostPlayhead.add(buildGhostLine(0, sideWidth));
+    state.gridGhostPlayhead.add(buildGhostLine(sideWidth, sideWidth));
+    state.gridGhostPlayheadEventPart = state.gridGhostPlayhead.add(buildGhostLine(sideWidth * 2, ChartEditorState.GRID_SIZE));
+    var ghostText:flixel.text.FlxText = buildGhostText();
     state.gridGhostPlayhead.add(ghostText);
     state.gridGhostPlayheadText = ghostText;
     state.gridGhostPlayhead.visible = false;
+
+    state.add(state.gridGhostPlayheadOpponent);
+    state.gridGhostPlayheadOpponent.zIndex = 29;
+    state.gridGhostPlayheadOpponent.setPosition(ChartEditorState.GRID_X_POS, playheadBaseYPos);
+    state.gridGhostPlayheadOpponent.add(buildGhostLine(0, sideWidth));
+    var opponentGhostText:flixel.text.FlxText = buildGhostText();
+    state.gridGhostPlayheadOpponent.add(opponentGhostText);
+    state.gridGhostPlayheadOpponentText = opponentGhostText;
+    state.gridGhostPlayheadOpponent.visible = false;
 
     // Character icons.
     state.healthIconDad = new HealthIcon(state.currentSongMetadata.playData.characters.opponent);
@@ -283,6 +303,22 @@ class ChartEditorLayoutHandler
     // 15 is above the grid, but below most stuff that's on the grid.
     state.audioWaveforms.zIndex = 15;
     state.add(state.audioWaveforms);
+  }
+
+  static function buildGhostLine(x:Int, width:Int):FlxSprite
+  {
+    var line:FunkinSprite = new FunkinSprite().makeSolidColor(width, ChartEditorState.PLAYHEAD_HEIGHT, ChartEditorState.PLAYHEAD_COLOR);
+    line.x = x;
+    line.alpha = 0.4;
+    return line;
+  }
+
+  static function buildGhostText():flixel.text.FlxText
+  {
+    var text:flixel.text.FlxText = new flixel.text.FlxText(0, -18, 0, '', 12);
+    text.setBorderStyle(flixel.text.FlxText.FlxTextBorderStyle.OUTLINE, 0xFF000000, 1);
+    text.alpha = 0.8;
+    return text;
   }
 
   public static function createSubtitles(state:ChartEditorState):Void

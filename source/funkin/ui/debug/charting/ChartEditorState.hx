@@ -967,6 +967,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var showPlayerView:Bool = false;
   var gridPlayerView:Null<flixel.FlxSprite> = null;
   var gridPlayerViewEdge:Null<flixel.FlxSprite> = null;
+  var gridOpponentView:Null<flixel.FlxSprite> = null;
+  var gridOpponentViewEdge:Null<flixel.FlxSprite> = null;
 
   /**
    * How opaque the grid backing is, from 0 to 1.
@@ -2884,6 +2886,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var gridGhostPlayhead:FlxSpriteGroup = new FlxSpriteGroup();
   var gridGhostPlayheadText:Null<flixel.text.FlxText> = null;
 
+  var gridGhostPlayheadOpponentPart:Null<flixel.FlxSprite> = null;
+  var gridGhostPlayheadEventPart:Null<flixel.FlxSprite> = null;
+
+  var gridGhostPlayheadOpponent:FlxSpriteGroup = new FlxSpriteGroup();
+  var gridGhostPlayheadOpponentText:Null<flixel.text.FlxText> = null;
+
   /**
    * A sprite used to indicate the note that will be placed on click.
    */
@@ -3402,6 +3410,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     gridTiledSprite.x = gridX;
     gridPlayhead.x = gridX;
     gridGhostPlayhead.x = gridX;
+    gridGhostPlayheadOpponent.x = gridX;
 
     if (measureTicks != null) measureTicks.x = gridX - GRID_SIZE;
 
