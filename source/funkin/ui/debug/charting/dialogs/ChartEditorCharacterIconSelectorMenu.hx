@@ -2,18 +2,25 @@ package funkin.ui.debug.charting.dialogs;
 
 #if FEATURE_CHART_EDITOR
 import flixel.math.FlxPoint;
-import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.data.character.CharacterData;
 import funkin.data.character.CharacterRegistry;
+import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.play.components.HealthIcon;
 import funkin.util.SortUtil;
+import haxe.ui.components.Button;
 import haxe.ui.components.Label;
+import haxe.ui.components.TextField;
 import haxe.ui.containers.Grid;
 import haxe.ui.containers.ScrollView;
 import haxe.ui.core.Screen;
-import flixel.tweens.FlxTween;
-import flixel.tweens.FlxEase;
-import haxe.ui.components.Button;
+import haxe.ui.events.UIEvent;
+
+private typedef CharacterEntry = {
+  var id:String;
+  var name:String;
+  var button:Button;
+  var isNone:Bool;
+};
 
 // @:nullSafety // TODO: Fix null safety when used with HaxeUI build macros.
 @:access(funkin.ui.debug.charting.ChartEditorState)
@@ -22,9 +29,13 @@ class ChartEditorCharacterIconSelectorMenu extends ChartEditorBaseMenu
 {
   public var charSelectScroll:ScrollView;
   public var charIconName:Label;
+  public var charSearch:TextField;
 
+  var charEntries:Array<CharacterEntry> = [];
   var currentCharButton:Null<Button> = null;
   var currentCharId:String = '';
+  var defaultText:String = '(choose a character)';
+  var initialScrollPos:Float = 0;
 
   public function new(chartEditorState2:ChartEditorState,
     charType:CharacterType,
@@ -33,21 +44,6 @@ class ChartEditorCharacterIconSelectorMenu extends ChartEditorBaseMenu
     super(chartEditorState2);
 
     initialize(charType, lockPosition);
-    this.alpha = 0;
-    this.y -= 10;
-    FlxTween.tween(this, {
-      alpha: 1,
-      y: this.y + 10
-    }, 0.2, {
-      ease: FlxEase.quartOut,
-      onComplete: function(_)
-      {
-        // Just focus the button FFS. Idk why, but the scrollbar doesn't update until after the tween finishes with this????
-        if (currentCharButton != null) currentCharButton.focus = true;
-        else
-          chartEditorState.error('Failure', 'Could not find character of ${currentCharId} in registry (Is the character in the registry?)');
-      }
-    });
   }
 
   function initialize(charType:CharacterType, lockPosition:Bool)
@@ -64,7 +60,6 @@ class ChartEditorCharacterIconSelectorMenu extends ChartEditorBaseMenu
         throw 'Invalid charType: ' + charType;
     };
 
-    // Position this menu.
     var targetHealthIcon:Null<HealthIcon> = switch (charType)
     {
       case BF:
@@ -96,13 +91,13 @@ class ChartEditorCharacterIconSelectorMenu extends ChartEditorBaseMenu
     var charIds:Array<String> = CharacterRegistry.instance.listEntryIds();
     charIds.sort(SortUtil.alphabetically);
 
-    charIds.insert(0, ""); // Add none/null/NuN character option
-
-    var defaultText:String = '(choose a character)';
+    charIds.insert(0, ''); // Add None option.
 
     for (charIndex => charId in charIds)
     {
       var charData:CharacterData = CharacterRegistry.instance.fetchCharacterData(charId);
+      var charName:String = (charId != '') ? charData.name : 'None';
+      var charLabel:String = (charId != '') ? '${charName} [${charId}]' : 'None';
 
       var charButton = new Button();
       charButton.width = 70;
@@ -112,11 +107,10 @@ class ChartEditorCharacterIconSelectorMenu extends ChartEditorBaseMenu
 
       if (charId == currentCharId)
       {
-        // Scroll to the character if it is already selected.
-        charSelectScroll.vscrollPos = Math.floor(charIndex / 5) * 80;
-        charButton.focus = true;
+        initialScrollPos = Math.floor(charIndex / 5) * 80;
+        charSelectScroll.vscrollPos = initialScrollPos;
 
-        defaultText = (currentCharId != "") ? '${charData.name} [${charId}]' : 'None';
+        defaultText = charLabel;
 
         currentCharButton = charButton;
       }
@@ -124,7 +118,7 @@ class ChartEditorCharacterIconSelectorMenu extends ChartEditorBaseMenu
       var LIMIT = 6;
       var pixelIcon = CharacterRegistry.getCharPixelIconAsset(charId);
       charButton.icon = pixelIcon != null ? haxe.ui.util.Variant.fromImageData(pixelIcon) : null;
-      charButton.text = (charId != "") ? (charData.name.length > LIMIT ? '${charData.name.substr(0, LIMIT)}.' : '${charData.name}') : 'None';
+      charButton.text = (charName.length > LIMIT) ? '${charName.substr(0, LIMIT)}.' : charName;
 
       charButton.onClick = _ ->
       {
@@ -142,7 +136,7 @@ class ChartEditorCharacterIconSelectorMenu extends ChartEditorBaseMenu
             throw 'Invalid charType: ' + charType;
         };
 
-        defaultText = (charId != "") ? '${charData.name} [${charId}]' : 'None';
+        defaultText = charLabel;
         chartEditorState.healthIconsDirty = true;
 
         chartEditorState.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
@@ -150,16 +144,62 @@ class ChartEditorCharacterIconSelectorMenu extends ChartEditorBaseMenu
 
       charButton.onMouseOver = _ ->
       {
-        charIconName.text = (charId != "") ? '${charData.name} [${charId}]' : 'None';
+        charIconName.text = charLabel;
       };
       charButton.onMouseOut = _ ->
       {
         charIconName.text = defaultText;
       };
+
+      charEntries.push({
+        id: charId,
+        name: charName,
+        button: charButton,
+        isNone: charId == ''
+      });
+
       charGrid.addComponent(charButton);
     }
 
     charIconName.text = defaultText;
+    charSearch.onChange = onSearchChanged;
+  }
+
+  function focusCurrentCharacter():Void
+  {
+    if (currentCharButton == null) return;
+
+    if ((charSearch.text ?? '').length == 0) charSelectScroll.vscrollPos = initialScrollPos;
+    currentCharButton.focus = true;
+  }
+
+  function onSearchChanged(_:UIEvent):Void
+  {
+    var term:String = StringTools.trim(charSearch.text ?? '').toLowerCase();
+
+    var matchCount:Int = 0;
+
+    for (entry in charEntries)
+    {
+      if (entry.isNone)
+      {
+        entry.button.hidden = false;
+        continue;
+      }
+
+      var matches:Bool = term.length == 0
+        || entry.name.toLowerCase().indexOf(term) != -1
+        || entry.id.toLowerCase().indexOf(term) != -1;
+
+      entry.button.hidden = !matches;
+
+      if (matches) matchCount++;
+    }
+
+    charIconName.text = (term.length > 0 && matchCount == 0) ? 'No characters found' : defaultText;
+
+    charSelectScroll.vscrollPos = 0;
+    charSelectScroll.hscrollPos = 0;
   }
 
   public static function build(chartEditorState:ChartEditorState,
@@ -169,6 +209,7 @@ class ChartEditorCharacterIconSelectorMenu extends ChartEditorBaseMenu
     var menu = new ChartEditorCharacterIconSelectorMenu(chartEditorState, charType, lockPosition);
 
     Screen.instance.addComponent(menu);
+    haxe.ui.Toolkit.callLater(() -> menu.focusCurrentCharacter());
 
     return menu;
   }
