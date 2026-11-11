@@ -457,6 +457,13 @@ class FreeplayState extends MusicBeatSubState
     // TODO: refactor DifficultySelector to *not* use `this` as input? Handle it's animations and style data in different manner
     diffSelLeft = new DifficultySelector((CUTOUT_WIDTH * DJ_POS_MULTI) + 20, grpDifficulties.y - 10, false, controls, styleData, uiStateMachine);
     diffSelRight = new DifficultySelector((CUTOUT_WIDTH * DJ_POS_MULTI) + 325, grpDifficulties.y - 10, true, controls, styleData, uiStateMachine);
+
+    // Always opened on top of another state, so it never needs its own transition.
+    @:nullSafety(Off)
+    {
+      transIn = null;
+      transOut = null;
+    }
   }
 
   private function initializeBackingCard():Void
