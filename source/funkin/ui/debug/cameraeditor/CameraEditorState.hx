@@ -1155,8 +1155,11 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   var eventAnimations:Array<{sprite:FlxSprite, anim:flixel.animation.FlxAnimation, startMs:Float, finished:Bool}> = [];
 
+  var stageSpritesCache:Null<Array<FlxSprite>> = null;
+
   function stageSprites():Array<FlxSprite>
   {
+    if (stageSpritesCache != null) return stageSpritesCache;
     var result:Array<FlxSprite> = [];
     if (currentStage == null) return result;
     function collect(group:flixel.group.FlxGroup.FlxTypedGroup<Dynamic>):Void
@@ -1268,6 +1271,10 @@ class CameraEditorState extends UIState implements ConsoleClass
     eventAnimations = [];
     if (currentStage == null) return;
     currentStage.songEvents = songEvents;
+    for (sprite in stageSprites())
+    {
+      if (Std.isOfType(sprite, funkin.play.stage.Bopper)) cast(sprite, funkin.play.stage.Bopper).canPlayOtherAnims = true;
+    }
     currentStage.onEventReset();
     currentStage.dispatchToCharacters(new SongRetryEvent(currentDifficulty));
   }
@@ -2404,6 +2411,10 @@ class CameraEditorState extends UIState implements ConsoleClass
       replayDadAnimWindowEnd = -1;
     }
 
+    var soundsBeforeReplay:Array<flixel.sound.FlxSound> = [for (sound in FlxG.sound.list.members) if (sound != null && sound.playing) sound];
+    FunkinSound.suppressOneShots = true;
+    stageSpritesCache = stageSprites();
+
     if (songEvents != null && songEvents.length > 0)
     {
       var replayEvents:Array<SongEventData> = songEvents.filter(function(eventData:SongEventData):Bool
@@ -2564,6 +2575,13 @@ class CameraEditorState extends UIState implements ConsoleClass
     if (doSongEvents) customEvents.update(position, dispatchReplayedCustomEvent, true, false);
 
     seekEventAnimations(position);
+
+    for (sound in FlxG.sound.list.members)
+    {
+      if (sound != null && sound.playing && !soundsBeforeReplay.contains(sound)) sound.stop();
+    }
+    FunkinSound.suppressOneShots = false;
+    stageSpritesCache = null;
 
     if (dad != null) dad.animation.update(0);
     if (bf != null) bf.animation.update(0);

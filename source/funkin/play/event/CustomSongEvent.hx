@@ -88,6 +88,31 @@ class CustomSongEvent extends SongEvent
     return ['true', 'yes', 'on', '1'].contains(StringTools.trim(text).toLowerCase());
   }
 
+  // If you want to use a list just separate the values with commas.
+  // "true (true.gif), false (false.gif)"
+  public static function paramList(data:SongEventData, name:String):Array<String>
+  {
+    var text:Null<String> = param(data, name);
+    if (text == null || StringTools.trim(text).length == 0) return [];
+    return [for (part in text.split(',')) StringTools.trim(part)];
+  }
+
+  public static function paramBoolList(data:SongEventData, name:String):Array<Bool>
+  {
+    return [for (part in paramList(data, name)) ['true', 'yes', 'on', '1'].contains(part.toLowerCase())];
+  }
+
+  public static function paramFloatList(data:SongEventData, name:String):Array<Float>
+  {
+    var result:Array<Float> = [];
+    for (part in paramList(data, name))
+    {
+      var value:Float = Std.parseFloat(part);
+      result.push(Math.isNaN(value) ? 0 : value);
+    }
+    return result;
+  }
+
   public function new()
   {
     super(KIND);
@@ -96,7 +121,8 @@ class CustomSongEvent extends SongEvent
   public static function tagFor(name:Null<String>):String
   {
     if (name == null) return '';
-    var words:Array<String> = ~/[^A-Za-z0-9]+/g.split(name).filter(word -> word.length > 0);
+    var words:Array<String> = ~/[^A-Za-z0-9]+/g.split(name).filter(word -> word.length > 0); // words with spaces
+    if (words.length == 1) words = ~/([a-z0-9])(?=[A-Z])/g.replace(words[0], '$1 ').split(' '); // camelCase
     if (words.length == 0) return '';
     if (words.length == 1) return words[0].substr(0, 2).toUpperCase();
     return (words[0].charAt(0) + words[1].charAt(0)).toUpperCase();
