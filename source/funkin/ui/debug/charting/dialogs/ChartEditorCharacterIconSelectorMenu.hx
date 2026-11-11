@@ -25,6 +25,7 @@ class ChartEditorCharacterIconSelectorMenu extends ChartEditorBaseMenu
 
   var currentCharButton:Null<Button> = null;
   var currentCharId:String = '';
+  var fadeTween:FlxTween;
 
   public function new(chartEditorState2:ChartEditorState,
     charType:CharacterType,
@@ -35,7 +36,7 @@ class ChartEditorCharacterIconSelectorMenu extends ChartEditorBaseMenu
     initialize(charType, lockPosition);
     this.alpha = 0;
     this.y -= 10;
-    FlxTween.tween(this, {
+    fadeTween = FlxTween.tween(this, {
       alpha: 1,
       y: this.y + 10
     }, 0.2, {
@@ -43,9 +44,14 @@ class ChartEditorCharacterIconSelectorMenu extends ChartEditorBaseMenu
       onComplete: function(_)
       {
         // Just focus the button FFS. Idk why, but the scrollbar doesn't update until after the tween finishes with this????
-        if (currentCharButton != null) currentCharButton.focus = true;
+        if (currentCharButton != null)
+        {
+          currentCharButton.focus = true;
+        }
         else
+        {
           chartEditorState.error('Failure', 'Could not find character of ${currentCharId} in registry (Is the character in the registry?)');
+        }
       }
     });
   }
@@ -114,7 +120,6 @@ class ChartEditorCharacterIconSelectorMenu extends ChartEditorBaseMenu
       {
         // Scroll to the character if it is already selected.
         charSelectScroll.vscrollPos = Math.floor(charIndex / 5) * 80;
-        charButton.focus = true;
 
         defaultText = (currentCharId != "") ? '${charData.name} [${charId}]' : 'None';
 
@@ -160,6 +165,12 @@ class ChartEditorCharacterIconSelectorMenu extends ChartEditorBaseMenu
     }
 
     charIconName.text = defaultText;
+  }
+
+  override function onDestroy():Void
+  {
+    fadeTween.cancel();
+    super.onDestroy();
   }
 
   public static function build(chartEditorState:ChartEditorState,
