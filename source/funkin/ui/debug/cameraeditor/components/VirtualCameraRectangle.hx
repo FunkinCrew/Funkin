@@ -6,12 +6,15 @@ import flixel.FlxObject;
 import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
-import flixel.FlxObject;
-import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxRect;
+import flixel.tweens.FlxEase;
+import flixel.util.FlxColor;
+import funkin.data.song.SongData.SongEventData;
 import funkin.graphics.FunkinSliceSprite;
+import funkin.graphics.FunkinSprite;
+import funkin.play.event.SongEvent;
+import funkin.play.stage.Stage;
 import funkin.ui.FullScreenScaleMode;
-import flixel.FlxCamera;
 
 /**
  * The sprite which displays the current visible area of the camera during previews.
