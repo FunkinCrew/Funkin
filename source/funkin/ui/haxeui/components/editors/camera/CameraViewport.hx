@@ -73,7 +73,7 @@ private class CameraViewportEvents extends haxe.ui.events.Events
 
   override public function register():Void
   {
-    if (!hasEvent(MouseEvent.MIDDLE_MOUSE_DOWN, _onMiddleMouseDown)) registerEvent(MouseEvent.MIDDLE_MOUSE_DOWN, _onMiddleMouseDown);
+    Screen.instance.registerEvent(MouseEvent.MIDDLE_MOUSE_DOWN, _onMiddleMouseDown);
     if (!hasEvent(MouseEvent.MOUSE_OVER, _onMouseOver)) registerEvent(MouseEvent.MOUSE_OVER, _onMouseOver);
     if (!hasEvent(MouseEvent.MOUSE_OUT, _onMouseOut)) registerEvent(MouseEvent.MOUSE_OUT, _onMouseOut);
     Screen.instance.registerEvent(KeyboardEvent.KEY_DOWN, _onKeyDown);
@@ -96,7 +96,7 @@ private class CameraViewportEvents extends haxe.ui.events.Events
 
   override public function unregister():Void
   {
-    unregisterEvent(MouseEvent.MIDDLE_MOUSE_DOWN, _onMiddleMouseDown);
+    Screen.instance.unregisterEvent(MouseEvent.MIDDLE_MOUSE_DOWN, _onMiddleMouseDown);
     unregisterEvent(MouseEvent.MOUSE_OVER, _onMouseOver);
     unregisterEvent(MouseEvent.MOUSE_OUT, _onMouseOut);
     Screen.instance.unregisterEvent(MouseEvent.MOUSE_MOVE, _onMouseMove);
@@ -125,6 +125,8 @@ private class CameraViewportEvents extends haxe.ui.events.Events
 
   function _onMiddleMouseDown(e:MouseEvent):Void
   {
+    if (Screen.instance.hasSolidComponentUnderPoint(e.screenX, e.screenY)) return;
+    if (!_viewport.hitTest(e.screenX, e.screenY)) return;
     if (_panSource != NONE) return;
     Screen.instance.registerEvent(MouseEvent.MIDDLE_MOUSE_UP, _onMiddleMouseUp);
     _beginPan(MIDDLE_MOUSE);

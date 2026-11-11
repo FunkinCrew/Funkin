@@ -1,6 +1,7 @@
 package funkin.util;
 
 import flixel.math.FlxPoint;
+import haxe.ui.core.Screen;
 
 /**
  * Utility functions related to the mouse.
@@ -8,8 +9,8 @@ import flixel.math.FlxPoint;
 @:nullSafety
 class MouseUtil
 {
-  static var prevTargetPosition:FlxPoint = new FlxPoint();
   static var prevMousePosition:FlxPoint = new FlxPoint();
+  static var middleMouseDragCursorActive:Bool = false;
 
   /**
    * Used to be for general camera middle click dragging, now generalized for any click and drag type shit!
@@ -26,14 +27,31 @@ class MouseUtil
 
     if (justPressed)
     {
-      prevTargetPosition.set(target.x, target.y);
-      prevMousePosition.set(FlxG.mouse.viewX, FlxG.mouse.viewY);
+      prevMousePosition.set(FlxG.mouse.gameX, FlxG.mouse.gameY);
     }
 
     if (pressed)
     {
-      target.x = prevTargetPosition.x - (FlxG.mouse.viewX - prevMousePosition.x);
-      target.y = prevTargetPosition.y - (FlxG.mouse.viewY - prevMousePosition.y);
+      var zoom:Float = FlxG.camera.zoom;
+      if (zoom <= 0) zoom = 1;
+
+      target.x -= (FlxG.mouse.gameX - prevMousePosition.x) / zoom;
+      target.y -= (FlxG.mouse.gameY - prevMousePosition.y) / zoom;
+      prevMousePosition.set(FlxG.mouse.gameX, FlxG.mouse.gameY);
+    }
+  }
+
+  public static function updateMiddleMouseDragCursor(isDragging:Bool):Void
+  {
+    if (isDragging)
+    {
+      middleMouseDragCursorActive = true;
+      Screen.instance.setCursor("grabbing");
+    }
+    else if (middleMouseDragCursorActive)
+    {
+      middleMouseDragCursorActive = false;
+      Screen.instance.setCursor("default");
     }
   }
 

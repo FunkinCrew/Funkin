@@ -27,6 +27,7 @@ import haxe.ui.containers.menus.MenuBar;
 import haxe.ui.containers.menus.MenuOptionBox;
 import haxe.ui.containers.menus.MenuCheckBox;
 import funkin.util.FileUtil;
+import funkin.util.MouseUtil;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.debug.FunkinDebugDisplay.DebugDisplayMode;
 import funkin.ui.debug.stageeditor.handlers.AssetDataHandler;
@@ -659,6 +660,7 @@ class StageEditorState extends UIState
 
     if (!isCursorOverHaxeUI) handleTrackpadScroll();
     handleMiddleMousePan();
+    MouseUtil.updateMiddleMouseDragCursor(middleMousePanPosition != null);
 
     // key shortcuts and inputs
     if (pressingControl() && FlxG.keys.justPressed.Q) onMenuItemClick('exit');
@@ -1093,7 +1095,7 @@ class StageEditorState extends UIState
     camFollow.y -= (dy * TRACKPAD_PAN_SCALE) / camGame.zoom;
   }
 
-  var middleMousePanOffset:FlxPoint = null;
+  var middleMousePanPosition:FlxPoint = null;
 
   function handleMiddleMousePan():Void
   {
@@ -1101,26 +1103,28 @@ class StageEditorState extends UIState
     {
       if (isCursorOverHaxeUI) return;
 
-      // captures once so it don't drift
-      middleMousePanOffset = FlxPoint.get(camFollow.x + FlxG.mouse.viewX, camFollow.y + FlxG.mouse.viewY);
+      middleMousePanPosition = FlxPoint.get(FlxG.mouse.gameX, FlxG.mouse.gameY);
     }
-    else if (FlxG.mouse.pressedMiddle && middleMousePanOffset != null)
+    else if (FlxG.mouse.pressedMiddle && middleMousePanPosition != null)
     {
-      camFollow.x = middleMousePanOffset.x - FlxG.mouse.viewX;
-      camFollow.y = middleMousePanOffset.y - FlxG.mouse.viewY;
+      var mouseX:Float = FlxG.mouse.gameX;
+      var mouseY:Float = FlxG.mouse.gameY;
+      camFollow.x -= (mouseX - middleMousePanPosition.x) / camGame.zoom;
+      camFollow.y -= (mouseY - middleMousePanPosition.y) / camGame.zoom;
+      middleMousePanPosition.set(mouseX, mouseY);
 
       wrapMouseDuringPan();
     }
-    else if (middleMousePanOffset != null)
+    else if (middleMousePanPosition != null)
     {
-      middleMousePanOffset.put();
-      middleMousePanOffset = null;
+      middleMousePanPosition.put();
+      middleMousePanPosition = null;
     }
   }
 
   function wrapMouseDuringPan():Void
   {
-    if (middleMousePanOffset == null || FlxG.stage?.window == null) return;
+    if (middleMousePanPosition == null || FlxG.stage?.window == null) return;
 
     var top:Float = (menubar != null && menubar.height > 0) ? menubar.height : 35.0;
     var bottom:Float = FlxG.height - ((bottomBar != null && bottomBar.height > 0) ? bottomBar.height : 48.0);
@@ -1135,8 +1139,7 @@ class StageEditorState extends UIState
 
     if (tx != gx || ty != gy)
     {
-      middleMousePanOffset.x += (tx - gx) / camGame.zoom;
-      middleMousePanOffset.y += (ty - gy) / camGame.zoom;
+      middleMousePanPosition.set(tx, ty);
 
       var p = FlxG.game.localToGlobal(new Point(tx, ty));
       var scale = FlxG.stage.window.scale > 0 ? FlxG.stage.window.scale : 1.0;
@@ -1769,10 +1772,10 @@ class StageEditorState extends UIState
   {
     super.destroy();
 
-    if (middleMousePanOffset != null)
+    if (middleMousePanPosition != null)
     {
-      middleMousePanOffset.put();
-      middleMousePanOffset = null;
+      middleMousePanPosition.put();
+      middleMousePanPosition = null;
     }
 
     FlxG.stage.window.onDropFile.remove(onDropFile);
