@@ -68,10 +68,19 @@ class WiggleEffectRuntime extends FlxRuntimeShader
     return time = v;
   }
 
+  var antialiasing(default, set):Bool = false;
+
+  function set_antialiasing(v:Bool):Bool
+  {
+    this.setBool('antialiasing', v);
+    return antialiasing = v;
+  }
+
   public function new(speed:Float,
     freq:Float,
     amplitude:Float,
-    ?effect:WiggleEffectType = DREAMY):Void
+    ?effect:WiggleEffectType = DREAMY,
+    antialiasing:Bool = false):Void
   {
     super(Assets.getText(Paths.frag('ui/shaders/wiggle')));
 
@@ -80,6 +89,7 @@ class WiggleEffectRuntime extends FlxRuntimeShader
     this.waveFrequency = freq;
     this.waveAmplitude = amplitude;
     this.effectType = effect;
+    this.antialiasing = antialiasing;
   }
 
   public function update(elapsed:Float)
