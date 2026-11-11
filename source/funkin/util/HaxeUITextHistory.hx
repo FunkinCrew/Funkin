@@ -74,8 +74,8 @@ class HaxeUITextHistory
   public static function undo():Bool
   {
     update();
-    if (field == null) return false;
-    if (undoStack.length == 0) return true;
+    // Nothing typed here to take back, so the editor's own undo gets the key instead.
+    if (field == null || undoStack.length == 0) return false;
     redoStack.push(lastText);
     restore(undoStack.pop());
     return true;
@@ -88,8 +88,7 @@ class HaxeUITextHistory
   public static function redo():Bool
   {
     update();
-    if (field == null) return false;
-    if (redoStack.length == 0) return true;
+    if (field == null || redoStack.length == 0) return false;
     undoStack.push(lastText);
     restore(redoStack.pop());
     return true;
@@ -114,6 +113,12 @@ class HaxeUITextHistory
   {
     var focus:Null<Component> = cast FocusManager.instance.focus;
     if (focus == null) return null;
+    var parent:Null<Component> = focus;
+    while (parent != null)
+    {
+      if (parent is haxe.ui.components.NumberStepper) return null;
+      parent = parent.parentComponent;
+    }
     if (focus is TextField) return cast focus;
     return focus.findComponent(null, TextField);
   }

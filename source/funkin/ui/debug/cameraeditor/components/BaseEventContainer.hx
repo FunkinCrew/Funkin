@@ -84,11 +84,24 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
     return false;
   }
 
+  public static var editorFrame:Int = 0;
+
+  var reloadFrame:Int = -100;
+
+  static inline var SETTLE_FRAMES:Int = 3;
+
+  function settling():Bool
+  {
+    return editorFrame - reloadFrame < SETTLE_FRAMES;
+  }
+
   /**
    * Points the panel at the current selection again, without rebuilding it.
    */
   public function reload():Void
   {
+    reloadFrame = editorFrame;
+    if (hasFocusWithin(this)) haxe.ui.focus.FocusManager.instance.focus = null;
     lastSnapshot = takeSnapshot();
     var previousPlaceholders:Array<Component> = placeholdersShown;
     placeholdersShown = [];
@@ -380,7 +393,7 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
    */
   function isUserNumberChange(field:Component, value:Float):Bool
   {
-    if (loadingNumber) return false;
+    if (loadingNumber || settling()) return false;
     var typedOverMixed:Bool = mixedFields.contains(field) && hasFocusWithin(field) && typedFields.contains(field);
     if (loadedNumbers.exists(field) && loadedNumbers.get(field) == value && !typedOverMixed) return false;
     loadedNumbers.set(field, value);
@@ -397,6 +410,7 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
    */
   function isUserBoolChange(field:Component, value:Bool):Bool
   {
+    if (settling()) return false;
     if (loadedBools.exists(field) && loadedBools.get(field) == value) return false;
     loadedBools.set(field, value);
     return true;
@@ -430,6 +444,7 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
    */
   function isUserChoiceChange(field:Component, value:Dynamic):Bool
   {
+    if (settling()) return false;
     if (loadedChoices.exists(field) && loadedChoices.get(field) == value && FlxG.game.ticks - choiceLoadTicks < LOAD_SETTLE_MS) return false;
     loadedChoices.set(field, value);
     return true;
@@ -636,7 +651,7 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
     field.registerEvent(UIEvent.CHANGE, function(_:UIEvent):Void
     {
       if (primaryEvent == null || field.disabled) return;
-      if (loadedTexts.get(field) == field.text) return;
+      if (settling() || loadedTexts.get(field) == field.text) return;
       loadedTexts.set(field, field.text);
       setOnAll(fieldName, field.text);
       updateCameraPreview();
