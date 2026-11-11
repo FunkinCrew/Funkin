@@ -337,6 +337,7 @@ class DebugBoundingState extends FlxState
     bg.setGraphicSize(Std.int(bg.width / FlxG.camera.zoom));
 
     super.update(elapsed);
+    MouseUtil.updateMiddleMouseDragCursor(FlxG.mouse.pressedMiddle);
   }
 
   static final TRACKPAD_PAN_SCALE:Float = 25.0;
