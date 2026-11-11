@@ -45,6 +45,8 @@ class TimelineViewport extends Box
   public static inline var DURATION_PRECISION:Float = 1000;
   public static inline var PIXELS_PER_STEP_BASE:Float = 12.0;
   public static inline var MIN_ZOOM:Float = 0.02;
+
+  public static inline var MIN_ZOOM_SONG_FRACTION:Float = 1.2;
   public static inline var MAX_ZOOM:Float = 10.0;
   public static inline var ZOOM_WHEEL_IN:Float = 1.25;
   public static inline var ZOOM_WHEEL_OUT:Float = 0.8;
@@ -150,6 +152,16 @@ class TimelineViewport extends Box
   {
     if (conductor == null) return false;
     return @:privateAccess conductor.timeChanges.length > 0;
+  }
+
+  public var minZoom(get, never):Float;
+
+  function get_minZoom():Float
+  {
+    var songSteps:Float = msToSteps(songLengthMs);
+    if (songSteps <= 0 || width <= 0) return MIN_ZOOM;
+    var fit:Float = width / (songSteps * MIN_ZOOM_SONG_FRACTION * pixelsPerStep);
+    return Math.min(fit, MAX_ZOOM);
   }
 
   public function msToSteps(ms:Float):Float
@@ -577,7 +589,7 @@ class TimelineViewport extends Box
     }
 
     var newZoom:Float = fromZoom * factor;
-    if (newZoom < MIN_ZOOM) newZoom = MIN_ZOOM;
+    if (newZoom < minZoom) newZoom = minZoom;
     if (newZoom > MAX_ZOOM) newZoom = MAX_ZOOM;
 
     // A zoom keeps the view on the song, or puts it back on it.
@@ -1899,7 +1911,7 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
     var mouseMs:Float = _viewport.pixelXToMs(localX);
 
     var newZoom:Float = _viewport.zoomLevel * (1.0 + delta);
-    if (newZoom < TimelineViewport.MIN_ZOOM) newZoom = TimelineViewport.MIN_ZOOM;
+    if (newZoom < _viewport.minZoom) newZoom = _viewport.minZoom;
     if (newZoom > TimelineViewport.MAX_ZOOM) newZoom = TimelineViewport.MAX_ZOOM;
     _viewport.cancelScrollEase();
     _viewport.chasing = true;
