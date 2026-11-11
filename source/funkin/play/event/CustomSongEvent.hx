@@ -118,7 +118,19 @@ class CustomSongEvent extends SongEvent
     super(KIND);
   }
 
+  static var tagCache:Map<String, String> = [];
+
   public static function tagFor(name:Null<String>):String
+  {
+    if (name == null) return '';
+    var cached:Null<String> = tagCache.get(name);
+    if (cached != null) return cached;
+    var tag:String = buildTag(name);
+    tagCache.set(name, tag);
+    return tag;
+  }
+
+  static function buildTag(name:Null<String>):String
   {
     if (name == null) return '';
     var words:Array<String> = ~/[^A-Za-z0-9]+/g.split(name).filter(word -> word.length > 0); // words with spaces
