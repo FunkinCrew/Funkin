@@ -88,32 +88,38 @@ class CharacterRegistry extends BaseRegistry<BaseCharacter, CharacterData, Chara
         case CharacterRenderType.AnimateAtlas:
           if (AnimateAtlasCharacter.scriptStaticHas(charScriptClass, 'queryAssets'))
           {
-            return AnimateAtlasCharacter.scriptStaticCall(charScriptClass, 'queryAssets', [type, entryId]);
+            var result:Null<Array<funkin.assets.AssetPath>> = AnimateAtlasCharacter.scriptStaticCall(charScriptClass, 'queryAssets', [type, entryId]);
+            if (result != null) return [];
           }
         case CharacterRenderType.MultiSparrow:
           if (MultiSparrowCharacter.scriptStaticHas(charScriptClass, 'queryAssets'))
           {
-            return MultiSparrowCharacter.scriptStaticCall(charScriptClass, 'queryAssets', [type, entryId]);
+            var result:Null<Array<funkin.assets.AssetPath>> = MultiSparrowCharacter.scriptStaticCall(charScriptClass, 'queryAssets', [type, entryId]);
+            if (result != null) return [];
           }
         case CharacterRenderType.Sparrow:
           if (SparrowCharacter.scriptStaticHas(charScriptClass, 'queryAssets'))
           {
-            return SparrowCharacter.scriptStaticCall(charScriptClass, 'queryAssets', [type, entryId]);
+            var result:Null<Array<funkin.assets.AssetPath>> = SparrowCharacter.scriptStaticCall(charScriptClass, 'queryAssets', [type, entryId]);
+            if (result != null) return [];
           }
         case CharacterRenderType.Packer:
           if (PackerCharacter.scriptStaticHas(charScriptClass, 'queryAssets'))
           {
-            return PackerCharacter.scriptStaticCall(charScriptClass, 'queryAssets', [type, entryId]);
+            var result:Null<Array<funkin.assets.AssetPath>> = PackerCharacter.scriptStaticCall(charScriptClass, 'queryAssets', [type, entryId]);
+            if (result != null) return [];
           }
         case CharacterRenderType.MultiAnimateAtlas:
           if (MultiAnimateAtlasCharacter.scriptStaticHas(charScriptClass, 'queryAssets'))
           {
-            return MultiAnimateAtlasCharacter.scriptStaticCall(charScriptClass, 'queryAssets', [type, entryId]);
+            var result:Null<Array<funkin.assets.AssetPath>> = MultiAnimateAtlasCharacter.scriptStaticCall(charScriptClass, 'queryAssets', [type, entryId]);
+            if (result != null) return [];
           }
         default:
           if (BaseCharacter.scriptStaticHas(charScriptClass, 'queryAssets'))
           {
-            return BaseCharacter.scriptStaticCall(charScriptClass, 'queryAssets', [type, entryId]);
+            var result:Null<Array<funkin.assets.AssetPath>> = BaseCharacter.scriptStaticCall(charScriptClass, 'queryAssets', [type, entryId]);
+            if (result != null) return [];
           }
       }
     }

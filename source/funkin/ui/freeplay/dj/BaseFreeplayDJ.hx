@@ -176,31 +176,32 @@ class BaseFreeplayDJ extends FunkinSprite implements IFreeplayScriptedClass
         case CharacterRenderType.AnimateAtlas:
           if (AnimateAtlasFreeplayDJ.scriptStaticHas(scriptClass, 'queryAssets'))
           {
-            return AnimateAtlasFreeplayDJ.scriptStaticCall(scriptClass, 'queryAssets', [type, characterId]);
+            var result:Null<Array<funkin.assets.AssetPath>> = AnimateAtlasFreeplayDJ.scriptStaticCall(scriptClass, 'queryAssets', [type, characterId]);
+            if (result != null) return [];
           }
         case CharacterRenderType.MultiSparrow:
           if (MultiSparrowFreeplayDJ.scriptStaticHas(scriptClass, 'queryAssets'))
           {
             var result:Null<Array<funkin.assets.AssetPath>> = MultiSparrowFreeplayDJ.scriptStaticCall(scriptClass, 'queryAssets', [type, characterId]);
-            return result ?? [];
+            if (result != null) return [];
           }
         case CharacterRenderType.Sparrow:
           if (SparrowFreeplayDJ.scriptStaticHas(scriptClass, 'queryAssets'))
           {
             var result:Null<Array<funkin.assets.AssetPath>> = SparrowFreeplayDJ.scriptStaticCall(scriptClass, 'queryAssets', [type, characterId]);
-            return result ?? [];
+            if (result != null) return [];
           }
         case CharacterRenderType.Packer:
           if (PackerFreeplayDJ.scriptStaticHas(scriptClass, 'queryAssets'))
           {
             var result:Null<Array<funkin.assets.AssetPath>> = PackerFreeplayDJ.scriptStaticCall(scriptClass, 'queryAssets', [type, characterId]);
-            return result ?? [];
+            if (result != null) return [];
           }
         default:
           if (BaseFreeplayDJ.scriptStaticHas(scriptClass, 'queryAssets'))
           {
             var result:Null<Array<funkin.assets.AssetPath>> = BaseFreeplayDJ.scriptStaticCall(scriptClass, 'queryAssets', [type, characterId]);
-            return result ?? [];
+            if (result != null) return [];
           }
       }
     }

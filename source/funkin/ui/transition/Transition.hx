@@ -5,7 +5,6 @@ import flixel.FlxSubState;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.transition.FlxTransitionableSubState;
 import flixel.addons.transition.TransitionData;
-import funkin.ui.transition.Transition.FlxTransition;
 import flixel.graphics.FlxGraphic;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
@@ -13,19 +12,21 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import flixel.util.typeLimit.NextState;
 import funkin.assets.Assets.AssetType;
+import funkin.assets.Assets;
 import funkin.assets.Paths.AssetPath;
+import funkin.assets.ValidatedPaths as Paths;
 import funkin.data.song.SongRegistry;
 import funkin.play.PlayState;
+import funkin.ui.quickpanel.QuickPanelState;
+import funkin.ui.transition.StickerTransition;
+import funkin.ui.transition.Transition.FlxTransition;
 import funkin.ui.transition.loading.FunkayLoadingState;
 import funkin.ui.transition.loading.LoadingState;
 import funkin.ui.transition.loading.StickerLoadingState;
-import funkin.ui.transition.StickerTransition;
 import funkin.ui.transition.loading.ThrobberLoadingState;
 import funkin.ui.transition.progress.FunkinProgressBar;
 import funkin.util.FlxStateUtil;
 import funkin.util.tasks.TaskHandler;
-import funkin.assets.Assets;
-import funkin.assets.ValidatedPaths as Paths;
 
 /**
  * Provides information about how to transition between states, including the asset query function to use during loading.
@@ -436,9 +437,7 @@ class Transition
       var future = TaskHandler.performSimpleTask(() ->
       {
         trace('[LOADING] Caching charts...');
-        final targetDifficulty = playStateParams.targetSong.getDifficulty(
-          playStateParams.targetDifficulty, playStateParams.targetVariation
-        );
+        final targetDifficulty = playStateParams.targetSong.getDifficulty(playStateParams.targetDifficulty, playStateParams.targetVariation);
         if (targetDifficulty?.notes == null)
         {
           var forceReload:Bool = true;

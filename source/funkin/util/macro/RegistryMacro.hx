@@ -284,7 +284,7 @@ class RegistryMacro
           {
             if (${entryTypeExpr}.scriptStaticHas(scriptCls, 'queryAssets'))
             {
-              var result:Null<Array<funkin.assets.AssetPath>> = ${entryTypeExpr}.scriptStaticCall(scriptCls, 'queryAssets', [type, entryId, params]);
+              var result:Null<Array<funkin.assets.Paths.AssetPath>> = ${entryTypeExpr}.scriptStaticCall(scriptCls, 'queryAssets', [type, entryId, params]);
               return result ?? [];
             }
           }
