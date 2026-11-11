@@ -1587,7 +1587,7 @@ class ModMenuState extends MusicBeatState
     Cursor.hide();
     Transition.switchState(() -> new MainMenuState(), {
       assetQuery: MainMenuState.queryAssets,
-      transition: None
+      transition: BlackScreen(Fade(North), Fade(South))
     });
     FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu').toString());
   }

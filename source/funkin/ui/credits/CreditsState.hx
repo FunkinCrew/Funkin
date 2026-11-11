@@ -284,7 +284,7 @@ class CreditsState extends MusicBeatState
     FlxG.keys.enabled = false;
     Transition.switchState(() -> new MainMenuState(), {
       assetQuery: MainMenuState.queryAssets,
-      transition: BlackScreen(None, None)
+      transition: BlackScreen(Fade(North), Fade(South))
     });
     FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu').toFlxSoundAsset());
   }
