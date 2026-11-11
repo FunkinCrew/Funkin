@@ -1348,6 +1348,11 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   var _cameraTarget:FlxPoint = new FlxPoint();
   var _autoSeekTimer:Float = 0;
+
+  static inline var SEEK_SETTLE_SEC:Float = 0.15;
+  static inline var SEEK_REPLAY_INTERVAL_SEC:Float = 0.25;
+
+  var seekReplayCooldown:Float = 0;
   var _wasRelative:Bool = false;
   var _shouldResetCameraPosition:Bool = false;
 
@@ -1376,13 +1381,14 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     Preferences.debugDisplay == DebugDisplayMode.Off ? menubar.paddingLeft = null : menubar.paddingLeft = 256;
 
+    if (seekReplayCooldown > 0) seekReplayCooldown -= elapsed;
+
     if (autoSeek)
     {
       _autoSeekTimer += elapsed;
 
-      if (_autoSeekTimer >= 0.5)
+      if (_autoSeekTimer >= SEEK_SETTLE_SEC)
       {
-        trace('Auto-seek elapsed: ' + conductorInUse.songPosition);
         autoSeek = false;
         _autoSeekTimer = 0;
         replayCameraTimeline(conductorInUse.songPosition);
@@ -2347,11 +2353,12 @@ class CameraEditorState extends UIState implements ConsoleClass
     {
       var diff = Math.abs(position - lastSeekReplay);
       autoSeek = true;
+      _autoSeekTimer = 0;
       noEvents = true;
 
-      if (diff > SEEK_TOLERANCE_MS)
+      if (diff > SEEK_TOLERANCE_MS && seekReplayCooldown <= 0)
       {
-        autoSeek = false;
+        seekReplayCooldown = SEEK_REPLAY_INTERVAL_SEC;
         lastSeekReplay = position;
         replayCameraTimeline(position);
       }

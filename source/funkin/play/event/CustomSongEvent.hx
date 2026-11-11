@@ -115,7 +115,9 @@ class CustomSongEvent extends SongEvent
 
   public function new()
   {
-    super(KIND);
+    super(KIND, {
+      processOldEvents: true
+    });
   }
 
   static var tagCache:Map<String, String> = [];
@@ -138,6 +140,11 @@ class CustomSongEvent extends SongEvent
     if (words.length == 0) return '';
     if (words.length == 1) return words[0].substr(0, 2).toUpperCase();
     return (words[0].charAt(0) + words[1].charAt(0)).toUpperCase();
+  }
+
+  override public function calculateActivationTime(data:SongEventData, conductor:Conductor):Float
+  {
+    return super.calculateActivationTime(data, conductor) + (data.getFloat('offset') ?? 0);
   }
 
   override public function handleEvent(data:SongEventData):Void
@@ -172,6 +179,14 @@ class CustomSongEvent extends SongEvent
         title: 'Name',
         defaultValue: '',
         type: SongEventFieldType.STRING
+      },
+      {
+        name: 'offset',
+        title: 'Activation Offset',
+        defaultValue: 0,
+        step: 1,
+        type: SongEventFieldType.FLOAT,
+        units: 'ms'
       },
       {
         name: 'duration',

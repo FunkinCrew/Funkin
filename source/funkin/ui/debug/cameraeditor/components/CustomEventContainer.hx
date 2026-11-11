@@ -16,6 +16,7 @@ import haxe.ui.events.UIEvent;
 class CustomEventContainer extends BaseEventContainer
 {
   var nameField:TextField;
+  var offsetStepper:NumberStepper;
   var durationStepper:NumberStepper;
   var easeDropdown:DropDown;
   var easeDirDropdown:DropDown;
@@ -39,6 +40,13 @@ class CustomEventContainer extends BaseEventContainer
     row.addComponent(nameField);
     addComponent(row);
 
+    offsetStepper = new NumberStepper();
+    offsetStepper.width = 160;
+    offsetStepper.step = 1;
+    offsetStepper.precision = 3;
+    offsetStepper.tooltip = 'Moves when the event starts, negative is earlier.';
+    addRow('Offset (ms)', offsetStepper);
+
     durationStepper = new NumberStepper();
     durationStepper.width = 160;
     durationStepper.min = 0;
@@ -56,6 +64,7 @@ class CustomEventContainer extends BaseEventContainer
     addComponent(paramsList);
 
     bindStringField(nameField, 'name');
+    bindFloatField(offsetStepper, 'offset');
     bindFloatField(durationStepper, 'duration');
     bindChoice(easeDropdown, 'ease');
     bindChoice(easeDirDropdown, 'easeDir');
@@ -104,6 +113,7 @@ class CustomEventContainer extends BaseEventContainer
     var primary = primaryEvent;
     if (primary == null) return;
     loadStringField(nameField, 'name', '');
+    loadFloatField(offsetStepper, 'offset', 0);
     loadFloatField(durationStepper, 'duration', 0);
     loadChoice(easeDropdown, 'ease', 'linear');
     loadChoice(easeDirDropdown, 'easeDir', 'InOut');
