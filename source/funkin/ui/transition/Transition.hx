@@ -914,19 +914,19 @@ enum abstract FadeDirection(String)
       case FadeDirection.North:
         return new FlxPoint(0, 1);
       case FadeDirection.NorthEast:
-        return new FlxPoint(1, 1);
-      case FadeDirection.NorthWest:
         return new FlxPoint(-1, 1);
+      case FadeDirection.NorthWest:
+        return new FlxPoint(1, 1);
       case FadeDirection.South:
         return new FlxPoint(0, -1);
       case FadeDirection.SouthEast:
-        return new FlxPoint(1, -1);
-      case FadeDirection.SouthWest:
         return new FlxPoint(-1, -1);
+      case FadeDirection.SouthWest:
+        return new FlxPoint(1, -1);
       case FadeDirection.East:
-        return new FlxPoint(1, 0);
-      case FadeDirection.West:
         return new FlxPoint(-1, 0);
+      case FadeDirection.West:
+        return new FlxPoint(1, 0);
     }
   }
 }
