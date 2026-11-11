@@ -125,6 +125,7 @@ private class CameraViewportEvents extends haxe.ui.events.Events
 
   function _onMiddleMouseDown(e:MouseEvent):Void
   {
+    if (Screen.instance.hasSolidComponentUnderPoint(e.screenX, e.screenY)) return;
     if (!_viewport.hitTest(e.screenX, e.screenY)) return;
     if (_panSource != NONE) return;
     Screen.instance.registerEvent(MouseEvent.MIDDLE_MOUSE_UP, _onMiddleMouseUp);
