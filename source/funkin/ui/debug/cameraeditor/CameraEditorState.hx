@@ -2389,6 +2389,8 @@ class CameraEditorState extends UIState implements ConsoleClass
     var incremental:Bool = !full && replayPosition >= 0 && position >= replayPosition;
     var fromPosition:Float = replayPosition;
 
+    noEvents = true;
+
     if (!incremental)
     {
       resetEventState();
