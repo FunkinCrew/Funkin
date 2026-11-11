@@ -87,7 +87,7 @@ class StickerTransition extends FlxTransition
     cachedPacks.set(packId, future);
     future.onError((error) ->
     {
-      //retry if the first load failed
+      // retry if the first load failed
       if (cachedPacks.get(packId) == future) cachedPacks.remove(packId);
       trace('[STICKER TRANSITION] Failed to cache assets for pack "$packId": $error');
     });
@@ -241,7 +241,7 @@ class StickerTransition extends FlxTransition
 
         // Sometimes play a sound.
         // If we play a sound with EVERY sticker, the audio engine gets overwhelmed.
-        var shouldPlaySound:Bool = isLastSticker || FlxG.random.bool(20); // 20%
+        var shouldPlaySound:Bool = true;
         if (shouldPlaySound)
         {
           var nextSound:String = FlxG.random.getObject(sounds);

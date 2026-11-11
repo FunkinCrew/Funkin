@@ -3532,7 +3532,14 @@ class FreeplayState extends MusicBeatSubState
     var result:MainMenuState = new MainMenuState(true);
 
     // Assets were already loaded by whoever called Transition.switchState (see buildAssetQuery).
-    result.openSubState(new FreeplayState(params));
+    // How silly to duplicate transitions hmmm
+    var freeplayState:FreeplayState = new FreeplayState(params);
+    @:nullSafety(Off)
+    {
+      freeplayState.transIn = null;
+      freeplayState.transOut = null;
+    }
+    result.openSubState(freeplayState);
 
     result.persistentUpdate = false;
     result.persistentDraw = true;
