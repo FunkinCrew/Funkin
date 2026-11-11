@@ -29,7 +29,7 @@ class ValidatedPaths
     var shouldValidate:Bool = MacroUtil.extractBooleanConstant(validate) ?? true;
     if (!shouldValidate)
     {
-      Context.info('[ASSETS] Skipping validation for asset path...', key.pos);
+      if (Context.defined('VERBOSE_ASSET_CACHE')) Context.info('[ASSETS] Skipping validation for asset path...', key.pos);
     }
     else
     {
@@ -58,7 +58,7 @@ class ValidatedPaths
     var shouldValidate:Bool = MacroUtil.extractBooleanConstant(validate) ?? true;
     if (!shouldValidate)
     {
-      Context.info('[ASSETS] Skipping validation for asset path...', key.pos);
+      if (Context.defined('VERBOSE_ASSET_CACHE')) Context.info('[ASSETS] Skipping validation for asset path...', key.pos);
     }
     else
     {
@@ -87,7 +87,7 @@ class ValidatedPaths
     var shouldValidate:Bool = MacroUtil.extractBooleanConstant(validate) ?? true;
     if (!shouldValidate)
     {
-      Context.info('[ASSETS] Skipping validation for asset path...', key.pos);
+      if (Context.defined('VERBOSE_ASSET_CACHE')) Context.info('[ASSETS] Skipping validation for asset path...', key.pos);
     }
     else
     {
@@ -118,7 +118,7 @@ class ValidatedPaths
     var shouldValidate:Bool = MacroUtil.extractBooleanConstant(validate) ?? true;
     if (!shouldValidate)
     {
-      Context.info('[ASSETS] Skipping validation for asset path...', key.pos);
+      if (Context.defined('VERBOSE_ASSET_CACHE')) Context.info('[ASSETS] Skipping validation for asset path...', key.pos);
     }
     else
     {
@@ -149,7 +149,7 @@ class ValidatedPaths
     var shouldValidate:Bool = MacroUtil.extractBooleanConstant(validate) ?? true;
     if (!shouldValidate)
     {
-      Context.info('[ASSETS] Skipping validation for asset path...', key.pos);
+      if (Context.defined('VERBOSE_ASSET_CACHE')) Context.info('[ASSETS] Skipping validation for asset path...', key.pos);
     }
     else
     {
@@ -179,7 +179,7 @@ class ValidatedPaths
     var shouldValidate:Bool = MacroUtil.extractBooleanConstant(validate) ?? true;
     if (!shouldValidate)
     {
-      Context.info('[ASSETS] Skipping validation for asset path...', key.pos);
+      if (Context.defined('VERBOSE_ASSET_CACHE')) Context.info('[ASSETS] Skipping validation for asset path...', key.pos);
     }
     else
     {
@@ -208,7 +208,7 @@ class ValidatedPaths
     var shouldValidate:Bool = MacroUtil.extractBooleanConstant(validate) ?? true;
     if (!shouldValidate)
     {
-      Context.info('[ASSETS] Skipping validation for asset path...', key.pos);
+      if (Context.defined('VERBOSE_ASSET_CACHE')) Context.info('[ASSETS] Skipping validation for asset path...', key.pos);
     }
     else
     {
@@ -240,7 +240,7 @@ class ValidatedPaths
     var shouldValidate:Bool = MacroUtil.extractBooleanConstant(validate) ?? true;
     if (!shouldValidate)
     {
-      Context.info('[ASSETS] Skipping validation for asset path...', key.pos);
+      if (Context.defined('VERBOSE_ASSET_CACHE')) Context.info('[ASSETS] Skipping validation for asset path...', key.pos);
     }
     else
     {
@@ -283,7 +283,7 @@ class ValidatedPaths
     var shouldValidate:Bool = MacroUtil.extractBooleanConstant(validate) ?? true;
     if (!shouldValidate)
     {
-      Context.info('[ASSETS] Skipping validation for asset path...', key.pos);
+      if (Context.defined('VERBOSE_ASSET_CACHE')) Context.info('[ASSETS] Skipping validation for asset path...', key.pos);
     }
     else
     {
@@ -313,7 +313,7 @@ class ValidatedPaths
     var shouldValidate:Bool = MacroUtil.extractBooleanConstant(validate) ?? true;
     if (!shouldValidate)
     {
-      Context.info('[ASSETS] Skipping validation for asset path...', key.pos);
+      if (Context.defined('VERBOSE_ASSET_CACHE')) Context.info('[ASSETS] Skipping validation for asset path...', key.pos);
     }
     else
     {
@@ -323,7 +323,6 @@ class ValidatedPaths
 
     if (!shouldValidate || !MacroUtil.isNullExpr(validate))
     {
-      Context.info('[ASSETS] validate = "${validate.toString()}"', key.pos);
       // This expression gets inserted at the location that `ValidatedPaths.image(key)` got called.
       return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.image($e{key}, $e{validate});
     }
@@ -343,7 +342,7 @@ class ValidatedPaths
     var shouldValidate:Bool = MacroUtil.extractBooleanConstant(validate) ?? true;
     if (!shouldValidate)
     {
-      Context.info('[ASSETS] Skipping validation for asset path...', key.pos);
+      if (Context.defined('VERBOSE_ASSET_CACHE')) Context.info('[ASSETS] Skipping validation for asset path...', key.pos);
     }
     else
     {
@@ -372,7 +371,7 @@ class ValidatedPaths
     var shouldValidate:Bool = MacroUtil.extractBooleanConstant(validate) ?? true;
     if (!shouldValidate)
     {
-      Context.info('[ASSETS] Skipping validation for asset path...', key.pos);
+      if (Context.defined('VERBOSE_ASSET_CACHE')) Context.info('[ASSETS] Skipping validation for asset path...', key.pos);
     }
     else
     {

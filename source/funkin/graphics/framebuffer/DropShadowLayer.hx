@@ -1,7 +1,5 @@
 package funkin.graphics.framebuffer;
 
-import flixel.FlxCamera;
-import flixel.graphics.frames.FlxFrame;
 import flixel.util.FlxColor;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.shaders.BlurShaderDown;
@@ -12,15 +10,10 @@ import openfl.filters.ShaderFilter;
 import animate.FlxAnimateFrames.FlxAnimateSpritemapCollection;
 import flixel.FlxSprite;
 
-using flixel.util.FlxColorTransformUtil;
-
 /**
  * A `FunkinBufferSprite` that can render a drop shadow under every sprite for a chosen camera.
  */
-@:access(openfl.display.BitmapData)
-@:access(openfl.display.DisplayObject)
-@:access(flixel.FlxCamera)
-class DropShadowLayer extends FlxSprite
+class DropShadowLayer extends FunkinBufferSprite
 {
   /**
    * If `true`, the buffer will only render sprites that are part of a whitelist.
@@ -32,42 +25,33 @@ class DropShadowLayer extends FlxSprite
   **/
   public var funkinCamera:FunkinCamera;
 
-  /**
-   * The resolution scale of the buffer.
-   * Setting it lower than 1.0 will make the buffer render at a lower resolution.
-   * Default is 0.35.
-  **/
-  public var resolutionScale(default, set):Float = 0.35;
-
-  /**
-   * The delay before the buffer is rendered.
-   * If set to `0`, the buffer will be rendered immediately.
-   *
-   * Could be useful for performance.
-  **/
-  public var bufferDelay(default, set):Float = 0.0010;
-
   var _filters:Array<openfl.filters.BitmapFilter> = [];
-  var _bufferID:Int = -1;
+  var _whiteList:Array<String> = [];
+  var _blackList:Array<String> = [];
 
   public function new(camera:FunkinCamera, _color:FlxColor = 0xFFFFFFFF, sampleSteps:Int = 2, blurAmt:Float = 4, distX:Float = 0, distY:Float = 0)
   {
-    super();
+    super(0, 0, camera, {
+      baseZoom: -1,
+      bufferDelay: 0.0010,
+      useScreenspace: false,
+      resolutionScale: 0.35
+    });
 
     this.cameras = [camera];
     this.funkinCamera = camera;
 
-    camera.defaultShader = new funkin.graphics.shaders.MultiBufferShader();
-    // Wanted to use just a RED color format because in the end it just becomes grayish
-    // But that ended up making a fully gray rect in the end
-    _bufferID = camera.canvas.graphics.addBuffer(openfl.display3D.Context3DTextureFormat.BGRA);
-    camera.canvas.cacheAsBitmap = true;
+    // Do not let the shadow texture render itself into the source buffer.
+    blacklistSprite(this);
+
+    // Keep the layer aligned to the camera in world space.
+    this.x = camera.scroll.x;
+    this.y = camera.scroll.y;
 
     // Down samples
     for (i in 0...sampleSteps)
     {
-      var downFilter:ShaderFilter = new ShaderFilter(new BlurShaderDown(1 / (i + 1), blurAmt));
-      _filters.push(downFilter);
+      _filters.push(new ShaderFilter(new BlurShaderDown(1 / (i + 1), blurAmt)));
     }
 
     // Up samples
@@ -79,73 +63,45 @@ class DropShadowLayer extends FlxSprite
     {
       for (i in 0...sampleSteps - 1)
       {
-        var upFilter:ShaderFilter = new ShaderFilter(new BlurShaderUp(sampleSteps - i, blurAmt));
-        _filters.push(upFilter);
+        _filters.push(new ShaderFilter(new BlurShaderUp(sampleSteps - i, blurAmt)));
       }
 
       // Final upsample + color offset!
-      // Mix them into one shader to reduce the RTT passes needed to apply the filter
+      // Mix them into one shader to reduce the RTT passes needed to apply the filter.
       _filters.push(new ShaderFilter(new BlurShaderUpShadow(1, blurAmt, _color, distX, distY)));
     }
 
-    camera.canvas.graphics.setBufferFilters(_bufferID, _filters, resolutionScale, bufferDelay);
+    this.filters = _filters;
+  }
+
+  /**
+   * Whether the device can render to multiple color attachments.
+   * If `false`, the layer renders nothing.
+  **/
+  public static function isSupported():Bool
+  {
+    var context = flixel.FlxG.stage.window.context;
+    if (context.type != lime.graphics.RenderContextType.OPENGLES) return true;
+    @:privateAccess
+    if (openfl.display.OpenGLRenderer.__drawBuffersEXT) return true;
+    return Std.parseFloat(context.version) >= 3;
   }
 
   override function draw():Void
   {
     if (!visible) return;
     if (useWhitelist && _whiteList.isEmpty()) return;
-    if (funkinCamera.canvas.graphics.getBuffer(_bufferID) == null) return;
 
-    render();
+    x = funkinCamera.scroll.x;
+    y = funkinCamera.scroll.y;
 
     super.draw();
   }
 
-  function render():Void
-  {
-    // otherwise openfl will mess up somehow and keep scaling up the frame buffer until it eats all your VRAM
-    if (camera.canvas.scrollRect == null)
-    {
-      camera.canvas.scrollRect = new openfl.geom.Rectangle(0, 0, camera.width, camera.height);
-    }
-    else
-    {
-      camera.canvas.scrollRect.width = camera.width;
-      camera.canvas.scrollRect.height = camera.height;
-    }
-
-    var bufferBitmap = funkinCamera.canvas.graphics.getBuffer(_bufferID);
-
-    if (bufferBitmap != null)
-    {
-      x = camera.scroll.x;
-      y = camera.scroll.y;
-      scale.x = camera.width / bufferBitmap.width;
-      scale.y = camera.height / bufferBitmap.height;
-    }
-
-    if (bufferBitmap != null && (graphic == null || (graphic != null && graphic.bitmap != bufferBitmap)))
-    {
-      pixels = bufferBitmap;
-      blacklistSprite(this);
-      updateHitbox();
-    }
-  }
-
   override function destroy():Void
   {
-    if (funkinCamera.canvas != null)
-    {
-      funkinCamera.canvas.cacheAsBitmap = false;
-      camera.canvas.scrollRect = null;
-    }
-
     super.destroy();
   }
-
-  var _whiteList:Array<String> = [];
-  var _blackList:Array<String> = [];
 
   public function blacklistSprite(sprite:Null<FlxSprite>):Void
   {
@@ -182,8 +138,7 @@ class DropShadowLayer extends FlxSprite
       }
     }
 
-    funkinCamera.blackListKeys = _blackList.copy();
-    funkinCamera.whiteListKeys = _whiteList.copy();
+    syncCameraFilters();
   }
 
   public function whitelistSprite(sprite:Null<FlxSprite>):Void
@@ -197,7 +152,7 @@ class DropShadowLayer extends FlxSprite
     var graphicKeys:Array<String> = [sprite.graphic.key];
 
     // Texture atlases use a spritemap collection
-    // We'll need to add all the spritemaps to the blacklist
+    // We'll need to add all the spritemaps to the whitelist
     if (sprite.graphic is FlxAnimateSpritemapCollection)
     {
       var spritemaps:FlxAnimateSpritemapCollection = cast sprite.graphic;
@@ -221,6 +176,11 @@ class DropShadowLayer extends FlxSprite
       }
     }
 
+    syncCameraFilters();
+  }
+
+  function syncCameraFilters():Void
+  {
     funkinCamera.blackListKeys = _blackList.copy();
     funkinCamera.whiteListKeys = _whiteList.copy();
   }
@@ -229,17 +189,5 @@ class DropShadowLayer extends FlxSprite
   {
     funkinCamera.useWhitelist = v;
     return useWhitelist = v;
-  }
-
-  function set_resolutionScale(v:Float):Float
-  {
-    camera.canvas.graphics.setBufferFilters(_bufferID, _filters, v, bufferDelay);
-    return resolutionScale = v;
-  }
-
-  function set_bufferDelay(v:Float):Float
-  {
-    camera.canvas.graphics.setBufferFilters(_bufferID, _filters, resolutionScale, v);
-    return bufferDelay = v;
   }
 }

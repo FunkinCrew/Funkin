@@ -16,6 +16,12 @@ enum UIState
   // Character Select
   UnlockAnimation;
   CharacterSelected;
+  // Quick Panel
+  PanelClosed;
+  PanelLoading;
+  PanelDragging;
+  PanelOpen;
+  PanelConfirming;
 }
 
 /**
@@ -38,11 +44,28 @@ class UIStateMachine
    */
   public var previousState(default, null):UIState = Idle;
 
+  /**
+   * The state this machine starts in and returns to on `reset()`.
+   */
+  var defaultState:UIState = Idle;
+
+  var label:String = 'ui';
   var validTransitions:Map<UIState, Array<UIState>>;
   var onStateChange:Array<(UIState, UIState) -> Void> = [];
 
-  public function new(?transitions:Map<UIState, Array<UIState>>)
+  public function new(label:String = 'ui',
+    ?transitions:Map<UIState, Array<UIState>>,
+    ?initialState:UIState)
   {
+    this.label = label;
+
+    if (initialState != null)
+    {
+      defaultState = initialState;
+      currentState = initialState;
+      previousState = initialState;
+    }
+
     // Default valid transitions if none provided
     validTransitions = transitions != null ? transitions : [
       Idle => [
@@ -128,12 +151,12 @@ class UIStateMachine
   }
 
   /**
-   * Resets the state machine to the Idle state.
+   * Resets the state machine to the default state.
    */
   public function reset():Void
   {
     previousState = currentState;
-    currentState = Idle;
+    currentState = defaultState;
   }
 
   /**
@@ -153,7 +176,7 @@ class UIStateMachine
   public function canInteract():Bool
   {
     // Entering is an enabled state since we want to be able to interact even during the screen fade wipe thing
-    return currentState == Idle || currentState == EnteringMainMenu || currentState == CharacterSelected;
+    return currentState == Idle || currentState == EnteringMainMenu || currentState == CharacterSelected || currentState == PanelOpen;
   }
 
   static function log(message:String):Void

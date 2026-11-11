@@ -1,5 +1,6 @@
 package funkin.graphics.video;
 
+#if html5
 import flixel.util.FlxColor;
 import funkin.audio.FunkinSound;
 import openfl.events.NetStatusEvent;
@@ -18,7 +19,7 @@ class FlxVideo extends FunkinSprite
 {
   var video:Video;
   var netStream:NetStream;
-  var videoPath:String;
+  var videoPath:String = "";
 
   /**
    * A callback to execute when the video finishes.
@@ -26,30 +27,42 @@ class FlxVideo extends FunkinSprite
   public var finishCallback:Null<Void->Void> = null;
 
   @:nullSafety(Off)
-  public function new(videoPath:String)
+  public function new(?videoPath:String)
   {
     super();
 
+    video = new Video();
+
+    var netConnection:NetConnection = new NetConnection();
+    netConnection.connect(null);
+    netStream = new NetStream(netConnection);
+    netConnection.addEventListener(NetStatusEvent.NET_STATUS, onNetConnectionNetStatus);
+
+    load(videoPath);
+
+    makeSolidColor(2, 2, FlxColor.TRANSPARENT);
+  }
+
+  public function load(?videoPath:String):Bool
+  {
+    if (videoPath == null) return false;
+
+    if (!funkin.assets.Assets.exists(videoPath)) return false;
+
     this.videoPath = videoPath;
 
-    video = new Video();
     video.x = 0;
     video.y = 0;
     video.alpha = 0;
 
     FlxG.game.addChild(video);
 
-    var netConnection:NetConnection = new NetConnection();
-    netConnection.connect(null);
-
-    netStream = new NetStream(netConnection);
     netStream.client = {
       onMetaData: onClientMetaData
     };
-    netConnection.addEventListener(NetStatusEvent.NET_STATUS, onNetConnectionNetStatus);
     netStream.play(videoPath);
 
-    makeSolidColor(2, 2, FlxColor.TRANSPARENT);
+    return true;
   }
 
   /**
@@ -143,15 +156,26 @@ class FlxVideo extends FunkinSprite
 
   function onVideoReady():Void
   {
-    video.width = FlxG.width;
-    video.height = FlxG.height;
+    final videoWidth:Int = video.videoWidth;
+    final videoHeight:Int = video.videoHeight;
+
+    if (videoWidth <= 0 || videoHeight <= 0)
+    {
+      return;
+    }
+
+    video.width = videoWidth;
+    video.height = videoHeight;
+    video.smoothing = true;
+
+    makeGraphic(videoWidth, videoHeight, FlxColor.TRANSPARENT);
+    setGraphicSize(FlxG.width, FlxG.height);
+    updateHitbox();
 
     videoAvailable = true;
 
     FunkinSound.onVolumeChanged.add(onVolumeChanged);
     onVolumeChanged(FlxG.sound.muted ? 0 : FlxG.sound.volume);
-
-    makeSolidColor(Std.int(video.width), Std.int(video.height), FlxColor.TRANSPARENT);
   }
 
   function onVolumeChanged(volume:Float):Void
@@ -164,3 +188,4 @@ class FlxVideo extends FunkinSprite
     if (event.info.code == 'NetStream.Play.Complete') finishVideo();
   }
 }
+#end

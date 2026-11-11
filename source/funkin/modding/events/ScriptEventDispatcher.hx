@@ -206,6 +206,9 @@ class ScriptEventDispatcher
         case SONG_EVENT:
           t.onSongEvent(cast event);
           return;
+        case CUSTOM_EVENT:
+          t.onCustomEvent(cast event);
+          return;
         case COUNTDOWN_START:
           t.onCountdownStart(cast event);
           return;
@@ -233,6 +236,7 @@ class ScriptEventDispatcher
         ScriptEventType.PAUSE,
         ScriptEventType.RESUME,
         ScriptEventType.SONG_EVENT,
+        ScriptEventType.CUSTOM_EVENT,
         ScriptEventType.COUNTDOWN_START,
         ScriptEventType.COUNTDOWN_STEP,
         ScriptEventType.COUNTDOWN_END,

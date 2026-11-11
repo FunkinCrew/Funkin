@@ -8,8 +8,8 @@ import haxe.ui.components.Label;
 import haxe.ui.core.Screen;
 import haxe.ui.events.UIEvent;
 import funkin.data.song.SongData.SongEventData;
-import funkin.ui.debug.charting.commands.MoveEventsCommand;
-import funkin.ui.debug.charting.commands.RemoveEventsCommand;
+import funkin.ui.debug.charting.commands.events.MoveEventsCommand;
+import funkin.ui.debug.charting.commands.events.RemoveEventsCommand;
 
 @:access(funkin.ui.debug.charting.ChartEditorState)
 @:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/context-menus/event.xml"))

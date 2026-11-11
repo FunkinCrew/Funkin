@@ -17,6 +17,7 @@ import funkin.audio.FunkinSound;
 import funkin.ui.AtlasText;
 // import openfl.Assets;
 import funkin.ui.mainmenu.MainMenuState;
+import funkin.ui.transition.Transition;
 #if FEATURE_NEWGROUNDS
 import funkin.api.newgrounds.Medals;
 #end
@@ -27,8 +28,9 @@ import funkin.util.SwipeUtil;
 //
 // ~PATHS~
 //
-import funkin.assets.Assets as Assets;
+import funkin.assets.Assets;
 import funkin.assets.ValidatedPaths as Paths;
+import funkin.assets.Paths.AssetPath;
 
 class TitleState extends MusicBeatState
 {
@@ -44,6 +46,65 @@ class TitleState extends MusicBeatState
   var curWacky:Array<String> = [];
   var lastBeat:Int = 0;
   var swagShader:ColorSwap;
+
+  /**
+   * Return a list of all AssetPaths that this state depends on to load.
+   * @param type The type of assets to retrieve.
+   * @return A list of asset paths.
+   */
+  public static function queryAssets(type:AssetType):Array<AssetPath>
+  {
+    var results = [];
+
+    switch (type)
+    {
+      case IMAGE:
+        results.append([
+          Paths.image('ui/title/logo-bumpin'),
+          Paths.image('ui/title/gf-dance-title'),
+
+          Paths.image('ui/title/newgrounds-logo-animated'),
+          Paths.image('ui/title/newgrounds-logo-classic'),
+          Paths.image('ui/title/newgrounds-logo')
+        ]);
+
+        #if mobile
+        results.append(Paths.animateAtlas('ui/title/title-screen-text-mobile').image());
+        #else
+        results.append(Paths.animateAtlas('ui/title/title-screen-text').image());
+        #end
+
+      case XML:
+        results.append([
+          Paths.xml('ui/title/logo-bumpin'),
+          Paths.xml('ui/title/gf-dance-title')
+        ]);
+
+      case SOUND:
+        results.append([
+          Paths.music('ui/main-menu/freaky-menu').audio(),
+          Paths.music('ui/title/girlfriends-ringtone').audio()
+        ]);
+
+      case JSON:
+        results.append([
+          Paths.music('ui/main-menu/freaky-menu').metadata(),
+          Paths.music('ui/title/girlfriends-ringtone').metadata()
+        ]);
+        #if mobile
+        results.append(Paths.animateAtlas('ui/title/title-screen-text-mobile').json());
+        #else
+        results.append(Paths.animateAtlas('ui/title/title-screen-text').json());
+        #end
+
+      case TEXT:
+        results.append([Paths.txt('ui/title/intro-text')]);
+
+      default:
+    }
+
+    return results;
+  }
 
   override public function create():Void
   {
@@ -215,7 +276,11 @@ class TitleState extends MusicBeatState
     FlxG.sound.music.fadeOut(2.0, 0);
     FlxG.camera.fade(FlxColor.BLACK, 2.0, false, function()
     {
-      FlxG.switchState(() -> new AttractState());
+      Transition.switchState(() -> new AttractState(), {
+        assetQuery: AttractState.queryAssets,
+        transition: TransitionType.BlackScreen(FadeType.Fade(FadeDirection.North), FadeType.Fade(FadeDirection.South)),
+        shouldPurgeCache: false
+      });
     });
   }
 
@@ -282,12 +347,16 @@ class TitleState extends MusicBeatState
       FlxTween.cancelTweensOf(windowWobblePosition);
       windowMoveTimer = 0;
 
-      FlxTween.tween(windowWobblePosition, {x: windowWobblePosition.x + 300}, 1.4, {
+      FlxTween.tween(windowWobblePosition, {
+        x: windowWobblePosition.x + 300
+      }, 1.4, {
         ease: FlxEase.quadInOut,
         type: PINGPONG,
         startDelay: 0.35
       });
-      FlxTween.tween(windowWobblePosition, {y: windowWobblePosition.y + 100}, 0.7, {
+      FlxTween.tween(windowWobblePosition, {
+        y: windowWobblePosition.y + 100
+      }, 0.7, {
         ease: FlxEase.quadInOut,
         type: PINGPONG
       });
@@ -319,7 +388,7 @@ class TitleState extends MusicBeatState
     // If you spam Enter, we should skip the transition.
     if (pressedEnter && transitioning && skippedIntro)
     {
-      moveToMainMenu();
+      moveToMainMenu(true);
     }
 
     if (pressedEnter && !transitioning && skippedIntro)
@@ -359,7 +428,7 @@ class TitleState extends MusicBeatState
     super.update(elapsed);
   }
 
-  function moveToMainMenu():Void
+  function moveToMainMenu(?force:Bool = false):Void
   {
     #if FEATURE_VIDEO_PLAYBACK
     if (attractTimer != null)
@@ -369,7 +438,10 @@ class TitleState extends MusicBeatState
     }
     #end
 
-    FlxG.switchState(() -> new MainMenuState());
+    Transition.switchState(() -> new MainMenuState(), {
+      assetQuery: MainMenuState.queryAssets,
+      transition: (BlackScreen(force ? None : Fade(North), Fade(South))),
+    });
   }
 
   override function draw()

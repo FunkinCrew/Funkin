@@ -110,6 +110,6 @@ typedef DialogParams =
 typedef DialogDropTarget =
 {
   component:Component,
-  handler:String->Void
+  handler:lime.utils.DroppedFile->Void
 }
 #end

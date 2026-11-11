@@ -171,7 +171,6 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements Conso
    */
   public static function initialize():Void
   {
-    FlxG.plugins.drawOnTop = true;
     instance = new NewgroundsMedalPlugin();
     FlxG.plugins.addPlugin(instance);
 

@@ -16,7 +16,19 @@ import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
 import funkin.modding.events.ScriptEvent;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.data.freeplay.player.PlayerRegistry;
+import funkin.data.notestyle.NoteStyleRegistry;
+import funkin.data.event.SongEventRegistry;
 import funkin.util.SortUtil;
+import funkin.assets.Paths.AssetPath;
+//
+// ~PATHS~
+//
+import funkin.assets.Assets;
+import funkin.assets.Assets.AssetType;
+import funkin.assets.Paths.AnimateAtlasAssetPathBuilder;
+import funkin.assets.Paths.AssetPath;
+import funkin.assets.Paths.MusicAssetPathBuilder;
+import funkin.assets.ValidatedPaths as Paths;
 import funkin.assets.Paths.AssetPath;
 
 /**
@@ -134,6 +146,37 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
   }
 
   public var variation:Null<String> = null;
+
+  /**
+   * Retrieve a list of all the asset paths required to load the song.
+   *
+   * If you have a scripted class which initializes sprites, or plays sounds or something,
+   * make sure you add them here so they get cached in the loading screen.
+   *
+   * @param type The type of asset to query
+   * @param entryId The song ID, used to look up the specific assets.
+   * @param params The entry parameters, if any.
+   * @return An array of asset paths, or empty if no assets of that type are required.
+   */
+  public static function queryAssets(type:funkin.assets.Assets.AssetType,
+    entryId:String,
+    ?params:SongEntryParams):Array<funkin.assets.Paths.AssetPath>
+  {
+    switch (type)
+    {
+      case JSON:
+        final ASSET_BLACKLIST:Array<String> = ['Animation', 'spritemap1'];
+        final BASE_PATH:String = 'gameplay/songs/$entryId';
+        // Just return every -metadata.json and -chart.json file in the directory.
+        // Parsing which ones are actually used/unused is too much work!
+        var dataFiles:Array<funkin.assets.Paths.AssetPath> = funkin.assets.Assets
+          .listDataFilesInPath('$BASE_PATH/', ASSET_BLACKLIST, false)
+          .map((assetId) -> funkin.assets.Paths.json('$BASE_PATH/$assetId'));
+        return [dataFiles].flatten();
+      default:
+        return [];
+    }
+  }
 
   /**
    * @param id The ID of the song to load.
@@ -714,6 +757,10 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
   {
   };
 
+  public function onCustomEvent(event:CustomEventScriptEvent):Void
+  {
+  };
+
   public function onStepHit(event:SongTimeScriptEvent):Void
   {
   };
@@ -769,6 +816,9 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
    * Validate that the variation ID is valid.
    * Auto-accept if it's one of the base game default variations.
    * Reject if the ID starts with a number, or contains invalid characters.
+   *
+   * @param variation The variation ID to validate.
+   * @return Whether the ID is valid.
    */
   static function validateVariationId(variation:String):Bool
   {
@@ -783,6 +833,9 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
   }
 }
 
+/**
+ * Data for one particular variation, of one particular difficulty of a given song.
+ */
 class SongDifficulty
 {
   /**
@@ -828,6 +881,60 @@ class SongDifficulty
   public var stickerPack:Null<String> = null;
   public var discordRPCImage:Null<String> = null;
 
+  /**
+   * Return a list of all AssetPaths that this song depends on to load.
+   * @param type The type of AssetPath to return a list of paths for.
+   * @return The list of asset paths.
+   */
+  public function queryAssets(type:AssetType, instId:String = ''):Array<AssetPath>
+  {
+    trace('[LOADING] Fetching assets for ${song.id} (${difficulty}-${variation})...');
+
+    var results:Array<AssetPath> = SongRegistry.instance.queryAssets(type, song.id, {
+      variation: this.variation
+    });
+
+    // Add assets for this variation's note style.
+    results.append(NoteStyleRegistry.instance.queryAssets(type, this.noteStyle));
+
+    // Add assets for this variation's events.
+    // Only available once the chart has been cached.
+    if ((events?.length ?? 0) > 0)
+    {
+      for (eventData in events)
+      {
+        results.append(SongEventRegistry.queryAssets(type, eventData));
+      }
+    }
+    else
+    {
+      trace('[LOADING] WARNING: Song events not cached while query assets for ${song.id} ${difficulty}-${variation}');
+    }
+
+    switch (type)
+    {
+      case SOUND:
+        results.push(getInstPath(instId));
+        trace('[LOADING] Getting voice list...');
+        results.append(buildVoiceList());
+      case TEXT:
+        // Add the subtitles file, if it exists.
+        // We load it regardless if the subtitles are turned off, because the user might turn them back on.
+        var subtitlesFile:String = 'gameplay/songs/${song.id}/subtitles/song-lyrics';
+        if (this.variation != Constants.DEFAULT_VARIATION)
+        {
+          subtitlesFile += '-${this.variation}';
+        }
+        var assetPath:AssetPath = funkin.assets.Paths.srt(subtitlesFile, false);
+        if (assetPath.exists()) results.push(assetPath);
+
+      default:
+        // Nothing
+    }
+
+    return results;
+  }
+
   public function new(song:Song, diffId:String, variation:String)
   {
     this.song = song;
@@ -835,6 +942,9 @@ class SongDifficulty
     this.variation = variation;
   }
 
+  /**
+   * Clear the note data from the chart. It will be need to be loaded and parsed later if you want to play it.
+   */
   public function clearChart():Void
   {
     notes = null;
@@ -850,6 +960,9 @@ class SongDifficulty
     return timeChanges[0].bpm;
   }
 
+  /**
+   * @return A list of song events for this variation.
+   */
   public function getEvents():Array<SongEventData>
   {
     return cast events;
@@ -879,31 +992,34 @@ class SongDifficulty
   }
 
   /**
-   * Cache the instrumental for a given song variation.
-   * @param instrumental = ''
+   * Cache the audio for the instrumental for a given song variation.
+   * @param instrumental The instrumental suffix.
    */
   public function cacheInst(instrumental = ''):Void
   {
     funkin.assets.Assets.cacheSound(getInstPath(instrumental));
   }
 
-  public function playInst(volume:Float = 1.0, instId:String = '', looped:Bool = false):Void
+  /**
+   * Plays the audio for the instrumental for a given song variation.
+   *
+   * @param instId The instrumental suffix.
+   */
+  public function playInst(instId:String = ''):Void
   {
-    var suffix:String = (instId != '') ? '-$instId' : '';
-    var path:String = Paths.inst(this.song.id, suffix);
+    var path:String = getInstPath(instId).toString();
     trace(' SONG '.bold().bg_note_down() + ' Playing instrumental track "$path" for song "${song.id}"');
 
-    FlxG.sound.music = FunkinSound.load(path, volume, looped, false, true, false, null, null);
+    FlxG.sound.music = FunkinSound.load(path, 1.0, false, false, true, false, null, null);
 
     // Workaround for a bug where FlxG.sound.music.update() was being called twice.
     FlxG.sound.list.remove(FlxG.sound.music);
   }
 
   /**
-   * Cache the vocals for a given character.
-   * @param i
+   * Cache the audio for the vocals for a given song variation.
    */
-  public function cacheVocals(instrumental = ''):Void
+  public function cacheVocals():Void
   {
     for (voice in buildVoiceList())
     {
@@ -913,10 +1029,8 @@ class SongDifficulty
   }
 
   /**
-   * Build a list of vocal files for the given character.
-   * Automatically resolves suffixed character IDs (so bf-car will resolve to bf if needed).
-   *
-   * @param id The character we are about to play.
+   * @return A list of vocal files for the given difficulty.
+   *   Automatically resolves suffixed character IDs (so bf-car will resolve to bf if needed).
    */
   public function buildVoiceList():Array<AssetPath>
   {
@@ -927,13 +1041,19 @@ class SongDifficulty
     {
       var suffix:String = (variation != null && variation != '' && variation != 'default') ? '-$variation' : '';
       // Try to use `Voices.ogg` if no other voices are found.
-      if (funkin.assets.Assets.exists(
-        funkin.assets.Paths.voices(this.song.id, '').toString()
-      )) result.push(funkin.assets.Paths.voices(this.song.id, '$suffix'));
+      var voiceAssetPath = funkin.assets.Paths.voices(this.song.id, suffix, false);
+      if (voiceAssetPath.exists())
+      {
+        result.push(voiceAssetPath);
+      }
     }
     return result;
   }
 
+  /**
+   * @return A list of player vocal tracks for this difficulty.
+   *   Automatically resolves suffixed character IDs (so bf-car will resolve to bf if needed).
+   */
   public function buildPlayerVoiceList():Array<AssetPath>
   {
     var suffix:String = (variation != null && variation != '' && variation != 'default') ? '-$variation' : '';
@@ -942,14 +1062,14 @@ class SongDifficulty
     {
       // The metadata explicitly defines the list of voices.
       var playerIds:Array<String> = characters?.playerVocals ?? [characters.player];
-      var playerVoices:Array<AssetPath> = playerIds.map((id) -> funkin.assets.Paths.voices(this.song.id, '-$id$suffix'));
+      var playerVoices:Array<AssetPath> = playerIds.map((id) -> funkin.assets.Paths.voices(this.song.id, '-$id$suffix', false));
       var validVoices:Bool = true;
 
       // Check if all voice paths exist before returning
       // If not, fallback to the default method for resolving voices
       for (voice in playerVoices)
       {
-        if (voice == null || !funkin.assets.Assets.exists(voice.toString())) validVoices = false;
+        if (voice == null || !voice.exists()) validVoices = false;
       }
       if (validVoices) return playerVoices;
     }
@@ -958,33 +1078,37 @@ class SongDifficulty
     // For example, if `Voices-bf-car-erect.ogg` does not exist, check for `Voices-bf-erect.ogg`.
     // Then, check for  `Voices-bf-car.ogg`, then `Voices-bf.ogg`.
     var playerId:String = characters.player;
-    var playerVoice:AssetPath = funkin.assets.Paths.voices(this.song.id, '-${playerId}$suffix');
+    var playerVoice:AssetPath = funkin.assets.Paths.voices(this.song.id, '-${playerId}$suffix', false);
 
-    while (playerVoice != null && !funkin.assets.Assets.exists(playerVoice.toString()))
+    while (playerVoice != null && !playerVoice.exists())
     {
       // Remove the last suffix.
       // For example, bf-car becomes bf.
       playerId = playerId.split('-').slice(0, -1).join('-');
       // Try again.
-      playerVoice = playerId == '' ? null : funkin.assets.Paths.voices(this.song.id, '-${playerId}$suffix');
+      playerVoice = playerId == '' ? null : funkin.assets.Paths.voices(this.song.id, '-${playerId}$suffix', false);
     }
     if (playerVoice == null)
     {
       // Try again without $suffix.
       playerId = characters.player;
-      playerVoice = funkin.assets.Paths.voices(this.song.id, '-${playerId}');
-      while (playerVoice != null && !funkin.assets.Assets.exists(playerVoice.toString()))
+      playerVoice = funkin.assets.Paths.voices(this.song.id, '-${playerId}', false);
+      while (playerVoice != null && !playerVoice.exists())
       {
         // Remove the last suffix.
         playerId = playerId.split('-').slice(0, -1).join('-');
         // Try again.
-        playerVoice = playerId == '' ? null : funkin.assets.Paths.voices(this.song.id, '-${playerId}$suffix');
+        playerVoice = playerId == '' ? null : funkin.assets.Paths.voices(this.song.id, '-${playerId}$suffix', false);
       }
     }
 
     return playerVoice != null ? [playerVoice] : [];
   }
 
+  /**
+   * @return A list of opponent vocal tracks for this difficulty.
+   *   Automatically resolves suffixed character IDs (so bf-car will resolve to bf if needed).
+   */
   public function buildOpponentVoiceList():Array<AssetPath>
   {
     var suffix:String = (variation != null && variation != '' && variation != 'default') ? '-$variation' : '';
@@ -993,14 +1117,14 @@ class SongDifficulty
     {
       // The metadata explicitly defines the list of voices.
       var opponentIds:Array<String> = characters?.opponentVocals ?? [characters.opponent];
-      var opponentVoices:Array<AssetPath> = opponentIds.map((id) -> funkin.assets.Paths.voices(this.song.id, '-$id$suffix'));
+      var opponentVoices:Array<AssetPath> = opponentIds.map((id) -> funkin.assets.Paths.voices(this.song.id, '-$id$suffix', false));
       var validVoices:Bool = true;
 
       // Check if all voice paths exist before returning
       // If not, fallback to the default method for resolving voices
       for (voice in opponentVoices)
       {
-        if (voice == null || !funkin.assets.Assets.exists(voice.toString())) validVoices = false;
+        if (voice == null || !voice.exists()) validVoices = false;
       }
       if (validVoices) return opponentVoices;
     }
@@ -1010,25 +1134,25 @@ class SongDifficulty
     // Then, check for  `Voices-bf-car.ogg`, then `Voices-bf.ogg`.
 
     var opponentId:String = characters.opponent;
-    var opponentVoice:AssetPath = funkin.assets.Paths.voices(this.song.id, '-${opponentId}$suffix');
-    while (opponentVoice != null && !funkin.assets.Assets.exists(opponentVoice.toString()))
+    var opponentVoice:AssetPath = funkin.assets.Paths.voices(this.song.id, '-${opponentId}$suffix', false);
+    while (opponentVoice != null && !opponentVoice.exists())
     {
       // Remove the last suffix.
       opponentId = opponentId.split('-').slice(0, -1).join('-');
       // Try again.
-      opponentVoice = opponentId == '' ? null : funkin.assets.Paths.voices(this.song.id, '-${opponentId}$suffix');
+      opponentVoice = opponentId == '' ? null : funkin.assets.Paths.voices(this.song.id, '-${opponentId}$suffix', false);
     }
     if (opponentVoice == null)
     {
       // Try again without $suffix.
       opponentId = characters.opponent;
-      opponentVoice = funkin.assets.Paths.voices(this.song.id, '-${opponentId}');
-      while (opponentVoice != null && !funkin.assets.Assets.exists(opponentVoice.toString()))
+      opponentVoice = funkin.assets.Paths.voices(this.song.id, '-${opponentId}', false);
+      while (opponentVoice != null && !opponentVoice.exists())
       {
         // Remove the last suffix.
         opponentId = opponentId.split('-').slice(0, -1).join('-');
         // Try again.
-        opponentVoice = opponentId == '' ? null : funkin.assets.Paths.voices(this.song.id, '-${opponentId}$suffix');
+        opponentVoice = opponentId == '' ? null : funkin.assets.Paths.voices(this.song.id, '-${opponentId}$suffix', false);
       }
     }
 
@@ -1037,7 +1161,8 @@ class SongDifficulty
 
   /**
    * Create a VoicesGroup, an audio object that can play the vocals for all characters.
-   * @param charId The player ID.
+   *
+   * @param instId The instrumental ID being played. May affect vocal offsets.
    * @return The generated vocal group.
    */
   public function buildVocals(?instId:String = ''):VoicesGroup
@@ -1050,14 +1175,14 @@ class SongDifficulty
     // Add player vocals.
     for (playerVoice in playerVoiceList)
     {
-      if (!funkin.assets.Assets.exists(playerVoice.toString())) continue;
+      if (!playerVoice.exists()) continue;
       result.addPlayerVoice(FunkinSound.load(playerVoice.toFlxSoundAsset(), 1.0));
     }
 
     // Add opponent vocals.
     for (opponentVoice in opponentVoiceList)
     {
-      if (!funkin.assets.Assets.exists(opponentVoice.toString())) continue;
+      if (!opponentVoice.exists()) continue;
       result.addOpponentVoice(FunkinSound.load(opponentVoice.toFlxSoundAsset(), 1.0));
     }
 
@@ -1065,8 +1190,8 @@ class SongDifficulty
     {
       var suffix:String = (variation != null && variation != '' && variation != 'default') ? '-$variation' : '';
       // Try to use `Voices.ogg` if no other voices are found.
-      var legacyPath = funkin.assets.Paths.voices(this.song.id, '$suffix');
-      if (funkin.assets.Assets.exists(legacyPath.toString()))
+      var legacyPath = funkin.assets.Paths.voices(this.song.id, '$suffix', false);
+      if (legacyPath.exists())
       {
         result.addPlayerVoice(FunkinSound.load(legacyPath.toFlxSoundAsset(), 1.0));
       }

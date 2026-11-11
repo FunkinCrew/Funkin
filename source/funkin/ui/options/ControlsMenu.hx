@@ -15,7 +15,7 @@ import funkin.ui.MenuList.MenuTypedList;
 import funkin.ui.TextMenuList;
 import funkin.ui.Page;
 #if FEATURE_TOUCH_CONTROLS
-import funkin.mobile.ui.FunkinBackButton;
+import funkin.touch.ui.FunkinBackButton;
 #end
 
 class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
@@ -425,8 +425,10 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
     var leftItem = controlGrid.members[controlGrid.selectedIndex - 1];
     var rightItem = controlGrid.members[controlGrid.selectedIndex + 1];
 
+    var otherItem = controlGrid.selectedIndex % 2 == 1 ? leftItem : rightItem;
+
     // check if all keybinds are being removed and this is a UI control, prevent removing last keybind for this
-    if (input == FlxKey.NONE && controlGrid.selectedIndex != 1 && rightItem.input == FlxKey.NONE)
+    if (input == FlxKey.NONE && otherItem != null && otherItem.input == FlxKey.NONE)
     {
       for (group in itemGroups)
       {

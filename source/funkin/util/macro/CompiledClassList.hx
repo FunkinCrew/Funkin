@@ -15,7 +15,7 @@ class CompiledClassList
    */
   static inline final METADATA_RESOURCE_NAME:String = 'Funkin_CompiledClassList';
 
-  static var classLists:Map<String, List<Class<Dynamic>>> = [];
+  static var classLists:Map<String, Array<Class<Dynamic>>> = [];
   static var initialized:Bool = false;
 
   /**
@@ -36,7 +36,7 @@ class CompiledClassList
         var id:String = data[0];
 
         // All other elements are class types.
-        var classes:List<Class<Dynamic>> = new List();
+        var classes:Array<Class<Dynamic>> = new Array();
         for (i in 1...data.length)
         {
           var className:String = data[i];
@@ -70,14 +70,14 @@ class CompiledClassList
    * @param request The request. See `ClassMacro` for more information.
    * @return The list of matching classes.
    */
-  public static function get(request:String):List<Class<Dynamic>>
+  public static function get(request:String):Array<Class<Dynamic>>
   {
     if (!initialized) init();
 
     if (!classLists.exists(request))
     {
       trace(' WARNING '.bg_yellow().bold() + ' Class list $request not properly generated. Please debug the build macro.');
-      classLists.set(request, new List()); // Make the error only appear once.
+      classLists.set(request, new Array()); // Make the error only appear once.
     }
 
     // A faulty request sets the value to an empty list above so this will never be null
@@ -93,7 +93,7 @@ class CompiledClassList
    * @param type The type of classes to cast the list to.
    * @return The list of matching classes.
    */
-  public static inline function getTyped<T>(request:String, type:Class<T>):List<Class<T>>
+  public static inline function getTyped<T>(request:String, type:Class<T>):Array<Class<T>>
   {
     return cast get(request);
   }

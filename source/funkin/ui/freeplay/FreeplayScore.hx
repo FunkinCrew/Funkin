@@ -2,6 +2,8 @@ package funkin.ui.freeplay;
 
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
+import funkin.assets.Paths;
+import funkin.assets.Assets;
 
 @:nullSafety
 class FreeplayScore extends FlxTypedSpriteGroup<ScoreNum>
@@ -32,6 +34,15 @@ class FreeplayScore extends FlxTypedSpriteGroup<ScoreNum>
     }
 
     return val;
+  }
+
+  public static function queryAssets(type:AssetType, ?styleData:FreeplayStyle):Array<AssetPath>
+  {
+    var results:Array<AssetPath> = [];
+
+    results.append(ScoreNum.queryAssets(type, styleData));
+
+    return results;
   }
 
   public function new(x:Float, y:Float, digitCount:Int, scoreShit:Int = 100, ?styleData:FreeplayStyle)
@@ -97,6 +108,37 @@ class ScoreNum extends FlxSprite
     }
 
     return val;
+  }
+
+  public static function queryAssets(type:AssetType, ?styleData:FreeplayStyle):Array<AssetPath>
+  {
+    var results:Array<AssetPath> = [];
+
+    switch (type)
+    {
+      case IMAGE:
+        if (styleData != null)
+        {
+          results.push(Paths.image(styleData.getNumbersAssetKey()));
+        }
+        else
+        {
+          results.push(Paths.image('ui/freeplay/styles/bf/digital-numbers'));
+        }
+      case XML:
+        if (styleData != null)
+        {
+          results.push(Paths.xml(styleData.getNumbersAssetKey()));
+        }
+        else
+        {
+          results.push(Paths.xml('ui/freeplay/styles/bf/digital-numbers'));
+        }
+      default:
+        // Nothing.
+    }
+
+    return [];
   }
 
   public function new(x:Float, y:Float, ?initDigit:Int = 0, ?styleData:FreeplayStyle)

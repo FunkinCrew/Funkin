@@ -1,9 +1,9 @@
 package funkin.graphics;
 
 import animate.FlxAnimate;
-import animate.FlxAnimateFrames.FilterQuality;
-import animate.FlxAnimateFrames.SpritemapInput;
 import animate.FlxAnimateFrames;
+import animate.internal.AnimateDrawCommand;
+import animate.internal.RenderTexture;
 import animate.internal.SymbolItem;
 import animate.internal.elements.AtlasInstance;
 import animate.internal.elements.Element;
@@ -11,6 +11,7 @@ import animate.internal.elements.SymbolInstance;
 import flixel.FlxCamera;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxFrame;
+import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.math.FlxMatrix;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
@@ -21,6 +22,8 @@ import funkin.assets.Assets;
 import funkin.assets.Paths;
 import funkin.graphics.framebuffer.FunkinFilterRenderer;
 import haxe.io.Path;
+import lime.app.Future;
+import lime.app.Promise;
 import openfl.display.BitmapData;
 import openfl.display3D.textures.TextureBase;
 import openfl.filters.BitmapFilter;
@@ -111,6 +114,7 @@ typedef AtlasSpriteSettings =
   /**
    * If enabled, the sprite will render as one texture instead of rendering multiple limbs.
    * This is useful for stuff like changing alpha, and shaders that require the whole sprite.
+   *
    * Only enable this if your sprite either:
    * - Changes alpha to something other than 1.0
    * - Has a shader or blend mode
@@ -128,24 +132,15 @@ typedef AtlasSpriteSettings =
 @:access(polymod.Polymod)
 class FunkinSprite extends FlxAnimate
 {
+  // Prevents stale web asset loads from replacing newer ones. Kinda
+  var asyncLoadToken:Int = 0;
+
   public var vcamPoint:Null<FlxPoint> = null;
 
   /**
    * The filters array to be applied to the sprite.
    */
   public var filters(default, set):Null<Array<BitmapFilter>> = null;
-
-  override function set_clipRect(rect:FlxRect):FlxRect
-  {
-    if (!isAnimate) return super.set_clipRect(rect);
-
-    if (rect != null) clipRect = rect.round();
-    else
-      @:nullSafety(Off)
-      clipRect = null;
-
-    return rect;
-  }
 
   /**
    * Only used for mods that don't use the new asset system.
@@ -479,6 +474,370 @@ class FunkinSprite extends FlxAnimate
     __backwardsCompatibility = funkin.modding.compat.AnimateAtlas.needsBackwardsCompat(key);
 
     return this;
+  }
+
+  /**
+   * Load an animated atlas asynchronously, selecting its format from given argument.
+   *
+   * @param key Asset path relative to the images directory.
+   * @param renderType Atlas format: `animateatlas`, `sparrow`, or `packer`.
+   * @param settings Optional Adobe Animate atlas settings.
+   * @param modId Optional mod ID to load assets from.
+   */
+  public function loadAtlasAsync(key:String,
+    renderType:String = 'animateatlas',
+    settings:Null<AtlasSpriteSettings> = null,
+    modId:String = ''):lime.app.Future<FunkinSprite>
+  {
+    return switch (renderType.toLowerCase())
+    {
+      case 'animateatlas':
+        loadTextureAtlasAsync(key, settings, modId);
+      case 'sparrow':
+        loadSparrowAsync(key, modId);
+      case 'packer':
+        loadPackerAsync(key, modId);
+      default:
+        cast Future.withError('Unsupported atlas render type "$renderType" for "$key"');
+    }
+  }
+
+  public function loadTextureAtlasAsync(key:Null<String>,
+    settings:Null<AtlasSpriteSettings> = null,
+    modId:String = ''):lime.app.Future<FunkinSprite>
+  {
+    if (key == null)
+    {
+      return cast Future.withError('Null path specified for loadTextureAtlasAsync()!');
+    }
+
+    if (settings == null) settings = getDefaultAtlasSettings();
+
+    final loadToken:Int = ++asyncLoadToken;
+    final localSettings:AtlasSpriteSettings = settings;
+    final localKey:String = key;
+
+    return loadAnimateAtlasFramesAsync(localKey, localSettings, modId).then((loadedFrames:FlxAnimateFrames) ->
+    {
+      if (loadToken != asyncLoadToken) return Future.withValue(this);
+
+      this.applyStageMatrix = localSettings.applyStageMatrix ?? false;
+      this.postStageMatrixApply = localSettings.postStageMatrixApply ?? false;
+      this.useRenderTexture = localSettings.useRenderTexture ?? false;
+      this.frames = loadedFrames;
+      __backwardsCompatibility = funkin.modding.compat.AnimateAtlas.needsBackwardsCompat(localKey);
+
+      return Future.withValue(this);
+    });
+  }
+
+  public function loadSparrowAsync(key:String, modId:String = ''):lime.app.Future<FunkinSprite>
+  {
+    final loadToken:Int = ++asyncLoadToken;
+
+    if (modId == '')
+    {
+      return Assets.loadSparrowAtlas(Paths.image(key, false)).then((loadedFrames:FlxAtlasFrames) ->
+      {
+        if (loadToken == asyncLoadToken) this.frames = loadedFrames;
+        return Future.withValue(this);
+      });
+    }
+
+    var imagePath:String = Paths.image(key, false).toString();
+    var xmlPath:String = Paths.xml(key, false).toString();
+    var bitmapFuture = PolymodAssets.loadBitmapDataFromMod(imagePath, modId);
+    var xmlFuture = PolymodAssets.loadTextFromMod(xmlPath, modId);
+    var result:Promise<FunkinSprite> = new Promise();
+    var completed:Int = 0;
+    var failed:Bool = false;
+    var bitmap:Null<BitmapData> = null;
+    var xml:Null<String> = null;
+
+    function finish():Void
+    {
+      if (failed || completed < 2) return;
+      if (bitmap == null || xml == null)
+      {
+        failed = true;
+        result.error('Could not decode Sparrow atlas "$key" from mod "$modId"');
+        return;
+      }
+
+      try
+      {
+        var loadedFrames = FlxAtlasFrames.fromSparrow(bitmap, xml);
+        if (loadToken == asyncLoadToken) this.frames = loadedFrames;
+        result.complete(this);
+      }
+      catch (error:Dynamic)
+      {
+        failed = true;
+        result.error(error);
+      }
+    }
+
+    bitmapFuture.onComplete((value:BitmapData) ->
+    {
+      bitmap = value;
+      completed++;
+      finish();
+    }).onError((error:Dynamic) ->
+      {
+        if (!failed)
+        {
+          failed = true;
+          result.error(error);
+        }
+      });
+    xmlFuture.onComplete((value:String) ->
+    {
+      xml = value;
+      completed++;
+      finish();
+    }).onError((error:Dynamic) ->
+      {
+        if (!failed)
+        {
+          failed = true;
+          result.error(error);
+        }
+      });
+
+    return result.future;
+  }
+
+  public function loadPackerAsync(key:String, modId:String = ''):lime.app.Future<FunkinSprite>
+  {
+    final loadToken:Int = ++asyncLoadToken;
+
+    if (modId == '')
+    {
+      return Assets.loadPackerAtlas(Paths.image(key, false)).then((loadedFrames:FlxAtlasFrames) ->
+      {
+        if (loadToken == asyncLoadToken) this.frames = loadedFrames;
+        return Future.withValue(this);
+      });
+    }
+
+    var imagePath:String = Paths.image(key, false).toString();
+    var txtPath:String = Paths.txt(key, false).toString();
+    var bitmapFuture = PolymodAssets.loadBitmapDataFromMod(imagePath, modId);
+    var txtFuture = PolymodAssets.loadTextFromMod(txtPath, modId);
+    var result:Promise<FunkinSprite> = new Promise();
+    var completed:Int = 0;
+    var failed:Bool = false;
+    var bitmap:Null<BitmapData> = null;
+    var txt:Null<String> = null;
+
+    function finish():Void
+    {
+      if (failed || completed < 2) return;
+      if (bitmap == null || txt == null)
+      {
+        failed = true;
+        result.error('Could not decode Packer atlas "$key" from mod "$modId"');
+        return;
+      }
+
+      try
+      {
+        var loadedFrames = FlxAtlasFrames.fromSpriteSheetPacker(bitmap, txt);
+        if (loadToken == asyncLoadToken) this.frames = loadedFrames;
+        result.complete(this);
+      }
+      catch (error:Dynamic)
+      {
+        failed = true;
+        result.error(error);
+      }
+    }
+
+    bitmapFuture.onComplete((value:BitmapData) ->
+    {
+      bitmap = value;
+      completed++;
+      finish();
+    }).onError((error:Dynamic) ->
+      {
+        if (!failed)
+        {
+          failed = true;
+          result.error(error);
+        }
+      });
+    txtFuture.onComplete((value:String) ->
+    {
+      txt = value;
+      completed++;
+      finish();
+    }).onError((error:Dynamic) ->
+      {
+        if (!failed)
+        {
+          failed = true;
+          result.error(error);
+        }
+      });
+
+    return result.future;
+  }
+
+  private function loadAnimateAtlasFramesAsync(key:String, settings:AtlasSpriteSettings, modId:String):lime.app.Future<FlxAnimateFrames>
+  {
+    var result:Promise<FlxAnimateFrames> = new Promise();
+    var animationPath:String = Paths.json('$key/Animation', false).toString();
+
+    var loadAnimation:lime.app.Future<String>;
+    var mapPaths:Array<
+      {image:String, json:String}> = [];
+
+    if (modId != '')
+    {
+      var animationId:String = 'assets/$key/Animation.json';
+      if (!PolymodAssets.existsInMod(animationId, modId))
+      {
+        result.error('Could not find Animation.json in path "$key" from mod "$modId"');
+        return result.future;
+      }
+
+      loadAnimation = PolymodAssets.loadTextFromMod(animationId, modId);
+
+      var spritemapCount:Int = 1;
+      while (
+        PolymodAssets.existsInMod('assets/$key/spritemap$spritemapCount.png', modId)
+        && PolymodAssets.existsInMod('assets/$key/spritemap$spritemapCount.json', modId)
+      )
+      {
+        mapPaths.push({
+          image: 'assets/$key/spritemap$spritemapCount.png',
+          json: 'assets/$key/spritemap$spritemapCount.json'
+        });
+        spritemapCount++;
+      }
+    }
+    else
+    {
+      if (!Assets.exists(animationPath))
+      {
+        result.error('No Animation.json file exists at the specified path (${animationPath})');
+        return result.future;
+      }
+
+      loadAnimation = Assets.loadText(Paths.json('$key/Animation', false));
+
+      var spritemapCount:Int = 1;
+      while (
+        Assets.exists(Paths.image('$key/spritemap$spritemapCount', false).toString())
+        && Assets.exists(Paths.json('$key/spritemap$spritemapCount', false).toString())
+      )
+      {
+        mapPaths.push({
+          image: Paths.image('$key/spritemap$spritemapCount', false).toString(),
+          json: Paths.json('$key/spritemap$spritemapCount', false).toString()
+        });
+        spritemapCount++;
+      }
+    }
+
+    var pending:Int = 1 + mapPaths.length * 2;
+    var animationJson:Null<String> = null;
+    var spritemapResults:Array<Null<SpritemapInput>> = [];
+    var failed:Bool = false;
+    spritemapResults.resize(mapPaths.length);
+
+    function fail(error:Dynamic):Void
+    {
+      if (failed) return;
+      failed = true;
+      result.error(error);
+    }
+
+    function done():Void
+    {
+      pending--;
+      if (pending > 0 || failed) return;
+
+      if (animationJson == null)
+      {
+        fail('Animation.json decoded to null for "$key"');
+        return;
+      }
+
+      var spritemaps:Array<SpritemapInput> = [];
+      for (entry in spritemapResults)
+      {
+        if (entry != null) spritemaps.push(entry);
+      }
+
+      try
+      {
+        var frames = FlxAnimateFrames.fromAnimate(animationJson, spritemaps, settings.metadataJson, settings.cacheKey, settings.uniqueInCache, {
+          swfMode: settings.swfMode,
+          cacheOnLoad: settings.cacheOnLoad,
+          filterQuality: settings.filterQuality,
+          onSymbolCreate: settings.onSymbolCreate
+        });
+        result.complete(frames);
+      }
+      catch (error:Dynamic)
+      {
+        fail(error);
+      }
+    }
+
+    loadAnimation.onComplete((value:String) ->
+    {
+      animationJson = value;
+      done();
+    }).onError(fail);
+
+    for (index in 0...mapPaths.length)
+    {
+      var map = mapPaths[index];
+      var bitmapFuture:lime.app.Future<BitmapData>;
+      var jsonFuture:lime.app.Future<String>;
+
+      if (modId != '')
+      {
+        bitmapFuture = PolymodAssets.loadBitmapDataFromMod(map.image, modId);
+        jsonFuture = PolymodAssets.loadTextFromMod(map.json, modId);
+      }
+      else
+      {
+        bitmapFuture = Assets.loadBitmapData(Paths.image('$key/spritemap${index + 1}', false));
+        jsonFuture = Assets.loadText(Paths.json('$key/spritemap${index + 1}', false));
+      }
+
+      var bitmap:Null<BitmapData> = null;
+      var json:Null<String> = null;
+      bitmapFuture.onComplete((value:BitmapData) ->
+      {
+        bitmap = value;
+        if (bitmap != null && json != null)
+        {
+          spritemapResults[index] = {
+            source: bitmap,
+            json: json
+          };
+        }
+        done();
+      }).onError(fail);
+      jsonFuture.onComplete((value:String) ->
+      {
+        json = value;
+        if (bitmap != null && json != null)
+        {
+          spritemapResults[index] = {
+            source: bitmap,
+            json: json
+          };
+        }
+        done();
+      }).onError(fail);
+    }
+
+    return result.future;
   }
 
   /**
@@ -962,8 +1321,6 @@ class FunkinSprite extends FlxAnimate
     // Forcefully enable render texture when we have filters.
     if (filters != null && filters.length > 0) return true;
 
-    if (this.isAnimate && this.clipRect != null) return true;
-
     return super.checkRenderTexture();
   }
 
@@ -994,13 +1351,15 @@ class FunkinSprite extends FlxAnimate
 
   override public function draw():Void
   {
-    if (filters != null)
+    #if FEATURE_DEBUG_TRACY
+    // Hide profiler zones of inner functions, greatly reducing data used representing OpenFL/Flixel internals.
+    final functionZones:Bool = cpp.vm.tracy.TracyProfiler.setFunctionZones(false);
+    #end
+
+    for (filter in filters ?? [])
     {
-      for (filter in filters)
-      {
-        @:privateAccess
-        if (filter.__renderDirty) _renderTextureDirty = true;
-      }
+      @:privateAccess
+      if (filter.__renderDirty) _renderTextureDirty = true;
     }
 
     super.draw();
@@ -1016,95 +1375,73 @@ class FunkinSprite extends FlxAnimate
 
     if (willUseRenderTexture)
     {
-      var bounds:Array<Int> = [Math.ceil(frame.frame.width), Math.ceil(frame.frame.height)];
-      if (_renderTexture == null) _renderTexture = new FunkinRenderTexture(bounds[0], bounds[1], this);
-
-      if (_renderTextureDirty)
-      {
-        _renderTexture.init(bounds[0], bounds[1]);
-        _renderTexture.drawToCamera((camera, mat) ->
-        {
-          camera.drawPixels(frame, framePixels, mat, null, null, antialiasing, null);
-        });
-
-        _renderTexture.render();
-
-        filterRenderer.applyFilters();
-        _renderTextureDirty = false;
-      }
-
-      if (filtered)
-      {
-        matrix.translate(filterOffsets[0] * matrix.a + filterOffsets[1] * matrix.c, filterOffsets[1] * matrix.d + filterOffsets[0] * matrix.b);
-        camera.drawPixels(filterRenderer.graphic?.imageFrame.frame, null, matrix, colorTransform, blend, antialiasing, shader, blendTarget);
-      }
-      else
-      {
-        camera.drawPixels(_renderTexture.graphic.imageFrame.frame, framePixels, matrix, colorTransform, blend, antialiasing, shader, blendTarget);
-      }
+      var bounds:FlxRect = FlxRect.get(0, 0, frame.frame.width, frame.frame.height);
+      setupRenderTexture(camera, bounds, null, matrix);
+      drawRenderTexture(camera, matrix);
+      bounds.put();
     }
     else
     {
-      camera.drawPixels(frame, framePixels, matrix, colorTransform, blend, antialiasing, shader, blendTarget);
+      camera.drawPixels(frame, framePixels, matrix, colorTransform, blend, antialiasing, shader);
     }
   }
 
-  override function drawAnimate(camera:FlxCamera):Void
+  override function setupRenderTexture(camera:FlxCamera, bounds:FlxRect, ?command:AnimateDrawCommand, matrix:FlxMatrix):Void
   {
-    final willUseRenderTexture = checkRenderTexture();
-    final matrix = _matrix;
+    var dirty:Bool = _renderTextureDirty;
 
-    @:privateAccess
-    var bounds = timeline._bounds;
-
-    // Reuses the matrix built by the cull pass when possible.
-    prepareAnimateDrawMatrix(matrix, camera, bounds, willUseRenderTexture);
-
-    if (renderStage) drawStage(camera);
-
-    timeline.currentFrame = animation.frameIndex;
-
-    #if !flash
-    if (willUseRenderTexture)
+    // Small fix for buffer sprite whitelisting/blacklisting
+    if (_renderTexture == null)
     {
-      if (_renderTexture == null)
+      var graphicKey:String = this.graphic.key;
+
+      if (this.isAnimate)
       {
-        _renderTexture = new FunkinRenderTexture(Math.ceil(bounds.width), Math.ceil(bounds.height), this);
+        @:privateAccess
+        graphicKey = cast(this.library.parent, FlxAnimateSpritemapCollection).spritemaps[0].key;
       }
 
-      if (_renderTextureDirty)
-      {
-        _renderTexture.init(Math.ceil(bounds.width), Math.ceil(bounds.height));
-        _renderTexture.drawToCamera((camera, matrix) ->
-        {
-          matrix.translate(-bounds.x, -bounds.y);
-          timeline.draw(camera, matrix, null, null, antialiasing, null);
-        });
-        _renderTexture.render();
+      _renderTexture = new RenderTexture(Math.ceil(bounds.width), Math.ceil(bounds.height), graphicKey);
+      filterRenderer.graphicKey = graphicKey;
+    }
 
-        filterRenderer.applyFilters();
-        _renderTextureDirty = false;
-      }
+    super.setupRenderTexture(camera, bounds, command, matrix);
 
-      if (filtered)
-      {
-        matrix.translate(filterOffsets[0] * matrix.a + filterOffsets[1] * matrix.c, filterOffsets[1] * matrix.d + filterOffsets[0] * matrix.b);
-        camera.drawPixels(filterRenderer.graphic?.imageFrame.frame, null, matrix, colorTransform, blend, antialiasing, shader, blendTarget);
-      }
-      else
-      {
-        camera.drawPixels(_renderTexture.graphic.imageFrame.frame, framePixels, matrix, colorTransform, blend, antialiasing, shader, blendTarget);
-      }
+    if (dirty)
+    {
+      filterRenderer.applyFilters();
+    }
+  }
+
+  override function renderRTT(camera:FlxCamera, matrix:FlxMatrix, bounds:FlxRect, command:AnimateDrawCommand):Void
+  {
+    if (isAnimate)
+    {
+      matrix.translate(-bounds.x, -bounds.y);
+      timeline.draw(camera, matrix, command);
     }
     else
-    #end
     {
-      timeline.draw(camera, matrix, colorTransform, blend, antialiasing, shader);
+      camera.drawPixels(frame, framePixels, matrix, null, null, antialiasing, null);
     }
+  }
+
+  override function drawRenderTexture(camera:FlxCamera, matrix:FlxMatrix):Void
+  {
+    if (filtered)
+    {
+      matrix.translate(filterOffsets[0] * matrix.a + filterOffsets[1] * matrix.c, filterOffsets[1] * matrix.d + filterOffsets[0] * matrix.b);
+      camera.drawPixels(filterRenderer.graphic?.imageFrame.frame, null, matrix, colorTransform, blend, antialiasing, shader, blendTarget);
+      return;
+    }
+
+    super.drawRenderTexture(camera, matrix);
   }
 
   override public function destroy():Void
   {
+    asyncLoadToken++;
+
     // @:nullSafety(Off)
     // frames = null;
     // ^ Might be useful but its like a micro enhancement in terms of optimization. Keeping it regardless -Moon

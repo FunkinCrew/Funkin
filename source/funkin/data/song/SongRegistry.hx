@@ -13,6 +13,7 @@ import funkin.data.DefaultRegistryImpl;
 #if FEATURE_MULTITHREADING
 import hx.concurrent.collection.SynchronizedMap;
 #end
+import funkin.assets.Assets;
 
 using funkin.data.song.migrator.SongDataMigrator;
 
@@ -495,12 +496,13 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
   {
     variation ??= Constants.DEFAULT_VARIATION;
     var entryFilePath:String = Paths.musicMetadata('$id', variation == Constants.DEFAULT_VARIATION ? '' : '-$variation');
-    if (!openfl.Assets.exists(entryFilePath))
+    if (!Assets.exists(entryFilePath))
     {
       trace('  WARNING '.bold().bg_yellow() + ' Could not locate file $entryFilePath');
       return null;
     }
-    var rawJson:String = openfl.Assets.getText(entryFilePath);
+    @:privateAccess
+    var rawJson:String = Assets.getText(funkin.assets.Paths.raw(entryFilePath));
     if (rawJson == null) return null;
     rawJson = rawJson.trim();
     return {

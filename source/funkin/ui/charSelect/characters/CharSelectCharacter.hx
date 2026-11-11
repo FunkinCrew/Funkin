@@ -3,17 +3,25 @@ package funkin.ui.charSelect.characters;
 import flixel.FlxCamera;
 import flixel.graphics.frames.FlxFramesCollection;
 import flixel.math.FlxPoint;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import funkin.assets.Assets.AssetType;
+import funkin.assets.Paths.AssetPath;
 import funkin.data.animation.AnimationData;
-import funkin.data.freeplay.player.PlayerData;
-import funkin.graphics.FunkinCamera;
+import funkin.data.freeplay.player.PlayerData.PlayerCharSelectCharacterData;
+import funkin.data.freeplay.player.PlayerData.PlayerCharSelectData;
+import funkin.data.freeplay.player.PlayerData.PlayerCharSelectGFData;
+import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.graphics.FunkinSprite;
 import funkin.modding.IScriptedClass.IBPMSyncedScriptedClass;
 import funkin.modding.IScriptedClass.ICharacterSelectScriptedClass;
 import funkin.modding.events.ScriptEvent;
 import funkin.ui.charSelect.CharacterSelectState;
 import funkin.util.assets.FlxAnimationUtil;
-import funkin.vis.dsp.SpectralAnalyzer;
 
+/**
+ * The animations that a character can have in the Character Select screen.
+ */
 enum abstract CharacterAnimation(String) to String
 {
   public var IDLE = 'idle';
@@ -72,6 +80,21 @@ class CharSelectCharacter extends FunkinSprite implements IBPMSyncedScriptedClas
   var currentAnimationOffset:Array<Float> = [0, 0];
 
   /**
+   * The tween for transitioning the character in/out.
+   */
+  var transitionTween:Null<FlxTween> = null;
+
+  /**
+   * Additional offset for the character when transitioning in/out.
+   */
+  var _transitionOffsets:FlxPoint = FlxPoint.get(0, 0);
+
+  /**
+   * Alpha offset for the character when transitioning in/out.
+   */
+  var _transitionAlpha:Float = 1;
+
+  /**
    * Alias for `currentPath`.
    * Only here for backwards compatibility with mods.
    */
@@ -89,10 +112,7 @@ class CharSelectCharacter extends FunkinSprite implements IBPMSyncedScriptedClas
 
     this.playerId = playerId;
     this.characterType = characterType;
-
     this.playerData = data;
-
-    this.enableVisualizer = visualizer;
     this.globalOffsets = data?.offsets ?? [0, 0];
 
     loadGraphics();
@@ -101,6 +121,134 @@ class CharSelectCharacter extends FunkinSprite implements IBPMSyncedScriptedClas
     playAnimation(IDLE, true);
 
     animation.onFinish.add(onAnimationFinish);
+  }
+
+  /**
+   * Resolve the data used to create a given character on the Character Select screen.
+   * so we can always agree on which asset path, render type and animations a character ends up with.
+   *
+   * @param playerId The ID of the playable character. Ignored for LOCKED_PLAYER.
+   * @param characterType Which character to resolve.
+   * @return data for the character, or null if the playable character doesn't have any (like no GF).
+   */
+  public static function getCharacterData(playerId:String,
+    characterType:CharacterSelectType):Null<PlayerCharSelectCharacterData>
+  {
+    if (characterType == LOCKED_PLAYER)
+    {
+      return {
+        assetPath: 'ui/character-select/characters/locked',
+        animations: PlayerCharSelectData.getDefaultAnimations(LOCKED_PLAYER),
+        atlasSettings: {
+          cacheOnLoad: true,
+          filterQuality: 2, // LOW
+        }
+      };
+    }
+
+    var playerCSData:Null<PlayerCharSelectData> = PlayerRegistry.instance.fetchEntry(playerId)?.getCharSelectData();
+    if (playerCSData == null) return null;
+
+    if (characterType == GF)
+    {
+      var girlfriendCSData:Null<PlayerCharSelectGFData> = playerCSData.gf;
+      if (girlfriendCSData == null) return null;
+
+      return {
+        assetPath: girlfriendCSData.characterData?.assetPath ?? girlfriendCSData.assetPath,
+        renderType: girlfriendCSData.characterData?.renderType ?? 'animateatlas',
+        scriptClass: girlfriendCSData.characterData?.scriptClass,
+        animations: girlfriendCSData.characterData?.animations,
+        atlasSettings: girlfriendCSData.characterData?.atlasSettings,
+        danceEvery: girlfriendCSData.characterData?.danceEvery,
+        offsets: girlfriendCSData.characterData?.offsets ?? [0, 0]
+      };
+    }
+
+    var playerParams:PlayerCharSelectCharacterData = {
+      assetPath: (playerCSData.characterData?.assetPath ?? playerCSData.assetPath) ?? 'ui/character-select/characters/${playerId}',
+      renderType: playerCSData.characterData?.renderType ?? 'animateatlas',
+      scriptClass: playerCSData.characterData?.scriptClass,
+      animations: playerCSData.characterData?.animations,
+      atlasSettings: playerCSData.characterData?.atlasSettings,
+      danceEvery: playerCSData.characterData?.danceEvery,
+      offsets: playerCSData.characterData?.offsets ?? [0, 0]
+    };
+
+    // Additional check for if the asset path is blank... somehow.
+    if (playerParams.assetPath.isBlank())
+    {
+      playerParams.assetPath = 'ui/character-select/characters/${playerId}';
+    }
+
+    return playerParams;
+  }
+
+  /**
+   * Return a list of all AssetPaths that a Character Select character depends on to load.
+   *
+   * @param type The type of AssetPath to return a list of paths for.
+   * @param playerId The ID of the playable character.
+   * @param characterType Which character to query.
+   * @return The assets that the loading screen should cache.
+   */
+  public static function queryAssets(type:AssetType,
+    playerId:String,
+    characterType:CharacterSelectType):Array<AssetPath>
+  {
+    var results:Array<AssetPath> = [];
+
+    var data:Null<PlayerCharSelectCharacterData> = getCharacterData(playerId, characterType);
+    var assetPath:Null<String> = data?.assetPath;
+    if (data == null || assetPath == null || assetPath.isBlank()) return results;
+
+    var startPath:String = 'gameplay/playable-characters/$playerId';
+
+    var renderType:String = data.renderType ?? 'animateatlas';
+    switch (renderType)
+    {
+      case 'animateatlas':
+        var atlasPath:String = funkin.assets.Paths.formatRelative(assetPath, startPath);
+        switch (type)
+        {
+          case IMAGE:
+            results.append(funkin.assets.Paths.animateAtlas(atlasPath).image());
+          case JSON:
+            results.append(funkin.assets.Paths.animateAtlas(atlasPath).json());
+          default:
+            // No assets.
+        }
+
+      case 'sparrow', 'packer', 'multisparrow':
+        var allAssetPaths:Array<String> = [assetPath];
+        if (renderType == 'multisparrow')
+        {
+          for (animation in (data.animations ?? []))
+          {
+            if (animation.assetPath != null && !allAssetPaths.contains(animation.assetPath)) allAssetPaths.push(animation.assetPath);
+          }
+        }
+
+        for (path in allAssetPaths)
+        {
+          var imagePath:String = haxe.io.Path.withoutExtension(funkin.assets.Paths.formatRelative(path, startPath, Constants.EXT_IMAGE));
+          switch (type)
+          {
+            case IMAGE:
+              results.push(funkin.assets.Paths.image(imagePath));
+            case XML if (renderType != 'packer'):
+              results.push(funkin.assets.Paths.xml(imagePath));
+            case TEXT if (renderType == 'packer'):
+              results.push(funkin.assets.Paths.txt(imagePath));
+            default:
+              // No assets.
+          }
+        }
+
+      default:
+    }
+
+    return results;
   }
 
   /**
@@ -132,6 +280,99 @@ class CharSelectCharacter extends FunkinSprite implements IBPMSyncedScriptedClas
   }
 
   /**
+   * Transitions in this character.
+   */
+  public function transitionIn():Void
+  {
+    if (characterType != CharacterSelectType.GF) return;
+    if (transitionTween != null)
+    {
+      transitionTween.cancel();
+      transitionTween = null;
+    }
+
+    this._transitionAlpha = 0;
+    this._transitionOffsets.set(-this.width, 0);
+
+    this.revive();
+    this.playAnimation(IDLE);
+
+    transitionTween = FlxTween.tween(this, {
+      _transitionAlpha: 1,
+      '_transitionOffsets.x': 0
+    }, 0.28, {
+      ease: FlxEase.cubeOut,
+      // 48 instead of 24 to reduce choppiness
+      framerate: 48,
+      onComplete: (twn:FlxTween) ->
+      {
+        if (transitionTween != null)
+        {
+          transitionTween.cancel();
+          transitionTween = null;
+        }
+      }
+    });
+  }
+
+  /**
+   * Transitions out this character.
+   * @param setVisible Whether to set visible instead of calling `kill()`.
+   */
+  public function transitionOut(setVisible:Bool = false):Void
+  {
+    if (characterType != CharacterSelectType.GF) return;
+
+    this._transitionAlpha = 1;
+    this._transitionOffsets.set(0, 0);
+
+    this.playAnimation(IDLE);
+
+    if (transitionTween != null)
+    {
+      transitionTween.cancel();
+      transitionTween = null;
+
+      if (setVisible)
+      {
+        this.localVisible = false;
+      }
+      else
+      {
+        this.kill();
+      }
+
+      return;
+    }
+
+    transitionTween = FlxTween.tween(this, {
+      _transitionAlpha: 0,
+      '_transitionOffsets.y': -this.height
+    }, 0.30, {
+      ease: FlxEase.cubeOut,
+      // 48 instead of 24 to reduce choppiness
+      framerate: 48,
+      onComplete: (twn:FlxTween) ->
+      {
+        if (setVisible)
+        {
+          this.localVisible = false;
+        }
+        else
+        {
+          this.kill();
+        }
+
+        if (transitionTween != null)
+        {
+          transitionTween.cancel();
+          transitionTween = null;
+        }
+      }
+    });
+  }
+
+  /**
    * Get the configuration for the texture atlas.
    *
    * @return The configuration for the texture atlas.
@@ -143,7 +384,7 @@ class CharSelectCharacter extends FunkinSprite implements IBPMSyncedScriptedClas
       cacheOnLoad: playerData?.atlasSettings?.cacheOnLoad ?? false,
       filterQuality: cast playerData?.atlasSettings?.filterQuality ?? animate.FlxAnimateFrames.FilterQuality.MEDIUM,
       applyStageMatrix: playerData?.atlasSettings?.applyStageMatrix ?? true,
-      useRenderTexture: playerData?.atlasSettings?.useRenderTexture ?? false
+      useRenderTexture: playerData?.atlasSettings?.useRenderTexture ?? true
     }
   }
 
@@ -172,13 +413,16 @@ class CharSelectCharacter extends FunkinSprite implements IBPMSyncedScriptedClas
     switch (playerData?.renderType ?? 'animateatlas')
     {
       case 'animateatlas':
-        this.loadTextureAtlas(allAssetPaths[0], getAtlasSettings());
+        var atlasPath:String = funkin.assets.Paths.formatRelative(allAssetPaths[0], 'gameplay/playable-characters/$playerId');
+        this.loadTextureAtlas(atlasPath, getAtlasSettings());
 
       case 'sparrow':
-        this.loadSparrow(allAssetPaths[0]);
+        var sparrowPath:String = funkin.assets.Paths.formatRelative(allAssetPaths[0], 'gameplay/playable-characters/$playerId', Constants.EXT_IMAGE);
+        this.loadSparrow(sparrowPath);
 
       case 'packer':
-        this.loadPacker(allAssetPaths[0]);
+        var packerPath:String = funkin.assets.Paths.formatRelative(allAssetPaths[0], 'gameplay/playable-characters/$playerId', Constants.EXT_IMAGE);
+        this.loadPacker(packerPath);
 
       case 'multisparrow':
         // For the multisparrow render type, we create a new frame collection instance and add all the frames from the asset path array.
@@ -188,7 +432,8 @@ class CharSelectCharacter extends FunkinSprite implements IBPMSyncedScriptedClas
 
         for (assetPath in allAssetPaths)
         {
-          var assetFrames:FlxFramesCollection = Paths.getSparrowAtlas(assetPath);
+          var sparrowPath:String = funkin.assets.Paths.formatRelative(assetPath, 'gameplay/playable-characters/$playerId', Constants.EXT_IMAGE);
+          var assetFrames:FlxFramesCollection = Paths.getSparrowAtlas(sparrowPath);
           for (frame in assetFrames.frames) framesCollection.pushFrame(frame.copyTo());
         }
 
@@ -227,6 +472,10 @@ class CharSelectCharacter extends FunkinSprite implements IBPMSyncedScriptedClas
 
     // Small offset for mobile!
     output.x += CharacterSelectState.CUTOUT_SIZE;
+
+    // For transitioning!
+    output.x += _transitionOffsets.x;
+    output.y += _transitionOffsets.y;
 
     return output;
   }
@@ -283,22 +532,6 @@ class CharSelectCharacter extends FunkinSprite implements IBPMSyncedScriptedClas
 
   public function onCreate(event:ScriptEvent):Void
   {
-    if (enableVisualizer && !initializedVisualizer && FlxG.sound.music != null)
-    {
-      @:privateAccess
-      analyzer = new SpectralAnalyzer(FlxG.sound.music._channel.__audioSource, 7, 0.1);
-      #if sys
-      // On native it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
-      // So we want to manually change it!
-      @:privateAccess
-      // I don't know WHAT null-safety is complaining about here
-      // - Abnormal
-      @:nullSafety(Off)
-      analyzer.fftN = 512;
-      #end
-
-      initializedVisualizer = true;
-    }
   }
 
   public function onDestroy(event:ScriptEvent):Void
@@ -321,51 +554,22 @@ class CharSelectCharacter extends FunkinSprite implements IBPMSyncedScriptedClas
   {
   }
 
-  /**
-   * DEPRECATED VISUALIZER CODE: WILL BE REMOVED IN A FUTURE UPDATE
-   * ONLY HERE FOR BACKWARDS COMPATIBILITY
-   */
-  var analyzer:Null<SpectralAnalyzer>;
+  override public function destroy():Void
+  {
+    if (transitionTween != null) transitionTween.cancel();
 
-  var analyzerLevelsCache:Array<Bar> = new Array<Bar>();
-  var initializedVisualizer:Bool = false;
-  var enableVisualizer:Bool = false;
+    _transitionOffsets.put();
+
+    super.destroy();
+  }
 
   override public function draw():Void
   {
-    // Skip drawing if the asset path is blank
-    // Prevents the HaxeFlixel logo from showing up at the top left
     if (currentPath.isBlank()) return;
 
-    if (analyzer != null) drawFFT();
+    this.alpha *= _transitionAlpha;
 
     super.draw();
-  }
-
-  function drawFFT():Void
-  {
-    if (analyzer != null)
-    {
-      analyzerLevelsCache = analyzer.getLevels(analyzerLevelsCache);
-      var frame:Null<animate.internal.Frame> = this.timeline.getLayer('VIZ_bars')?.getFrameAtIndex(animation.curAnim.curFrame) ?? null;
-      var elements:Array<animate.internal.elements.Element> = frame?.elements ?? [];
-      var len:Int = cast Math.min(elements.length, 7);
-
-      for (i in 0...len)
-      {
-        var animFrame:Int = (FlxG.sound.volume == 0 || FlxG.sound.muted) ? 0 : Math.round(analyzerLevelsCache[i].value * 12);
-
-        animFrame = Math.floor(Math.min(12, animFrame));
-        animFrame = Math.floor(Math.max(0, animFrame));
-
-        animFrame = Std.int(Math.abs(animFrame - 12));
-
-        var convertedSymbol = elements[i].toSymbolInstance();
-        convertedSymbol.firstFrame = animFrame;
-
-        elements[i] = convertedSymbol;
-      }
-    }
   }
 }
 

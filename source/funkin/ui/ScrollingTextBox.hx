@@ -67,6 +67,7 @@ class ScrollingTextBox extends FunkinSpriteGroup
 
   var fontPath:String;
   var fontSize:Int;
+
   public var textColor(default, set):FlxColor = FlxColor.WHITE;
 
   function set_textColor(value:FlxColor):FlxColor
@@ -98,7 +99,11 @@ class ScrollingTextBox extends FunkinSpriteGroup
    */
   var holdTimer:Float = 0;
 
-  public function new(boxWidth:Float, boxHeight:Float, fontPath:String, fontSize:Int, textColor:FlxColor = FlxColor.WHITE)
+  public function new(boxWidth:Float,
+    boxHeight:Float,
+    fontPath:String,
+    fontSize:Int,
+    textColor:FlxColor = FlxColor.WHITE)
   {
     super();
 
@@ -133,11 +138,11 @@ class ScrollingTextBox extends FunkinSpriteGroup
 
     line = makeLine();
     lineClip = FlxRect.get(0, 0, boxWidth, boxHeight);
-    setChildClipRect(line, lineClip);
+    line.clipRect = lineClip;
 
     lineRepeat = makeLine();
     repeatClip = FlxRect.get(0, 0, boxWidth, boxHeight);
-    setChildClipRect(lineRepeat, repeatClip);
+    lineRepeat.clipRect = repeatClip;
 
     resetScroll();
     layoutLine();
@@ -161,7 +166,7 @@ class ScrollingTextBox extends FunkinSpriteGroup
   {
     if (line != null)
     {
-      setChildClipRect(line, null);
+      line.clipRect = null;
       remove(line);
       line.destroy();
       line = null;
@@ -169,7 +174,7 @@ class ScrollingTextBox extends FunkinSpriteGroup
 
     if (lineRepeat != null)
     {
-      setChildClipRect(lineRepeat, null);
+      lineRepeat.clipRect = null;
       remove(lineRepeat);
       lineRepeat.destroy();
       lineRepeat = null;

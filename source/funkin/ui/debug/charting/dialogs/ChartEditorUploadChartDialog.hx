@@ -5,7 +5,6 @@ import funkin.input.Cursor;
 import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog.DialogDropTarget;
 import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog.DialogParams;
 import funkin.util.FileUtil;
-import haxe.io.Path;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialog.DialogEvent;
 
@@ -103,22 +102,33 @@ class ChartEditorUploadChartDialog extends ChartEditorBaseDialog
   /**
    * Called when a file is selected by dropping a file onto the Upload Chart box.
    */
-  function onDropFileChartBox(pathStr:String):Void
+  function onDropFileChartBox(file:lime.utils.DroppedFile):Void
   {
-    var path:Path = new Path(pathStr);
-    trace('Dropped file (${path})');
+    trace('Dropped file (${file.path})');
 
-    try
+    file.readFile().onComplete(function(bytes:haxe.io.Bytes)
     {
-      ChartEditorImportExportHandler.loadSongFromFNFCPath(chartEditorState, path.toString());
-      // If we failed, it'd throw.
-      this.hideDialog(DialogButton.APPLY);
-    }
-    catch (e)
+      if (bytes == null)
+      {
+        chartEditorState.failure('Failed to Load Chart', 'Could not read dropped chart (${file.path})');
+        return;
+      }
+
+      try
+      {
+        ChartEditorImportExportHandler.loadSongFromFNFCBytes(chartEditorState, bytes, file.path);
+        // If we failed, it'd throw.
+        this.hideDialog(DialogButton.APPLY);
+      }
+      catch (e)
+      {
+        chartEditorState.failure('Failed to Load Chart', 'Failed to load chart (${file.path}):\n$e');
+        // Leave the popup open.
+      }
+    }).onError(function(error:Dynamic)
     {
-      chartEditorState.failure('Failed to Load Chart', 'Failed to load chart (${path.toString()}):\n$e');
-      // Leave the popup open.
-    }
+        chartEditorState.failure('Failed to Load Chart', 'Failed to read chart (${file.path}):\n$error');
+    });
   }
 
   /**

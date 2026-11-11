@@ -578,6 +578,7 @@ class SongChartData implements ICloneable<SongChartData> implements ISerializabl
   public var scrollSpeed:Map<String, Float>;
   public var events:Array<SongEventData>;
   @:order(funkin.util.Constants.DEFAULT_DIFFICULTY_LIST_FULL)
+  @:jcustomparse(funkin.data.DataParse.songNotesMap)
   public var notes:Map<String, Array<SongNoteData>>;
 
   /**
@@ -670,13 +671,17 @@ class SongChartData implements ICloneable<SongChartData> implements ISerializabl
   {
     // Update generatedBy and version before writing.
     updateVersionToLatest();
-    removeEmptyDifficulties();
+
+    // Clone the object to make potentially breaking edits before serializing,
+    // such as removing invalid data.
+    var sanitizedOutput = this.clone();
+    sanitizedOutput.removeEmptyDifficulties();
 
     var writer = new json2object.JsonWriter<SongChartData>(params ?? {
       ignoreNullOptionals: true,
       ignoreDefaults: true
     });
-    return writer.write(this, pretty ? ' ' : null);
+    return writer.write(sanitizedOutput, pretty ? ' ' : null);
   }
 
   public function updateVersionToLatest():Void
@@ -705,6 +710,41 @@ class SongChartData implements ICloneable<SongChartData> implements ISerializabl
   }
 
   /**
+   * Scan the chart for invalid song events (based on their positioning, data, or other events near them).
+   *
+   * @param difficulty The difficulty to scan. `null` to scan all difficulties.
+   * @return The list of errors for the first invalid event found.
+   */
+  public function validateChartEvents(?difficulty:String):Array<String>
+  {
+    for (event in this.events)
+    {
+      if (event == null) continue;
+
+      var errors:Array<String> = validateChartEvent(event, difficulty);
+      if (errors.length > 0) return errors;
+    }
+
+    return [];
+  }
+
+  /**
+   * Validate one song events (based on its positioning, data, or other events near them).
+   *
+   * @param event The event to scan.
+   * @param difficulty The difficulty to scan. `null` to scan all difficulties.
+   * @return A list of errors with that event, or `[]` if no errors exist.
+   */
+  public function validateChartEvent(event:SongEventData, ?difficulty:String):Array<String>
+  {
+    var eventHandler:Null<SongEvent> = event.getHandler();
+    if (eventHandler == null) return [];
+
+    var errors:Array<String> = eventHandler.validate(event, this, difficulty);
+    return errors;
+  }
+
+  /**
    * Produces a string representation suitable for debugging.
    */
   public function toString():String
@@ -726,10 +766,18 @@ class SongChartEditorData implements ICloneable<SongChartEditorData>
 
   public var comments:Array<CommentData>;
 
+  @:optional
+  @:default([])
+  public var subBeats:Array<Float>;
+  @:optional
+  public var subBeatSnaps:Null<Map<String, Int>>;
+
   public function new()
   {
     this.eventLayers = [];
     this.comments = [];
+    this.subBeats = [];
+    this.subBeatSnaps = new Map<String, Int>();
   }
 
   /**
@@ -742,6 +790,9 @@ class SongChartEditorData implements ICloneable<SongChartEditorData>
 
     result.eventLayers = this.eventLayers.clone();
     result.comments = this.comments.clone();
+    result.subBeats = (this.subBeats ?? []).copy();
+    var snaps:Null<Map<String, Int>> = this.subBeatSnaps;
+    result.subBeatSnaps = (snaps != null) ? snaps.copy() : new Map<String, Int>();
 
     return result;
   }
@@ -882,6 +933,8 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
 
   @:jignored
   var _activationTime:Null<Float> = null;
+  @:jignored
+  var _validationErrors:Null<Array<String>> = null;
 
   /**
    * Get the timestamp at which `handleEvent()` should be called for this event.
@@ -1063,7 +1116,7 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
    * @param key The name of the field to retrieve.
    * @return The field value, or `null` if not provided.
    */
-  public function getStringArray(key:String):Array<Float>
+  public function getStringArray(key:String):Array<String>
   {
     var result:Dynamic = getDynamic(key);
     if (result == null) return null;
@@ -1083,6 +1136,15 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
   }
 
   /**
+   * Round a number to 3 decimals for showing.
+   */
+  static function tidyTooltipNumber(value:Dynamic):Dynamic
+  {
+    if (!Std.isOfType(value, Float) || Std.isOfType(value, Int)) return value;
+    return Math.round((value : Float) * 1000) / 1000;
+  }
+
+  /**
    * Build the tooltip string for this particular instance of the song event.
    * @return A tooltip string, containing readable values for the event's data.
    */
@@ -1099,7 +1161,7 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
 
     for (fieldName in eventSchema.listAllFieldNames())
     {
-      var fieldValue:Dynamic = valueStruct.exists(fieldName) ? valueStruct.get(fieldName) : eventSchema.getDefaultFieldValue(fieldName);
+      var fieldValue:Dynamic = tidyTooltipNumber(valueStruct.exists(fieldName) ? valueStruct.get(fieldName) : eventSchema.getDefaultFieldValue(fieldName));
 
       var title:String = eventSchema.getByName(fieldName)?.title ?? 'UnknownField';
       var valueStr:String = eventSchema.stringifyFieldValue(fieldName, fieldValue) ?? 'UnknownValue';
@@ -1110,7 +1172,7 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
     for (pair in valueStruct.keyValueIterator())
     {
       var fieldName:String = pair.key;
-      var fieldValue:Dynamic = pair.value;
+      var fieldValue:Dynamic = tidyTooltipNumber(pair.value);
 
       // Already populated above.
       if (eventSchema.hasField(fieldName)) continue;
@@ -1119,6 +1181,16 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
       var valueStr:String = eventSchema.stringifyFieldValue(fieldName, fieldValue) ?? 'Unknown Value ($fieldValue)';
 
       result += '\n- ${title}: ${valueStr}';
+    }
+
+    // `_validationErrors` holds results of `validateChartEvent(event)` cached by the editor.
+    if (_validationErrors != null && _validationErrors.length > 0)
+    {
+      result += '\n\nERRORS:';
+      for (error in _validationErrors)
+      {
+        result += '\n- ${error}';
+      }
     }
 
     return result;
@@ -1153,6 +1225,24 @@ abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataR
   }
 
   /**
+   * @return A list of cached validation errors for this event.
+   */
+  public function getValidationErrors():Array<String>
+  {
+    @:privateAccess
+    return this._validationErrors ?? [];
+  }
+
+  /**
+   * @param errors A list of validation errors to cache in this event.
+   */
+  function cacheValidationErrors(errors:Array<String>):Void
+  {
+    @:privateAccess // @:allow doesn't work on abstracts I guess.
+    this._validationErrors = errors;
+  }
+
+  /**
    * Check whether this event is equal to another event.
    * Ex. `event1 == event2`
    *
@@ -1162,6 +1252,7 @@ abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataR
   @:op(A == B)
   public function op_equals(other:SongEventData):Bool
   {
+    if (this == null) return other == null;
     if (other == null) return false;
     return this.time == other.time && this.eventKind == other.eventKind && this.value == other.value;
   }
@@ -1176,6 +1267,8 @@ abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataR
   @:op(A != B)
   public function op_notEquals(other:SongEventData):Bool
   {
+    if (this == null) return other != null;
+    if (other == null) return true;
     return this.time != other.time || this.eventKind != other.eventKind || this.value != other.value;
   }
 

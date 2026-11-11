@@ -1,6 +1,7 @@
 package funkin.ui.debug.cameraeditor.components;
 
 #if FEATURE_CAMERA_EDITOR
+import funkin.play.event.SongEvent;
 import funkin.play.event.ZoomCameraSongEvent;
 import funkin.ui.haxeui.components.editors.camera.EaseGraphPreview;
 import haxe.ui.events.UIEvent;
@@ -14,16 +15,16 @@ class ZoomCameraContainer extends BaseEventContainer
   public function new(state:CameraEditorState)
   {
     super(state);
-    zoomCameraEaseFrame.easeGraphPreview.event = cameraEditorState.selectedSongEvent;
+    zoomCameraEaseFrame.easeGraphPreview.event = primaryEvent;
 
     bindFloatField(zoomCameraDuration, 'duration');
     bindFloatField(zoomCameraWidescreenScaleX, 'widescreenScaleX');
     bindFloatField(zoomCameraWidescreenScaleY, 'widescreenScaleY');
+    bindFormula(zoomCameraZoomLevel, 'zoom');
 
     zoomCameraEaseFrame.easeGraphPreview.registerEvent(UIEvent.CHANGE, function(_:UIEvent):Void
     {
-      updateCameraPreview();
-      updateBlockVisuals();
+      onEasePreviewChange();
     });
   }
 
@@ -37,26 +38,33 @@ class ZoomCameraContainer extends BaseEventContainer
    */
   public function loadCurrentEventData():Void
   {
-    if (cameraEditorState.selectedSongEvent == null) return;
+    if (primaryEvent == null) return;
 
-    var modeType:String = cameraEditorState.selectedSongEvent.getString('mode') ?? ZoomCameraSongEvent.DEFAULT_MODE;
+    markShared(zoomCameraMode, allMatch('mode', ZoomCameraSongEvent.DEFAULT_MODE));
+    var modeType:String = primaryEvent.getString('mode') ?? ZoomCameraSongEvent.DEFAULT_MODE;
     if (modeType == 'stage')
     {
-      zoomCameraMode.selectedIndex = 0;
+      quietly(zoomCameraMode, () -> zoomCameraMode.selectedIndex = 0);
     }
     else if (modeType == 'direct')
     {
-      zoomCameraMode.selectedIndex = 1;
+      quietly(zoomCameraMode, () -> zoomCameraMode.selectedIndex = 1);
     }
+    rememberChoice(zoomCameraMode, modeType);
 
-    zoomCameraZoomLevel.value = cameraEditorState.selectedSongEvent.getFloat('zoom') ?? ZoomCameraSongEvent.DEFAULT_ZOOM;
-    zoomCameraZoomLevelSlider.value = zoomCameraZoomLevel.value;
+    var zoomShared:Bool = allMatch('zoom', ZoomCameraSongEvent.DEFAULT_ZOOM);
+    markShared(zoomCameraZoomLevel, zoomShared);
+    markShared(zoomCameraZoomLevelSlider, zoomShared);
+    loadNumber(zoomCameraZoomLevel, primaryEvent.getFloat('zoom') ?? ZoomCameraSongEvent.DEFAULT_ZOOM);
+    loadNumber(zoomCameraZoomLevelSlider, zoomCameraZoomLevel.value);
 
     loadFloatField(zoomCameraDuration, 'duration', ZoomCameraSongEvent.DEFAULT_DURATION);
     loadFloatField(zoomCameraWidescreenScaleX, 'widescreenScaleX', ZoomCameraSongEvent.DEFAULT_WIDESCREEN_SCALE);
     loadFloatField(zoomCameraWidescreenScaleY, 'widescreenScaleY', ZoomCameraSongEvent.DEFAULT_WIDESCREEN_SCALE);
 
-    zoomCameraEaseFrame.easeGraphPreview.event = cameraEditorState.selectedSongEvent;
+    markShared(zoomCameraEaseFrame, allMatch('ease', SongEvent.DEFAULT_EASE) && allMatch('easeDir', SongEvent.DEFAULT_EASE_DIR));
+    zoomCameraEaseFrame.easeGraphPreview.event = primaryEvent;
+    rememberEase();
     updateCameraPreview();
     updateBlockVisuals();
   }
@@ -67,6 +75,8 @@ class ZoomCameraContainer extends BaseEventContainer
   @:bind(zoomCameraZoomLevel, UIEvent.CHANGE)
   function onChange_zoomCameraZoomLevel(_):Void
   {
+    if (primaryEvent == null || zoomCameraZoomLevel.disabled) return;
+    if (!isUserNumberChange(zoomCameraZoomLevel, zoomCameraZoomLevel.value)) return;
     var value:Float = zoomCameraZoomLevel.value;
 
     if (zoomCameraZoomLevelSlider != null && zoomCameraZoomLevel.value != zoomCameraZoomLevelSlider.value)
@@ -74,7 +84,7 @@ class ZoomCameraContainer extends BaseEventContainer
       zoomCameraZoomLevelSlider.value = zoomCameraZoomLevel.value;
     }
 
-    cameraEditorState.selectedSongEvent.set('zoom', value);
+    setOnAll('zoom', value);
     updateCameraPreview();
   }
 
@@ -84,6 +94,8 @@ class ZoomCameraContainer extends BaseEventContainer
   @:bind(zoomCameraZoomLevelSlider, UIEvent.CHANGE)
   function onChange_zoomCameraZoomLevelSlider(_):Void
   {
+    if (primaryEvent == null || zoomCameraZoomLevelSlider.disabled) return;
+    if (!isUserNumberChange(zoomCameraZoomLevelSlider, zoomCameraZoomLevelSlider.value)) return;
     var value:Float = zoomCameraZoomLevelSlider.value;
 
     if (zoomCameraZoomLevel != null && zoomCameraZoomLevel.value != zoomCameraZoomLevelSlider.value)
@@ -91,7 +103,7 @@ class ZoomCameraContainer extends BaseEventContainer
       zoomCameraZoomLevel.value = zoomCameraZoomLevelSlider.value;
     }
 
-    cameraEditorState.selectedSongEvent.set('zoom', value);
+    setOnAll('zoom', value);
     updateCameraPreview();
   }
 
@@ -101,17 +113,16 @@ class ZoomCameraContainer extends BaseEventContainer
   @:bind(zoomCameraMode, UIEvent.CHANGE)
   function onChange_zoomCameraMode(_):Void
   {
-    if (zoomCameraMode.selectedItem == null)
-    {
-      cameraEditorState.selectedSongEvent.set('mode', ZoomCameraSongEvent.DEFAULT_MODE);
-      return;
-    }
+    if (primaryEvent == null || zoomCameraMode.disabled) return;
+    // Nothing picked means the field is showing the placeholder, which is not a value.
+    if (zoomCameraMode.selectedItem == null) return;
 
     var index:Int = zoomCameraMode.selectedIndex;
     var value:String = 'stage';
     if (index == 1) value = 'direct';
+    if (!isUserChoiceChange(zoomCameraMode, value)) return;
 
-    cameraEditorState.selectedSongEvent.set('mode', value);
+    setOnAll('mode', value);
     updateCameraPreview();
   }
 }

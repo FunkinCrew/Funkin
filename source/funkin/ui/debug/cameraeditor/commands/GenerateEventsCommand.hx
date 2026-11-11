@@ -3,7 +3,6 @@ package funkin.ui.debug.cameraeditor.commands;
 #if FEATURE_CAMERA_EDITOR
 import funkin.data.song.SongData.SongEventData;
 import funkin.ui.haxeui.components.editors.timeline.TimelineLayerData;
-import funkin.audio.FunkinSound;
 import funkin.util.SortUtil;
 import flixel.util.FlxSort;
 
@@ -55,7 +54,7 @@ class GenerateEventsCommand implements CameraEditorCommand
 
     state.currentSongChartData.events.sort(SortUtil.eventDataByTime.bind(FlxSort.ASCENDING));
 
-    FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/note-place'));
+    state.playEditSound('ui/editors/chart-editor/charting-sounds/note-place');
 
     for (event in events) viewport.addEventBlock(event);
     viewport.refreshLayout();
@@ -92,7 +91,7 @@ class GenerateEventsCommand implements CameraEditorCommand
       addedLayer = null;
     }
 
-    FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/undo'));
+    state.playEditSound('ui/editors/chart-editor/charting-sounds/undo');
 
     viewport.refreshLayout();
 

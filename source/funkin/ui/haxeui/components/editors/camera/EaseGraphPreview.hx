@@ -21,10 +21,10 @@ import openfl.display.BitmapData;
 @:xml('
 <hbox width="100%" height="100%">
   <vbox width="100%" height="100%">
-    <dropdown id="easeDropdown" text="Ease" width="140">
+    <dropdown id="easeDropdown" text="Ease" width="100">
       <data>
         <item id="linear" text="Linear" />
-        <item id="INSTANT" text="Instant (Ignores duration)" />
+        <item id="INSTANT" text="Instant" />
         <item id="sine" text="Sine" />
         <item id="quad" text="Quad" />
         <item id="cube" text="Cube" />
@@ -134,7 +134,7 @@ class EaseGraphPreview extends HBox
       // Insert CLASSIC right after INSTANT so the order matches the historical layout.
       easeDropdown.dataSource.insert(2, {
         id: 'CLASSIC',
-        text: 'Classic (Ignores duration)'
+        text: 'Classic'
       });
     }
     else
@@ -237,7 +237,7 @@ class EaseGraphPreview extends HBox
 
     final graphBd:Null<BitmapData> = SongEventHelper.getEaseBitmap(easeKey);
     _easeGraphSprite = SongEventHelper.createSpriteFromKey(easeKey, EASE_GRAPH_SIZE, EASE_GRAPH_SIZE);
-    easeGraph.resource = _easeGraphSprite?.frame;
+    easeGraph.resource = SongEventHelper.liveFrame(_easeGraphSprite);
 
     if (graphBd == null || easeGraph.resource == null)
     {
@@ -254,7 +254,7 @@ class EaseGraphPreview extends HBox
       return;
     }
     _easeDotSprites = dotSprites;
-    easeDot.resource = _easeDotSprites[0].frame;
+    easeDot.resource = SongEventHelper.liveFrame(_easeDotSprites[0]);
 
     startDotAnimation();
   }
@@ -297,9 +297,9 @@ class EaseGraphPreview extends HBox
       _pauseTimer ??= new FlxTimer();
       _pauseTimer.start(LOOP_PAUSE, onLoopRestart, 1);
     }
-    else if (_easeDotSprites[_dotIndex].frame != null)
+    else if (SongEventHelper.liveFrame(_easeDotSprites[_dotIndex]) != null)
     {
-      easeDot.resource = _easeDotSprites[_dotIndex].frame;
+      easeDot.resource = SongEventHelper.liveFrame(_easeDotSprites[_dotIndex]);
     }
   }
 
@@ -307,9 +307,9 @@ class EaseGraphPreview extends HBox
   {
     if (_pauseTimer == null) return;
     _dotIndex = 0;
-    if (_easeDotSprites[0] != null && _easeDotSprites[0].frame != null)
+    if (_easeDotSprites[0] != null && SongEventHelper.liveFrame(_easeDotSprites[0]) != null)
     {
-      easeDot.resource = _easeDotSprites[0].frame;
+      easeDot.resource = SongEventHelper.liveFrame(_easeDotSprites[0]);
     }
     _dotTimer ??= new FlxTimer();
     _dotTimer.start(DOT_INTERVAL, onDotTick, 0);

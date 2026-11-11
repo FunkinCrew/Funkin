@@ -285,11 +285,25 @@ class Conductor
     return Save?.instance?.options?.audioVisualOffset ?? 0;
   }
 
+  /**
+   * An offset to compensate for the output buffer of the audio device.
+   */
+  public var outputLatency(get, never):Float;
+
+  function get_outputLatency():Float
+  {
+    #if lime_miniaudio
+    return lime.media.AudioManager.engine?.get_latency() ?? 0;
+    #else
+    return 0;
+    #end
+  }
+
   public var combinedOffset(get, never):Float;
 
   function get_combinedOffset():Float
   {
-    return instrumentalOffset + formatOffset + globalOffset;
+    return instrumentalOffset + formatOffset - globalOffset - outputLatency;
   }
 
   /**
@@ -528,7 +542,7 @@ class Conductor
     if (soundToCheck == null) soundToCheck = FlxG.sound.music;
 
     @:privateAccess
-    this.songPosition = soundToCheck._channel.position;
+    this.songPosition = soundToCheck.time;
     return this.songPosition;
   }
 

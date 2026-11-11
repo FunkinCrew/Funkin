@@ -2,10 +2,10 @@ package funkin.ui.debug.charting.components.palette;
 
 #if FEATURE_CHART_EDITOR
 import haxe.DynamicAccess;
+import funkin.ui.debug.charting.components.palette.ChartEditorCommandPalette.PaletteCommand;
 import funkin.util.SearchUtil.FuzzyScore;
 import funkin.util.SearchUtil;
 import funkin.data.song.SongData.CommentData;
-import funkin.ui.debug.charting.components.ChartEditorCommandPalette.PaletteCommand;
 
 /**
  * Utility functions for building the item list in the command palette.

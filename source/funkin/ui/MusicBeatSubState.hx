@@ -1,5 +1,6 @@
 package funkin.ui;
 
+import funkin.util.FlxStateUtil;
 import flixel.FlxSubState;
 import flixel.text.FlxText;
 import funkin.ui.mainmenu.MainMenuState;
@@ -10,19 +11,19 @@ import funkin.modding.IScriptedClass.IEventHandler;
 import funkin.modding.module.ModuleHandler;
 import funkin.modding.PolymodHandler;
 import funkin.util.SortUtil;
+import flixel.addons.transition.FlxTransitionableState;
+import flixel.addons.transition.FlxTransitionableSubState;
 import funkin.util.WindowUtil;
 import flixel.util.FlxSort;
 import flixel.util.typeLimit.NextState;
 import funkin.input.Controls;
+import funkin.ui.transition.Transition.FlxTransition;
 import funkin.ui.transition.preload.hotreload.HotReloadState.HotReloadStateParams;
 #if FEATURE_TOUCH_CONTROLS
-import funkin.graphics.FunkinCamera;
-import funkin.mobile.ui.FunkinBackButton;
-import funkin.mobile.ui.mainmenu.FunkinOptionsButton;
-#end
-#if FEATURE_TOUCH_CONTROLS
-import funkin.mobile.ui.FunkinHitbox;
-import funkin.mobile.input.PreciseInputHandler;
+import funkin.touch.ui.FunkinHitbox;
+import funkin.touch.ui.FunkinBackButton;
+import funkin.touch.ui.mainmenu.FunkinOptionsButton;
+import funkin.touch.input.PreciseInputHandler;
 import funkin.play.notes.NoteDirection;
 #end
 
@@ -30,7 +31,7 @@ import funkin.play.notes.NoteDirection;
  * MusicBeatSubState reincorporates the functionality of MusicBeatState into an FlxSubState.
  */
 @:nullSafety
-class MusicBeatSubState extends FlxSubState implements IEventHandler
+class MusicBeatSubState extends FlxTransitionableSubState implements IEventHandler
 {
   public var leftWatermarkText:Null<FlxText> = null;
   public var rightWatermarkText:Null<FlxText> = null;
@@ -151,19 +152,81 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
   {
     super.update(elapsed);
 
-    // Emergency exit button.
-    if (FlxG.keys.justPressed.F4)
-    {
-      FlxG.switchState(() -> new MainMenuState());
-      WindowUtil.setWindowTitle('Friday Night Funkin\'');
-    }
-
     // Display Conductor info in the watch window.
     FlxG.watch.addQuick('musicTime', FlxG.sound.music?.time ?? 0.0);
     Conductor.watchQuick(conductorInUse);
 
     var event:UpdateScriptEvent = UpdateScriptEvent.get(elapsed);
     dispatchEvent(event);
+  }
+
+  /**
+   * Starts the in-transition. Can be called manually at any time.
+   */
+  override public function transitionIn():Void
+  {
+    if (hasTransIn)
+    {
+      if (FlxTransitionableState.skipNextTransIn)
+      {
+        if (finishTransIn != null)
+        {
+          finishTransIn();
+        }
+        return;
+      }
+
+      var trans:FlxTransition = createTransition(transIn);
+
+      trans.setStatus(FULL);
+      FlxStateUtil.openSubStateAtTop(trans);
+
+      trans.finishCallback = finishTransIn;
+      trans.start(OUT);
+    }
+  }
+
+  /**
+   * Starts the out-transition. Can be called manually at any time.
+   */
+  override public function transitionOut(?onExit:Void->Void):Void
+  {
+    @:nullSafety(Off)
+    _onExit = onExit;
+    if (hasTransOut)
+    {
+      var trans:FlxTransition = createTransition(transOut);
+
+      trans.setStatus(EMPTY);
+      FlxStateUtil.openSubStateAtTop(trans);
+
+      trans.finishCallback = finishTransOut;
+      trans.start(IN);
+    }
+    else
+    {
+      _onExit();
+    }
+  }
+
+  override function finishTransIn():Void
+  {
+    FlxStateUtil.closeTransitionAtTop(this);
+  }
+
+  override function finishTransOut():Void
+  {
+    transOutFinished = true;
+
+    if (!_exiting)
+    {
+      FlxStateUtil.closeTransitionAtTop(this);
+    }
+
+    if (_onExit != null)
+    {
+      _onExit();
+    }
   }
 
   override function onFocus():Void
@@ -347,6 +410,12 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
       event.finish();
       return;
     }
+
+    /*if (FlxStateUtil.cancelTransitionAtTop(this))
+      {
+        FlxTransitionableState.skipNextTransIn = false;
+        FlxTransitionableState.skipNextTransOut = false;
+    }*/
 
     super.openSubState(targetSubState);
     event.finish();

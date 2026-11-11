@@ -2,79 +2,168 @@ package funkin.ui.modmenu;
 
 import funkin.group.FunkinGroup.FunkinSpriteGroup;
 import funkin.graphics.FunkinSprite;
-import polymod.Polymod.ModMetadata;
-import flixel.math.FlxRect;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.tweens.FlxEase;
-import flixel.FlxState;
 import funkin.audio.FunkinSound;
+import flixel.util.FlxDirection;
 
+/**
+ * The item list class for the two lists in mod menu.
+ *
+ * Items are stored bottom to top: index 0 is drawn at the BOTTOM and the last index at the top,
+ * which is how mods stack in the load order. Anything called "first" or "top" in the selection
+ * functions below is about what's on screen, so it's the LAST index.
+ */
 class ModMenuItemList extends FunkinSpriteGroup
 {
+  /**
+   * The Y offset for items in the list.
+   */
   public static var ITEM_X_OFFSET:Float = 40;
+
+  /**
+   * The Y offset for items in the list.
+   */
   public static var ITEM_Y_OFFSET:Float = 60;
+
+  /*
+   * The value to lerp for the scroll bar.
+   */
   public static var SCROLL_LERP:Float = 16;
+  /*
+   * The scrollbar's width.
+   */
   public static var SCROLLBAR_WIDTH:Float = 10;
+  /*
+   * The scrollbar's top margin.
+   */
   public static var SCROLLBAR_TOP_MARGIN:Float = -42;
+  /*
+   * The scrollbar's bottom margin.
+   */
   public static var SCROLLBAR_BOTTOM_MARGIN:Float = -60;
+  /*
+   * The scrollbar's minimum thumb height.
+   */
   public static var SCROLLBAR_MIN_THUMB:Float = 24;
+  /*
+   * The scrollbar's track color
+   */
   public static var SCROLLBAR_TRACK_COLOR:FlxColor = 0xFF3A393E;
+  /*
+   * The scrollbar's track alpha
+   */
   public static var SCROLLBAR_TRACK_ALPHA:Float = 0.6;
+  /*
+   * The scrollbar's thumb color
+   */
   public static var SCROLLBAR_THUMB_COLOR:FlxColor = 0xFF57565A;
+  /*
+   * The scrollbar's thumb alpha
+   */
   public static var SCROLLBAR_THUMB_ALPHA:Float = 0.95;
 
+  /**
+   * Whether items that are scrolled out of view are put to sleep, so they stop updating and drawing.
+   * Turn this off to check that culling isn't the cause of something.
+   */
+  public static var CULL_OFFSCREEN_ITEMS:Bool = true;
+
+  /**
+   * Gap between two neighbouring items.
+   */
+  static inline final ITEM_GAP:Float = 16;
+
+  /**
+   * Distance between the tops of two neighbouring items.
+   */
+  static final ITEM_STRIDE:Float = ModMenuItem.ICON_HEIGHT + ITEM_GAP;
+
+  /**
+   * How far past the visible area items stay awake, so scrolling never reveals a "sleeping" item.
+   * Do you think items snore too...
+   */
+  static final CULL_MARGIN:Float = ITEM_STRIDE * 2;
+
+  /**
+   * The selected item in this list.
+   */
   public var selectedModItem:Null<ModMenuItem> = null;
+
+  /**
+   * The selected index in this list.
+   */
   public var selectedItemIndex(get, never):Int;
+
+  /**
+   * The pinned top-most mod id in this list.
+   */
   public var pinnedTopModId:Null<String> = null;
-  // Separate array specifically typed to ModMenuItem
+
+  /**
+   * The mod menu items this list contains.
+   */
   public var modItems:Array<ModMenuItem>;
+
+  /**
+   * The current title this list has.
+   */
   public var title(default, set):String = "Disabled";
+
+  /**
+   * The title text associated with this list.
+   */
   public var titleText:FlxText;
+
+  /**
+   * The scrollbar's track sprite.
+   */
   public var scrollbarTrack:FunkinSprite;
+
+  /**
+   * The scrollbar's thumb sprite.
+   */
   public var scrollbarThumb:FunkinSprite;
 
-  // Cache last built bitmap heights so we only regenerate graphics when they actually change.
-  var lastTrackHeight:Int = -1;
-  var lastThumbHeight:Int = -1;
-
-  function set_title(value:String):String
-  {
-    titleText.text = value;
-    return title;
-  }
-
+  /**
+   * The viewport height for the list.
+   */
   public var viewportHeight:Float = 320;
+
+  /**
+   * The scrolling display offset.
+   */
   public var displayScrollOffset:Float = 0;
+
   var scrollAnimFrom:Float = 0;
   var scrollAnimTo:Float = 0;
   var scrollAnimTime:Float = 0;
   var scrollAnimDuration:Float = 0;
+
+  /**
+   * The scrolling offset.
+   */
   public var scrollOffset:Float = 0;
+
+  /**
+   * The target scrolling offset.
+   */
   public var targetScrollOffset:Float = 0;
 
-  public function animateScrollFrom(from:Float, duration:Float = 0.28):Void
-  {
-    if (from == scrollOffset || duration <= 0)
-    {
-      scrollAnimDuration = 0;
-      displayScrollOffset = scrollOffset;
-      return;
-    }
+  // Cache last built bitmap heights so we only regenerate graphics when they actually change.
+  var lastTrackHeight:Int = -1;
+  var lastThumbHeight:Int = -1;
+  // What the scrollbar was last laid out for, so it's only redone when one of these changes.
+  var lastScrollbarCount:Int = -1;
+  var lastScrollbarOffset:Float = 0;
+  var lastScrollbarBottom:Float = 0;
+  var lastScrollbarX:Float = 0;
+  var lastScrollbarY:Float = 0;
 
-    scrollAnimFrom = from;
-    scrollAnimTo = scrollOffset;
-    scrollAnimTime = 0;
-    scrollAnimDuration = duration;
-    displayScrollOffset = from;
-  }
-
-  function get_selectedItemIndex():Int
-  {
-    if (selectedModItem == null) return -1;
-    return this.modItems.indexOf(selectedModItem);
-  }
-
+  /**
+   * Creates a new instance of ModMenuItemList.
+   */
   public function new()
   {
     super();
@@ -101,77 +190,36 @@ class ModMenuItemList extends FunkinSpriteGroup
 
   /**
    * Adds the elements to a Mod Menu instance.
-   * @param state The state to add the elements to.
    */
-  public function addElements(state:FlxState):Void
+  public function addElements():Void
   {
+    if (ModMenuState.instance == null) return;
+
     titleText.zIndex = this.zIndex + 1;
     scrollbarTrack.zIndex = titleText.zIndex + 1;
     scrollbarThumb.zIndex = scrollbarTrack.zIndex + 1;
 
-    state.add(titleText);
-    state.add(scrollbarTrack);
-    state.add(scrollbarThumb);
+    ModMenuState.instance.add(titleText);
+    ModMenuState.instance.add(scrollbarTrack);
+    ModMenuState.instance.add(scrollbarThumb);
   }
 
   override public function update(elapsed:Float):Void
   {
+    // Before the group updates its items, so one that just started a flight is awake to fly.
+    updateItemCulling();
+
     super.update(elapsed);
 
-    if (scrollAnimDuration > 0)
-    {
-      scrollAnimTime += elapsed;
-      var t = Math.min(1, scrollAnimTime / scrollAnimDuration);
-      displayScrollOffset = scrollAnimFrom + (scrollAnimTo - scrollAnimFrom) * FlxEase.quartOut(t);
-      if (t >= 1) scrollAnimDuration = 0;
-      updateScrollbar();
-    }
-
-    if (Math.abs(targetScrollOffset - scrollOffset) > 0.1)
-    {
-      var t = Math.min(1, SCROLL_LERP * elapsed);
-      scrollOffset += (targetScrollOffset - scrollOffset) * t;
-      if (scrollAnimDuration <= 0) displayScrollOffset = scrollOffset;
-      repositionItems();
-    }
-    else if (scrollOffset != targetScrollOffset)
-    {
-      scrollOffset = targetScrollOffset;
-      if (scrollAnimDuration <= 0) displayScrollOffset = scrollOffset;
-      repositionItems();
-    }
+    updateScrollAnimation(elapsed);
+    updateScrollFollow(elapsed);
   }
 
-  public function removeAll():Void
-  {
-    var pinnedItem = getPinnedTopItem();
+  // ADDING AND REMOVING //
 
-    // remove all mod items except pinned
-    for (item in modItems.copy())
-    {
-      if (item == pinnedItem) continue;
-      removeMod(item);
-    }
-
-    if (pinnedItem != null)
-    {
-      modItems = [pinnedItem];
-      children = children.filter((c) -> (Std.isOfType(c, ModMenuItem) && c == pinnedItem));
-      pinnedItem.cancelFlight();
-      pinnedItem.localX = ITEM_X_OFFSET;
-      pinnedItem.localY = getModItemYPos(0) + scrollOffset;
-      selectedModItem = pinnedItem;
-    }
-    else
-    {
-      children = children.filter((c) -> !Std.isOfType(c, ModMenuItem));
-      modItems = [];
-      selectedModItem = null;
-    }
-
-    updateScrollbar();
-  }
-
+  /**
+   * Deselects all items within this list.
+   */
   public function deselectAll():Void
   {
     for (modMenuItem in modItems)
@@ -181,10 +229,17 @@ class ModMenuItemList extends FunkinSpriteGroup
     selectedModItem = null;
   }
 
+  /**
+   * Removes the given mod from this list.
+   * @param item The mod to remove.
+   */
   public function removeMod(item:ModMenuItem):Void
   {
     if (!modItems.contains(item)) return;
     if (isPinnedItem(item)) return;
+
+    // It's leaving the list, so nothing will wake it up again.
+    item.setOnScreen(true);
 
     modItems.remove(item);
     this.remove(item);
@@ -192,10 +247,17 @@ class ModMenuItemList extends FunkinSpriteGroup
     repositionItems();
   }
 
+  /**
+   * Removes the given mod without repositioning items from this list.
+   * @param item The mod to remove.
+   */
   public function removeModWithoutLayout(item:ModMenuItem):Int
   {
     if (!modItems.contains(item)) return -1;
     if (isPinnedItem(item)) return -1;
+
+    // It's leaving the list, so nothing will wake it up again.
+    item.setOnScreen(true);
 
     var index = modItems.indexOf(item);
     modItems.remove(item);
@@ -204,23 +266,13 @@ class ModMenuItemList extends FunkinSpriteGroup
     return index;
   }
 
-  public function addModRaw(item:ModMenuItem):Void
-  {
-    if (!modItems.contains(item))
-    {
-      super.add(item);
-      modItems.push(item);
-    }
-
-    var index = modItems.indexOf(item);
-    item.cancelFlight();
-    item.localX = ITEM_X_OFFSET;
-    item.localY = getModItemYPos(index) + scrollOffset;
-
-    updateScrollbar();
-  }
-
-  public function addModRawWithoutLayout(item:ModMenuItem, index:Int = -1):Int
+  /**
+   * Adds the given mod into this list with the given index (if there is any).
+   * @param item The mod to add.
+   * @param index The index to insert it at. -1 for default.
+   * @return Int The new index its at.
+   */
+  public function addMod(item:ModMenuItem, index:Int = -1):Int
   {
     if (index < 0 || index > modItems.length) index = modItems.length;
 
@@ -238,18 +290,10 @@ class ModMenuItemList extends FunkinSpriteGroup
     return index;
   }
 
-  public function addMod(mod:ModMetadata):Void
-  {
-    var modMenuItem = new ModMenuItem(mod);
-    addModRaw(modMenuItem);
-
-    if (selectedModItem == null)
-    {
-      selectedModItem = modMenuItem;
-      selectedModItem.selected = true;
-    }
-  }
-
+  /**
+   * Gets the pinned top-most item in this list
+   * @return Null<ModMenuItem> The item.
+   */
   public function getPinnedTopItem():Null<ModMenuItem>
   {
     if (pinnedTopModId == null) return null;
@@ -257,6 +301,11 @@ class ModMenuItemList extends FunkinSpriteGroup
     return this.modItems.find((item) -> item.getModId() == pinnedTopModId);
   }
 
+  /**
+   * Checks if the given item is the top-most pinned item within this list.
+   * @param item The item to check.
+   * @return Bool Whether it is at the top or not.
+   */
   public function isPinnedItem(item:Null<ModMenuItem>):Bool
   {
     if (item == null) return false;
@@ -265,49 +314,54 @@ class ModMenuItemList extends FunkinSpriteGroup
     return item.getModId() == pinnedTopModId;
   }
 
-  public function selectFirstItem(slideDir:Int = 0):Void
+  // SELECTION //
+
+  /**
+   * Selects the item at the top of the list, as seen on screen.
+   * @param slideDir The sliding direction.
+   */
+  public function selectFirstItem(?slideDir:Null<FlxDirection>):Void
   {
     if (modItems.length == 0) return;
     selectModItem(modItems[modItems.length - 1], true, slideDir);
   }
 
-  public function selectLastItem(slideDir:Int = 0):Void
+  /**
+   * Selects the item at the bottom of the list, as seen on screen.
+   * @param slideDir The sliding direction
+   */
+  public function selectLastItem(?slideDir:Null<FlxDirection>):Void
   {
     if (modItems.length == 0) return;
     selectModItem(modItems[0], true, slideDir);
   }
 
+  /**
+   * Selects nothing within this list.
+   */
   public function deselect():Void
   {
     selectModItem(null);
   }
 
-  public function moveUp(allowWrap:Bool = true):Bool
+  /**
+   * Moves the current selection upwards/downwards depending on the step
+   * @param step The amount of "steps" we take from the current selection.
+   * @param allowWrap Whether to wrap the selection around or not.
+   * @return Bool Whether the movement was successful or not.
+   */
+  public function moveSelectionBy(step:Int, allowWrap:Bool):Bool
   {
     if (modItems.length == 0) return true;
 
-    var index = selectedItemIndex + 1;
+    var index = selectedItemIndex + step;
 
     if (index >= modItems.length)
     {
       if (!allowWrap) return false;
       index = 0;
     }
-
-    FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
-
-    selectModItem(modItems[index], false, -1);
-    scrollBy(getScrollDeltaToReveal(selectedModItem));
-    return true;
-  }
-
-  public function moveDown(allowWrap:Bool = true):Bool
-  {
-    if (modItems.length == 0) return true;
-
-    var index = selectedItemIndex - 1;
-
-    if (index < 0)
+    else if (index < 0)
     {
       if (!allowWrap) return false;
       index = modItems.length - 1;
@@ -315,18 +369,29 @@ class ModMenuItemList extends FunkinSpriteGroup
 
     FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
 
-    selectModItem(modItems[index], false, 1);
+    selectModItem(modItems[index], false, step > 0 ? FlxDirection.UP : FlxDirection.DOWN);
     scrollBy(getScrollDeltaToReveal(selectedModItem));
     return true;
   }
 
-  public function selectItem(index:Int, slideDir:Int = 0):Void
+  /**
+   * Selects the item at the given index.
+   * @param index The index of the item we want to select.
+   * @param slideDir Optional. The direction this input is coming from.
+   */
+  public function selectItem(index:Int, ?slideDir:Null<FlxDirection>):Void
   {
     if (index < 0 || index >= modItems.length) return;
     selectModItem(modItems[index], true, slideDir);
   }
 
-  public function selectModItem(item:Null<ModMenuItem>, autoScroll:Bool = true, slideDir:Int = 0):Void
+  /**
+   * Selects the given item.
+   * @param item The item to select.
+   * @param autoScroll Whether to scroll the list towards it or not.
+   * @param slideDir Optional. The direction this input is coming from.
+   */
+  public function selectModItem(item:Null<ModMenuItem>, autoScroll:Bool = true, ?slideDir:Null<FlxDirection>):Void
   {
     if (selectedModItem != null) selectedModItem.selected = false;
 
@@ -339,11 +404,16 @@ class ModMenuItemList extends FunkinSpriteGroup
     selectedModItem = item;
     selectedModItem.selected = true;
 
-    if (slideDir != 0) selectedModItem.slideBackgroundFrom(slideDir);
+    if (slideDir != null) selectedModItem.slideBackgroundFrom(slideDir);
 
-    if (autoScroll) ensureItemVisible(selectedModItem);
+    if (autoScroll) scrollBy(getScrollDeltaToReveal(selectedModItem));
   }
 
+  // LAYOUT //
+
+  /**
+   * Repositions the items in this list.
+   */
   public function repositionItems():Void
   {
     for (index => modMenuItem in modItems)
@@ -356,7 +426,12 @@ class ModMenuItemList extends FunkinSpriteGroup
     updateScrollbar();
   }
 
-  public function animateItemsToLayout(duration:Float = 0.2, ?ease:Float->Float = null, startDelay:Float = 0):Void
+  /**
+   * Animates the items into their proper layout in this list
+   * @param duration The duration the flight would take.
+   * @param ease Optional. Easing to use for the transition.
+   */
+  public function animateItemsToLayout(duration:Float = 0.2, ?ease:Float->Float = null):Void
   {
     if (ease == null) ease = FlxEase.quadOut;
     for (index => modMenuItem in modItems)
@@ -368,20 +443,14 @@ class ModMenuItemList extends FunkinSpriteGroup
     updateScrollbar();
   }
 
-  public function animateItemsToLayoutForInsert(insertIndex:Int, duration:Float = 0.2, ?ease:Float->Float = null, startDelay:Float = 0):Void
-  {
-    animateItemsToLayoutForInsertCount(insertIndex, 1, duration, ease, startDelay);
-  }
-
   /**
-   * Like animateItemsToLayoutForInsert, but makes room for `insertCount` items being
-   * inserted starting at `insertIndex`.
+   * Animates the items into the layout for inserting into this list.
+   * @param insertIndex The index we'll start inserting at.
+   * @param insertCount How many items we're making room for.
+   * @param duration The length of the animation.
+   * @param ease The ease
    */
-  public function animateItemsToLayoutForInsertCount(insertIndex:Int,
-    insertCount:Int,
-    duration:Float = 0.2,
-    ?ease:Float->Float = null,
-    startDelay:Float = 0):Void
+  public function animateItemsToLayoutForInsertCount(insertIndex:Int, insertCount:Int, duration:Float = 0.2, ?ease:Float->Float = null):Void
   {
     if (ease == null) ease = FlxEase.quadOut;
     if (insertCount < 1) insertCount = 1;
@@ -401,79 +470,151 @@ class ModMenuItemList extends FunkinSpriteGroup
     updateScrollbar();
   }
 
-  public function applySwapScrollCorrection(changeIndex:Int, isInsertion:Bool):Void
-  {
-    var anchorIndex = getTopVisibleItemIndex();
-    if (anchorIndex < 0) return;
-
-    if (changeIndex > anchorIndex) return;
-
-    final ITEM_PADDING:Float = 96 + 16;
-    scrollOffset += isInsertion ? -ITEM_PADDING : ITEM_PADDING;
-    clampScroll();
-  }
-
-  function getTopVisibleItemIndex():Int
-  {
-    var top:Float = getViewportTop();
-
-    var index:Int = modItems.length - 1;
-    while (index >= 0)
-    {
-      var item = modItems[index];
-      if (item == null)
-      {
-        index--;
-        continue;
-      }
-
-      if (item.localY + 96 > top) return index;
-
-      index--;
-    }
-
-    return -1;
-  }
-
+  /**
+   * Gets the mod item Y position at the given index if the given count is the list length.
+   * @param index The index to calculate for
+   * @param itemCount The item count we use to calculate.
+   * @return Float The Y pos.
+   */
   public function getModItemYPosForCount(index:Int, itemCount:Int):Float
   {
-    final ICON_HEIGHT:Float = 96;
-    final ITEM_PADDING:Float = ICON_HEIGHT + 16;
-
-    return ITEM_Y_OFFSET + (ITEM_PADDING * (itemCount - 1 - index));
+    return ITEM_Y_OFFSET + (ITEM_STRIDE * (itemCount - 1 - index));
   }
 
+  /**
+   * Gets the mod item Y pos at the given index.
+   * @param index The index to check.
+   * @return Float The Y pos
+   */
   public function getModItemYPos(index:Int):Float
   {
     return getModItemYPosForCount(index, modItems.length);
   }
 
   /**
-   * Top of the usable viewport, in the SAME local space the items use.
+   * How tall all the items together are.
+   * @param count The amount of items in the list.
+   * @return Float The Y pos
    */
-  function getViewportTop():Float
+  function getContentHeight(count:Int):Float
   {
-    return ITEM_Y_OFFSET;
+    return ITEM_STRIDE * (count - 1) + ModMenuItem.ICON_HEIGHT;
+  }
+
+  /**
+   * The furthest `scrollOffset` can go.
+   * @param count The amount of items in the list.
+   * @return Float The distance it can go to.
+   */
+  function getMinScroll(count:Int):Float
+  {
+    var viewSpan = getViewportBottom() - ITEM_Y_OFFSET;
+
+    return Math.min(0, viewSpan - getContentHeight(count));
+  }
+
+  // CULLING //
+
+  /**
+   * Puts the items that are out of view to "sleep", and wakes the ones that came back.
+   * Items that are flying always stay "awake", since they have somewhere to be.
+   */
+  function updateItemCulling():Void
+  {
+    var top:Float = ITEM_Y_OFFSET;
+    var bottom:Float = getViewportBottom();
+
+    if (clipRect != null)
+    {
+      top = Math.min(top, clipRect.y - y);
+      bottom = Math.max(bottom, clipRect.bottom - y);
+    }
+
+    top -= CULL_MARGIN;
+    bottom += CULL_MARGIN;
+
+    for (item in modItems)
+    {
+      var itemTop:Float = item.localY;
+
+      item.setOnScreen(!CULL_OFFSCREEN_ITEMS || item.isInFlight || (itemTop + ModMenuItem.ICON_HEIGHT > top && itemTop < bottom));
+    }
+  }
+
+  // SCROLLING //
+
+  /**
+   * Animates the scrolling.
+   * @param from The position the scroll is coming from.
+   * @param duration The duration of the animation
+   */
+  public function animateScrollFrom(from:Float, duration:Float = 0.28):Void
+  {
+    if (from == scrollOffset || duration <= 0)
+    {
+      scrollAnimDuration = 0;
+      displayScrollOffset = scrollOffset;
+      return;
+    }
+
+    scrollAnimFrom = from;
+    scrollAnimTo = scrollOffset;
+    scrollAnimTime = 0;
+    scrollAnimDuration = duration;
+    displayScrollOffset = from;
+  }
+
+  /**
+   * Plays the eased scrolling.
+   * @param Elapsed elapsed
+   */
+  function updateScrollAnimation(elapsed:Float):Void
+  {
+    if (scrollAnimDuration <= 0) return;
+
+    scrollAnimTime += elapsed;
+    var t = Math.min(1, scrollAnimTime / scrollAnimDuration);
+    displayScrollOffset = scrollAnimFrom + (scrollAnimTo - scrollAnimFrom) * FlxEase.quartOut(t);
+    if (t >= 1) scrollAnimDuration = 0;
+    updateScrollbar();
+  }
+
+  /**
+   * Eases `scrollOffset` towards `targetScrollOffset`, moving the items along with it.
+   * @param elapsed Elapsed
+   */
+  function updateScrollFollow(elapsed:Float):Void
+  {
+    if (scrollOffset == targetScrollOffset) return;
+
+    if (Math.abs(targetScrollOffset - scrollOffset) > 0.1)
+    {
+      var t = Math.min(1, SCROLL_LERP * elapsed);
+      scrollOffset += (targetScrollOffset - scrollOffset) * t;
+    }
+    else
+    {
+      scrollOffset = targetScrollOffset;
+    }
+
+    if (scrollAnimDuration <= 0) displayScrollOffset = scrollOffset;
+    repositionItems();
   }
 
   /**
    * Bottom of the usable viewport in local space.
+   * @return Float the viewport bottom.
    */
   function getViewportBottom():Float
   {
     return clipRect != null ? clipRect.height : viewportHeight;
   }
 
-  public function ensureItemVisible(item:ModMenuItem):Void
-  {
-    if (item == null) return;
-
-    scrollBy(getScrollDeltaToReveal(item));
-  }
-
   /**
-   * Returns how much `scrollOffset` needs to change for `item` to sit fully
+   * Returns how much `scrollOffset` needs to change for the given mod to sit fully
    * inside the viewport. Returns 0 when the item is already visible.
+   * @param item The mod to check for.
+   * @return Float How much the offset needs to change
    */
   function getScrollDeltaToReveal(item:Null<ModMenuItem>):Float
   {
@@ -482,27 +623,24 @@ class ModMenuItemList extends FunkinSpriteGroup
     var index = modItems.indexOf(item);
     if (index < 0) return 0;
 
-    var itemHeight = 96;
     var itemTop = getModItemYPos(index) + scrollOffset;
-    var top = getViewportTop();
+    var top = ITEM_Y_OFFSET;
     var bottom = getViewportBottom();
 
     if (itemTop < top) return (top - itemTop);
-    if (itemTop + itemHeight > bottom) return -(itemTop + itemHeight - bottom);
+    if (itemTop + ModMenuItem.ICON_HEIGHT > bottom) return -(itemTop + ModMenuItem.ICON_HEIGHT - bottom);
     return 0;
   }
 
+  /**
+   * Clamps the target scroll offset between 0 and the given count (list length if there isn't any)
+   * @param itemCount Optional. How many items to account for in thist list.
+   */
   function clampScroll(?itemCount:Int):Void
   {
     var count:Int = (itemCount != null) ? itemCount : modItems.length;
 
-    var ICON_HEIGHT:Float = 96;
-    var ITEM_PADDING:Float = ICON_HEIGHT + 16;
-    var contentHeight = ITEM_PADDING * (count - 1) + ICON_HEIGHT;
-
-    var viewSpan = getViewportBottom() - getViewportTop();
-
-    var minScroll:Float = Math.min(0, viewSpan - contentHeight);
+    var minScroll:Float = getMinScroll(count);
     var maxScroll:Float = 0;
 
     if (targetScrollOffset < minScroll) targetScrollOffset = minScroll;
@@ -510,21 +648,21 @@ class ModMenuItemList extends FunkinSpriteGroup
   }
 
   /**
-   * Adjusts scrollOffset so the item at `index` would be visible, assuming there are `itemCount` items in the list.
-   * @param index
-   * @param itemCount
+   * Adjusts scrollOffset and takes into account the given
+   * item count so the item at the given index would be visible
+   * @param index The index to check.
+   * @param itemCount The count of items we want to calculate with.
    */
   public function revealSlot(index:Int, itemCount:Int):Void
   {
     var previousScroll:Float = scrollOffset;
 
-    var itemHeight = 96;
     var itemTop = getModItemYPosForCount(index, itemCount) + scrollOffset;
-    var top = getViewportTop();
+    var top = ITEM_Y_OFFSET;
     var bottom = getViewportBottom();
 
     if (itemTop < top) scrollOffset += (top - itemTop);
-    else if (itemTop + itemHeight > bottom) scrollOffset -= (itemTop + itemHeight - bottom);
+    else if (itemTop + ModMenuItem.ICON_HEIGHT > bottom) scrollOffset -= (itemTop + ModMenuItem.ICON_HEIGHT - bottom);
 
     targetScrollOffset = scrollOffset;
     clampScroll(itemCount);
@@ -534,6 +672,9 @@ class ModMenuItemList extends FunkinSpriteGroup
     updateScrollbar();
   }
 
+  /**
+   * Clamps the scroll to the content in this list
+   */
   public function clampScrollToContent():Void
   {
     targetScrollOffset = scrollOffset;
@@ -541,13 +682,19 @@ class ModMenuItemList extends FunkinSpriteGroup
     scrollOffset = targetScrollOffset;
   }
 
+  /**
+   * Scrolls by with the given amount.
+   * @param delta How much we move.
+   */
   public function scrollBy(delta:Float):Void
   {
-    var oldOffset:Float = scrollOffset;
     targetScrollOffset += delta;
     clampScroll();
   }
 
+  /**
+   * Snaps the scrolling to finish its course earlier.
+   */
   public function snapScroll():Void
   {
     scrollOffset = targetScrollOffset;
@@ -562,12 +709,26 @@ class ModMenuItemList extends FunkinSpriteGroup
   {
     if (scrollbarTrack == null || scrollbarThumb == null) return;
 
-    var ICON_HEIGHT:Float = 96;
-    var ITEM_PADDING:Float = ICON_HEIGHT + 16;
-    var contentHeight = ITEM_PADDING * (modItems.length - 1) + ICON_HEIGHT;
-
-    var viewTop:Float = getViewportTop();
+    var viewTop:Float = ITEM_Y_OFFSET;
     var viewBottom:Float = getViewportBottom();
+
+    // Nothing the scrollbar depends on changed, so it's already right.
+    // We dont want to calculate anything useless now
+    if (
+      modItems.length == lastScrollbarCount
+      && displayScrollOffset == lastScrollbarOffset
+      && viewBottom == lastScrollbarBottom
+      && x == lastScrollbarX
+      && y == lastScrollbarY
+    ) return;
+
+    lastScrollbarCount = modItems.length;
+    lastScrollbarOffset = displayScrollOffset;
+    lastScrollbarBottom = viewBottom;
+    lastScrollbarX = x;
+    lastScrollbarY = y;
+
+    var contentHeight = getContentHeight(modItems.length);
     var viewSpan:Float = viewBottom - viewTop;
 
     var needsScroll = contentHeight > viewSpan;
@@ -586,7 +747,7 @@ class ModMenuItemList extends FunkinSpriteGroup
     if (thumbHeight < SCROLLBAR_MIN_THUMB) thumbHeight = SCROLLBAR_MIN_THUMB;
     if (thumbHeight > trackHeight) thumbHeight = trackHeight;
 
-    var minScroll:Float = Math.min(0, viewSpan - contentHeight);
+    var minScroll:Float = getMinScroll(modItems.length);
     var frac:Float = (minScroll != 0) ? (displayScrollOffset / minScroll) : 0;
     if (frac < 0) frac = 0;
     if (frac > 1) frac = 1;
@@ -617,5 +778,20 @@ class ModMenuItemList extends FunkinSpriteGroup
     scrollbarTrack.y = y + scrollbarTrack.localY;
     scrollbarThumb.x = x + scrollbarThumb.localX;
     scrollbarThumb.y = y + scrollbarThumb.localY;
+  }
+
+  // Setters / helpers
+
+  function set_title(value:String):String
+  {
+    titleText.text = value;
+    title = value;
+    return title;
+  }
+
+  function get_selectedItemIndex():Int
+  {
+    if (selectedModItem == null) return -1;
+    return this.modItems.indexOf(selectedModItem);
   }
 }

@@ -11,6 +11,8 @@ import flixel.text.FlxText.FlxTextAlign;
 #if FEATURE_TOUCH_CONTROLS
 import funkin.util.TouchUtil;
 #end
+import funkin.assets.Paths;
+import funkin.assets.Assets;
 
 @:nullSafety
 class CapsuleOptionsMenu extends FlxSpriteGroup
@@ -32,6 +34,23 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
     rightArrow.busy = b;
   }
 
+  public static function queryAssets(type:AssetType):Array<AssetPath>
+  {
+    var results:Array<AssetPath> = [];
+
+    switch (type)
+    {
+      case IMAGE:
+        results.push(Paths.image('ui/freeplay/interface/freeplay-capsule/box-inst'));
+      case XML:
+        results.push(Paths.xml('ui/freeplay/interface/freeplay-capsule/box-inst'));
+      default:
+        // Nothing
+    }
+
+    return results;
+  }
+
   public function new(parent:FreeplayState, x:Float = 0, y:Float = 0, instIds:Array<String>):Void
   {
     super(x, y);
@@ -46,7 +65,7 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
     capsuleMenuBG.animation.addByPrefix('open', 'open0', 24, false);
 
     currentInstrumental = new FlxText(0, 36, capsuleMenuBG.width, '');
-    currentInstrumental.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 40, FlxTextAlign.CENTER, true);
+    currentInstrumental.setFormat(Paths.font('ui/fonts/VCR OSD Mono'), 40, FlxTextAlign.CENTER, true);
 
     final PAD = 4;
 
@@ -56,7 +75,7 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
     rightArrow = new InstrumentalSelector(parent, capsuleMenuBG.width - leftArrow.width - PAD, 30, true, parent.controls);
 
     var label:FlxText = new FlxText(0, 5, capsuleMenuBG.width, 'INSTRUMENTAL');
-    label.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 24, FlxTextAlign.CENTER, true);
+    label.setFormat(Paths.font('ui/fonts/VCR OSD Mono'), 24, FlxTextAlign.CENTER, true);
 
     add(capsuleMenuBG);
     add(leftArrow);

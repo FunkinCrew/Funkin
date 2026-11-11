@@ -26,6 +26,8 @@ import funkin.ui.story.Level;
 import funkin.ui.PixelatedIcon;
 import funkin.util.TouchUtil;
 import funkin.util.SwipeUtil;
+import funkin.assets.Paths;
+import funkin.assets.Assets;
 
 using StringTools;
 
@@ -69,7 +71,7 @@ class SongMenuItem extends FlxSpriteGroup
   var bpmNumbers:Array<CapsuleNumber> = []; // referred to as "smallnumbers" in the .fla file!
   var impactThing:FunkinSprite;
 
-  public var sparkle:FlxSprite;
+  public var sparkle:FlxSprite = new FlxSprite();
 
   var sparkleTimer:FlxTimer;
 
@@ -78,6 +80,67 @@ class SongMenuItem extends FlxSpriteGroup
   var index:Int;
 
   public var curSelected:Int;
+
+  public static function queryAssets(type:funkin.assets.Assets.AssetType,
+    ?styleData:FreeplayStyle):Array<funkin.assets.Paths.AssetPath>
+  {
+    var results:Array<funkin.assets.Paths.AssetPath> = [];
+
+    switch (type)
+    {
+      case IMAGE:
+        results.appendUnique([
+          Paths.image('ui/freeplay/interface/freeplay-capsule/new'),
+          Paths.image('ui/freeplay/interface/sparkle'),
+          Paths.image('ui/freeplay/interface/favorite'),
+          Paths.image('ui/freeplay/interface/freeplay-capsule/rank-badge'),
+          Paths.image('ui/freeplay/interface/freeplay-capsule/numbers-big'),
+          Paths.image('ui/freeplay/interface/freeplay-capsule/numbers-small'),
+
+          Paths.image('ui/freeplay/interface/freeplay-capsule/bpm'),
+          Paths.image('ui/freeplay/interface/freeplay-capsule/difficulty'),
+        ]);
+
+        if (styleData != null)
+        {
+          results.appendUnique([Paths.image(styleData.getCapsuleAssetKey())]);
+        }
+        else
+        {
+          results.appendUnique([Paths.image('ui/freeplay/interface/freeplay-capsule/capsule/capsule-bf')]);
+        }
+
+        // TODO: Fix this!
+        results.appendUnique([Paths.image('ui/freeplay/interface/freeplay-capsule/capsule/capsule-bf')]);
+      case XML:
+        results.appendUnique([
+          Paths.xml('ui/freeplay/interface/freeplay-capsule/new'),
+          Paths.xml('ui/freeplay/interface/sparkle'),
+          Paths.xml('ui/freeplay/interface/favorite'),
+          Paths.xml('ui/freeplay/interface/freeplay-capsule/rank-badge'),
+          Paths.xml('ui/freeplay/interface/freeplay-capsule/numbers-big'),
+          Paths.xml('ui/freeplay/interface/freeplay-capsule/numbers-small'),
+        ]);
+
+        if (styleData != null)
+        {
+          results.appendUnique([Paths.xml(styleData.getCapsuleAssetKey())]);
+        }
+        else
+        {
+          results.appendUnique([Paths.xml('ui/freeplay/interface/freeplay-capsule/capsule/capsule-bf'),]);
+        }
+
+        // TODO: Fix this!
+        results.appendUnique([Paths.xml('ui/freeplay/interface/freeplay-capsule/capsule/capsule-bf')]);
+      case SHADER:
+        results.push(Paths.frag('ui/shaders/hsv'));
+      default:
+        // Nothing
+    }
+
+    return results;
+  }
 
   public function new(x:Float, y:Float)
   {
@@ -90,11 +153,11 @@ class SongMenuItem extends FlxSpriteGroup
     // capsule.animation
     add(capsule);
 
-    bpmText = new FlxSprite(144, 87).loadGraphic(Paths.image('ui/freeplay/interface/freeplay-capsule/bpm'));
+    bpmText = new FlxSprite(144, 87).loadGraphic(Paths.image('ui/freeplay/interface/freeplay-capsule/bpm').toFlxGraphicAsset());
     bpmText.setGraphicSize(Std.int(bpmText.width * 0.9));
     add(bpmText);
 
-    difficultyText = new FlxSprite(414, 87).loadGraphic(Paths.image('ui/freeplay/interface/freeplay-capsule/difficulty'));
+    difficultyText = new FlxSprite(414, 87).loadGraphic(Paths.image('ui/freeplay/interface/freeplay-capsule/difficulty').toFlxGraphicAsset());
     difficultyText.setGraphicSize(Std.int(difficultyText.width * 0.9));
     add(difficultyText);
 
@@ -153,7 +216,7 @@ class SongMenuItem extends FlxSpriteGroup
     blurredRanking = new FreeplayRank(ranking.x, ranking.y);
     add(blurredRanking);
 
-    sparkle = new FlxSprite(ranking.x, ranking.y);
+    sparkle.setPosition(ranking.x, ranking.y);
     sparkle.frames = Paths.getSparrowAtlas('ui/freeplay/interface/sparkle');
     sparkle.animation.addByPrefix('sparkle', 'sparkle Export0', 24, false);
     sparkle.animation.play('sparkle', true);
@@ -267,7 +330,7 @@ class SongMenuItem extends FlxSpriteGroup
   {
     if (FlxG.bitmap.checkCache(text)) return;
 
-    var weekTextBase:FlxText = new FlxText(0, 0, 0, text).setFormat(funkin.assets.Paths.font('ui/fonts/YoureGone-Regular', 'otf'), 20, 0xFF21242E);
+    var weekTextBase:FlxText = new FlxText(0, 0, 0, text).setFormat(Paths.font('ui/fonts/YoureGone-Regular', 'otf'), 20, 0xFF21242E);
     @:privateAccess weekTextBase.regenGraphic();
 
     FlxG.bitmap.add(weekTextBase.pixels.clone(), false, text);
@@ -527,7 +590,9 @@ class SongMenuItem extends FlxSpriteGroup
     this.y = y;
   }
 
-  public function initData(freeplayData:Null<FreeplaySongData>, ?styleData:FreeplayStyle = null, ?index:Int):Void
+  public function initData(freeplayData:Null<FreeplaySongData>,
+    ?styleData:FreeplayStyle = null,
+    ?index:Int):Void
   {
     this.freeplayData = freeplayData;
 
@@ -802,8 +867,12 @@ class SongMenuItem extends FlxSpriteGroup
 
   override function destroy():Void
   {
+    if (sparkleTimer != null)
+    {
+      sparkleTimer.cancel();
+      sparkleTimer = null;
+    }
     targetPos.put();
-    targetPos = null;
     difficultyNumbers = [];
     bpmNumbers = [];
     super.destroy();

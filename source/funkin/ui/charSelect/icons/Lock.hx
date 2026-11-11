@@ -2,6 +2,12 @@ package funkin.ui.charSelect.icons;
 
 import flixel.util.FlxColor;
 import funkin.graphics.FunkinSprite;
+//
+// ~PATHS~
+//
+import funkin.assets.Assets.AssetType;
+import funkin.assets.Paths.AssetPath;
+import funkin.assets.ValidatedPaths as Paths;
 
 /**
  * The lock icon that takes the place of a locked character in the Character Select screen.
@@ -17,6 +23,23 @@ class Lock extends FunkinSprite
     0xFF20ECCD, 0xFF20C8D4, 0xFF209BDD,
     0xFF209BDD, 0xFF2362C9, 0xFF243FB9
   ];
+
+  public static function queryAssets(type:AssetType):Array<AssetPath>
+  {
+    switch (type)
+    {
+      case IMAGE:
+        var results = [];
+
+        results.appendUnique(Paths.animateAtlas('ui/character-select/interface/lock').image());
+
+        return results;
+      case JSON:
+        return Paths.animateAtlas('ui/character-select/interface/lock').json();
+      default:
+        return [];
+    }
+  }
 
   public function new(x:Float = 0, y:Float = 0, index:Int)
   {

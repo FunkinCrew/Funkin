@@ -25,6 +25,22 @@ class SpeakerRegistry extends BaseRegistry<Speaker, SpeakerData, SpeakerEntryPar
       versionRule: SPEAKER_DATA_VERSION_RULE
     });
   }
+
+  override public function fetchEntry(id:String, ?params:SpeakerEntryParams):Null<Speaker>
+  {
+    var scriptClass:Null<String> = getScriptedEntryClassName(id, params);
+    if (scriptClass != null)
+    {
+      return Speaker.scriptInit(scriptClass, id);
+    }
+
+    if (!hasEntry(id))
+    {
+      return super.fetchEntry(id, params);
+    }
+
+    return new Speaker(id, params);
+  }
 }
 
 typedef SpeakerEntryParams =

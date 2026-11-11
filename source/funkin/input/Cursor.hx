@@ -8,6 +8,7 @@ import lime.app.Application;
 import lime.ui.MouseCursor;
 import haxe.ui.backend.flixel.MouseHelper;
 import haxe.ui.core.Screen;
+import haxe.ui.dragdrop.DragManager;
 import haxe.ui.events.MouseEvent;
 #end
 import lime.app.Future;
@@ -370,6 +371,8 @@ class Cursor
 
     #if !FLX_NO_MOUSE
     MouseHelper.notify(MouseEvent.MOUSE_MOVE, onMouseMoveSyncCursor, 5);
+    MouseHelper.notify(MouseEvent.MOUSE_DOWN, onMouseButtonSyncCursor, 15);
+    MouseHelper.notify(MouseEvent.MOUSE_UP, onMouseButtonSyncCursor, 15);
     #end
   }
 
@@ -392,6 +395,15 @@ class Cursor
     "progress" => MouseCursor.WAIT_ARROW,
   ];
   static var lastResolvedCursor:Null<String> = null;
+  static var wasDragging:Bool = false;
+
+  static function onMouseButtonSyncCursor(e:MouseEvent):Void
+  {
+    var isDragging:Bool = DragManager.instance.isDragging;
+    if (isDragging == wasDragging) return;
+    wasDragging = isDragging;
+    onMouseMoveSyncCursor(e);
+  }
 
   static function onMouseMoveSyncCursor(_:MouseEvent):Void
   {
@@ -408,6 +420,10 @@ class Cursor
         break;
       }
     }
+
+    if (DragManager.instance.isDragging) name = "grabbing";
+
+    Screen.instance.setCursor(name);
 
     if (name == lastResolvedCursor) return;
     lastResolvedCursor = name;

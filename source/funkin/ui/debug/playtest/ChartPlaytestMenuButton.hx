@@ -72,15 +72,15 @@ class ChartPlaytestMenuButtonListToggle extends ChartPlaytestMenuButtonBase
   var title:String;
   var list:Array<String>;
   var onPressed:String->Void;
-  var curSelected:Int = 0;
+
+  public var curSelected:Int = 0;
 
   public function new(x:Float, y:Float, title:String, list:Array<String>, onPressed:String->Void)
   {
-    super(x, y, getCurrentText(title, list[curSelected]));
-
     this.title = title;
     this.list = list;
     this.onPressed = onPressed;
+    super(x, y, getCurrentText());
   }
 
   override function onButtonPressed():Void
@@ -96,14 +96,14 @@ class ChartPlaytestMenuButtonListToggle extends ChartPlaytestMenuButtonBase
       curSelected = list.length - 1;
     }
 
-    text = getCurrentText(title, list[curSelected]);
+    text = getCurrentText();
 
     if (onPressed != null) onPressed(list[curSelected]);
   }
 
-  function getCurrentText(title:String, selectedItem:String):String
+  function getCurrentText():String
   {
-    return '$title: $selectedItem';
+    return '$title: ${list[curSelected]}';
   }
 }
 #end

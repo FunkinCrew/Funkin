@@ -9,6 +9,16 @@ import funkin.util.assets.FlxAnimationUtil;
 import funkin.modding.IScriptedClass.IDialogueScriptedClass;
 import funkin.data.dialogue.SpeakerData;
 import funkin.data.dialogue.SpeakerRegistry;
+import funkin.data.dialogue.SpeakerRegistry.SpeakerEntryParams;
+//
+// ~PATHS~
+//
+import funkin.assets.Assets;
+import funkin.assets.Assets.AssetType;
+import funkin.assets.Paths.AnimateAtlasAssetPathBuilder;
+import funkin.assets.Paths.AssetPath;
+import funkin.assets.Paths.MusicAssetPathBuilder;
+import funkin.assets.ValidatedPaths as Paths;
 
 /**
  * The character sprite which displays during dialogue.
@@ -65,10 +75,47 @@ class Speaker extends FunkinSprite implements IDialogueScriptedClass implements 
     if (globalOffsets == null) globalOffsets = [0, 0];
     if (globalOffsets == value) return value;
 
-    this.x = value[0] + originalPosition[0] + animOffsets[0];
-    this.y = value[1] + originalPosition[1] + animOffsets[1];
+    final newX:Float = value[0] + originalPosition[0] + animOffsets[0];
+    final newY:Float = value[1] + originalPosition[1] + animOffsets[1];
+
+    this.x = newX;
+    this.localX = newX;
+    this.y = newY;
+    this.localY = newY;
 
     return globalOffsets = value;
+  }
+
+  /**
+   * Retrieve a list of all the asset paths required to load the speaker.
+   *
+   * If you have a scripted class which initializes sprites, or plays sounds or something,
+   * make sure you add them here so they get cached in the loading screen.
+   *
+   * @param type The type of asset to query
+   * @param entryId The speaker ID, used to look up the specific assets.
+   * @param params The entry parameters, if any.
+   * @return An array of asset paths, or empty if no assets of that type are required.
+   */
+  public static function queryAssets(type:funkin.assets.Assets.AssetType,
+    entryId:String,
+    ?params:SpeakerEntryParams):Array<funkin.assets.Paths.AssetPath>
+  {
+    var results:Array<funkin.assets.Paths.AssetPath> = [];
+
+    var _data:Null<SpeakerData> = Speaker._fetchData(entryId);
+    if (_data == null) return results;
+
+    switch (type)
+    {
+      case IMAGE:
+        results.push(funkin.assets.Paths.image(_data.assetPath));
+      case XML:
+        results.push(funkin.assets.Paths.xml(_data.assetPath));
+      default:
+        // Nothing
+    }
+    return results;
   }
 
   public function new(id:String, ?params:Dynamic)
@@ -91,7 +138,9 @@ class Speaker extends FunkinSprite implements IDialogueScriptedClass implements 
   public function onCreate(event:ScriptEvent):Void
   {
     this.x = 0;
+    this.localX = 0;
     this.y = 0;
+    this.localY = 0;
     this.globalOffsets = [0, 0];
     this.alpha = 1;
 
@@ -159,6 +208,9 @@ class Speaker extends FunkinSprite implements IDialogueScriptedClass implements 
     this.flipY = _data.flipY;
     this.globalOffsets = _data.offsets;
     this.setScale(_data.scale);
+
+    this.localX = this.x;
+    this.localY = this.y;
   }
 
   /**
@@ -270,6 +322,11 @@ class Speaker extends FunkinSprite implements IDialogueScriptedClass implements 
     {
       this.animOffsets = [0, 0];
     }
+  }
+
+  override public function toString():String
+  {
+    return 'Speaker($id)';
   }
 
   public function onDialogueStart(event:DialogueScriptEvent):Void

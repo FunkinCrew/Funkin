@@ -236,11 +236,11 @@ class ModInstaller
   /**
    * Downloads the archive described by the resolved metadata.
    * @param mod The resolved metadata.
-   * @param onProgress Called with a 0-1 ratio as the download runs.
+   * @param onProgress Called with the loaded bytes and total bytes of the download as it runs.
    * @param onSuccess Called with the path of the downloaded archive, which the caller owns.
    * @param onError Called with a human readable reason.
    */
-  public static function download(mod:OneClickMod, onProgress:Float->Void, onSuccess:String->Void, onError:String->Void):Void
+  public static function download(mod:OneClickMod, onProgress:Int->Int->Void, onSuccess:String->Void, onError:String->Void):Void
   {
     if (!isHostAllowed(mod.downloadUrl))
     {
@@ -279,7 +279,7 @@ class ModInstaller
    */
   static var activeDownload:Null<DownloadJob> = null;
 
-  static var downloadOnProgress:Null<Float->Void> = null;
+  static var downloadOnProgress:Null<Int->Int->Void> = null;
   static var downloadOnSuccess:Null<String->Void> = null;
   static var downloadOnError:Null<String->Void> = null;
 
@@ -371,7 +371,7 @@ class ModInstaller
 
       lastReportedProgress = ratio;
 
-      if (downloadOnProgress != null) downloadOnProgress(ratio);
+      if (downloadOnProgress != null) downloadOnProgress(snapshot.bytesLoaded, snapshot.bytesTotal);
 
       return;
     }
@@ -1571,6 +1571,8 @@ private class DownloadOutput extends haxe.io.Output
     close2();
   }
 }
+#else
+typedef InstallJob = Dynamic;
 #end
 
 /**

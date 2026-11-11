@@ -2,8 +2,9 @@ package funkin.play.character;
 
 import flixel.math.FlxPoint;
 import funkin.modding.events.ScriptEvent;
+import funkin.data.IRegistryEntry;
 import funkin.data.character.CharacterData;
-import funkin.data.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterRegistry;
 import funkin.data.character.CharacterData.CharacterRenderType;
 import funkin.play.stage.Bopper;
 import funkin.play.notes.NoteDirection;
@@ -12,16 +13,30 @@ import funkin.play.notes.notekind.NoteKind;
 import funkin.play.notes.notekind.NoteKindManager;
 import funkin.play.stage.Stage;
 import funkin.graphics.FunkinAnimationController;
+//
+// ~PATHS~
+//
+import funkin.assets.ValidatedPaths as Paths;
+import funkin.assets.Paths.AssetPath;
+import funkin.assets.Assets.AssetType;
 
 /**
  * A Character is a stage prop which bops to the music as well as controlled by the strumlines.
  *
  * Remember: The character's origin is at its FEET. (horizontal center, vertical bottom)
  */
-class BaseCharacter extends Bopper
+class BaseCharacter extends Bopper implements IRegistryEntry<CharacterData>
 {
   // Metadata about a character.
-  public var characterId(default, null):String;
+  public final id:String;
+  public var characterId(get, never):String;
+
+  function get_characterId():String
+  {
+    // Backwards compatibility from before characters were moved to a registry.
+    return id;
+  }
+
   public var characterName(default, null):String;
 
   /**
@@ -75,7 +90,7 @@ class BaseCharacter extends Bopper
   public var dropNoteCounts(default, null):Array<Int>;
 
   @:allow(funkin.ui.debug.anim.DebugBoundingState)
-  final _data:CharacterData;
+  public final _data:CharacterData;
 
   /**
    * The amount of time, in seconds, that the character's singing animations should last for.
@@ -172,26 +187,102 @@ class BaseCharacter extends Bopper
   }
 
   /**
+   * Retrieve a list of all the asset paths required to load the character.
+   *
+   * If you have a scripted class which initializes sprites, or plays sounds or something,
+   * make sure you extend this function and add them here so they get cached in the loading screen.
+   *
+   * @param type The type of asset to query
+   * @param id The character ID to query.
+   * @param params Optional. Char entry params.
+   * @return An array of asset paths, or empty if no assets of that type are required.
+   */
+  public static function queryAssets(type:AssetType, entryId:String, ?params:CharacterEntryParams):Array<AssetPath>
+  {
+    var results:Array<AssetPath> = queryBaseAssets(type, entryId, params);
+
+    var _data:Null<CharacterData> = CharacterRegistry.instance.fetchCharacterData(entryId);
+    if (_data != null)
+    {
+      switch (_data.renderType)
+      {
+        case CharacterRenderType.AnimateAtlas:
+          results = AnimateAtlasCharacter.queryAssets(type, entryId, params);
+        case CharacterRenderType.MultiAnimateAtlas:
+          results = MultiAnimateAtlasCharacter.queryAssets(type, entryId, params);
+        case CharacterRenderType.Sparrow:
+          results = SparrowCharacter.queryAssets(type, entryId, params);
+        case CharacterRenderType.MultiSparrow:
+          results = MultiSparrowCharacter.queryAssets(type, entryId, params);
+        case CharacterRenderType.Packer:
+          results = PackerCharacter.queryAssets(type, entryId, params);
+        default:
+      }
+    }
+
+    return results;
+  }
+
+  /**
+   * Assets common to every character (like the health icon). Character subclasses `queryAssets` functions should call this,
+   * NOT `BaseCharacter.queryAssets`, to avoid infinite looping (the rooms).
+   *
+   * @param type The type of asset to query
+   * @param id The character ID to query.
+   * @param params Optional. Char entry params.
+   * @return An array of asset paths, or empty if no assets of that type are required.
+   */
+  public static function queryBaseAssets(type:AssetType, entryId:String, ?params:CharacterEntryParams):Array<AssetPath>
+  {
+    // Specific implementations handle figuring out which assets to load.
+
+    var results:Array<funkin.assets.Paths.AssetPath> = [];
+
+    var _data:Null<CharacterData> = CharacterRegistry.instance.fetchCharacterData(entryId);
+    if (_data == null) return results;
+
+    // Get the character's health icon path.
+    var healthIconId:String = _data?.healthIcon?.id ?? Constants.DEFAULT_HEALTH_ICON;
+    var healthIconPath:AssetPath = Paths.image('gameplay/characters/$healthIconId/icon-$healthIconId');
+
+    var results:Array<AssetPath> = [];
+
+    switch (type)
+    {
+      case IMAGE:
+        results.push(healthIconPath);
+      case XML:
+        results.push(healthIconPath.withAssetType(XML).orNull());
+      default:
+        // Nothing
+    }
+
+    return results.filterNull();
+  }
+
+  /**
    * The render type of the character.
    */
   public var renderType(default, null):CharacterRenderType;
 
-  public function new(id:String, renderType:CharacterRenderType)
+  public function new(id:String, ?params:Dynamic)
   {
-    super(CharacterDataParser.DEFAULT_DANCEEVERY);
+    super(CharacterData.DEFAULT_DANCEEVERY);
 
-    this.characterId = id;
+    this.id = id;
 
     ignoreExclusionPref = ['sing'];
 
-    _data = CharacterDataParser.fetchCharacterData(this.characterId);
+    _data = CharacterRegistry.instance.fetchCharacterData(this.id);
+
+    var expectedRenderType:CharacterRenderType = params?.renderType ?? _data.renderType;
     if (_data == null)
     {
-      throw 'Could not find character data for characterId: $characterId';
+      throw 'Could not find character data for characterId: $id';
     }
-    else if (_data.renderType != renderType)
+    else if (_data.renderType != expectedRenderType)
     {
-      throw 'Render type mismatch for character ($characterId): expected ${renderType}, got ${_data.renderType}';
+      throw 'Render type mismatch for character ($id): expected ${expectedRenderType}, got ${_data.renderType}';
     }
     else
     {
@@ -201,7 +292,7 @@ class BaseCharacter extends Bopper
       this.singTimeSteps = _data.singTime;
       this.globalOffsets = _data.offsets;
       this.flipX = _data.flipX;
-      this.renderType = renderType;
+      this.renderType = expectedRenderType;
     }
 
     if (PlayState.instance != null) currentStage = PlayState.instance.currentStage;
@@ -326,8 +417,8 @@ class BaseCharacter extends Bopper
     // so we can query which ones are available.
     this.comboNoteCounts = findCountAnimations('combo'); // ex. combo50
     this.dropNoteCounts = findCountAnimations('drop'); // ex. drop50
-    if (comboNoteCounts.length > 0) log('Character $characterId plays Combo animation at ${this.comboNoteCounts.join(', ')}');
-    if (dropNoteCounts.length > 0) log('Character $characterId plays Drop animation at ${this.dropNoteCounts.join(', ')}');
+    if (comboNoteCounts.length > 0) log('Character $id plays Combo animation at ${this.comboNoteCounts.join(', ')}');
+    if (dropNoteCounts.length > 0) log('Character $id plays Drop animation at ${this.dropNoteCounts.join(', ')}');
 
     super.onCreate(event);
   }
@@ -528,7 +619,7 @@ class BaseCharacter extends Bopper
 
   /**
    * Returns true if the player just pressed a note.
-   * Used when determing whether a the player character should revert to the `idle` animation.
+   * Used when determining whether a player character should revert to the `idle` animation.
    * On non-player characters, this should be ignored.
    */
   function justPressedNote(player:Int = 1):Bool
@@ -554,7 +645,7 @@ class BaseCharacter extends Bopper
 
   /**
    * Returns true if the player is holding a note.
-   * Used when determing whether a the player character should revert to the `idle` animation.
+   * Used when determining whether a player character should revert to the `idle` animation.
    * On non-player characters, this should be ignored.
    */
   function isHoldingNote(player:Int = 1):Bool

@@ -1,5 +1,6 @@
 package funkin.data;
 
+import lime.app.Future;
 import funkin.util.VersionUtil;
 import haxe.Constraints.Constructible;
 import funkin.util.tasks.TaskHandler;
@@ -11,7 +12,7 @@ import hx.concurrent.collection.SynchronizedMap;
 //
 // ~PATHS~
 //
-import funkin.assets.Assets as Assets;
+import funkin.assets.Assets;
 import funkin.assets.Assets.AssetType;
 import funkin.assets.Assets;
 import funkin.assets.Paths.AnimateAtlasAssetPathBuilder;
@@ -216,7 +217,6 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
     entries.set(entry.id, entry);
   }
 
-  #if FEATURE_MULTITHREADING
   /**
    * Loads all JSON files, constructs the appropriate entries, and adds them to the registry.
    * This function operates asynchronously, and returns a Future representing a fulfilled promise.
@@ -241,6 +241,7 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
     var scriptedEntryClassNames:Array<String> = [];
     var unscriptedEntryIds:Array<String> = [];
 
+    #if FEATURE_MULTITHREADING
     // A thread-safe array to store errors in.
     var entryErrors:SynchronizedArray<
       {
@@ -248,6 +249,15 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
         error:Any,
         ?entryCls:String
       }> = new SynchronizedArray();
+    #else
+    // An array to store errors in.
+    var entryErrors:Array<
+      {
+        ?entryId:String,
+        error:Any,
+        ?entryCls:String
+      }> = [];
+    #end
 
     var startUnscriptedEntries:() -> Void;
 
@@ -452,39 +462,50 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
       return true;
     });
 
-    // Queue loading of scripted entries.
     tallyScriptedEntriesFuture.onError(onError);
     tallyScriptedEntriesFuture.onComplete((_) ->
     {
-      // NOTE: onComplete() is run in the main thread.
-      if (scriptedEntryClassNames.length == 0)
-      {
-        // If no scripted entries, start loading unscripted entries.
-        checkComplete();
-      }
-      else
-      {
-        // TODO: Is it better to make one Future that loads them one at a time,
-        // or X futures which each load one entry?
-        for (entryCls in scriptedEntryClassNames)
-        {
-          var scriptedEntryFuture = TaskHandler.performTask({
-            task: performScriptedEntryLoad,
-            initialState: {
-              entryCls: entryCls
-            },
-          }, new lime.app.Promise<
-            {entryId:String, entry:T, entryCls:String}>());
+      // Asynchronously cache the JSON data we need to build the registry entries.
+      // On desktop this prevents a stutter, and on web this prevents a crash.
+      var assetPaths:Array<AssetPath> = [];
 
-          scriptedEntryFuture.onError(onError);
-          scriptedEntryFuture.onComplete(onScriptedEntryLoadedAsync);
+      assetPaths.appendUnique(queryRegistryAssets(JSON));
+
+      var cacheDataFuture:Future<Array<Future<Bool>>> = Assets.cacheAll(assetPaths);
+
+      // Queue loading of scripted entries.
+      cacheDataFuture.onError(onError);
+      cacheDataFuture.onComplete((_) ->
+      {
+        // NOTE: onComplete() is run in the main thread.
+        if (scriptedEntryClassNames.length == 0)
+        {
+          // If no scripted entries, start loading unscripted entries.
+          checkComplete();
         }
-      }
+        else
+        {
+          // TODO: Is it better to make one Future that loads them one at a time,
+          // or X futures which each load one entry?
+          for (entryCls in scriptedEntryClassNames)
+          {
+            var scriptedEntryFuture = TaskHandler.performTask({
+              task: performScriptedEntryLoad,
+              initialState: {
+                entryCls: entryCls
+              },
+            }, new lime.app.Promise<
+              {entryId:String, entry:T, entryCls:String}>());
+
+            scriptedEntryFuture.onError(onError);
+            scriptedEntryFuture.onComplete(onScriptedEntryLoadedAsync);
+          }
+        }
+      });
     });
 
     return promise.future;
   }
-  #end
 
   /**
    * Retrieve a list of all entry IDs in this registry.
@@ -528,6 +549,32 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
         return [];
     }
   }
+
+  /**
+   * Query the assets required to load all the entries in this registry.
+   *
+   * @param type The type of asset to query.
+   * @return An array of asset paths of that type.
+   */
+  public function queryAllAssets(type:AssetType, ?params:P):Array<AssetPath>
+  {
+    var results:Array<AssetPath> = [];
+    for (entryId in listEntryIds())
+    {
+      results.append(queryAssets(type, entryId, params));
+    }
+    return results;
+  }
+
+  /**
+   * Query the assets required to load the entry with the given ID.
+   * For example, querying a Stage would return all the assets required to render and load the Stage.
+   *
+   * @param type The type of asset to query
+   * @param id The ID of the entry.
+   * @return An array of asset paths, or empty if no assets of that type are required.
+   */
+  public abstract function queryAssets(type:AssetType, id:String, ?params:P):Array<AssetPath>;
 
   /**
    * Return whether the entry ID is known to have an attached script.

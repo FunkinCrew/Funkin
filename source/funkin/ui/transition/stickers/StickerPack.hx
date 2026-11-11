@@ -20,6 +20,43 @@ class StickerPack implements IRegistryEntry<StickerData>
    */
   public final _data:StickerData;
 
+  /**
+   * Retrieve a list of all the asset paths required to load the speaker.
+   *
+   * If you have a scripted class which initializes sprites, or plays sounds or something,
+   * make sure you add them here so they get cached in the loading screen.
+   *
+   * @param type The type of asset to query
+   * @param entryId The speaker ID, used to look up the specific assets.
+   * @param params The entry parameters, if any.
+   * @return An array of asset paths, or empty if no assets of that type are required.
+   */
+  public static function queryAssets(type:funkin.assets.Assets.AssetType,
+    entryId:String,
+    ?params:StickerEntryParams):Array<funkin.assets.Paths.AssetPath>
+  {
+    var results:Array<funkin.assets.Paths.AssetPath> = [];
+
+    var entry:StickerPack = StickerRegistry.instance.fetchEntry(entryId, params);
+
+    switch (type)
+    {
+      case IMAGE:
+        for (sticker in entry.getStickers())
+        {
+          results.push(funkin.assets.Paths.image(sticker));
+        }
+
+      case XML:
+        // Nothing
+
+      default:
+        // Nothing
+    }
+
+    return results;
+  }
+
   public function new(id:String, ?params:Dynamic)
   {
     this.id = id;
@@ -65,7 +102,7 @@ class StickerPack implements IRegistryEntry<StickerData>
    */
   public function getRandomStickerPath(last:Bool):String
   {
-    return FlxG.random.getObject(getStickers());
+    return funkin.assets.Paths.formatRelative(FlxG.random.getObject(getStickers()), 'ui/loading/stickers/stickerpacks', Constants.EXT_IMAGE);
   }
 
   public function toString():String

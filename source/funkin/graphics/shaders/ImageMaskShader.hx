@@ -41,17 +41,7 @@ class ImageMaskShader extends FlxGraphicsShader
             vec4 maskTexture = flixel_texture2D(image, openfl_TextureCoordv);
 
             vec4 color = vec4(originalTexture.r * maskTexture.a, originalTexture.g * maskTexture.a, originalTexture.b * maskTexture.a, maskTexture.a);
-            // The color target is written last on purpose, see MultiBufferShader.
-            if (sampleAttachment)
-            {
-              gl_FragData[1] = color;
-            }
-            else
-            {
-              gl_FragData[1] = vec4(0.0, 0.0, 0.0, 0.0);
-            }
-
-            gl_FragData[0] = color;
+            gl_FragColor = color;
         }
     ')
   public function new()

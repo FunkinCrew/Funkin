@@ -1,5 +1,7 @@
 package funkin.ui.charSelect;
 
+import flixel.util.typeLimit.NextState;
+import funkin.ui.transition.Transition;
 import flixel.FlxObject;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -30,6 +32,11 @@ import flixel.util.FlxColor;
 import funkin.util.SwipeUtil;
 import funkin.util.TouchUtil;
 #end
+import funkin.assets.Assets.AssetType;
+import funkin.assets.Paths.AssetPath;
+import funkin.assets.Paths;
+import funkin.ui.transition.Transition;
+import funkin.ui.charSelect.icons.Lock;
 
 /**
  * Parameters used to initialize the CharacterSelectState.
@@ -201,6 +208,9 @@ class CharacterSelectState extends MusicBeatSubState
 
     currentCharacterId = value;
 
+    var event:CharacterSelectScriptEvent = CharacterSelectScriptEvent.get(CHARACTER_SELECTED, value);
+    dispatchEvent(event);
+
     nametag.loadCharacter(value);
 
     characters.setCharacters(oldId, value);
@@ -320,6 +330,11 @@ class CharacterSelectState extends MusicBeatSubState
    */
   var wentBackToFreeplay:Bool = false;
 
+  /**
+   * Foreground speakers.
+   */
+  var speakers:FunkinSprite;
+
   public function new(?params:CharacterSelectStateParams)
   {
     super();
@@ -354,7 +369,94 @@ class CharacterSelectState extends MusicBeatSubState
     @:bypassAccessor
     currentSelection = DEFAULT_CURSOR_INDEX;
 
+    speakers = new FunkinSprite(CUTOUT_SIZE - 10, 0);
+
     instance = this;
+  }
+
+  /**
+   * Produce a list of all the AssetPaths that this state depends on to load.
+   * This is used to ensure those assets are properly cached during the preceding loading screen.
+   *
+   * @param type The type of AssetPath to return a list of paths for.
+   * @return A list of AssetPaths of that type that the state will use.
+   */
+  public static function queryAssets(type:AssetType):Array<AssetPath>
+  {
+    var results:Array<AssetPath> = [];
+
+    switch (type)
+    {
+      case IMAGE:
+        results.append(Paths.animateAtlas('ui/character-select/interface/crowd').image());
+        results.append(Paths.animateAtlas('ui/character-select/interface/dipshit-text').image());
+        results.append(Paths.animateAtlas('ui/character-select/interface/char-select-stage').image());
+        results.append(Paths.animateAtlas('ui/character-select/interface/bar-thing').image());
+        results.append(Paths.animateAtlas('ui/character-select/interface/speakers').image());
+
+        results.push(Paths.image('ui/character-select/interface/char-select-bg'));
+        results.push(Paths.image('ui/character-select/interface/curtains'));
+        results.push(Paths.image('ui/character-select/interface/char-light'));
+        results.push(Paths.image('ui/character-select/interface/foreground-blur'));
+        results.push(Paths.image('ui/freeplay/interface/transition-gradient'));
+        results.push(Paths.image('ui/character-select/interface/char-selector'));
+        results.push(Paths.image('ui/character-select/interface/char-selector-confirm'));
+        results.push(Paths.image('ui/character-select/interface/char-selector-denied'));
+        results.push(Paths.image('ui/character-select/characters/nametag-bf'));
+        results.push(Paths.image('ui/character-select/characters/nametag-locked'));
+
+        results.append(Paths.animateAtlas('ui/character-select/characters/bf').image());
+
+      case JSON:
+        results.append(Paths.animateAtlas('ui/character-select/characters/bf').json());
+        results.append(Paths.animateAtlas('ui/character-select/interface/dipshit-text').json());
+        results.append(Paths.animateAtlas('ui/character-select/interface/crowd').json());
+        results.append(Paths.animateAtlas('ui/character-select/interface/char-select-stage').json());
+        results.append(Paths.animateAtlas('ui/character-select/interface/bar-thing').json());
+        results.append(Paths.animateAtlas('ui/character-select/interface/speakers').json());
+        results.push(Paths.music('ui/character-select/stay-funky').metadata());
+
+      case XML:
+        results.push(Paths.xml('ui/character-select/interface/char-selector-confirm'));
+        results.push(Paths.xml('ui/character-select/interface/char-selector-denied'));
+
+      case SOUND:
+        results.push(Paths.sound('ui/character-select/sounds/select'));
+        results.push(Paths.sound('ui/character-select/sounds/unlock'));
+        results.push(Paths.sound('ui/character-select/sounds/locked'));
+        results.push(Paths.sound('ui/character-select/sounds/static'));
+        results.push(Paths.sound('ui/character-select/sounds/lights'));
+        results.push(Paths.sound('ui/character-select/sounds/confirm'));
+        results.push(Paths.sound('ui/main-menu/cancel-menu'));
+        results.push(Paths.music('ui/character-select/stay-funky').audio());
+
+      case TEXT:
+        results.push(Paths.txt('ui/character-select/interface/icon-bop/info'));
+
+      case SHADER:
+        results.push(Paths.frag('ui/shaders/mosaic'));
+
+      default:
+        // No assets.
+    }
+
+    results.append(CharSelectCharacter.queryAssets(type, 'locked', LOCKED_PLAYER));
+
+    for (playerId in PlayerRegistry.instance.listEntryIds())
+    {
+      if (
+        type == IMAGE
+        && PlayerRegistry.instance.fetchEntry(playerId)?.getCharSelectData() != null
+      ) results.push(Paths.image('ui/character-select/characters/nametag-$playerId'));
+
+      results.append(CharSelectCharacter.queryAssets(type, playerId, PLAYER));
+      results.append(CharSelectCharacter.queryAssets(type, playerId, GF));
+    }
+
+    results.append(Lock.queryAssets(type));
+    results.append(PixelatedIcon.queryAssets(type));
+
+    return results;
   }
 
   function loadAvailableCharacters():Void
@@ -421,11 +523,11 @@ class CharacterSelectState extends MusicBeatSubState
     loadAvailableCharacters();
 
     var bg:FunkinSprite = new FunkinSprite(CUTOUT_SIZE + -153, -140);
-    bg.loadGraphic(Paths.image('ui/character-select/interface/char-select-bg'));
+    bg.loadGraphic(Paths.image('ui/character-select/interface/char-select-bg').toFlxGraphicAsset());
     bg.scrollFactor.set(0.1, 0.1);
     add(bg);
 
-    var crowd:FunkinSprite = new FunkinSprite(CUTOUT_SIZE, 0).loadTextureAtlas('ui/character-select/interface/crowd', {
+    var crowd:FunkinSprite = new FunkinSprite(CUTOUT_SIZE + 28, 0).loadTextureAtlas('ui/character-select/interface/crowd', {
       applyStageMatrix: true
     });
     crowd.anim.addBySymbol('wholeTimeline', crowd.getDefaultSymbol(), crowd.library.frameRate);
@@ -441,7 +543,7 @@ class CharacterSelectState extends MusicBeatSubState
     add(stage);
 
     var curtains:FunkinSprite = new FunkinSprite(CUTOUT_SIZE + -212, -99);
-    curtains.loadGraphic(Paths.image('ui/character-select/interface/curtains'));
+    curtains.loadGraphic(Paths.image('ui/character-select/interface/curtains').toFlxGraphicAsset());
     curtains.scrollFactor.set(1.4, 1.4);
     add(curtains);
 
@@ -463,27 +565,26 @@ class CharacterSelectState extends MusicBeatSubState
     });
 
     var charLight:FunkinSprite = new FunkinSprite(CUTOUT_SIZE + 800, 250);
-    charLight.loadGraphic(Paths.image('ui/character-select/interface/char-light'));
+    charLight.loadGraphic(Paths.image('ui/character-select/interface/char-light').toFlxGraphicAsset());
     add(charLight);
 
     var charLightGF:FunkinSprite = new FunkinSprite(CUTOUT_SIZE + 180, 240);
-    charLightGF.loadGraphic(Paths.image('ui/character-select/interface/char-light'));
+    charLightGF.loadGraphic(Paths.image('ui/character-select/interface/char-light').toFlxGraphicAsset());
     add(charLightGF);
 
     // Adding the character group here for layering.
     add(characters);
 
-    var speakers:FunkinSprite = new FunkinSprite(CUTOUT_SIZE - 10, 0).loadTextureAtlas('ui/character-select/interface/speakers', {
+    speakers.loadTextureAtlas('ui/character-select/interface/speakers', {
       applyStageMatrix: true
     });
-    speakers.anim.addBySymbol('wholeTimeline', speakers.getDefaultSymbol(), speakers.library.frameRate);
-    speakers.animation.play('wholeTimeline');
+    speakers.anim.addBySymbol('wholeTimeline', speakers.getDefaultSymbol(), speakers.library.frameRate, false);
     speakers.scrollFactor.set(1.8, 1.8);
     speakers.scale.set(1.05, 1.05);
     add(speakers);
 
     var fgBlur:FunkinSprite = new FunkinSprite(CUTOUT_SIZE + -125, 170);
-    fgBlur.loadGraphic(Paths.image('ui/character-select/interface/foreground-blur'));
+    fgBlur.loadGraphic(Paths.image('ui/character-select/interface/foreground-blur').toFlxGraphicAsset());
     fgBlur.blend = BlendMode.MULTIPLY;
     add(fgBlur);
 
@@ -520,20 +621,17 @@ class CharacterSelectState extends MusicBeatSubState
     add(characterHitbox);
     #end
 
-    selectSound.loadEmbedded(Paths.sound('ui/character-select/sounds/select'));
+    selectSound.loadEmbedded(Paths.sound('ui/character-select/sounds/select').toFlxSoundAsset());
     selectSound.volume = 0.7;
     FlxG.sound.list.add(selectSound);
 
-    unlockSound.loadEmbedded(Paths.sound('ui/character-select/sounds/unlock'));
+    unlockSound.loadEmbedded(Paths.sound('ui/character-select/sounds/unlock').toFlxSoundAsset());
     unlockSound.volume = 0.7;
     FlxG.sound.list.add(unlockSound);
 
-    lockedSound.loadEmbedded(Paths.sound('ui/character-select/sounds/locked'));
+    lockedSound.loadEmbedded(Paths.sound('ui/character-select/sounds/locked').toFlxSoundAsset());
     lockedSound.volume = 0.7;
     FlxG.sound.list.add(lockedSound);
-
-    // Pre-caching the menu music for later.
-    FlxG.sound.cache(Paths.sound('ui/character-select/stay-funky/stay-funky'));
 
     icons.doIntroTween();
 
@@ -565,7 +663,7 @@ class CharacterSelectState extends MusicBeatSubState
     });
     #end
 
-    transitionGradient.loadGraphic(Paths.image('ui/freeplay/interface/transition-gradient'));
+    transitionGradient.loadGraphic(Paths.image('ui/freeplay/interface/transition-gradient').toFlxGraphicAsset());
     transitionGradient.scale.set(FlxG.width, 1);
     transitionGradient.flipY = true;
     transitionGradient.updateHitbox();
@@ -600,7 +698,7 @@ class CharacterSelectState extends MusicBeatSubState
     var blackScreen:FunkinSprite = new FunkinSprite(-(FlxG.width * 0.5), -(FlxG.height * 0.5)).makeSolidColor(FlxG.width * 2, FlxG.height * 2, 0xFF000000);
     add(blackScreen);
 
-    introSound.loadEmbedded(Paths.sound('ui/character-select/sounds/lights'));
+    introSound.loadEmbedded(Paths.sound('ui/character-select/sounds/lights').toFlxSoundAsset());
     introSound.volume = 0;
 
     FlxG.sound.list.add(introSound);
@@ -732,6 +830,9 @@ class CharacterSelectState extends MusicBeatSubState
 
               @:bypassAccessor
               currentCharacterId = characterId;
+
+              var event:CharacterSelectScriptEvent = CharacterSelectScriptEvent.get(CHARACTER_SELECTED, characterId);
+              dispatchEvent(event);
 
               if (locksToUnlock.isEmpty())
               {
@@ -890,6 +991,13 @@ class CharacterSelectState extends MusicBeatSubState
     }
   }
 
+  override public function beatHit():Bool
+  {
+    speakers?.animation?.play('wholeTimeline');
+
+    return super.beatHit();
+  }
+
   function selectCharacter():Void
   {
     if (currentCharacterId == 'locked')
@@ -909,7 +1017,7 @@ class CharacterSelectState extends MusicBeatSubState
     inputHandler.reset();
     cursors.confirm();
 
-    FunkinSound.playOnce(Paths.sound('ui/character-select/sounds/confirm'));
+    FunkinSound.playOnce(Paths.sound('ui/character-select/sounds/confirm').toFlxSoundAsset());
 
     var event:CharacterSelectScriptEvent = CharacterSelectScriptEvent.get(CHARACTER_CONFIRMED, currentCharacterId);
     dispatchEvent(event);
@@ -999,7 +1107,7 @@ class CharacterSelectState extends MusicBeatSubState
 
     wentBackToFreeplay = true;
 
-    FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu'));
+    FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu').toFlxSoundAsset());
     FlxTween.tween(FlxG.sound.music, {
       volume: 0.0
     }, 0.7, {
@@ -1067,12 +1175,18 @@ class CharacterSelectState extends MusicBeatSubState
       ease: FlxEase.backIn,
       onComplete: (_) ->
       {
-        FlxG.switchState(() -> FreeplayState.build({
-          {
-            character: wentBackToFreeplay ? rememberedCharacterId : currentCharacterId,
-            fromCharSelect: true
-          }
-        }));
+        var freeplayParams:FreeplayStateParams = {
+          character: wentBackToFreeplay ? rememberedCharacterId : currentCharacterId,
+          fromCharSelect: true
+        };
+        var targetState:NextState = () -> FreeplayState.build(freeplayParams);
+        // TODO: THis is very hacky imo, find a better way -Moon.
+
+        Transition.switchState(targetState, {
+          transition: TransitionType.BlackScreen(FadeType.Fade(FadeDirection.North), FadeType.Fade(FadeDirection.South)),
+          assetQuery: FreeplayState.buildAssetQuery.bind(_, freeplayParams),
+          shouldPurgeCache: true
+        });
       }
     });
   }

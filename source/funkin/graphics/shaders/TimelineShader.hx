@@ -6,34 +6,43 @@ import flixel.system.FlxAssets.FlxShader;
 import openfl.display.BitmapData;
 
 /**
+ * One stretch of the song under a single time signature.
+ */
+typedef TimelineSignatureSegment =
+{
+  // sooo shaders can't have dynamic arrays, so we have a fixed amount of segments that can be displayed at once.
+  // Luckily you can reuse these segments so as long as 8 segments are enough to cover the visible area, it'll be fine.
+
+  // otherwise.... sorry!
+
+  /**
+   * Where the stretch begins, in pixels from the start of the song.
+   */
+  var startPx:Float;
+
+  var numerator:Int;
+  var denominator:Int;
+
+  /**
+   * How many bars came before this stretch, so bar numbers keep counting across it.
+   */
+  var barIndex:Int;
+}
+
+/**
  * hi this is fabs this shader is satan and writing it was pure evil
  * hi this is pursk this shader is optimized and cooler than ever
+ * hi this is kade this shader is now satan v2
  */
 class TimelineShader extends FlxShader
 {
   /**
-   * The numerator for the current time signature (the `3` in `3/4`).
+   * How many time signature stretches the shader can hold at once.
+   * The stretches sent are the one under the left edge of the view and the ones after it.
    */
-  public var timeSignatureNumerator(default, set):Int;
+  public static inline var MAX_SEGMENTS:Int = 8;
 
-  public function set_timeSignatureNumerator(val:Int):Int
-  {
-    timeSignatureNumerator = val;
-    timeSigNumerator.value = [val];
-    return val;
-  }
-
-  /**
-   * The denominator for the current time signature (the `4` in `3/4`).
-   */
-  public var timeSignatureDenominator(default, set):Int;
-
-  public function set_timeSignatureDenominator(val:Int):Int
-  {
-    timeSignatureDenominator = val;
-    timeSigDenominator.value = [val];
-    return val;
-  }
+  static inline var SEGMENT_FAR:Float = 1.0e30;
 
   /**
    * The image used for rendering text in the shader.
@@ -68,6 +77,19 @@ class TimelineShader extends FlxShader
   {
     zoomDetail = val;
     detail.value = [val];
+    return val;
+  }
+
+  /**
+   * How many grid lines a beat is cut into on the lanes. Below one, the lanes only draw bars.
+   * The ruler keeps its own detail.
+   */
+  public var gridLinesPerBeat(default, set):Float = 4;
+
+  public function set_gridLinesPerBeat(val:Float):Float
+  {
+    gridLinesPerBeat = val;
+    gridSplits.value = [val];
     return val;
   }
 
@@ -147,6 +169,27 @@ class TimelineShader extends FlxShader
   }
 
   /**
+   * Hands the shader the time signature stretches to draw, first one first.
+   */
+  public function setSegments(segments:Array<TimelineSignatureSegment>):Void
+  {
+    var slots:Array<Dynamic> = [seg0, seg1, seg2, seg3, seg4, seg5, seg6, seg7];
+    for (i in 0...MAX_SEGMENTS)
+    {
+      var slot = slots[i];
+      if (i < segments.length)
+      {
+        var seg = segments[i];
+        slot.value = [seg.startPx, seg.numerator, seg.denominator, seg.barIndex];
+      }
+      else
+      {
+        slot.value = [SEGMENT_FAR, 4, 4, 0];
+      }
+    }
+  }
+
+  /**
    * Okay, there's the fucking thing, that if this frag text was in one string line, it would throw compilation error *src/funkin/graphics/shaders/TimelineShader.cpp(*line*): error C2026*
    * Aka "this line is too long, MVSC can't proceed that".
    * It's the only way :shrugshrug:, got it?
@@ -221,25 +264,36 @@ class TimelineShader extends FlxShader
     uniform vec2 offset;
     uniform float layerAmt;
     uniform float topBarSize;
-    uniform float timeSigNumerator;
-    uniform float timeSigDenominator;
     uniform float detail;
+    uniform float gridSplits;
+    uniform vec4 seg0;
+    uniform vec4 seg1;
+    uniform vec4 seg2;
+    uniform vec4 seg3;
+    uniform vec4 seg4;
+    uniform vec4 seg5;
+    uniform vec4 seg6;
+    uniform vec4 seg7;
     const float MAX_DETAIL = 2.0;
     const float MIN_DETAIL = -1.0;
-    int getSplits(float change)
+    vec4 findSegment(float x)
     {
-      float d = clamp(detail + change, MIN_DETAIL, MAX_DETAIL);
-      if (d < -0.5) return 1;
-      if (d < 0.5) return 1;
-      if (d < 1.5) return int(timeSigNumerator);
-      return int(timeSigNumerator * 4.0);
-    }\n" + "float getMeasureInterval()
+      vec4 s = seg0;
+      if (x >= seg1.x) s = seg1;
+      if (x >= seg2.x) s = seg2;
+      if (x >= seg3.x) s = seg3;
+      if (x >= seg4.x) s = seg4;
+      if (x >= seg5.x) s = seg5;
+      if (x >= seg6.x) s = seg6;
+      if (x >= seg7.x) s = seg7;
+      return s;
+    }\n" + "float getMeasureInterval(float numer, float denom)
     {
       float d = clamp(detail, MIN_DETAIL, MAX_DETAIL);
-      if (d < -0.5) return timeSigDenominator * 2.0;
-      if (d < 0.5) return timeSigDenominator;
+      if (d < -0.5) return denom * 2.0;
+      if (d < 0.5) return denom;
       if (d < 1.5) return 1.0;
-      return 1.0 / max(1.0, timeSigNumerator);
+      return 1.0 / max(1.0, numer);
     }\n" + "vec2 applyBoundary(vec2 result, float divNum, float period, float val)
     {
       float m = mod(divNum, period);
@@ -255,8 +309,8 @@ class TimelineShader extends FlxShader
       return applyBoundary(lengths, divisionNum, measureDivisions, 0.4);
     }\n" + "vec2 calculateDivisionOpacity(float divisionNum, float barSplits, float beatDivisions, float measureDivisions)
     {
-      vec2 mults = vec2(0.1);
-      mults = applyBoundary(mults, divisionNum, beatDivisions, 0.25);
+      vec2 mults = vec2(0.22);
+      mults = applyBoundary(mults, divisionNum, beatDivisions, 0.45);
       mults = applyBoundary(mults, divisionNum, barSplits, 0.55);
       return applyBoundary(mults, divisionNum, measureDivisions, 0.80);
     }\n" + "vec2 calculateDecimalText(float num)
@@ -264,23 +318,19 @@ class TimelineShader extends FlxShader
       num = max(num, 0.000001);
       float digits = floor(log(num) / log(10.0)) + 1.0;
       return vec2(num / pow(10.0, digits), digits + 1.0);
-    }\n" + "vec3 createTopBar(vec3 col, vec2 uv, float barWidth)
+    }\n" + "vec3 createTopBar(vec3 col, vec2 uv, float localX, float numer, float denom, float barBase, float barWidth, float splitFactor, float barSplits, float beatDivisions, float measureDivisions)
     {
       const vec3 bgColor = vec3(0.12);
       const vec3 textColor = vec3(0.80);
       col = mix(col, bgColor, 1.0 - step(topBarSize, uv.y));
       if (uv.x < 0.0) return col;
-      float barSplits = float(getSplits(1.0));
-      float beatDivisions = barSplits / max(1.0, timeSigNumerator);
-      float measureDivisions = barSplits * max(1.0, timeSigDenominator);
-      float tickFactor = barWidth / max(1.0, barSplits);
-      float measureInterval = max(0.0001, getMeasureInterval());
+      float measureInterval = max(0.0001, getMeasureInterval(numer, denom));
       float measureFactor = barWidth * measureInterval;
-      float relLW = lineWidth / tickFactor;
-      float relX = mod(uv.x / tickFactor, 1.0);
+      float relLW = lineWidth / splitFactor;
+      float relX = mod(localX / splitFactor, 1.0);
       float multLeft = 1.0 - smoothstep(0.0, relLW, relX);
       float multRight = 1.0 - smoothstep(1.0, 1.0 - relLW, relX);
-      float divisionNum = floor(uv.x / tickFactor);
+      float divisionNum = floor(localX / splitFactor) + barBase * barSplits;
       vec2 lengths = calculateTickLengths(divisionNum, barSplits, beatDivisions, measureDivisions);
       float tickTop = topBarSize * 0.9;
       float belowTop = 1.0 - step(tickTop, uv.y);
@@ -288,18 +338,19 @@ class TimelineShader extends FlxShader
       col = mix(col, textColor, multRight * step(tickTop - topBarSize * lengths.y, uv.y) * belowTop);
       float textMult = 0.0; if (uv.y < topBarSize)
       {
-        float measureFloor = floor(uv.x / measureFactor);
-        vec2 relMeasure = vec2(mod(uv.x / measureFactor, 1.0), mod(uv.y / topBarSize, 1.0));
+        float globalBar = barBase + localX / barWidth;
+        float measureFloor = floor(globalBar / measureInterval + 0.0001);
+        vec2 relMeasure = vec2(globalBar / measureInterval - measureFloor, mod(uv.y / topBarSize, 1.0));
         vec2 textUV = vec2(relMeasure.x * (measureFactor / topBarSize), relMeasure.y);
         textUV = textUV * 0.15 - vec2(0.0, 0.01);
-        int curMeasure = int(measureFloor * measureInterval + 1.0);
-        int curBeat = int(floor(uv.x / max(1.0, beatSize.x)) + 1.0);
+        int curMeasure = int(measureFloor * measureInterval + 1.0001);
+        int curBeat = int(floor(localX / max(1.0, beatSize.x) + 0.0001) + 1.0);
         if (detail == 2.0)
         {
-          float percentage = mod(measureFloor * measureInterval, 1.0);
-          float result = (percentage * timeSigNumerator + 1.0) / 10.0;
+          float percentage = mod(measureFloor * measureInterval + 0.0001, 1.0);
+          float result = (percentage * numer + 1.0) / 10.0;
           vec2 decimalText = calculateDecimalText(result);
-          bool isFirstBeat = mod(float(curBeat) - 1.0, max(1.0, timeSigNumerator)) == 0.0;
+          bool isFirstBeat = mod(float(curBeat) - 1.0, max(1.0, numer)) == 0.0;
           if (isFirstBeat) textMult = printInt(textUV, curMeasure, 0);
           else textMult = printFloat(textUV, float(curMeasure) + decimalText.x, int(decimalText.y), 0) / 2.0;
         } else {
@@ -315,18 +366,24 @@ class TimelineShader extends FlxShader
       const vec3 bar1Color = vec3(0.23);
       const vec3 bar2Color = vec3(0.27);
       const vec3 divisionColor = vec3(0.07);
-      float barWidth = beatSize.x * max(1.0, timeSigNumerator);
-      float barSplitsF = max(1.0, float(getSplits(0.0)));
-      float splitFactor = barWidth / barSplitsF;
-      float beatDivisions = barSplitsF / max(1.0, timeSigNumerator);
-      float measureDivisions = barSplitsF * max(1.0, timeSigDenominator);
+      vec4 seg = findSegment(uv.x);
+      float numer = max(1.0, seg.y);
+      float denom = max(1.0, seg.z);
+      float barBase = seg.w;
+      float localX = uv.x - seg.x;
+      float barWidth = beatSize.x * numer;
+      bool splitBeats = gridSplits >= 1.0;
+      float splitFactor = splitBeats ? beatSize.x / gridSplits : barWidth;
+      float beatDivisions = splitBeats ? gridSplits : 1.0;
+      float barSplits = splitBeats ? gridSplits * numer : 1.0;
+      float measureDivisions = barSplits * denom;
       vec2 lw = vec2(lineWidth / splitFactor, lineWidth * 1.5 / max(1.0, beatSize.y));
-      vec2 relPos = vec2(mod(uv.x / splitFactor, 1.0), mod(uv.y / max(1.0, beatSize.y), 1.0));
-      float barNum = floor(uv.x / barWidth);
-      float measureNum = floor(barNum / max(1.0, timeSigDenominator));
+      vec2 relPos = vec2(mod(localX / splitFactor, 1.0), mod(uv.y / max(1.0, beatSize.y), 1.0));
+      float globalBar = barBase + localX / barWidth;
+      float measureNum = floor(globalBar / denom + 0.0001);
       vec3 col = mix(bar1Color, bar2Color, mod(measureNum, 2.0));
-      float divisionNum = floor(uv.x / splitFactor);
-      vec2 mults = calculateDivisionOpacity(divisionNum, barSplitsF, beatDivisions, measureDivisions);
+      float divisionNum = floor(localX / splitFactor) + barBase * barSplits;
+      vec2 mults = calculateDivisionOpacity(divisionNum, barSplits, beatDivisions, measureDivisions);
       float multLeft = 1.0 - smoothstep(0.0, lw.x, relPos.x);
       float multRight = 1.0 - smoothstep(1.0, 1.0 - lw.x, relPos.x);
       float multVertical = 1.0 - min(smoothstep(0.0, lw.y, relPos.y), smoothstep(1.0, 1.0 - lw.y, relPos.y));
@@ -335,7 +392,7 @@ class TimelineShader extends FlxShader
       col = mix(col, divisionColor, multVertical);
       if (uv.x < 0.0 || uv.y < 0.0 || uv.y > beatSize.y * layerAmt)
         col = divisionColor;
-      col = createTopBar(col, barUv, barWidth);
+      col = createTopBar(col, barUv, localX, numer, denom, barBase, barWidth, splitFactor, barSplits, beatDivisions, measureDivisions);
       if (uv.x > beatSize.x * beatAmt || uv.x < 0.0)
         col *= 0.5;
 
@@ -348,15 +405,21 @@ class TimelineShader extends FlxShader
     areaWidth.value = [100];
     areaHeight.value = [100];
     beatSize.value = [100, 100];
+    gridSplits.value = [4];
 
     zoomDetail = 0;
     layerCount = 1;
     beatCount = 100;
     beatLength = 100;
 
-    // setting these to 4/4 for now, but they COULD be anything! i just don't know exactly how i should set that up rn in the editor
-    timeSignatureNumerator = 4;
-    timeSignatureDenominator = 4;
+    setSegments([
+      {
+        startPx: 0,
+        numerator: 4,
+        denominator: 4,
+        barIndex: 0
+      }
+    ]);
 
     this.lineWidth.value = [lineWidth];
     topBarSize.value = [TimelineViewport.TOP_BAR_HEIGHT];

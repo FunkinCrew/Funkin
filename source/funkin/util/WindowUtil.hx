@@ -113,7 +113,7 @@ class WindowUtil
     openfl.Lib.current.stage.addEventListener(openfl.events.KeyboardEvent.KEY_DOWN, (e:openfl.events.KeyboardEvent) ->
     {
       #if FEATURE_HAXEUI
-      if (haxe.ui.focus.FocusManager.instance.focus != null)
+      if (funkin.util.HaxeUIFocusUtil.isFocused())
       {
         return;
       }

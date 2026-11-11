@@ -1,5 +1,6 @@
 package funkin.ui;
 
+import funkin.util.FlxStateUtil;
 import funkin.modding.IScriptedClass.IEventHandler;
 import funkin.ui.mainmenu.MainMenuState;
 import flixel.FlxSubState;
@@ -18,11 +19,10 @@ import funkin.input.Controls;
 import funkin.ui.FullScreenScaleMode;
 import funkin.ui.transition.preload.hotreload.HotReloadState.HotReloadStateParams;
 #if FEATURE_TOUCH_CONTROLS
-import funkin.graphics.FunkinCamera;
-import funkin.mobile.ui.FunkinHitbox;
-import funkin.mobile.input.PreciseInputHandler;
-import funkin.mobile.ui.FunkinBackButton;
-import funkin.mobile.ui.mainmenu.FunkinOptionsButton;
+import funkin.touch.ui.FunkinHitbox;
+import funkin.touch.ui.FunkinBackButton;
+import funkin.touch.ui.mainmenu.FunkinOptionsButton;
+import funkin.touch.input.PreciseInputHandler;
 import funkin.play.notes.NoteDirection;
 #end
 
@@ -69,7 +69,13 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
   override function finishTransIn()
   {
-    super.finishTransIn();
+    if (FlxStateUtil.hasSubState(this)) FlxStateUtil.closeTransitionAtTop(this);
+    else
+      super.finishTransIn();
+
+    var stateClass:Null<Class<Dynamic>> = FlxG.state != null ? Type.getClass(FlxG.state) : null;
+    var state:String = stateClass != null ? Type.getClassName(stateClass) : 'none';
+    trace(' UI '.bold().bg_orange() + '$state: Finish transition in.');
 
     default_trans_isTransitioning = false;
   }
@@ -199,16 +205,6 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
     Conductor.beatHit.remove(this.beatHit);
     Conductor.stepHit.remove(this.stepHit);
-  }
-
-  function handleFunctionControls():Void
-  {
-    // Emergency exit button.
-    if (FlxG.keys.justPressed.F4)
-    {
-      FlxG.switchState(() -> new MainMenuState());
-      WindowUtil.setWindowTitle('Friday Night Funkin\'');
-    }
   }
 
   override function update(elapsed:Float):Void
@@ -375,6 +371,21 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
     if (event.eventCanceled)
     {
+      event.finish();
+      return;
+    }
+
+    if (FlxStateUtil.cancelTransitionAtTop(this))
+    {
+      FlxTransitionableState.skipNextTransIn = false;
+      FlxTransitionableState.skipNextTransOut = false;
+    }
+
+    // Make sure that the game opens substates at the top of the stack.
+    // Events will be dispatched by the substate.
+    if (FlxStateUtil.hasSubState(this, true))
+    {
+      FlxStateUtil.openSubStateAtTop(targetSubState, this);
       event.finish();
       return;
     }

@@ -171,6 +171,11 @@ interface IPlayStateScriptedClass extends INoteScriptedClass extends IBPMSyncedS
   public function onSongEvent(event:SongEventScriptEvent):Void;
 
   /**
+   * Called every frame while a Custom Event runs, from 0% to 100%.
+   */
+  public function onCustomEvent(event:CustomEventScriptEvent):Void;
+
+  /**
    * Called when the countdown of the song starts.
    */
   public function onCountdownStart(event:CountdownScriptEvent):Void;

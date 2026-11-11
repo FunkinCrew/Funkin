@@ -39,6 +39,15 @@ class ReloadAssetsDebugPlugin extends FlxBasic
       {
         reload();
       }
+
+      #if html5
+      if (FlxG.keys.justPressed.SEVEN && FlxG.keys.pressed.SHIFT)
+      #else
+      if (FlxG.keys.justPressed.F7)
+      #end
+      {
+        funkin.assets.FunkinAssetCache.instance.debug_listCachedAssets();
+      }
     }
   }
 
@@ -89,12 +98,14 @@ class ReloadAssetsDebugPlugin extends FlxBasic
           targetState: scriptedNextState
         }
       }
+      // Directly switch to HotReloadState; we don't need Transition since HotReloadState handles asset loading.
       FlxG.switchState(() -> new HotReloadState(hotReloadParams));
     }
     else
     {
-      var clsName:String = Type.getClassName(Type.getClass(state));
-      if (funkin.modding.CppiaScripts.exists(clsName))
+      @:nullSafety(Off)
+      var clsName:Null<String> = Type.getClassName(Type.getClass(state));
+      if (clsName != null && funkin.modding.CppiaScripts.exists(clsName))
       {
         trace('Hot-reloading compiled state: ' + clsName);
         if (Std.isOfType(state, MusicBeatState) || Std.isOfType(state, MusicBeatSubState)) state.onPreHotReload();
@@ -106,6 +117,7 @@ class ReloadAssetsDebugPlugin extends FlxBasic
             return newState;
           }
         };
+        // Directly switch to HotReloadState; we don't need Transition since HotReloadState handles asset loading.
         FlxG.switchState(() -> new HotReloadState(hotReloadParams));
         return;
       }
@@ -121,6 +133,7 @@ class ReloadAssetsDebugPlugin extends FlxBasic
         // Fetch the custom hot reload params for this state.
         hotReloadParams = state.getHotReloadParams();
       }
+      // Directly switch to HotReloadState; we don't need Transition since HotReloadState handles asset loading.
       FlxG.switchState(() -> new HotReloadState(hotReloadParams));
     }
   }

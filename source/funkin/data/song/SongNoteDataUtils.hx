@@ -8,10 +8,8 @@ using SongData.SongNoteData;
 @:nullSafety
 class SongNoteDataUtils
 {
-  static final CHUNK_INTERVAL_MS:Float = 2500;
-
   /**
-   * Retrieves all stacked notes. It does this by cycling through "chunks" of notes within a certain interval.
+   * Retrieves all stacked notes. It does this by checking each note against the ones right after it in time.
    *
    * @param notes Sorted notes by time.
    * @param threshold The note stack threshold. Refer to `doNotesStack` for more details.
@@ -23,49 +21,51 @@ class SongNoteDataUtils
   public static function listStackedNotes(notes:Array<SongNoteData>, threshold:Float, includeOverlapped:Bool = true, ?overlapped:Array<SongNoteData>):Array<SongNoteData>
   {
     var stackedNotes:Array<SongNoteData> = [];
-
-    var chunkTime:Float = 0;
-    var chunks:Array<Array<SongNoteData>> = [[]];
-
-    for (note in notes)
+    var stackedSet:haxe.ds.ObjectMap<SongNoteData, Bool> = new haxe.ds.ObjectMap();
+    var overlappedSet:haxe.ds.ObjectMap<SongNoteData, Bool> = new haxe.ds.ObjectMap();
+    if (overlapped != null)
     {
-      if (note == null)
-      {
-        continue;
-      }
-
-      while (note.time >= chunkTime + CHUNK_INTERVAL_MS)
-      {
-        chunkTime += CHUNK_INTERVAL_MS;
-        chunks.push([]);
-      }
-
-      chunks[chunks.length - 1].push(note);
+      for (note in overlapped)
+        overlappedSet.set(note, true);
     }
 
-    for (chunk in chunks)
+    var sorted:Array<SongNoteData> = [for (note in notes) if (note != null) note];
+    sorted.sort((a, b) -> a.time < b.time ? -1 : (a.time > b.time ? 1 : 0));
+
+    var stepTimes:Array<Float> = threshold == 0 ? [] : [for (note in sorted) note.getStepTime()];
+    for (i in 0...sorted.length)
     {
-      for (i in 0...(chunk.length - 1))
+      var noteI:SongNoteData = sorted[i];
+      for (j in (i + 1)...sorted.length)
       {
-        for (j in (i + 1)...chunk.length)
+        var noteJ:SongNoteData = sorted[j];
+        if (threshold == 0)
         {
-          var noteI:SongNoteData = chunk[i];
-          var noteJ:SongNoteData = chunk[j];
+          if (noteJ.time - noteI.time >= 1) break;
+        }
+        else if (stepTimes[j] - stepTimes[i] > threshold + 0.001) break;
 
-          if (doNotesStack(noteI, noteJ, threshold))
+        if (!doNotesStack(noteI, noteJ, threshold)) continue;
+
+        if (!stackedSet.exists(noteI))
+        {
+          if (includeOverlapped)
           {
-            if (!stackedNotes.fastContains(noteI))
-            {
-              if (includeOverlapped) stackedNotes.push(noteI);
-
-              if (overlapped != null && !overlapped.contains(noteI)) overlapped.push(noteI);
-            }
-
-            if (!stackedNotes.fastContains(noteJ))
-            {
-              stackedNotes.push(noteJ);
-            }
+            stackedNotes.push(noteI);
+            stackedSet.set(noteI, true);
           }
+
+          if (overlapped != null && !overlappedSet.exists(noteI))
+          {
+            overlapped.push(noteI);
+            overlappedSet.set(noteI, true);
+          }
+        }
+
+        if (!stackedSet.exists(noteJ))
+        {
+          stackedNotes.push(noteJ);
+          stackedSet.set(noteJ, true);
         }
       }
     }

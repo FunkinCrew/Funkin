@@ -1,5 +1,7 @@
 {
   "recommendations": [
+    // Any VSCode extensions in this list get recommended to all users.
+
     "nadako.vshaxe", // Basic Haxe integration
     "wiggin77.codedox", // Haxe documentation
     "vshaxe.haxe-checkstyle", // Haxe code style and conventions

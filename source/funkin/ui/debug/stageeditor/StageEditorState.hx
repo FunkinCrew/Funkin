@@ -16,7 +16,7 @@ import flixel.addons.display.FlxGridOverlay;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.character.BaseCharacter;
 import funkin.play.character.BaseCharacter.CharacterType;
-import funkin.data.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterRegistry;
 import funkin.save.Save;
 import funkin.input.Cursor;
 import haxe.ui.backend.flixel.UIState;
@@ -56,6 +56,7 @@ import funkin.graphics.shaders.Grayscale;
 import funkin.data.stage.StageRegistry;
 import funkin.graphics.FunkinCamera;
 import haxe.io.Bytes;
+import funkin.ui.transition.Transition;
 
 /**
  * Da Stage Editor woo!!
@@ -330,11 +331,17 @@ class StageEditorState extends UIState
     Screen.instance.addComponent(root);
 
     // Characters setup.
-    var gf = CharacterDataParser.fetchCharacter(params?.targetGfChar ?? Save.instance.stageGirlfriendChar, true);
+    var gf = CharacterRegistry.instance.fetchEntry(params?.targetGfChar ?? Save.instance.stageGirlfriendChar, {
+      debug: true
+    });
     if (gf != null) gf.characterType = CharacterType.GF;
-    var dad = CharacterDataParser.fetchCharacter(params?.targetDadChar ?? Save.instance.stageDadChar, true);
+    var dad = CharacterRegistry.instance.fetchEntry(params?.targetDadChar ?? Save.instance.stageDadChar, {
+      debug: true
+    });
     if (dad != null) dad.characterType = CharacterType.DAD;
-    var bf = CharacterDataParser.fetchCharacter(params?.targetBfChar ?? Save.instance.stageBoyfriendChar, true);
+    var bf = CharacterRegistry.instance.fetchEntry(params?.targetBfChar ?? Save.instance.stageBoyfriendChar, {
+      debug: true
+    });
     if (bf != null) bf.characterType = CharacterType.BF;
 
     if (bf != null) bf.flipX = !bf.getDataFlipX();
@@ -436,26 +443,7 @@ class StageEditorState extends UIState
     // Some callbacks.
     findObjDialog = new FindObjDialog(this, selectedSprite == null ? '' : selectedSprite.name);
 
-    FlxG.stage.window.onDropFile.add(function(file:lime.utils.DroppedFile, state:String, x:Float, y:Float):Void
-    {
-      if (!allowInput || welcomeDialog != null) return;
-
-      var data:Bytes = FileUtil.readBytesFromPath(file.path);
-
-      if (data != null)
-      {
-        objNameDialog = new NewObjDialog(this, data);
-        objNameDialog.bitmapName = new haxe.io.Path(file.path).file;
-        objNameDialog.showDialog();
-
-        objNameDialog.onDialogClosed = function(_)
-        {
-          objNameDialog = null;
-        }
-
-        return;
-      }
-    });
+    FlxG.stage.window.onDropFile.add(onDropFile);
 
     if (params?.targetStageId != null && StageRegistry.instance.hasEntry(params?.targetStageId))
     {
@@ -545,6 +533,27 @@ class StageEditorState extends UIState
       startingVolume: 0.0
     });
     FlxG.sound.music.fadeIn(10, 0, 1);
+  }
+
+  function onDropFile(file:lime.utils.DroppedFile, state:String, x:Float, y:Float):Void
+  {
+    if (!allowInput || welcomeDialog != null) return;
+
+    var data:Bytes = FileUtil.readBytesFromPath(file.path);
+
+    if (data != null)
+    {
+      objNameDialog = new NewObjDialog(this, data);
+      objNameDialog.bitmapName = new haxe.io.Path(file.path).file;
+      objNameDialog.showDialog();
+
+      objNameDialog.onDialogClosed = function(_)
+      {
+        objNameDialog = null;
+      }
+
+      return;
+    }
   }
 
   var curTestChar:Int = 0;
@@ -1093,10 +1102,7 @@ class StageEditorState extends UIState
       if (isCursorOverHaxeUI) return;
 
       // captures once so it don't drift
-      middleMousePanOffset = FlxPoint.get(
-        camFollow.x + FlxG.mouse.viewX,
-        camFollow.y + FlxG.mouse.viewY
-      );
+      middleMousePanOffset = FlxPoint.get(camFollow.x + FlxG.mouse.viewX, camFollow.y + FlxG.mouse.viewY);
     }
     else if (FlxG.mouse.pressedMiddle && middleMousePanOffset != null)
     {
@@ -1480,7 +1486,10 @@ class StageEditorState extends UIState
         CrashHandler.criticalErrorSignal.remove(autosavePerCrash);
 
         Cursor.hide();
-        FlxG.switchState(() -> new MainMenuState());
+        Transition.switchState(() -> new MainMenuState(), {
+          assetQuery: MainMenuState.queryAssets,
+          transition: BlackScreen(None, None)
+        });
         FlxG.sound.music.stop();
 
       case 'switch mode':
@@ -1765,6 +1774,8 @@ class StageEditorState extends UIState
       middleMousePanOffset.put();
       middleMousePanOffset = null;
     }
+
+    FlxG.stage.window.onDropFile.remove(onDropFile);
 
     // Reset the sounds used by some playables.
     funkin.play.GameOverSubState.reset();

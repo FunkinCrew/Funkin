@@ -16,11 +16,49 @@ class FreeplayStyle implements IRegistryEntry<FreeplayStyleData>
    * The internal ID for this freeplay style.
    */
   // public final id:String;
-
   /**
    * The full data for a freeplay style.
    */
   // public final _data:FreeplayStyleData;
+
+  /**
+   * Retrieve a list of all the asset paths required to load the freeplay style.
+   *
+   * If you have a scripted class which initializes sprites, or plays sounds or something,
+   * make sure you add them here so they get cached in the loading screen.
+   *
+   * @param type The type of asset to query
+   * @param entryId The album ID, used to look up the specific assets.
+   * @param params The entry parameters, if any.
+   * @return An array of asset paths, or empty if no assets of that type are required.
+   */
+  public static function queryAssets(type:funkin.assets.Assets.AssetType,
+    entryId:String,
+    ?params:FreeplayStyleEntryParams):Array<funkin.assets.Paths.AssetPath>
+  {
+    var results:Array<funkin.assets.Paths.AssetPath> = [];
+
+    var entry:Null<FreeplayStyle> = FreeplayStyleRegistry.instance.fetchEntry(entryId, params);
+    if (entry == null) return [];
+
+    switch (type)
+    {
+      case IMAGE:
+        results.push(funkin.assets.Paths.image(entry.getBgAssetKey()));
+        results.push(funkin.assets.Paths.image(entry.getNumbersAssetKey()));
+        results.push(funkin.assets.Paths.image(entry.getSelectorAssetKey()));
+
+      case XML:
+        results.push(funkin.assets.Paths.xml(entry.getNumbersAssetKey()));
+        results.push(funkin.assets.Paths.xml(entry.getSelectorAssetKey()));
+
+      default:
+        // Nothing
+    }
+
+    return results;
+  }
+
   public function new(id:String, ?params:Dynamic)
   {
     this.id = id;
@@ -47,7 +85,7 @@ class FreeplayStyle implements IRegistryEntry<FreeplayStyleData>
    */
   public function getBgAssetKey():String
   {
-    return _data?.bgAsset ?? "ui/freeplay/backgrounds/bf/week1";
+    return funkin.assets.Paths.formatRelative(_data?.bgAsset ?? "ui/freeplay/backgrounds/bf/week1", 'ui/freeplay/styles/$id', Constants.EXT_IMAGE);
   }
 
   /**
@@ -56,7 +94,11 @@ class FreeplayStyle implements IRegistryEntry<FreeplayStyleData>
    */
   public function getSelectorAssetKey():String
   {
-    return _data?.selectorAsset ?? "ui/freeplay/interface/difficulty-selector";
+    return funkin.assets.Paths.formatRelative(
+      _data?.selectorAsset ?? "ui/freeplay/interface/difficulty-selector",
+      'ui/freeplay/styles/$id',
+      Constants.EXT_IMAGE
+    );
   }
 
   /**
@@ -65,7 +107,11 @@ class FreeplayStyle implements IRegistryEntry<FreeplayStyleData>
    */
   public function getCapsuleAssetKey():String
   {
-    return _data?.capsuleAsset ?? "ui/freeplay/interface/freeplay-capsule/capsule/capsule-bf";
+    return funkin.assets.Paths.formatRelative(
+      _data?.capsuleAsset ?? "ui/freeplay/interface/freeplay-capsule/capsule/capsule-bf",
+      'ui/freeplay/styles/$id',
+      Constants.EXT_IMAGE
+    );
   }
 
   /**
@@ -74,7 +120,7 @@ class FreeplayStyle implements IRegistryEntry<FreeplayStyleData>
    */
   public function getNumbersAssetKey():String
   {
-    return _data?.numbersAsset ?? "digital_numbers";
+    return funkin.assets.Paths.formatRelative(_data?.numbersAsset ?? "ui/freeplay/styles/bf/digital-numbers", 'ui/freeplay/styles/$id', Constants.EXT_IMAGE);
   }
 
   /**

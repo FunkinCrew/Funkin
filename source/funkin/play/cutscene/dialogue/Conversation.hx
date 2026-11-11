@@ -21,6 +21,8 @@ import funkin.modding.IScriptedClass.IDialogueScriptedClass;
 import funkin.modding.IScriptedClass.IEventHandler;
 import funkin.util.SortUtil;
 import funkin.util.EaseUtil;
+import funkin.assets.Paths;
+import funkin.assets.Assets;
 
 /**
  * A high-level handler for dialogue.
@@ -90,6 +92,61 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
   var currentSpeaker:Null<Speaker>;
   var currentDialogueBox:Null<DialogueBox>;
 
+  var pendingDialogueBoxPosition:Null<Array<Float>> = null;
+  var pendingDialogueBoxPositionId:Null<String> = null;
+
+  /**
+   * Retrieve a list of all the asset paths required to load the conversation.
+   *
+   * If you have a scripted class which initializes sprites, or plays sounds or something,
+   * make sure you add them here so they get cached in the loading screen.
+   *
+   * @param type The type of asset to query
+   * @param entryId The conversation ID, used to look up the specific assets.
+   * @param params The entry parameters, if any.
+   * @return An array of asset paths, or empty if no assets of that type are required.
+   */
+  public static function queryAssets(type:AssetType, entryId:String, ?params:ConversationEntryParams):Array<AssetPath>
+  {
+    var results:Array<Null<AssetPath>> = [];
+
+    var _data:Null<ConversationData> = Conversation._fetchData(entryId);
+    if (_data == null) return [];
+
+    for (dialogueEntry in _data.dialogue)
+    {
+      results.appendUnique(SpeakerRegistry.instance.queryAssets(type, dialogueEntry.speaker));
+      results.appendUnique(DialogueBoxRegistry.instance.queryAssets(type, dialogueEntry.box));
+
+      switch (type)
+      {
+        case SOUND:
+          final typingSounds:Array<String> = getTypingSounds(dialogueEntry);
+          for (soundPath in typingSounds)
+          {
+            if (soundPath != null && soundPath != '')
+            {
+              results.pushUnique(Paths.sound(soundPath));
+            }
+          }
+        default:
+      }
+    }
+
+    switch (type)
+    {
+      case SOUND:
+        if (_data?.music?.asset != null && (_data.music?.asset?.length ?? 0) > 0) results.pushUnique(Paths.music(_data?.music?.asset ?? "").audio());
+
+      case JSON:
+        if (_data?.music?.asset != null && (_data.music?.asset?.length ?? 0) > 0) results.pushUnique(Paths.music(_data?.music?.asset ?? "").metadata());
+
+      default:
+    }
+
+    return results.filterNull();
+  }
+
   public function new(id:String, ?params:Dynamic)
   {
     super();
@@ -110,17 +167,21 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
     currentDialogueLine = 0;
     this.state = ConversationState.Start;
 
+    // Prevents incorrect speaker behavior.
+    showCurrentSpeaker();
+
     // Start the dialogue.
     startConversation();
   }
 
   function setupMusic():Void
   {
+    if (music != null) return;
     if (_data == null) return;
 
     if (_data.music == null || (_data.music.asset ?? '') == '') return;
 
-    music = FunkinSound.load(Paths.music(_data.music.asset), 0.0, true, true, true);
+    music = FunkinSound.load(Paths.music(_data.music.asset).audio().toFlxSoundAsset(), 0.0, _data.music.looped ?? false, true, true);
     var fadeTime:Float = _data.music.fadeTime ?? 0.0;
 
     if (fadeTime > 0.0)
@@ -226,7 +287,7 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
 
     if (nextSpeaker == null)
     {
-      if (nextSpeakerId == null)
+      if (nextSpeakerId == null || nextSpeakerId == '')
       {
         trace('Dialogue entry has no speaker.');
       }
@@ -236,6 +297,7 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
       }
       return;
     }
+
     if (!nextSpeaker.alive) nextSpeaker.revive();
 
     var event:ScriptEvent = ScriptEvent.get(CREATE);
@@ -245,6 +307,8 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
     currentSpeaker = nextSpeaker;
     currentSpeaker.zIndex = 200;
     add(currentSpeaker);
+
+    updateChildren();
     refresh();
   }
 
@@ -252,9 +316,17 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
   {
     var nextSpeakerAnimation:Null<String> = currentDialogueEntryData?.speakerAnimation;
 
-    if (nextSpeakerAnimation == null) return;
+    if (nextSpeakerAnimation == null || nextSpeakerAnimation == '') return;
 
-    if (currentSpeaker != null) currentSpeaker.playAnimation(nextSpeakerAnimation);
+    if (currentSpeaker != null) currentSpeaker.playAnimation(nextSpeakerAnimation, true);
+  }
+
+  static final DEFAULT_TYPING_SOUND:Array<String> = ['gameplay/dialogue/boxes/roses/click'];
+
+  static function getTypingSounds(entry:Null<DialogueEntryData>):Array<String>
+  {
+    if (entry == null || entry.sounds == null) return DEFAULT_TYPING_SOUND.copy(); //what 
+    return entry.sounds.copy();
   }
 
   function showCurrentDialogueBox():Void
@@ -262,7 +334,11 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
     var nextDialogueBoxId:String = currentDialogueEntryData?.box ?? '';
 
     // Skip the next steps if the current dialogue box is already displayed.
-    if ((currentDialogueBox != null && currentDialogueBox.alive) && nextDialogueBoxId == currentDialogueBox.id) return;
+    if ((currentDialogueBox != null && currentDialogueBox.alive) && nextDialogueBoxId == currentDialogueBox.id)
+    {
+      currentDialogueBox.speed = currentDialogueEntryData?.speed ?? 1.0;
+      return;
+    }
 
     if (currentDialogueBox != null)
     {
@@ -287,7 +363,15 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
     currentDialogueBox = nextDialogueBox;
     currentDialogueBox.zIndex = 300;
 
+    if (pendingDialogueBoxPosition != null && pendingDialogueBoxPositionId == nextDialogueBoxId)
+    {
+      nextDialogueBox.restorePosition(pendingDialogueBoxPosition);
+      pendingDialogueBoxPosition = null;
+      pendingDialogueBoxPositionId = null;
+    }
+
     currentDialogueBox.typingCompleteCallback = this.onTypingComplete;
+    currentDialogueBox.speed = currentDialogueEntryData?.speed ?? 1.0;
 
     add(currentDialogueBox);
     refresh();
@@ -297,9 +381,9 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
   {
     var nextDialogueBoxAnimation:Null<String> = currentDialogueEntryData?.boxAnimation;
 
-    if (nextDialogueBoxAnimation == null) return;
+    if (nextDialogueBoxAnimation == null || nextDialogueBoxAnimation == '') return;
 
-    if (currentDialogueBox != null) currentDialogueBox.playAnimation(nextDialogueBoxAnimation);
+    if (currentDialogueBox != null) currentDialogueBox.playAnimation(nextDialogueBoxAnimation, true);
   }
 
   function onTypingComplete():Void
@@ -307,6 +391,14 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
     if (this.state == ConversationState.Speaking)
     {
       this.state = ConversationState.Idle;
+
+      final autoAdvance:Bool = currentDialogueEntryData?.autoAdvance ?? false;
+      final autoAdvanceFromLine:Int = currentDialogueEntryData?.autoAdvanceFromLine ?? 0;
+
+      if (autoAdvance && currentDialogueLine >= autoAdvanceFromLine)
+      {
+        advanceConversation();
+      }
     }
     else
     {
@@ -372,8 +464,12 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
    */
   public function resetConversation():Void
   {
+    pendingDialogueBoxPosition = null;
+    pendingDialogueBoxPositionId = null;
+
     // Reset the progress in the dialogue.
     currentDialogueEntry = 0;
+    currentDialogueLine = 0;
     this.state = ConversationState.Start;
 
     if (outroTween != null)
@@ -397,6 +493,9 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
 
     if (currentDialogueBox != null)
     {
+      pendingDialogueBoxPosition = currentDialogueBox.capturePosition();
+      pendingDialogueBoxPositionId = currentDialogueBox.id;
+
       currentDialogueBox.kill();
       remove(currentDialogueBox);
       currentDialogueBox = null;
@@ -514,7 +613,7 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
     {
       // Continue the dialog with more lines.
       state = Speaking;
-      if (currentDialogueBox != null) currentDialogueBox.appendText(currentDialogueLineString);
+      if (currentDialogueBox != null) currentDialogueBox.appendText(currentDialogueLineString, getTypingSounds(currentDialogueEntryData));
     }
   }
 
@@ -563,10 +662,16 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
       case ConversationState.Opening:
         // Backdrop animation should have started.
         // Box animations should have started.
-        if (
+        final expectedBoxAnimation:Null<String> = currentDialogueEntryData?.boxAnimation;
+        final hasBlockingBoxAnimation:Bool =
           currentDialogueBox != null
-          && (currentDialogueBox.isAnimationFinished() || currentDialogueBox.getCurrentAnimation() != currentDialogueEntryData?.boxAnimation)
-        )
+          && expectedBoxAnimation != null
+          && expectedBoxAnimation != ''
+          && currentDialogueBox.getCurrentAnimation() == expectedBoxAnimation
+          && !currentDialogueBox.isCurrentAnimationLooped()
+          && !currentDialogueBox.isAnimationFinished();
+
+        if (currentDialogueBox != null && !hasBlockingBoxAnimation)
         {
           // Box animations have finished.
 
@@ -574,7 +679,7 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
           state = ConversationState.Speaking;
           showCurrentSpeaker();
           playSpeakerAnimation();
-          currentDialogueBox.setText(currentDialogueLineString);
+          currentDialogueBox.setText(currentDialogueLineString, getTypingSounds(currentDialogueEntryData));
         }
         return;
       case ConversationState.Speaking:
@@ -676,6 +781,11 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
     }
 
     super.kill();
+  }
+
+  override public function toString():String
+  {
+    return 'Conversation($id)';
   }
 }
 

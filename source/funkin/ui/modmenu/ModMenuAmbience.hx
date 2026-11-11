@@ -4,6 +4,9 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
 import funkin.audio.FunkinSoundscape;
+import funkin.assets.Assets.AssetType;
+import funkin.assets.Assets;
+import funkin.assets.ValidatedPaths as Paths;
 
 /**
  * Handles the mod menu ambience that plays, along with various sound effects that play at random.
@@ -19,7 +22,7 @@ class ModMenuAmbience extends FunkinSoundscape
   /**
    * The path to the PhantomArcade easter egg sound.
    */
-  public static final EASTER_EGG_PATH:String = funkin.assets.ValidatedPaths.sound('ui/mods/sounds/phantomarcade-trapped').toString();
+  public static final EASTER_EGG_PATH:String = Paths.sound('ui/mods/sounds/phantomarcade-trapped', false).toString();
 
   var _easterEgg:Null<FunkinSound> = null;
 

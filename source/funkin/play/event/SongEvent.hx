@@ -1,9 +1,12 @@
 package funkin.play.event;
 
+import funkin.data.song.SongData.SongChartData;
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.event.SongEventSchema;
 import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
 import funkin.modding.events.ScriptEvent;
+import funkin.assets.Paths;
+import funkin.assets.Assets;
 
 /**
  * Parameters used to initialize a song event.
@@ -83,6 +86,19 @@ class SongEvent implements IPlayStateScriptedClass
   }
 
   /**
+   * Provides a list of all the additional assets that a song containing this specific song event will need.
+   * For example, a health icon song event will need the image for the new health icon.
+   *
+   * @param type The type of asset to query.
+   * @param data The chart data for this specific instance of the song event.
+   * @return A list of assets to process in the loading screen.
+   */
+  public function queryAssets(type:AssetType, data:SongEventData):Array<AssetPath>
+  {
+    return [];
+  }
+
+  /**
    * Handles a song event that matches this handler's ID.
    * @param data The data associated with the event.
    */
@@ -135,6 +151,7 @@ class SongEvent implements IPlayStateScriptedClass
   /**
    * Retrieves the human readable title of this song event type.
    * Used for the chart editor.
+   *
    * @return The title.
    */
   public function getTitle():String
@@ -145,6 +162,21 @@ class SongEvent implements IPlayStateScriptedClass
   public function toString():String
   {
     return 'SongEvent(${this.id})';
+  }
+
+  /**
+   * Determines if the given event is valid for the given context.
+   * If it isn't, the chart editor will display an error message tied to the event.
+   *
+   * @param event The song event to evaluate.
+   * @param chart The whole chart that the song is located in.
+   * @param difficulty The difficulty that we are checking. Defaults to checking ALL difficulties in the chart.
+   * @return `[]` if the event is valid, a list of error messages otherwise.
+   */
+  public function validate(event:SongEventData, chart:SongChartData, ?difficulty:String):Array<String>
+  {
+    // Default to always valid.
+    return [];
   }
 
   public function onScriptEvent(event:ScriptEvent)
@@ -212,6 +244,10 @@ class SongEvent implements IPlayStateScriptedClass
   }
 
   public function onSongEvent(event:SongEventScriptEvent)
+  {
+  }
+
+  public function onCustomEvent(event:CustomEventScriptEvent)
   {
   }
 

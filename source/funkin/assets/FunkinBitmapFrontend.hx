@@ -1,7 +1,17 @@
 package funkin.assets;
 
+import animate.FlxAnimateFrames;
+import flixel.FlxBasic;
+import flixel.FlxSprite;
+import flixel.FlxState;
 import flixel.graphics.FlxGraphic;
+import flixel.graphics.frames.FlxFrame;
+import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
+import flixel.system.FlxAssets.FlxGraphicAsset;
+import flixel.util.FlxColor;
 import funkin.util.assets.StagedCache;
+import haxe.ds.ObjectMap;
 import openfl.display.BitmapData;
 import animate.FlxAnimateFrames;
 import flixel.util.FlxColor;
@@ -54,6 +64,7 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
     // Called whenever a graphic is purged from the cache.
     stagedFlxGraphic.onRemove.add(onRemoveFlxGraphic);
     stagedFlxGraphic.onPrePurge.add(onPrePurgeFlxGraphic);
+    stagedFlxGraphic.onReuse.add(onReuseFlxGraphic);
     stagedFlxGraphic.onPostPurge.add(onPostPurgeFlxGraphic);
 
     super();
@@ -176,12 +187,21 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
 
   override public function remove(graphic:FlxGraphic):Void
   {
+    //
+    if (graphic != null && graphic.persist && FunkinAssetCache.instance.isPurgeCycleActive) return;
+    if (graphic != null && stagedFlxGraphic.permanent.get(graphic.key) == graphic) return;
+
     if (graphic != null)
     {
+      final isPermanent:Bool = stagedFlxGraphic.existsPermanent(graphic.key);
+
       removeKey(graphic.key);
+
+      if (isPermanent) return;
+
       // Sometimes with raw-cached assets the graphic's key is different from the asset key, so we need to remove both. To be safe
       // TODO: Maybe we should just override add and check through the map or something to make sure but nothing gets double cached as an assetkey..? -Moon
-      graphic.destroy();
+      if (!graphic.isDestroyed) graphic.destroy();
     }
   }
 
@@ -215,6 +235,68 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
   }
 
   /**
+   * Walks the CURRENT state tree (state, substates, groups, sprite groups) and returns every FlxGraphic
+   * that a live object is actually using.
+   *
+   * We use this instead of `FlxGraphic.useCount` to decide what is still needed after a state switch.
+   * `useCount` only goes down when a sprite is `destroy()`ed, so any sprite that was dropped without being destroyed
+   * (`remove()`, `group.clear()`, never added to a group...) keeps its graphic "in use" forever.
+   *
+   */
+  public function collectLiveGraphics():ObjectMap<FlxGraphic, Bool>
+  {
+    final live:ObjectMap<FlxGraphic, Bool> = new ObjectMap();
+    final visited:ObjectMap<FlxBasic, Bool> = new ObjectMap();
+
+    var state:Null<FlxState> = FlxG.state;
+    while (state != null)
+    {
+      walkLive(state, live, visited);
+      state = state.subState;
+    }
+    return live;
+  }
+
+  function walkLive(basic:Null<FlxBasic>,
+    live:ObjectMap<FlxGraphic, Bool>,
+    visited:ObjectMap<FlxBasic, Bool>):Void
+  {
+    if (basic == null || visited.exists(basic)) return;
+    visited.set(basic, true);
+
+    if (Std.isOfType(basic, FlxSprite))
+    {
+      final sprite:FlxSprite = cast basic;
+      if (sprite.graphic != null) live.set(sprite.graphic, true);
+
+      final frames:Null<flixel.graphics.frames.FlxFramesCollection> = sprite.frames;
+      if (frames != null)
+      {
+        if (frames.parent != null) live.set(frames.parent, true);
+
+        // Collections made of several graphics (combined atlases, Animate atlases with spritemap1, spritemap2, ...).
+        for (field in ['usedGraphics', 'parents'])
+        {
+          final extra:Null<Array<FlxGraphic>> = Reflect.field(frames, field);
+          if (extra != null) for (graphic in extra) if (graphic != null) live.set(graphic, true);
+        }
+      }
+    }
+
+    if (Std.isOfType(basic, FlxTypedSpriteGroup))
+    {
+      final spriteGroup:FlxTypedSpriteGroup<FlxSprite> = cast basic;
+      walkLive(spriteGroup.group, live, visited);
+    }
+
+    if (Std.isOfType(basic, FlxTypedGroup))
+    {
+      final group:FlxTypedGroup<FlxBasic> = cast basic;
+      for (member in group.members) walkLive(member, live, visited);
+    }
+  }
+
+  /**
    * @param graphic The FlxGraphic to validate.
    * @return `true` only if the FlxGraphic is valid and ready to use.
    */
@@ -223,12 +305,17 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
     if (graphic == null) return false; // graphic is null
     if (graphic.isDestroyed) return false; // graphic is destroyed
     if (graphic.bitmap == null) return false; // graphic's bitmap is null
+
+    #if cpp
+    // This can only run on native targets as html5 doesn't have gpu caching or image upload
     @:privateAccess
     if (graphic.bitmap.image == null && graphic.bitmap.__texture == null)
     {
       // The bitmap has neither an image (yet to be uploaded) nor a __texture (already uploaded to GPU)
       return false;
     }
+    #end
+
     if (graphic.bitmap.width == 0 || graphic.bitmap.height == 0)
     {
       // The bitmap has no width or height, which means the bitmap is valid but empty, which is definitely wrong.
@@ -378,6 +465,11 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
     {
       graphic.persist = false;
     }
+  }
+
+  function onReuseFlxGraphic(assetPath:String, graphic:FlxGraphic):Void
+  {
+    if (graphic != null) graphic.persist = true;
   }
 
   function onPostPurgeFlxGraphic(assetPath:String):Void

@@ -15,6 +15,8 @@ import lime.app.Promise;
 import hx.concurrent.collection.SynchronizedArray;
 import hx.concurrent.collection.SynchronizedMap;
 #end
+import funkin.assets.Paths;
+import funkin.assets.Assets;
 
 /**
  * This class statically handles the parsing of internal and scripted song event handlers.
@@ -88,18 +90,23 @@ class SongEventRegistry
     }
   }
 
-  #if FEATURE_MULTITHREADING
   public static function loadEventCacheAsync():lime.app.Future<LoadEntriesResult>
   {
     clearEventCache();
 
-    var perf:funkin.util.logging.Perf = new funkin.util.logging.Perf('loadEventCacheAsync');
-    var promise:lime.app.Promise<LoadEntriesResult> = new lime.app.Promise<LoadEntriesResult>();
+    #if FEATURE_MULTITHREADING
     var entryErrors:SynchronizedArray<
       {eventId:String, error:Any, ?eventCls:String}> = new SynchronizedArray();
+    var scriptedEventClassNames:SynchronizedArray<String> = new SynchronizedArray<String>();
+    #else
+    var entryErrors:Array<
+      {eventId:String, error:Any, ?eventCls:String}> = [];
+    var scriptedEventClassNames:Array<String> = [];
+    #end
+    var perf:funkin.util.logging.Perf = new funkin.util.logging.Perf('loadEventCacheAsync');
+    var promise:lime.app.Promise<LoadEntriesResult> = new lime.app.Promise<LoadEntriesResult>();
 
     var entryCount:Int = 0;
-    var scriptedEventClassNames:SynchronizedArray<String> = new SynchronizedArray<String>();
     var loadedBaseEvents:Bool = false;
 
     var loadBaseEventsAsync:Void->Void = () -> {};
@@ -222,7 +229,11 @@ class SongEventRegistry
 
     loadScriptedEventsAsync = () ->
     {
+      #if FEATURE_MULTITHREADING
       scriptedEventClassNames = new SynchronizedArray<String>(SongEvent.listScriptClasses());
+      #else
+      scriptedEventClassNames = SongEvent.listScriptClasses();
+      #end
       entryCount = EVENT_CACHE.size() + scriptedEventClassNames.length;
 
       trace('Instantiating ${scriptedEventClassNames.length} scripted song events...');
@@ -289,7 +300,6 @@ class SongEventRegistry
 
     return promise.future;
   }
-  #end
 
   /**
    * @return A list of IDs for every song event handler class.
@@ -318,6 +328,21 @@ class SongEventRegistry
   public static function getEvent(id:String):Null<SongEvent>
   {
     return EVENT_CACHE.get(id);
+  }
+
+  public static function queryAssets(type:AssetType, data:SongEventData):Array<AssetPath>
+  {
+    var eventKind:String = data.eventKind;
+    var eventHandler:Null<SongEvent> = getEvent(eventKind);
+
+    if (eventHandler != null)
+    {
+      return eventHandler.queryAssets(type, data);
+    }
+    else
+    {
+      return [];
+    }
   }
 
   /**

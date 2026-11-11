@@ -7,6 +7,15 @@ import funkin.graphics.FunkinSprite;
 import funkin.modding.events.ScriptEvent;
 import funkin.util.assets.FlxAnimationUtil;
 import funkin.data.character.CharacterData.CharacterRenderType;
+import funkin.data.character.CharacterData;
+import funkin.data.character.CharacterRegistry;
+//
+// ~PATHS~
+//
+import funkin.assets.Assets;
+import funkin.assets.ValidatedPaths as Paths;
+import funkin.assets.Paths.AssetPath;
+import funkin.assets.Assets.AssetType;
 
 /**
  * For some characters which use Sparrow atlases, the spritesheets need to be split
@@ -23,9 +32,57 @@ class MultiSparrowCharacter extends BaseCharacter
 {
   var _usedAtlases:Array<FlxAtlasFrames> = [];
 
+  /**
+   * Retrieve a list of all the asset paths required to load the character.
+   *
+   * If you have a scripted class which initializes sprites, or plays sounds or something,
+   * make sure you add them here so they get cached in the loading screen.
+   *
+   * @param type The type of asset to query
+   * @param charId The character ID, used to look up the specific assets.
+   * @return An array of asset paths, or empty if no assets of that type are required.
+   */
+  public static function queryAssets(type:AssetType, entryId:String, ?params:CharacterEntryParams):Array<AssetPath>
+  {
+    // trace('ASSETS: Querying assets for MultiSparrow character "${charId}"')
+    // Specific implementations handle figuring out which assets to load.
+    var results:Array<AssetPath> = BaseCharacter.queryBaseAssets(type, entryId, params);
+
+    var _data:Null<CharacterData> = CharacterRegistry.instance.fetchCharacterData(entryId);
+    if (_data == null) return results;
+
+    switch (type)
+    {
+      case IMAGE:
+        results.pushUnique(Paths.image(_data.assetPath));
+
+        for (animation in _data.animations)
+        {
+          if (animation.assetPath == null) continue;
+          results.pushUnique(Paths.image(animation.assetPath));
+        }
+
+      case XML:
+        results.pushUnique(Paths.xml(_data.assetPath));
+
+        for (animation in _data.animations)
+        {
+          if (animation.assetPath == null) continue;
+          results.pushUnique(Paths.xml(animation.assetPath));
+        }
+
+      default:
+        // Nothing
+    }
+
+    return results;
+  }
+
   public function new(id:String)
   {
-    super(id, CharacterRenderType.MultiSparrow);
+    super(id, {
+      renderType: CharacterRenderType.MultiSparrow
+    });
   }
 
   override function onCreate(event:ScriptEvent):Void
@@ -63,7 +120,8 @@ class MultiSparrowCharacter extends BaseCharacter
     var textureList:Array<FlxAtlasFrames> = [];
     var addedAssetPaths:Array<String> = [];
 
-    var mainTexture:FlxAtlasFrames = Paths.getSparrowAtlas(_data.assetPath);
+    var assetPath:String = funkin.assets.Paths.formatRelative(_data.assetPath, 'gameplay/characters/$characterId', Constants.EXT_IMAGE);
+    var mainTexture:FlxAtlasFrames = Paths.getSparrowAtlas(assetPath);
     if (mainTexture == null)
     {
       log('Multi-Sparrow atlas could not load PRIMARY texture: ${_data.assetPath}');
@@ -95,8 +153,9 @@ class MultiSparrowCharacter extends BaseCharacter
       switch (animation.renderType)
       {
         case "animateatlas":
-          var subAssetLibrary:String = Paths.getLibrary(animation.assetPath);
-          var subAssetPath:String = Paths.stripLibrary(animation.assetPath);
+          var atlasPath:String = funkin.assets.Paths.formatRelative(animation.assetPath, 'gameplay/characters/$characterId');
+          var subAssetLibrary:String = Paths.getLibrary(atlasPath);
+          var subAssetPath:String = Paths.stripLibrary(atlasPath);
 
           var subTexture:FlxAnimateFrames = Paths.getAnimateAtlas(subAssetPath, subAssetLibrary, cast animation.atlasSettings ?? _data.atlasSettings);
 
@@ -105,7 +164,8 @@ class MultiSparrowCharacter extends BaseCharacter
 
           textureList.push(subTexture);
         default:
-          var subTexture:FlxAtlasFrames = Paths.getSparrowAtlas(animation.assetPath);
+          var sparrowPath:String = funkin.assets.Paths.formatRelative(animation.assetPath, 'gameplay/characters/$characterId', Constants.EXT_IMAGE);
+          var subTexture:FlxAtlasFrames = Paths.getSparrowAtlas(sparrowPath);
           // If we don't do this, the unused textures will be removed as soon as they're loaded.
 
           if (subTexture == null)

@@ -116,11 +116,7 @@ class MemoryUtil
    */
   public static function supportsGCMem():Bool
   {
-    #if !html5
     return true;
-    #else
-    return false;
-    #end
   }
 
   /**
@@ -176,6 +172,8 @@ class MemoryUtil
   {
     #if cpp
     cpp.vm.Gc.run(major);
+    #elseif (js && html5)
+    untyped js.Syntax.code("if (typeof globalThis !== 'undefined' && typeof globalThis.gc === 'function') globalThis.gc();");
     #else
     throw 'Not implemented!';
     #end

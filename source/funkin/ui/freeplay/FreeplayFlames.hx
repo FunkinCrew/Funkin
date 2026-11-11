@@ -3,6 +3,8 @@ package funkin.ui.freeplay;
 import flixel.group.FlxSpriteGroup;
 import flixel.FlxSprite;
 import flixel.util.FlxTimer;
+import funkin.assets.Paths;
+import funkin.assets.Assets;
 
 @:nullSafety
 class FreeplayFlames extends FlxSpriteGroup
@@ -15,6 +17,19 @@ class FreeplayFlames extends FlxSpriteGroup
   public var flameCount(default, set):Int = 0;
 
   var flameTimer:Float = 0.25;
+
+  public static function queryAssets(type:AssetType):Array<AssetPath>
+  {
+    switch (type)
+    {
+      case IMAGE:
+        return [Paths.image('ui/freeplay/difficulty/freeplay-flame')];
+      case XML:
+        return [Paths.xml('ui/freeplay/difficulty/freeplay-flame')];
+      default:
+        return [];
+    }
+  }
 
   public function new(x:Float, y:Float)
   {
@@ -65,6 +80,7 @@ class FreeplayFlames extends FlxSpriteGroup
       timers.remove(timer);
     }
 
+    this.properPositions = false;
     this.flameCount = value;
     var visibleCount:Int = 0;
     for (i in 0...5)

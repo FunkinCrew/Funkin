@@ -88,7 +88,8 @@ class PlayerData implements ISerializable
    * @param pretty Whether to use pretty formatting on the output.
    * @return This object, converted into a JSON string.
    */
-  public function serialize(pretty:Bool = true, ?params:json2object.JsonWriterParams):String
+  public function serialize(pretty:Bool = true,
+    ?params:json2object.JsonWriterParams):String
   {
     // Update generatedBy and version before writing.
     updateVersionToLatest();
@@ -428,6 +429,22 @@ class PlayerCharSelectData
       case LOCKED_PLAYER:
         return DEFAULT_ANIMATIONS_LOCKED;
     }
+  }
+
+  public function getAssetType():String
+  {
+    return characterData?.renderType ?? 'animateatlas';
+  }
+
+  public function getAnimateAtlasAssetPath(charId:String):String
+  {
+    var wantedAssetPath = characterData?.assetPath ?? assetPath ?? '';
+    if (wantedAssetPath.isBlank())
+    {
+      return 'ui/character-select/characters/${charId}';
+    }
+
+    return wantedAssetPath;
   }
 }
 

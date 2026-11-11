@@ -45,6 +45,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     }
     return _onVolumeChanged;
   }
+
   /**
    * Using `FunkinSound.load` will override a dead instance from here rather than creating a new one, if possible!
    */
@@ -105,7 +106,11 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   @:nullSafety(Off)
   override public function destroy():Void
   {
+    var sound:Null<openfl.media.Sound> = this._sound;
+
     super.destroy();
+
+    funkin.assets.FunkinAssetCache.FunkinAssetCache.instance.releaseSoundIfUnused(sound);
 
     FlxTween.cancelTweensOf(this);
     this._label = 'unknown';
@@ -135,16 +140,17 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 
     var pathsFunction = params.pathsFunction ?? MUSIC;
     var suffix = params.suffix ?? '';
+    var cleanKey:String = haxe.io.Path.withoutExtension(key);
+
     var pathToUse = switch (pathsFunction)
     {
       case MUSIC:
-        Paths.music('$key');
+        Paths.music('$cleanKey');
       case INST:
-        Paths.inst('$key', suffix);
+        Paths.inst('$cleanKey', suffix);
       default:
-        Paths.music('$key');
-    }
-
+        Paths.music('$cleanKey');
+    };
     if (!(params.restartTrack ?? false) && FlxG.sound.music?.playing)
     {
       if (FlxG.sound.music != null && Std.isOfType(FlxG.sound.music, FunkinSound))
@@ -252,6 +258,11 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   }
 
   /**
+   * When set, one shot sounds started through `load` and `playOnce` are skipped.
+   */
+  public static var suppressOneShots:Bool = false;
+
+  /**
    * Creates a new `FunkinSound` object synchronously.
    *
    * @param embeddedSound   The embedded sound resource you want to play.  To stream, use the optional URL parameter instead.
@@ -275,6 +286,8 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     ?onComplete:Void->Void,
     ?onLoad:Void->Void):Null<FunkinSound>
   {
+    if (suppressOneShots && autoPlay && !looped) return null;
+
     var sound:FunkinSound = FunkinSound.recycle();
 
     if (Std.isOfType(embeddedSound, String))
@@ -295,20 +308,15 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
       sound.loadEmbedded(embeddedSound, looped, autoDestroy, onComplete);
     }
 
-    if (embeddedSound is String)
+    sound._label = (embeddedSound is String) ? Paths.stripLibrary(embeddedSound) : 'unknown';
+
+    // Call onLoad() because the sound already loaded
+    if (onLoad != null && sound._sound != null)
     {
-      embeddedSound = Paths.stripLibrary(embeddedSound);
-      sound._label = embeddedSound;
-    }
-    else
-    {
-      sound._label = 'unknown';
+      onLoad();
     }
 
-    if (autoPlay) sound.play();
-    sound.volume = volume;
     FlxG.sound.defaultSoundGroup.add(sound);
-    sound.persist = persist;
 
     // Make sure to add the sound to the list.
     // If it's already in, it won't get re-added.
@@ -316,8 +324,13 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     // it will get re-added (then if this was called by playMusic(), removed again)
     FlxG.sound.list.add(sound);
 
-    // Call onLoad() because the sound already loaded
-    if (onLoad != null && sound._sound != null) onLoad();
+    sound.volume = volume;
+    sound.persist = persist;
+
+    if (autoPlay)
+    {
+      sound.play();
+    }
 
     return sound;
   }
@@ -350,17 +363,21 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     // split the path and get only after first :
     // we are bypassing the openfl/lime asset library fuss on web only
     #if web
-    path = Paths.stripLibrary(path);
+    var partialPath:String = Paths.stripLibrary(path);
+    #else
+    var partialPath:String = path;
     #end
 
-    var soundRequest = FlxPartialSound.partialLoadFromFile(path, start, end);
+    function startPartialLoad(?preloadedBytes:haxe.io.Bytes):Void
+    {
+      var soundRequest = preloadedBytes != null ? FlxPartialSound.partialLoadFromBytes(partialPath, preloadedBytes, start, end) : FlxPartialSound.partialLoadFromFile(partialPath, start, end);
 
-    if (soundRequest == null)
-    {
-      promise.complete(null);
-    }
-    else
-    {
+      if (soundRequest == null)
+      {
+        promise.complete(null);
+        return;
+      }
+
       promise.future.onError(function(e)
       {
         soundRequest.error('Sound loading was errored or cancelled');
@@ -368,10 +385,41 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 
       soundRequest.future.onComplete(function(partialSound)
       {
-        var snd = FunkinSound.load(partialSound, volume, looped, autoDestroy, autoPlay, false, onComplete, onLoad);
+        var snd:Null<FunkinSound> = FunkinSound.load(partialSound, volume, looped, autoDestroy, autoPlay, false, onComplete, onLoad);
+        if (snd != null) snd._label = path;
         promise.complete(snd);
       });
     }
+
+    #if web
+    var parsedPath:haxe.io.Path = new haxe.io.Path(partialPath);
+    var extension:String = parsedPath.ext ?? '';
+    var fileWithoutExtension:String = partialPath;
+
+    if (extension.length > 0)
+    {
+      fileWithoutExtension = partialPath.substr(0, partialPath.length - extension.length - 1);
+    }
+
+    var assetLibrary:String = Paths.getLibrary(path);
+    var assetPath:funkin.assets.Paths.AssetPath = funkin.assets.Paths.file(fileWithoutExtension, extension, false, assetLibrary);
+
+    funkin.assets.Assets.cacheBytes(assetPath).onComplete(function(_)
+    {
+      var bytes:Null<openfl.utils.ByteArray> = funkin.assets.FunkinAssetCache.instance.getBytes(assetPath.toString());
+      if (bytes == null)
+      {
+        promise.complete(null);
+        return;
+      }
+      startPartialLoad(cast bytes);
+    }).onError(function(_)
+    {
+        promise.complete(null);
+    });
+    #else
+    startPartialLoad();
+    #end
 
     return promise;
   }
@@ -435,8 +483,17 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   {
     if (value == muted) return value;
     muted = value;
-    updateTransform();
+    updateVolume();
     return value;
+  }
+
+  /**
+   * Calculate the volume of the sound, taking into account whether it is muted.
+   */
+  override function calcTransformVolume():Float
+  {
+    if (muted) return 0.0;
+    return super.calcTransformVolume();
   }
 
   function get_paused():Bool

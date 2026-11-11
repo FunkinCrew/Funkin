@@ -1,6 +1,7 @@
 package funkin.play.cutscene.dialogue;
 
 import flixel.FlxSprite;
+import flixel.sound.FlxSound;
 import funkin.data.IRegistryEntry;
 import flixel.group.FlxSpriteGroup;
 import funkin.group.FunkinGroup;
@@ -14,6 +15,15 @@ import funkin.modding.IScriptedClass.IDialogueScriptedClass;
 import flixel.util.FlxColor;
 import funkin.data.dialogue.DialogueBoxData;
 import funkin.data.dialogue.DialogueBoxRegistry;
+//
+// ~PATHS~
+//
+import funkin.assets.Assets;
+import funkin.assets.Assets.AssetType;
+import funkin.assets.Paths.AnimateAtlasAssetPathBuilder;
+import funkin.assets.Paths.AssetPath;
+import funkin.assets.Paths.MusicAssetPathBuilder;
+import funkin.assets.ValidatedPaths as Paths;
 
 class DialogueBox extends FunkinSpriteGroup implements IDialogueScriptedClass implements IRegistryEntry<DialogueBoxData>
 {
@@ -73,27 +83,101 @@ class DialogueBox extends FunkinSpriteGroup implements IDialogueScriptedClass im
     return globalOffsets = value;
   }
 
+  public function capturePosition():Array<Float>
+  {
+    return [originalPosition[0], originalPosition[1]];
+  }
+
+  public function restorePosition(position:Array<Float>):Void
+  {
+    if (position == null || position.length < 2) return;
+
+    originalPosition[0] = position[0];
+    originalPosition[1] = position[1];
+
+    final newX:Float = globalOffsets[0] + originalPosition[0] + animOffsets[0];
+    final newY:Float = globalOffsets[1] + originalPosition[1] + animOffsets[1];
+
+    this.x = newX;
+    this.localX = newX;
+    this.y = newY;
+    this.localY = newY;
+  }
+
   var boxSprite:FlxSprite;
   var textDisplay:FunkinTypeText;
-  var text(default, set):String;
+  var typingSounds:Array<FlxSound> = [];
+  var _text:String = '';
+
+  public var text(get, set):String;
+
+  function get_text():String
+  {
+    return _text;
+  }
 
   function set_text(value:String):String
   {
-    this.text = value;
-
-    textDisplay.resetText(this.text);
-    textDisplay.start();
-
-    return this.text;
+    _text = value ?? '';
+    if (textDisplay != null)
+    {
+      textDisplay.prefix = '';
+      textDisplay.resetText(_text);
+      textDisplay.start();
+    }
+    return _text;
   }
 
-  public var speed(default, set):Float;
+  var _speed:Float = 1.0;
+
+  public var speed(get, set):Float;
+
+  function get_speed():Float
+  {
+    return _speed;
+  }
 
   function set_speed(value:Float):Float
   {
-    this.speed = value;
-    textDisplay.delay = this.speed * 0.05; // 1.0 x 0.05
-    return this.speed;
+    _speed = Math.max(0.0, value);
+    if (textDisplay != null)
+    {
+      textDisplay.delay = _speed <= 0.0 ? 0.0 : 0.05 / _speed;
+    }
+    return _speed;
+  }
+
+  /**
+   * Retrieve a list of all the asset paths required to load the speaker.
+   *
+   * If you have a scripted class which initializes sprites, or plays sounds or something,
+   * make sure you add them here so they get cached in the loading screen.
+   *
+   * @param type The type of asset to query
+   * @param entryId The speaker ID, used to look up the specific assets.
+   * @param params The entry parameters, if any.
+   * @return An array of asset paths, or empty if no assets of that type are required.
+   */
+  public static function queryAssets(type:funkin.assets.Assets.AssetType,
+    entryId:String,
+    ?params:DialogueBoxEntryParams):Array<funkin.assets.Paths.AssetPath>
+  {
+    var results:Array<funkin.assets.Paths.AssetPath> = [];
+
+    var _data:Null<DialogueBoxData> = DialogueBox._fetchData(entryId);
+    if (_data == null) return results;
+
+    switch (type)
+    {
+      case IMAGE:
+        results.push(funkin.assets.Paths.image(_data.assetPath));
+      case XML:
+        if (_data.animations.length > 0) results.push(funkin.assets.Paths.xml(_data.assetPath));
+      default:
+        // Nothing
+    }
+
+    return results;
   }
 
   public function new(id:String, ?params:Dynamic)
@@ -126,21 +210,35 @@ class DialogueBox extends FunkinSpriteGroup implements IDialogueScriptedClass im
     if (this.boxSprite != null)
     {
       remove(this.boxSprite);
+      this.boxSprite.kill();
+      this.boxSprite.destroy();
       this.boxSprite = null;
     }
 
+    this.animationOffsets = new Map<String, Array<Float>>();
+    this.animOffsets = [0, 0];
     this.boxSprite = new FunkinSprite(0, 0);
 
     trace('[DIALOGUE BOX] Loading spritesheet ${_data.assetPath} for ${id}');
 
-    var tex:FlxFramesCollection = Paths.getSparrowAtlas(_data.assetPath);
-    if (tex == null)
+    var tex:Null<FlxFramesCollection> = null;
+    try
     {
-      trace('Could not load Sparrow sprite: ${_data.assetPath}');
-      return;
+      tex = Paths.getSparrowAtlas(_data.assetPath);
+    }
+    catch (e)
+    {
+      trace('[DIALOGUE BOX] Sparrow atlas unavailable for ${_data.assetPath}; trying static image.');
     }
 
-    this.boxSprite.frames = tex;
+    if (tex != null)
+    {
+      this.boxSprite.frames = tex;
+    }
+    else
+    {
+      this.boxSprite.loadGraphic(Paths.image(_data.assetPath).toFlxGraphicAsset());
+    }
 
     if (_data.isPixel)
     {
@@ -151,25 +249,50 @@ class DialogueBox extends FunkinSpriteGroup implements IDialogueScriptedClass im
       this.boxSprite.antialiasing = true;
     }
 
-    this.flipX = _data.flipX;
-    this.flipY = _data.flipY;
+    this.boxSprite.flipX = _data.flipX;
+    this.boxSprite.flipY = _data.flipY;
     this.globalOffsets = _data.offsets;
     this.setScale(_data.scale);
 
     add(this.boxSprite);
   }
 
-  public function setText(newText:String):Void
+  public function setTypingSounds(soundPaths:Array<String>):Void
   {
-    textDisplay.prefix = '';
-    textDisplay.resetText(newText);
-    textDisplay.start();
+    if (textDisplay == null) return;
+
+    for (sound in typingSounds)
+    {
+      if (sound != null) sound.destroy();
+    }
+    typingSounds = [];
+
+    for (soundPath in soundPaths)
+    {
+      if (soundPath == null || soundPath == '') continue;
+
+      var sound:Null<FunkinSound> = FunkinSound.load(Paths.sound(soundPath).toFlxSoundAsset(), 0.6);
+      if (sound != null) typingSounds.push(sound);
+    }
+
+    textDisplay.sounds = typingSounds;
   }
 
-  public function appendText(newText:String):Void
+  public function setText(newText:String, soundPaths:Array<String>):Void
   {
-    textDisplay.prefix = this.textDisplay.text;
-    textDisplay.resetText(newText);
+    setTypingSounds(soundPaths);
+    text = newText;
+  }
+
+  public function appendText(newText:String, soundPaths:Array<String>):Void
+  {
+    if (textDisplay == null) return;
+    setTypingSounds(soundPaths);
+
+    var prefix:String = textDisplay.text ?? '';
+    _text = prefix + (newText ?? '');
+    textDisplay.prefix = prefix;
+    textDisplay.resetText(newText ?? '');
     textDisplay.start();
   }
 
@@ -213,17 +336,6 @@ class DialogueBox extends FunkinSpriteGroup implements IDialogueScriptedClass im
   override public function kill():Void
   {
     super.kill();
-    if (this.boxSprite != null)
-    {
-      this.boxSprite.kill();
-      this.boxSprite = null;
-    }
-    if (this.textDisplay != null)
-    {
-      this.textDisplay.kill();
-      this.textDisplay = null;
-    }
-    this.clear();
   }
 
   override public function revive():Void
@@ -235,6 +347,19 @@ class DialogueBox extends FunkinSpriteGroup implements IDialogueScriptedClass im
     this.globalOffsets = [0, 0];
     this.visible = true;
     this.alpha = 1.0;
+
+    if (this.boxSprite != null)
+    {
+      this.boxSprite.visible = true;
+      this.boxSprite.alpha = 1.0;
+      this.boxSprite.flipX = _data.flipX;
+      this.boxSprite.flipY = _data.flipY;
+    }
+    if (this.textDisplay != null)
+    {
+      this.textDisplay.visible = true;
+      this.textDisplay.alpha = 1.0;
+    }
   }
 
   function loadAnimations():Void
@@ -290,6 +415,14 @@ class DialogueBox extends FunkinSpriteGroup implements IDialogueScriptedClass im
 
   function loadText():Void
   {
+    if (textDisplay != null)
+    {
+      remove(textDisplay);
+      textDisplay.kill();
+      textDisplay.destroy();
+      textDisplay = null;
+    }
+
     textDisplay = new FunkinTypeText(0, 0, 300, '', 32);
     textDisplay.fieldWidth = _data.text.width;
     textDisplay.setFormat(
@@ -301,9 +434,8 @@ class DialogueBox extends FunkinSpriteGroup implements IDialogueScriptedClass im
       FlxColor.fromString(_data.text.shadowColor ?? '#00000000'),
       false
     );
-    textDisplay.borderSize = _data.text.shadowWidth ?? 2;
-    // TODO: Add an option to configure this.
-    textDisplay.sounds = [FunkinSound.load(Paths.sound('gameplay/dialogue/boxes/roses/click'), 0.6)];
+    textDisplay.borderSize = _data.text.shadowWidth ?? 0;
+    textDisplay.delay = _speed <= 0.0 ? 0.0 : 0.05 / _speed;
 
     textDisplay.completeCallback = onTypingComplete;
 
@@ -325,7 +457,7 @@ class DialogueBox extends FunkinSpriteGroup implements IDialogueScriptedClass im
     var correctName:String = correctAnimationName(name);
     if (correctName == null) return;
 
-    this.boxSprite.animation.play(correctName, restart, false, 0);
+    this.boxSprite.animation.play(correctName, restart, reversed, 0);
 
     applyAnimationOffsets(correctName);
   }
@@ -378,8 +510,8 @@ class DialogueBox extends FunkinSpriteGroup implements IDialogueScriptedClass im
    */
   public function getCurrentAnimation():String
   {
-    if (this.animation == null || this.animation.curAnim == null) return '';
-    return this.animation.curAnim.name;
+    if (this.boxSprite == null || this.boxSprite.animation == null || this.boxSprite.animation.curAnim == null) return '';
+    return this.boxSprite.animation.curAnim.name;
   }
 
   /**
@@ -408,7 +540,20 @@ class DialogueBox extends FunkinSpriteGroup implements IDialogueScriptedClass im
 
   public function isAnimationFinished():Bool
   {
-    return this.boxSprite?.animation?.finished ?? false;
+    return this.boxSprite?.animation?.finished ?? true;
+  }
+
+  /**
+   * Whether the currently playing dialogue-box animation is looped.
+   */
+  public function isCurrentAnimationLooped():Bool
+  {
+    return this.boxSprite?.animation?.curAnim?.looped ?? false;
+  }
+
+  override public function toString():String
+  {
+    return 'DialogueBox($id)';
   }
 
   public function onDialogueStart(event:DialogueScriptEvent):Void
@@ -442,6 +587,12 @@ class DialogueBox extends FunkinSpriteGroup implements IDialogueScriptedClass im
     boxSprite = null;
     if (textDisplay != null) remove(textDisplay);
     textDisplay = null;
+
+    for (sound in typingSounds)
+    {
+      if (sound != null) sound.destroy();
+    }
+    typingSounds = [];
 
     this.clear();
 

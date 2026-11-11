@@ -7,6 +7,12 @@ import flixel.sound.FlxSound;
 import flixel.FlxSprite;
 import funkin.util.SRTUtil.SubtitleEntry;
 import funkin.util.SRTUtil.SRTParser;
+//
+// ~PATHS~
+//
+import funkin.assets.ValidatedPaths as Paths;
+import funkin.assets.Paths.AssetPath;
+import funkin.assets.Assets.AssetType;
 
 /**
  * A Sprite Group for displaying in-game subtitles.
@@ -21,7 +27,9 @@ class Subtitles extends FlxSpriteGroup
   public var offsets(default, set):Array<Float> = [0, 0];
   public var alignment(default, set):SubtitlesAlignment = SubtitlesAlignment.SUBTITLES_BOTTOM;
 
-  public function new(x:Float = 0, y:Float = 0, alignment:SubtitlesAlignment = SubtitlesAlignment.SUBTITLES_BOTTOM)
+  public function new(x:Float = 0,
+    y:Float = 0,
+    alignment:SubtitlesAlignment = SubtitlesAlignment.SUBTITLES_BOTTOM)
   {
     super(0, 0);
 
@@ -75,9 +83,11 @@ class Subtitles extends FlxSpriteGroup
   {
     setText([], true);
 
-    if (!Assets.exists(Paths.srt(filePath)) || sound == null) return;
+    var assetPath:AssetPath = Paths.srt(filePath, false);
 
-    subtitlesData = SRTParser.parseFromFile(filePath);
+    if (!assetPath.exists() || sound == null) return;
+
+    subtitlesData = SRTParser.parseFromAsset(assetPath);
 
     if (subtitlesData == null) return;
 

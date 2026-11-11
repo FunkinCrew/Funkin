@@ -131,7 +131,7 @@ class StringTools
    * This is here so you can use `string.parseJSON()` when `using StringTools`.
    *
    * TODO: Remove this and replace with `json2object`
-   * @param value The
+   * @param value The JSON string to parse.
    * @return The parsed object.
    */
   public static function parseJSON(value:String):Dynamic

@@ -1,6 +1,7 @@
 package funkin.modding.install;
 
 import flixel.FlxG;
+import funkin.ui.transition.Transition;
 import funkin.modding.install.ModInstaller.OneClickRequest;
 import funkin.util.protocol.OneClickBridge;
 import funkin.util.protocol.ProtocolRegistrar;
@@ -56,7 +57,7 @@ class OneClickInstallHandler
     #if (macos && cpp)
     funkin.external.apple.URLSchemeExtern.setCallback(cpp.Callable.fromStaticFunction(AppleURLCallbacks.onAppleURL));
     #elseif mobile
-    funkin.mobile.util.FNFLoaderProvider.onFNFMODOpen.add(handleLink);
+    funkin.util.mobile.FNFLoaderProvider.onFNFMODOpen.add(handleLink);
     #end
 
     // Anything queued while we were booting.
@@ -188,13 +189,16 @@ class OneClickInstallHandler
       if (awaitingMenu || !canInterrupt()) return;
 
       awaitingMenu = true;
-      FlxG.switchState(() -> new funkin.ui.modmenu.ModMenuState());
+      Transition.switchState(() -> new funkin.ui.modmenu.ModMenuState(), {
+        assetQuery: funkin.ui.modmenu.ModMenuState.queryAssets,
+        transition: BlackScreen(None, Fade(South))
+      });
       return;
     }
 
     awaitingMenu = false;
 
-    if (!menu.isInstalling())
+    if (!menu.installer.isInstalling())
     {
       final request:Null<OneClickRequest> = queue.shift();
       if (request != null) menu.beginOneClickInstall(request);

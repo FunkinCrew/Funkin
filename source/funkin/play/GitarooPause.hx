@@ -1,22 +1,49 @@
 package funkin.play;
 
+import funkin.ui.transition.Transition;
 import flixel.FlxSprite;
+import flixel.addons.transition.FlxTransitionableState;
 import funkin.play.PlayState.PlayStateParams;
 import funkin.graphics.FunkinSprite;
 import funkin.ui.MusicBeatState;
-import flixel.addons.transition.FlxTransitionableState;
 import funkin.ui.mainmenu.MainMenuState;
+import funkin.assets.Assets.AssetType;
+import funkin.assets.Paths.AssetPath;
+import funkin.assets.ValidatedPaths as Paths;
 #if FEATURE_TOUCH_CONTROLS
 import funkin.util.TouchUtil;
-import funkin.util.SwipeUtil;
 #end
 
 class GitarooPause extends MusicBeatState
 {
   var replayButton:FlxSprite;
   var cancelButton:FlxSprite;
-  var replaySelect:Bool = false;
+  var replaySelect(default, set):Bool = false;
   var previousParams:Null<PlayStateParams>;
+  var lock:Bool = false;
+
+  public static function queryAssets(type:AssetType):Array<AssetPath>
+  {
+    var results:Array<AssetPath> = [];
+
+    switch (type)
+    {
+      case IMAGE:
+        results.appendUnique([
+          Paths.image('ui/pause/alternate/pause-bg'),
+          Paths.image('ui/pause/alternate/bf-lol'),
+          Paths.image('ui/pause/alternate/pause-ui')
+        ]);
+      case XML:
+        results.appendUnique([
+          Paths.xml('ui/pause/alternate/bf-lol'),
+          Paths.xml('ui/pause/alternate/pause-ui')
+        ]);
+      default:
+    }
+
+    return results;
+  }
 
   public function new(?previousParams:PlayStateParams):Void
   {
@@ -49,12 +76,14 @@ class GitarooPause extends MusicBeatState
     replayButton.animation.addByPrefix('selected', 'bluereplay', 0, false);
     replayButton.animation.appendByPrefix('selected', 'yellowreplay');
     replayButton.animation.play('selected');
+    replayButton.updateHitbox();
     add(replayButton);
 
     cancelButton = new FunkinSprite(FlxG.width * 0.58, replayButton.y).loadSparrow('ui/pause/alternate/pause-ui');
     cancelButton.animation.addByPrefix('selected', 'bluecancel', 0, false);
     cancelButton.animation.appendByPrefix('selected', 'cancelyellow');
     cancelButton.animation.play('selected');
+    cancelButton.updateHitbox();
     add(cancelButton);
 
     changeThing();
@@ -62,39 +91,81 @@ class GitarooPause extends MusicBeatState
     super.create();
   }
 
-  #if FEATURE_TOUCH_CONTROLS
-  function checkSelectionPress():Bool
-  {
-    var buttonAcceptCheck:Bool = replaySelect ? TouchUtil.pressAction(replayButton) : TouchUtil.pressAction(cancelButton);
-    return buttonAcceptCheck && !SwipeUtil.swipeAny;
-  }
-  #end
-
   override function update(elapsed:Float):Void
   {
-    if (controls.UI_LEFT_P || controls.UI_RIGHT_P #if FEATURE_TOUCH_CONTROLS || SwipeUtil.justSwipedLeft || SwipeUtil.justSwipedRight #end) changeThing();
+    super.update(elapsed);
 
-    if (controls.ACCEPT_P #if FEATURE_TOUCH_CONTROLS || checkSelectionPress() #end)
+    if (lock) return;
+
+    if (controls.UI_LEFT_P || controls.UI_RIGHT_P) changeThing();
+
+    if (controls.ACCEPT_P)
+    {
+      selectThing();
+    }
+
+    #if FEATURE_TOUCH_CONTROLS
+    handleTouch();
+    #end
+  }
+
+  #if FEATURE_TOUCH_CONTROLS
+  function handleTouch():Void
+  {
+    if (TouchUtil.pressAction(replayButton))
     {
       if (replaySelect)
       {
-        FlxTransitionableState.skipNextTransIn = false;
-        FlxTransitionableState.skipNextTransOut = false;
-        if (funkin.ui.FullScreenScaleMode.instance != null) funkin.ui.FullScreenScaleMode.instance.onMeasurePostAwait();
-        FlxG.switchState(() -> new PlayState(previousParams));
-      }
-      else
-      {
-        FlxG.switchState(() -> new MainMenuState());
-      }
-    }
+        selectThing();
 
-    super.update(elapsed);
+        return;
+      }
+
+      replaySelect = true;
+    }
+    else if (TouchUtil.pressAction(cancelButton))
+    {
+      if (!replaySelect)
+      {
+        selectThing();
+
+        return;
+      }
+
+      replaySelect = false;
+    }
+  }
+  #end
+
+  function selectThing():Void
+  {
+    lock = true;
+
+    if (replaySelect)
+    {
+      if (funkin.ui.FullScreenScaleMode.instance != null) funkin.ui.FullScreenScaleMode.instance.onMeasurePostAwait();
+
+      funkin.ui.transition.Transition.openPlayState(previousParams, {
+        transition: None
+      }, false);
+    }
+    else
+    {
+      Transition.switchState(() -> new MainMenuState(), {
+        assetQuery: MainMenuState.queryAssets,
+        transition: BlackScreen(None, None)
+      });
+    }
   }
 
   function changeThing():Void
   {
     replaySelect = !replaySelect;
+  }
+
+  function set_replaySelect(value:Bool):Bool
+  {
+    replaySelect = value;
 
     if (replaySelect)
     {
@@ -106,5 +177,7 @@ class GitarooPause extends MusicBeatState
       cancelButton.animation.curAnim.curFrame = 1;
       replayButton.animation.curAnim.curFrame = 0;
     }
+
+    return replaySelect;
   }
 }
