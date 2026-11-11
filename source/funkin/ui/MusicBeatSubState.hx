@@ -17,15 +17,13 @@ import funkin.util.WindowUtil;
 import flixel.util.FlxSort;
 import flixel.util.typeLimit.NextState;
 import funkin.input.Controls;
+import funkin.ui.transition.Transition.FlxTransition;
 import funkin.ui.transition.preload.hotreload.HotReloadState.HotReloadStateParams;
 #if FEATURE_TOUCH_CONTROLS
-import funkin.graphics.FunkinCamera;
-import funkin.mobile.ui.FunkinBackButton;
-import funkin.mobile.ui.mainmenu.FunkinOptionsButton;
-#end
-#if FEATURE_TOUCH_CONTROLS
-import funkin.mobile.ui.FunkinHitbox;
-import funkin.mobile.input.PreciseInputHandler;
+import funkin.touch.ui.FunkinHitbox;
+import funkin.touch.ui.FunkinBackButton;
+import funkin.touch.ui.mainmenu.FunkinOptionsButton;
+import funkin.touch.input.PreciseInputHandler;
 import funkin.play.notes.NoteDirection;
 #end
 
@@ -178,7 +176,7 @@ class MusicBeatSubState extends FlxTransitionableSubState implements IEventHandl
         return;
       }
 
-      var trans:flixel.addons.transition.Transition = createTransition(transIn);
+      var trans:FlxTransition = createTransition(transIn);
 
       trans.setStatus(FULL);
       FlxStateUtil.openSubStateAtTop(trans);
@@ -197,7 +195,7 @@ class MusicBeatSubState extends FlxTransitionableSubState implements IEventHandl
     _onExit = onExit;
     if (hasTransOut)
     {
-      var trans:flixel.addons.transition.Transition = createTransition(transOut);
+      var trans:FlxTransition = createTransition(transOut);
 
       trans.setStatus(EMPTY);
       FlxStateUtil.openSubStateAtTop(trans);

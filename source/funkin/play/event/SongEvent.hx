@@ -1,5 +1,6 @@
 package funkin.play.event;
 
+import funkin.data.song.SongData.SongChartData;
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.event.SongEventSchema;
 import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
@@ -150,6 +151,7 @@ class SongEvent implements IPlayStateScriptedClass
   /**
    * Retrieves the human readable title of this song event type.
    * Used for the chart editor.
+   *
    * @return The title.
    */
   public function getTitle():String
@@ -160,6 +162,21 @@ class SongEvent implements IPlayStateScriptedClass
   public function toString():String
   {
     return 'SongEvent(${this.id})';
+  }
+
+  /**
+   * Determines if the given event is valid for the given context.
+   * If it isn't, the chart editor will display an error message tied to the event.
+   *
+   * @param event The song event to evaluate.
+   * @param chart The whole chart that the song is located in.
+   * @param difficulty The difficulty that we are checking. Defaults to checking ALL difficulties in the chart.
+   * @return `[]` if the event is valid, a list of error messages otherwise.
+   */
+  public function validate(event:SongEventData, chart:SongChartData, ?difficulty:String):Array<String>
+  {
+    // Default to always valid.
+    return [];
   }
 
   public function onScriptEvent(event:ScriptEvent)
@@ -227,6 +244,10 @@ class SongEvent implements IPlayStateScriptedClass
   }
 
   public function onSongEvent(event:SongEventScriptEvent)
+  {
+  }
+
+  public function onCustomEvent(event:CustomEventScriptEvent)
   {
   }
 

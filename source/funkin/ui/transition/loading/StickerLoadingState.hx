@@ -3,6 +3,7 @@ package funkin.ui.transition.loading;
 import flixel.addons.transition.Transition as FlxTransition;
 import funkin.ui.transition.Transition.TransitionTarget;
 import funkin.ui.transition.Transition.TransitionParams;
+import funkin.ui.transition.Transition.FlxTransition;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.util.FlxColor;
 import funkin.ui.transition.stickers.StickerSprite;
@@ -54,7 +55,7 @@ class StickerLoadingState extends LoadingState
    */
   public static function queryAssets(type:AssetType, stickerPackId:String):Array<AssetPath>
   {
-    //TODO: maybe just change classes that call this to call StickerTransition instead 
+    //TODO: maybe just change classes that call this to call StickerTransition instead
     return StickerTransition.queryAssets(type, stickerPackId);
   }
 

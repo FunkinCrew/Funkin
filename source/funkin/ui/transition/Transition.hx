@@ -12,18 +12,21 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import flixel.util.typeLimit.NextState;
 import funkin.assets.Assets.AssetType;
+import funkin.assets.Assets;
 import funkin.assets.Paths.AssetPath;
+import funkin.assets.ValidatedPaths as Paths;
 import funkin.data.song.SongRegistry;
 import funkin.play.PlayState;
+import funkin.ui.quickpanel.QuickPanelState;
+import funkin.ui.transition.StickerTransition;
+import funkin.ui.transition.Transition.FlxTransition;
 import funkin.ui.transition.loading.FunkayLoadingState;
 import funkin.ui.transition.loading.LoadingState;
 import funkin.ui.transition.loading.StickerLoadingState;
-import funkin.ui.transition.StickerTransition;
 import funkin.ui.transition.loading.ThrobberLoadingState;
+import funkin.ui.transition.progress.FunkinProgressBar;
 import funkin.util.FlxStateUtil;
 import funkin.util.tasks.TaskHandler;
-import funkin.assets.Assets;
-import funkin.assets.ValidatedPaths as Paths;
 
 /**
  * Provides information about how to transition between states, including the asset query function to use during loading.
@@ -103,7 +106,7 @@ class Transition
     var topState:Null<FlxState> = FlxStateUtil.getTopmostSubState(FlxG.state, false);
     if (topState == null) return false;
 
-    if (Std.isOfType(topState, flixel.addons.transition.Transition)) return true;
+    if (Std.isOfType(topState, FlxTransition)) return true;
 
     if (Std.isOfType(topState, LoadingState)) return true;
 
@@ -137,8 +140,9 @@ class Transition
     // We keep all the assets for all loading screens cached,
     // because we don't want to have a loading screen for a loading screen.
     results.append(LoadingState.queryAssets(type));
-    results.append(FunkayLoadingState.queryAssets(type));
+    results.append(FunkinProgressBar.queryAssets(type));
     results.append(ThrobberLoadingState.queryAssets(type));
+    results.append(QuickPanelState.queryAssets(type));
 
     // Scripted loading screens must keep their assets cached before a transition starts.
     for (scriptedClass in LoadingState.listScriptClasses())
@@ -433,9 +437,7 @@ class Transition
       var future = TaskHandler.performSimpleTask(() ->
       {
         trace('[LOADING] Caching charts...');
-        final targetDifficulty = playStateParams.targetSong.getDifficulty(
-          playStateParams.targetDifficulty, playStateParams.targetVariation
-        );
+        final targetDifficulty = playStateParams.targetSong.getDifficulty(playStateParams.targetDifficulty, playStateParams.targetVariation);
         if (targetDifficulty?.notes == null)
         {
           var forceReload:Bool = true;
@@ -911,19 +913,21 @@ enum abstract FadeDirection(String)
       case FadeDirection.North:
         return new FlxPoint(0, 1);
       case FadeDirection.NorthEast:
-        return new FlxPoint(1, 1);
-      case FadeDirection.NorthWest:
         return new FlxPoint(-1, 1);
+      case FadeDirection.NorthWest:
+        return new FlxPoint(1, 1);
       case FadeDirection.South:
         return new FlxPoint(0, -1);
       case FadeDirection.SouthEast:
-        return new FlxPoint(1, -1);
-      case FadeDirection.SouthWest:
         return new FlxPoint(-1, -1);
+      case FadeDirection.SouthWest:
+        return new FlxPoint(1, -1);
       case FadeDirection.East:
-        return new FlxPoint(1, 0);
-      case FadeDirection.West:
         return new FlxPoint(-1, 0);
+      case FadeDirection.West:
+        return new FlxPoint(1, 0);
     }
   }
 }
+
+typedef FlxTransition = flixel.addons.transition.Transition;

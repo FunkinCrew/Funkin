@@ -5,6 +5,7 @@ import flixel.util.FlxColor;
 import flixel.effects.FlxFlicker;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.util.FlxSignal.FlxTypedSignal;
+import funkin.ui.quickpanel.QuickPanelState;
 import funkin.audio.FunkinSound;
 import funkin.util.TouchUtil;
 import funkin.util.SwipeUtil;
@@ -295,6 +296,9 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
   public function accept():Void
   {
     var menuItem:T = members[selectedIndex];
+    #if FEATURE_DEBUG_MENU
+    if (QuickPanelState.instance != null) QuickPanelState.instance.allowOpen = false;
+    #end
 
     if (!menuItem.available) return;
 

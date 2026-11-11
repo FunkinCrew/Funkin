@@ -4,6 +4,7 @@ import flixel.FlxCamera;
 import flixel.addons.transition.Transition as FlxTransition;
 import flixel.addons.transition.TransitionData;
 import flixel.addons.transition.FlxTransitionSprite.TransitionStatus;
+import funkin.ui.transition.Transition.FlxTransition;
 import flixel.FlxG;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.math.FlxMath;
@@ -239,14 +240,9 @@ class StickerTransition extends FlxTransition
         // Remove each sticker in turn.
         sticker.visible = false;
 
-        // Sometimes play a sound.
-        // If we play a sound with EVERY sticker, the audio engine gets overwhelmed.
-        var shouldPlaySound:Bool = isLastSticker || FlxG.random.bool(20); // 20%
-        if (shouldPlaySound)
-        {
-          var nextSound:String = FlxG.random.getObject(sounds);
-          FunkinSound.playOnce(nextSound);
-        }
+        // Always play a sound.
+        var nextSound:String = FlxG.random.getObject(sounds);
+        FunkinSound.playOnce(nextSound);
 
         // Do the small vibration each time sticker disappears.
         HapticUtil.vibrate(0, 0.01, Constants.MIN_VIBRATION_AMPLITUDE * 0.5);

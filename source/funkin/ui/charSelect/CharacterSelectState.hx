@@ -1,5 +1,7 @@
 package funkin.ui.charSelect;
 
+import flixel.util.typeLimit.NextState;
+import funkin.ui.transition.Transition;
 import flixel.FlxObject;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -34,6 +36,7 @@ import funkin.assets.Assets.AssetType;
 import funkin.assets.Paths.AssetPath;
 import funkin.assets.Paths;
 import funkin.ui.transition.Transition;
+import funkin.ui.charSelect.icons.Lock;
 
 /**
  * Parameters used to initialize the CharacterSelectState.
@@ -49,118 +52,6 @@ typedef CharacterSelectStateParams =
 @:nullSafety
 class CharacterSelectState extends MusicBeatSubState
 {
-  public static function queryAssets(type:AssetType):Array<AssetPath>
-  {
-    var results:Array<AssetPath> = [];
-
-    switch (type)
-    {
-      case IMAGE:
-        results.append(Paths.animateAtlas('ui/character-select/interface/crowd').image());
-        results.append(Paths.animateAtlas('ui/character-select/interface/char-select-stage').image());
-        results.append(Paths.animateAtlas('ui/character-select/interface/bar-thing').image());
-        results.append(Paths.animateAtlas('ui/character-select/interface/speakers').image());
-        results.append(Paths.animateAtlas('ui/character-select/interface/dipshit-text').image());
-
-        results.appendUnique([
-          Paths.image('ui/character-select/interface/char-select-bg'),
-          Paths.image('ui/character-select/interface/curtains'),
-          Paths.image('ui/character-select/interface/char-light'),
-          Paths.image('ui/character-select/interface/foreground-blur'),
-          Paths.image('ui/freeplay/interface/transition-gradient'),
-          Paths.image('ui/character-select/interface/char-selector'),
-          Paths.image('ui/character-select/interface/dipshit-blur'),
-          Paths.image('ui/character-select/interface/dipshit-backing'),
-          Paths.image('ui/character-select/interface/char-selector-confirm'),
-          Paths.image('ui/character-select/interface/char-selector-denied'),
-          Paths.image('ui/character-select/characters/nametag-bf'),
-          Paths.image('ui/character-select/characters/nametag-locked'),
-        ]);
-        results.appendUnique(Paths.animateAtlas('ui/character-select/characters/bf').image());
-        results.appendUnique(Paths.animateAtlas('ui/character-select/characters/locked').image());
-
-      case JSON:
-        results.appendUnique(Paths.animateAtlas('ui/character-select/characters/bf').json());
-        results.appendUnique(Paths.animateAtlas('ui/character-select/characters/locked').json());
-        results.appendUnique(Paths.animateAtlas('ui/character-select/interface/crowd').json());
-        results.appendUnique(Paths.animateAtlas('ui/character-select/interface/char-select-stage').json());
-        results.appendUnique(Paths.animateAtlas('ui/character-select/interface/bar-thing').json());
-        results.appendUnique(Paths.animateAtlas('ui/character-select/interface/speakers').json());
-        results.pushUnique(Paths.music('ui/character-select/stay-funky').metadata());
-        results.append(Paths.animateAtlas('ui/character-select/interface/dipshit-text').json());
-
-      case XML:
-        results.appendUnique([
-          Paths.xml('ui/character-select/interface/dipshit-blur'),
-          Paths.xml('ui/character-select/interface/dipshit-backing'),
-          Paths.xml('ui/character-select/interface/char-selector'),
-          Paths.xml('ui/character-select/interface/char-selector-confirm'),
-          Paths.xml('ui/character-select/interface/char-selector-denied'),
-        ]);
-
-      case SOUND:
-        results.appendUnique([
-          Paths.sound('ui/character-select/sounds/select'),
-          Paths.sound('ui/character-select/sounds/unlock'),
-          Paths.sound('ui/character-select/sounds/locked'),
-          Paths.sound('ui/character-select/sounds/static'),
-          Paths.sound('ui/character-select/sounds/lights'),
-          Paths.sound('ui/character-select/sounds/confirm'),
-          Paths.sound('ui/main-menu/cancel-menu'),
-          Paths.music('ui/character-select/stay-funky').audio(),
-        ]);
-
-      case FONT:
-        results.pushUnique(Paths.file('ui/fonts/VCR OSD Mono', 'ttf'));
-
-      case TEXT:
-        results.pushUnique(Paths.txt('ui/character-select/interface/icon-bop/info'));
-
-      case SHADER:
-        results.pushUnique(Paths.frag('ui/shaders/mosaic'));
-
-      default:
-        // Nothing.
-    }
-
-    for (playerId in PlayerRegistry.instance.listEntryIds())
-    {
-      var player:Null<PlayableCharacter> = PlayerRegistry.instance.fetchEntry(playerId);
-      var playerData:Null<PlayerCharSelectData> = player?.getCharSelectData();
-      if (playerData == null) continue;
-
-      var playerPath:String = playerData.getAnimateAtlasAssetPath(playerId);
-      switch (type)
-      {
-        case IMAGE:
-          results.appendUnique(Paths.animateAtlas(playerPath).image());
-          results.pushUnique(Paths.image('ui/character-select/characters/nametag-$playerId'));
-        case JSON:
-          results.appendUnique(Paths.animateAtlas(playerPath).json());
-        default:
-      }
-
-      // GF also supports the newer nested characterData configuration.
-      var gfPath:Null<String> = playerData.gf?.characterData?.assetPath ?? playerData.gf?.assetPath;
-      if (gfPath != null && !gfPath.isBlank())
-      {
-        switch (type)
-        {
-          case IMAGE:
-            results.appendUnique(Paths.animateAtlas(gfPath).image());
-          case JSON:
-            results.appendUnique(Paths.animateAtlas(gfPath).json());
-          default:
-        }
-      }
-    }
-
-    results.appendUnique(funkin.ui.charSelect.icons.Lock.queryAssets(type));
-    results.appendUnique(PixelatedIcon.queryAssets(type));
-
-    return results;
-  }
-
   /**
    * A singleton instance of the Character Select screen.
    */
@@ -483,6 +374,91 @@ class CharacterSelectState extends MusicBeatSubState
     instance = this;
   }
 
+  /**
+   * Produce a list of all the AssetPaths that this state depends on to load.
+   * This is used to ensure those assets are properly cached during the preceding loading screen.
+   *
+   * @param type The type of AssetPath to return a list of paths for.
+   * @return A list of AssetPaths of that type that the state will use.
+   */
+  public static function queryAssets(type:AssetType):Array<AssetPath>
+  {
+    var results:Array<AssetPath> = [];
+
+    switch (type)
+    {
+      case IMAGE:
+        results.append(Paths.animateAtlas('ui/character-select/interface/crowd').image());
+        results.append(Paths.animateAtlas('ui/character-select/interface/dipshit-text').image());
+        results.append(Paths.animateAtlas('ui/character-select/interface/char-select-stage').image());
+        results.append(Paths.animateAtlas('ui/character-select/interface/bar-thing').image());
+        results.append(Paths.animateAtlas('ui/character-select/interface/speakers').image());
+
+        results.push(Paths.image('ui/character-select/interface/char-select-bg'));
+        results.push(Paths.image('ui/character-select/interface/curtains'));
+        results.push(Paths.image('ui/character-select/interface/char-light'));
+        results.push(Paths.image('ui/character-select/interface/foreground-blur'));
+        results.push(Paths.image('ui/freeplay/interface/transition-gradient'));
+        results.push(Paths.image('ui/character-select/interface/char-selector'));
+        results.push(Paths.image('ui/character-select/interface/char-selector-confirm'));
+        results.push(Paths.image('ui/character-select/interface/char-selector-denied'));
+        results.push(Paths.image('ui/character-select/characters/nametag-bf'));
+        results.push(Paths.image('ui/character-select/characters/nametag-locked'));
+
+        results.append(Paths.animateAtlas('ui/character-select/characters/bf').image());
+
+      case JSON:
+        results.append(Paths.animateAtlas('ui/character-select/characters/bf').json());
+        results.append(Paths.animateAtlas('ui/character-select/interface/dipshit-text').json());
+        results.append(Paths.animateAtlas('ui/character-select/interface/crowd').json());
+        results.append(Paths.animateAtlas('ui/character-select/interface/char-select-stage').json());
+        results.append(Paths.animateAtlas('ui/character-select/interface/bar-thing').json());
+        results.append(Paths.animateAtlas('ui/character-select/interface/speakers').json());
+        results.push(Paths.music('ui/character-select/stay-funky').metadata());
+
+      case XML:
+        results.push(Paths.xml('ui/character-select/interface/char-selector-confirm'));
+        results.push(Paths.xml('ui/character-select/interface/char-selector-denied'));
+
+      case SOUND:
+        results.push(Paths.sound('ui/character-select/sounds/select'));
+        results.push(Paths.sound('ui/character-select/sounds/unlock'));
+        results.push(Paths.sound('ui/character-select/sounds/locked'));
+        results.push(Paths.sound('ui/character-select/sounds/static'));
+        results.push(Paths.sound('ui/character-select/sounds/lights'));
+        results.push(Paths.sound('ui/character-select/sounds/confirm'));
+        results.push(Paths.sound('ui/main-menu/cancel-menu'));
+        results.push(Paths.music('ui/character-select/stay-funky').audio());
+
+      case TEXT:
+        results.push(Paths.txt('ui/character-select/interface/icon-bop/info'));
+
+      case SHADER:
+        results.push(Paths.frag('ui/shaders/mosaic'));
+
+      default:
+        // No assets.
+    }
+
+    results.append(CharSelectCharacter.queryAssets(type, 'locked', LOCKED_PLAYER));
+
+    for (playerId in PlayerRegistry.instance.listEntryIds())
+    {
+      if (
+        type == IMAGE
+        && PlayerRegistry.instance.fetchEntry(playerId)?.getCharSelectData() != null
+      ) results.push(Paths.image('ui/character-select/characters/nametag-$playerId'));
+
+      results.append(CharSelectCharacter.queryAssets(type, playerId, PLAYER));
+      results.append(CharSelectCharacter.queryAssets(type, playerId, GF));
+    }
+
+    results.append(Lock.queryAssets(type));
+    results.append(PixelatedIcon.queryAssets(type));
+
+    return results;
+  }
+
   function loadAvailableCharacters():Void
   {
     var playerIds:Array<String> = PlayerRegistry.instance.listEntryIds();
@@ -551,7 +527,7 @@ class CharacterSelectState extends MusicBeatSubState
     bg.scrollFactor.set(0.1, 0.1);
     add(bg);
 
-    var crowd:FunkinSprite = new FunkinSprite(CUTOUT_SIZE, 0).loadTextureAtlas('ui/character-select/interface/crowd', {
+    var crowd:FunkinSprite = new FunkinSprite(CUTOUT_SIZE + 28, 0).loadTextureAtlas('ui/character-select/interface/crowd', {
       applyStageMatrix: true
     });
     crowd.anim.addBySymbol('wholeTimeline', crowd.getDefaultSymbol(), crowd.library.frameRate);
@@ -1203,11 +1179,12 @@ class CharacterSelectState extends MusicBeatSubState
           character: wentBackToFreeplay ? rememberedCharacterId : currentCharacterId,
           fromCharSelect: true
         };
+        var targetState:NextState = () -> FreeplayState.build(freeplayParams);
+        // TODO: THis is very hacky imo, find a better way -Moon.
 
-        Transition.switchState(() -> FreeplayState.build(freeplayParams), {
-          assetQuery: FreeplayState.queryAssets.bind(_, freeplayParams, freeplayParams.character),
-          transition: BlackScreen(None, None),
-          shouldStopMusic: false,
+        Transition.switchState(targetState, {
+          transition: TransitionType.BlackScreen(FadeType.Fade(FadeDirection.North), FadeType.Fade(FadeDirection.South)),
+          assetQuery: FreeplayState.buildAssetQuery.bind(_, freeplayParams),
           shouldPurgeCache: true
         });
       }

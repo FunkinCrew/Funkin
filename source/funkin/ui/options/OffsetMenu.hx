@@ -3,11 +3,11 @@ package funkin.ui.options;
 import funkin.ui.MenuList.MenuTypedList;
 import funkin.ui.TextMenuList.TextMenuItem;
 import funkin.util.GRhythmUtil;
-import funkin.mobile.ui.FunkinBackButton;
+import funkin.touch.ui.FunkinBackButton;
 #if FEATURE_TOUCH_CONTROLS
-import funkin.mobile.ui.FunkinHitbox;
-import funkin.mobile.ui.FunkinHitbox.FunkinHitboxControlSchemes;
-import funkin.mobile.input.ControlsHandler;
+import funkin.touch.ui.FunkinHitbox;
+import funkin.touch.ui.FunkinHitbox.FunkinHitboxControlSchemes;
+import funkin.touch.input.ControlsHandler;
 import funkin.util.TouchUtil;
 #end
 import funkin.input.PreciseInputManager;
@@ -473,7 +473,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       if (calibrating) Preferences.globalOffset = savedOffset;
       #if !FEATURE_TOUCH_CONTROLS
       // mobile would play this twice
-      FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu'));
+      if (!destroying) FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu'));
       #end
     }
     else

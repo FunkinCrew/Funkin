@@ -3,12 +3,15 @@ package funkin.save;
 import funkin.util.tools.ISerializable;
 import flixel.util.FlxSave;
 import funkin.input.Controls.Device;
-import funkin.data.character.CharacterRegistry;
+import funkin.touch.ui.FunkinHitbox;
+import funkin.play.scoring.Scoring.ScoringRank;
 import funkin.play.scoring.Scoring;
 import funkin.play.scoring.Scoring.ScoringRank;
 import funkin.save.migrator.RawSaveData_v1_0_0;
 import funkin.save.migrator.SaveDataMigrator;
+import funkin.data.character.CharacterRegistry;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorLiveInputStyle;
+import funkin.ui.debug.charting.ChartEditorState.ChartEditorWaveformFilter;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorWaveformPos;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorTheme;
 import funkin.ui.debug.stageeditor.StageEditorState.StageEditorTheme;
@@ -16,7 +19,7 @@ import funkin.util.FileUtil;
 import funkin.util.macro.ConsoleMacro;
 import funkin.util.macro.SaveMacro;
 import funkin.util.SerializerUtil;
-import funkin.mobile.ui.FunkinHitbox;
+import funkin.touch.ui.FunkinHitbox;
 import thx.semver.Version;
 import flixel.util.FlxSave.SaveFailureType;
 import flixel.util.FlxSave.LoadFailureType;
@@ -200,14 +203,30 @@ class Save implements ConsoleClass implements ISerializable
         // Reasonable defaults.
         previousFiles: [],
         noteQuant: 3,
-        chartEditorLiveInputStyle: ChartEditorLiveInputStyle.None,
-        chartEditorWaveformPos: ChartEditorWaveformPos.Adjacent,
+        zoomLevel: 6,
+        chartEditorLiveInputStyle: ChartEditorLiveInputStyle.NumberKeys,
+        chartEditorWaveformPos: ChartEditorWaveformPos.Overlay,
+        showInstrumentalWaveform: false,
+        waveformFilter: ChartEditorWaveformFilter.None,
+        waveformFilterStrength: 0.5,
         theme: ChartEditorTheme.Light,
         playtestStartTime: false,
         playtestAudioSettings: false,
         playtestResultsSettings: false,
+        playtestPracticeMode: false,
+        playtestBotPlayMode: false,
+        playtestSongScripts: true,
+        stackedNoteThreshold: 0.0,
         downscroll: false,
         showNoteKinds: true,
+        showDifficultyHeatmap: false,
+        showBeatLines: true,
+        showSnapLines: true,
+        showCursorLine: true,
+        constantScroll: false,
+        constantScrollSpeed: 1.0,
+        uiScale: 1.45,
+        gridBackingAlpha: 0.92,
         metronomeVolume: 1.0,
         hitsoundVolumePlayer: 1.0,
         hitsoundVolumeOpponent: 1.0,
@@ -230,6 +249,7 @@ class Save implements ConsoleClass implements ISerializable
         previousFiles: [],
         theme: ChartEditorTheme.Light,
         zoomToPlayhead: false,
+        fitCameraToViewport: false,
       },
       optionsQuickMenu: {
         firstRun: false
@@ -305,14 +325,38 @@ class Save implements ConsoleClass implements ISerializable
   public var chartEditorHasBackup:SaveProperty<Bool>;
   @:saveProperty(data.optionsChartEditor.noteQuant, 3)
   public var chartEditorNoteQuant:SaveProperty<Int>;
-  @:saveProperty(data.optionsChartEditor.chartEditorLiveInputStyle, ChartEditorLiveInputStyle.None)
+  @:saveProperty(data.optionsChartEditor.zoomLevel, 6)
+  public var chartEditorZoomLevel:SaveProperty<Int>;
+  @:saveProperty(data.optionsChartEditor.chartEditorLiveInputStyle, ChartEditorLiveInputStyle.NumberKeys)
   public var chartEditorLiveInputStyle:SaveProperty<ChartEditorLiveInputStyle>;
-  @:saveProperty(data.optionsChartEditor.chartEditorWaveformPos, ChartEditorWaveformPos.Adjacent)
+  @:saveProperty(data.optionsChartEditor.chartEditorWaveformPos, ChartEditorWaveformPos.Overlay)
   public var chartEditorWaveformPos:SaveProperty<ChartEditorWaveformPos>;
+  @:saveProperty(data.optionsChartEditor.showInstrumentalWaveform, false)
+  public var chartEditorShowInstrumentalWaveform:SaveProperty<Bool>;
+  @:saveProperty(data.optionsChartEditor.waveformFilter, ChartEditorWaveformFilter.None)
+  public var chartEditorWaveformFilter:SaveProperty<ChartEditorWaveformFilter>;
+  @:saveProperty(data.optionsChartEditor.waveformFilterStrength, 0.5)
+  public var chartEditorWaveformFilterStrength:SaveProperty<Float>;
   @:saveProperty(data.optionsChartEditor.downscroll, false)
   public var chartEditorDownscroll:SaveProperty<Bool>;
   @:saveProperty(data.optionsChartEditor.showNoteKinds, true)
   public var chartEditorShowNoteKinds:SaveProperty<Bool>;
+  @:saveProperty(data.optionsChartEditor.showDifficultyHeatmap, false)
+  public var chartEditorShowDifficultyHeatmap:SaveProperty<Bool>;
+  @:saveProperty(data.optionsChartEditor.showBeatLines, true)
+  public var chartEditorShowBeatLines:SaveProperty<Bool>;
+  @:saveProperty(data.optionsChartEditor.showSnapLines, true)
+  public var chartEditorShowSnapLines:SaveProperty<Bool>;
+  @:saveProperty(data.optionsChartEditor.showCursorLine, true)
+  public var chartEditorShowCursorLine:SaveProperty<Bool>;
+  @:saveProperty(data.optionsChartEditor.constantScroll, false)
+  public var chartEditorConstantScroll:SaveProperty<Bool>;
+  @:saveProperty(data.optionsChartEditor.constantScrollSpeed, 1.0)
+  public var chartEditorConstantScrollSpeed:SaveProperty<Float>;
+  @:saveProperty(data.optionsChartEditor.uiScale, 1.45)
+  public var chartEditorUIScale:SaveProperty<Float>;
+  @:saveProperty(data.optionsChartEditor.gridBackingAlpha, 0.92)
+  public var chartEditorGridBackingAlpha:SaveProperty<Float>;
   @:saveProperty(data.optionsChartEditor.showSubtitles, true)
   public var chartEditorShowSubtitles:SaveProperty<Bool>;
   @:saveProperty(data.optionsChartEditor.playtestStartTime, false)
@@ -321,6 +365,14 @@ class Save implements ConsoleClass implements ISerializable
   public var chartEditorPlaytestAudioSettings:SaveProperty<Bool>;
   @:saveProperty(data.optionsChartEditor.playtestResultsSettings, false)
   public var chartEditorPlaytestResultsSettings:SaveProperty<Bool>;
+  @:saveProperty(data.optionsChartEditor.playtestPracticeMode, false)
+  public var chartEditorPlaytestPracticeMode:SaveProperty<Bool>;
+  @:saveProperty(data.optionsChartEditor.playtestBotPlayMode, false)
+  public var chartEditorPlaytestBotPlayMode:SaveProperty<Bool>;
+  @:saveProperty(data.optionsChartEditor.playtestSongScripts, true)
+  public var chartEditorPlaytestSongScripts:SaveProperty<Bool>;
+  @:saveProperty(data.optionsChartEditor.stackedNoteThreshold, 0.0)
+  public var chartEditorStackedNoteThreshold:SaveProperty<Float>;
   @:saveProperty(data.optionsChartEditor.theme, ChartEditorTheme.Light)
   public var chartEditorTheme:SaveProperty<ChartEditorTheme>;
   @:saveProperty(data.optionsChartEditor.metronomeVolume, 1.0)
@@ -433,6 +485,8 @@ class Save implements ConsoleClass implements ISerializable
   public var cameraEditorHasBackup:SaveProperty<Bool>;
   @:saveProperty(data.optionsCameraEditor.zoomToPlayhead, false)
   public var cameraEditorZoomToPlayhead:SaveProperty<Bool>;
+  @:saveProperty(data.optionsCameraEditor.fitCameraToViewport, false)
+  public var cameraEditorFitCameraToViewport:SaveProperty<Bool>;
 
   /// UTIL FUNCTIONS
 
@@ -1702,16 +1756,40 @@ typedef SaveDataChartEditorOptions =
   var ?noteQuant:Int;
 
   /**
+   * Grid zoom level index in the Chart Editor.
+   * @default `6`
+   */
+  var ?zoomLevel:Int;
+
+  /**
    * Live input style in the Chart Editor.
-   * @default `ChartEditorLiveInputStyle.None`
+   * @default `ChartEditorLiveInputStyle.NumberKeys`
    */
   var ?chartEditorLiveInputStyle:ChartEditorLiveInputStyle;
 
   /**
    * Where the waveform is placed in the Chart Editor.
-   * @default `ChartEditorWaveformPos.Adjacent`
+   * @default `ChartEditorWaveformPos.Overlay`
    */
   var ?chartEditorWaveformPos:ChartEditorWaveformPos;
+
+  /**
+   * Show one instrumental waveform instead of the two vocal waveforms in the Chart Editor.
+   * @default `false`
+   */
+  var ?showInstrumentalWaveform:Bool;
+
+  /**
+   * Filter applied to the waveform overlay in the Chart Editor.
+   * @default `ChartEditorWaveformFilter.None`
+   */
+  var ?waveformFilter:ChartEditorWaveformFilter;
+
+  /**
+   * Strength of the waveform overlay filter in the Chart Editor, from 0 to 1.
+   * @default `0.5`
+   */
+  var ?waveformFilterStrength:Float;
 
   /**
    * Theme in the Chart Editor.
@@ -1730,6 +1808,54 @@ typedef SaveDataChartEditorOptions =
    * @default `true`
    */
   var ?showNoteKinds:Bool;
+
+  /**
+   * Show the difficulty heatmap over the grid in the Chart Editor.
+   * @default `false`
+   */
+  var ?showDifficultyHeatmap:Bool;
+
+  /**
+   * Show a line on every beat in the Chart Editor.
+   * @default `true`
+   */
+  var ?showBeatLines:Bool;
+
+  /**
+   * Show a dim line on every snap of the current note snap in the Chart Editor.
+   * @default `true`
+   */
+  var ?showSnapLines:Bool;
+
+  /**
+   * Show a line at the cursor's snap in the Chart Editor.
+   * @default `true`
+   */
+  var ?showCursorLine:Bool;
+
+  /**
+   * Lay out the Chart Editor grid by time, so BPM changes don't change the scroll speed.
+   * @default `false`
+   */
+  var ?constantScroll:Bool;
+
+  /**
+   * How fast the Chart Editor grid scrolls with constant scroll on.
+   * @default `1.0`
+   */
+  var ?constantScrollSpeed:Float;
+
+  /**
+   * How large the Chart Editor is drawn, compared to one game pixel per screen pixel.
+   * @default `1.45`
+   */
+  var ?uiScale:Float;
+
+  /**
+   * How opaque the grid backing is in the Chart Editor, from 0 to 1.
+   * @default `0.92`
+   */
+  var ?gridBackingAlpha:Float;
 
   /**
    * Show Subtitles in the Chart Editor.
@@ -1772,6 +1898,30 @@ typedef SaveDataChartEditorOptions =
    * @default `false`
    */
   var ?playtestResultsSettings:Bool;
+
+  /**
+   * If true, playtesting doesn't end the song when you run out of health.
+   * @default `false`
+   */
+  var ?playtestPracticeMode:Bool;
+
+  /**
+   * If true, the computer plays the chart when playtesting.
+   * @default `false`
+   */
+  var ?playtestBotPlayMode:Bool;
+
+  /**
+   * If true, scripts tied to the song run when playtesting.
+   * @default `true`
+   */
+  var ?playtestSongScripts:Bool;
+
+  /**
+   * How close notes must be, in steps, to be highlighted as stacked in the Chart Editor. `0` means exactly the same time.
+   * @default `0.0`
+   */
+  var ?stackedNoteThreshold:Float;
 
   /**
    * Theme music in the Chart Editor.
@@ -1890,6 +2040,12 @@ typedef SaveDataCameraEditorOptions =
    * @default `false`
    */
   var ?zoomToPlayhead:Bool;
+
+  /**
+   * Whether the camera preview is fitted to the viewport.
+   * @default `false`
+   */
+  var ?fitCameraToViewport:Bool;
 }
 
 typedef SaveDataQuickMenuOptions =

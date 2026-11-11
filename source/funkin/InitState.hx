@@ -119,27 +119,27 @@ class InitState extends FlxState
 
       #if FEATURE_MOBILE_ADVERTISEMENTS
       // Setup Admob
-      funkin.mobile.util.AdMobUtil.init();
+      funkin.util.mobile.AdMobUtil.init();
       #end
 
       #if FEATURE_MOBILE_IAP
       // Setup In-App purchases
-      funkin.mobile.util.InAppPurchasesUtil.init();
+      funkin.util.mobile.InAppPurchasesUtil.init();
       #end
 
       #if FEATURE_MOBILE_IAR
       // Setup In-App reviews
-      funkin.mobile.util.InAppReviewUtil.init();
+      funkin.util.mobile.InAppReviewUtil.init();
       #end
 
       #if FEATURE_MOBILE_WEBVIEW
       // Setup WebView
-      funkin.mobile.util.WebViewUtil.init();
+      funkin.util.mobile.WebViewUtil.init();
       #end
 
       #if FEATURE_MOBILE_AGESIGNALS
       // Setup AgeSignals
-      funkin.mobile.util.AgeSignalsUtil.init();
+      funkin.util.mobile.AgeSignalsUtil.init();
       #end
 
       #if android
@@ -148,11 +148,9 @@ class InitState extends FlxState
       #end
 
       #if mobile
-      // Setup Mobile FNF Loader Provider.
-      funkin.mobile.util.FNFLoaderProvider.init();
+      // Setup Mobile FNFC launcher.
+      funkin.util.mobile.FNFLoaderProvider.init();
       #end
-
-      SongEventHelper.generateEaseGraphsBitmaps();
 
       // This ain't a pixel art game! (most of the time)
       FlxSprite.defaultAntialiasing = true;
@@ -236,6 +234,7 @@ class InitState extends FlxState
       // Plugins provide a useful interface for globally active Flixel objects,
       // that receive update events regardless of the current state.
       // TODO: Move scripted Module behavior to a Flixel plugin.
+      FlxG.plugins.drawOnTop = true;
       #if FEATURE_DEBUG_FUNCTIONS
       funkin.util.plugins.MemoryGCPlugin.initialize();
       #end
@@ -256,7 +255,7 @@ class InitState extends FlxState
       #end
       #if FEATURE_TOUCH_CONTROLS
       funkin.util.plugins.TouchPointerPlugin.initialize();
-      funkin.mobile.input.ControlsHandler.initInputTrackers();
+      funkin.touch.input.ControlsHandler.initInputTrackers();
       #end
       funkin.util.plugins.SidePanelPlugin.initialize();
 
@@ -432,7 +431,7 @@ class InitState extends FlxState
     funkin.modding.install.OneClickInstallHandler.initialize();
 
     #if mobile
-    final fnfModUrl:Null<String> = funkin.mobile.util.FNFLoaderProvider.queryFNFMOD();
+    final fnfModUrl:Null<String> = funkin.util.mobile.FNFLoaderProvider.queryFNFMOD();
 
     if (fnfModUrl != null && fnfModUrl.length > 0)
     {
@@ -519,7 +518,7 @@ class InitState extends FlxState
     else
     {
       #if mobile
-      funkin.mobile.util.FNFLoaderProvider.onFNFCOpen.add(function(fnfcFile:String)
+      funkin.util.mobile.FNFLoaderProvider.onFNFCOpen.add(function(fnfcFile:String)
       {
         flixel.tweens.FlxTween.globalManager.clear();
         flixel.util.FlxTimer.globalManager.clear();
@@ -536,8 +535,7 @@ class InitState extends FlxState
         });
       });
 
-      final fnfcFile = funkin.mobile.util.FNFLoaderProvider.queryFNFC();
-
+      final fnfcFile = funkin.util.mobile.FNFLoaderProvider.queryFNFC();
       if (fnfcFile != null)
       {
         trace('launching FNFC from $fnfcFile');

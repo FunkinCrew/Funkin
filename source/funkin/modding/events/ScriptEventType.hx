@@ -133,6 +133,13 @@ enum abstract ScriptEventType(String) from String to String
   public var SONG_EVENT = 'SONG_EVENT';
 
   /**
+   * Called every frame while a Custom Event is running, with how far through it the song is.
+   *
+   * This event is not cancelable.
+   */
+  public var CUSTOM_EVENT = 'CUSTOM_EVENT';
+
+  /**
    * Called when the song starts. This occurs as the countdown ends and the instrumental begin.
    *
    * This event is not cancelable.

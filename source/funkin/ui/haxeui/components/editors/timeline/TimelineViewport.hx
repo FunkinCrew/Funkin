@@ -5,6 +5,7 @@ import funkin.Conductor;
 import funkin.graphics.shaders.TimelineShader;
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongEventDataRaw;
+import funkin.play.event.SongEvent;
 import funkin.ui.haxeui.components.editors.timeline.EventTimeline.TimelinePlaybackAutoScrollMode;
 import funkin.ui.haxeui.components.editors.timeline.TimelineEvent.EventMoveDelta;
 import funkin.ui.haxeui.components.editors.timeline.TimelineEventBlock.TimelineBlockHitZone;
@@ -37,18 +38,22 @@ class TimelineViewport extends Box
   public static inline var LAYER_HEIGHT_WHEEL_STEP:Float = 6.0;
   public static inline var BLOCK_INSET:Float = 3.0;
   public static inline var MIN_BLOCK_WIDTH:Float = 10.0;
+  public static inline var INSTANT_BLOCK_WIDTH:Float = 14.0;
+  public static inline var INSTANT_BLOCK_SNAPS:Float = 2.0;
+  public static inline var BLOCK_DRAW_MARGIN:Float = 16.0;
+  // Durations are rounded to this many parts of a step.
+  public static inline var DURATION_PRECISION:Float = 1000;
   public static inline var PIXELS_PER_STEP_BASE:Float = 12.0;
-  public static inline var MIN_ZOOM:Float = 0.1;
+  public static inline var MIN_ZOOM:Float = 0.02;
+
+  public static inline var MIN_ZOOM_SONG_FRACTION:Float = 1.2;
   public static inline var MAX_ZOOM:Float = 10.0;
   public static inline var ZOOM_WHEEL_IN:Float = 1.25;
   public static inline var ZOOM_WHEEL_OUT:Float = 0.8;
-
   // How long the view takes to close half the distance to where the wheel sent it.
   public static inline var VIEW_EASE_HALF_LIFE:Float = 0.045;
-
   // A drag held near either side carries the view along at one steady pace.
   public static inline var EDGE_AUTOSCROLL_ZONE_PX:Float = 28.0;
-
   public static inline var EDGE_AUTOSCROLL_PX_PER_SEC:Float = 900.0;
   // The least a wheel notch moves the view along the song, as a share of what is on screen.
   public static inline var SCROLL_STEP_MIN_SHARE:Float = 0.1;
@@ -80,12 +85,10 @@ class TimelineViewport extends Box
 
   public var layerScrollOffsetPx:Float = 0;
   public var layerHeight:Float = LAYER_HEIGHT;
-
   // Where the view is easing to. The wheel moves these and the view follows a frame or two behind.
   public var aimScrollOffsetMs:Float = 0;
   public var aimZoomLevel:Float = 1.0;
   public var aimLayerHeight:Float = LAYER_HEIGHT;
-
   @:noCompletion
   public var _easingScroll:Bool = false;
   @:noCompletion
@@ -95,7 +98,6 @@ class TimelineViewport extends Box
   var _zoomAnchorSteps:Float = 0;
   var _zoomAnchorX:Float = 0;
   var _zoomAnchorPlayhead:Bool = false;
-
   // The scroll position in steps is asked for by every block each layout.
   var _scrollStepsCacheMs:Float = Math.NaN;
   var _scrollStepsCache:Float = 0;
@@ -105,14 +107,11 @@ class TimelineViewport extends Box
   public var aimLayerScrollOffsetPx:Float = 0;
   @:noCompletion
   public var _easingLayerScroll:Bool = false;
-
   // Whether a zoom holds the playhead still rather than the cursor.
   public var zoomToPlayhead:Bool = false;
-
   // Whether the view keeps the playhead in front of it while the song runs.
   // Scrolling turns it off, and the song leaving the view turns it back on.
   public var chasing:Bool = true;
-
   public var onRefresh:Void->Void;
   @:noCompletion
   public var _eventsInstance:TimelineViewportEvents;
@@ -155,6 +154,16 @@ class TimelineViewport extends Box
     return @:privateAccess conductor.timeChanges.length > 0;
   }
 
+  public var minZoom(get, never):Float;
+
+  function get_minZoom():Float
+  {
+    var songSteps:Float = msToSteps(songLengthMs);
+    if (songSteps <= 0 || width <= 0) return MIN_ZOOM;
+    var fit:Float = width / (songSteps * MIN_ZOOM_SONG_FRACTION * pixelsPerStep);
+    return Math.min(fit, MAX_ZOOM);
+  }
+
   public function msToSteps(ms:Float):Float
   {
     if (!hasTimeChanges()) return stepLengthMs > 0 ? ms / stepLengthMs : 0;
@@ -187,7 +196,9 @@ class TimelineViewport extends Box
   public function durationStepsBetween(startMs:Float, endMs:Float):Float
   {
     var stepMs:Float = stepLengthAtMs(startMs);
-    return stepMs > 0 ? (endMs - startMs) / stepMs : 1.0;
+    if (stepMs <= 0) return 1.0;
+    // Going through milliseconds leaves float error, so a snapped length like 4 would come out as 3.9999.
+    return Math.fround((endMs - startMs) / stepMs * DURATION_PRECISION) / DURATION_PRECISION;
   }
 
   public var scrollOffsetSteps(get, never):Float;
@@ -419,10 +430,36 @@ class TimelineViewport extends Box
    */
   function isFollowingPlayback():Bool
   {
-    if (!chasing) return false;
+    return chasing && isPlaybackAutoScrolling();
+  }
+
+  /**
+   * Whether the song is running with an auto-scroll mode, whether or not the view is on the playhead right now.
+   */
+  function isPlaybackAutoScrolling():Bool
+  {
     var timeline:Null<EventTimeline> = findAncestor(EventTimeline);
     if (timeline == null || !timeline.isPlaying) return false;
     return (timeline.autoScrollMode : TimelinePlaybackAutoScrollMode) != NONE;
+  }
+
+  /**
+   * Where the playhead should sit on screen during a zoom while playback auto-scrolls.
+   */
+  function playbackAnchorX(playheadX:Float):Float
+  {
+    var timeline:Null<EventTimeline> = findAncestor(EventTimeline);
+    if (timeline != null && (timeline.autoScrollMode : TimelinePlaybackAutoScrollMode) == SMOOTH) return width * 0.5;
+    if (playheadX >= 0 && playheadX <= width * 0.95) return playheadX;
+    return width * 0.05;
+  }
+
+  /**
+   * How wide an instant event is drawn: a couple of snaps, but never too thin to grab.
+   */
+  public function instantBlockWidth():Float
+  {
+    return Math.max(INSTANT_BLOCK_WIDTH, INSTANT_BLOCK_SNAPS * snapGridSteps() * pixelsPerStep * zoomLevel);
   }
 
   public function cancelLayerScrollEase():Void
@@ -471,7 +508,6 @@ class TimelineViewport extends Box
     if (h == layerHeight) return;
 
     layerHeight = h;
-    for (block in eventBlocks) block.height = blockHeight;
     refreshLayout();
   }
 
@@ -507,6 +543,7 @@ class TimelineViewport extends Box
    */
   public function zoomAnchorX(fallbackX:Float):Float
   {
+    if (isPlaybackAutoScrolling()) return playbackAnchorX(msToPixelX(songPositionMs));
     if (!zoomToPlayhead) return fallbackX;
 
     var playheadX:Float = msToPixelX(songPositionMs);
@@ -532,8 +569,13 @@ class TimelineViewport extends Box
 
     var playheadSteps:Float = msToSteps(songPositionMs);
     var playheadX:Float = (playheadSteps - fromScrollSteps) * pxFrom;
-    // While the song runs the view keeps the playhead put anyway.
-    if ((zoomToPlayhead || isFollowingPlayback()) && playheadX >= 0 && playheadX <= width)
+    if (isPlaybackAutoScrolling())
+    {
+      _zoomAnchorPlayhead = true;
+      _zoomAnchorSteps = playheadSteps;
+      _zoomAnchorX = playbackAnchorX(playheadX);
+    }
+    else if (zoomToPlayhead && playheadX >= 0 && playheadX <= width)
     {
       _zoomAnchorPlayhead = true;
       _zoomAnchorSteps = playheadSteps;
@@ -547,7 +589,7 @@ class TimelineViewport extends Box
     }
 
     var newZoom:Float = fromZoom * factor;
-    if (newZoom < MIN_ZOOM) newZoom = MIN_ZOOM;
+    if (newZoom < minZoom) newZoom = minZoom;
     if (newZoom > MAX_ZOOM) newZoom = MAX_ZOOM;
 
     // A zoom keeps the view on the song, or puts it back on it.
@@ -701,7 +743,6 @@ class TimelineViewport extends Box
    */
   public function rebuildBlocks(events:Array<SongEventData>):Void
   {
-    for (block in eventBlocks) contentArea.removeComponent(block);
     eventBlocks = [];
 
     for (event in events) addEventBlock(event);
@@ -711,7 +752,7 @@ class TimelineViewport extends Box
 
   public function addEventBlock(event:SongEventData):TimelineEventBlock
   {
-    if (event.eventKind != "FocusCamera" && event.eventKind != "ZoomCamera" && event.eventKind != "PlayAnimation") return null;
+    if (!TimelineUtil.isTimelineEvent(event.eventKind)) return null;
 
     var block = new TimelineEventBlock();
     block.eventData = event;
@@ -720,26 +761,10 @@ class TimelineViewport extends Box
     var layerName = raw.editorLayer != null ? raw.editorLayer : "Default";
     block.layerIndex = getLayerIndex(layerName);
 
-    if (block.layerIndex >= 0 && block.layerIndex < layers.length) block.applyColor(layers[block.layerIndex].color);
-
-    contentArea.addComponent(block);
-
-    var triangle = block.findComponent("block-instantTriangle", Image);
-    if (triangle != null)
-    {
-      if (!block.isInstant()) triangle.opacity = 0;
-      block._cachedTriangle = triangle;
-    }
-
-    var icon = block.findComponent("block-icon", Image);
-    if (icon != null)
-    {
-      var iconRes = TimelineEventBlock.getIconResource(event.eventKind);
-      if (iconRes != null) icon.resource = iconRes;
-      block._cachedIcon = icon;
-    }
+    block.updateVisuals();
 
     eventBlocks.push(block);
+    refreshLayout();
     return block;
   }
 
@@ -753,8 +778,8 @@ class TimelineViewport extends Box
   {
     var block = findBlockByEvent(event);
     if (block == null) return false;
-    contentArea.removeComponent(block);
     eventBlocks.remove(block);
+    refreshLayout();
     return true;
   }
 
@@ -782,6 +807,7 @@ class TimelineViewport extends Box
       if (targetSelected && !block.selected) continue;
       block.updateVisuals();
     }
+    refreshLayout();
   }
 
   public function getSelectedEvents():Array<SongEventData>
@@ -878,7 +904,8 @@ private class TimelineViewportBuilder extends CompositeBuilder
     _viewport.addComponent(topper);
     _viewport.playheadTopper = topper;
 
-    var contentArea:Box = new Box();
+    var contentArea:TimelineBlockArea = new TimelineBlockArea();
+    contentArea.viewport = _viewport;
     contentArea.id = "timeline-content-area";
     contentArea.layout = new AbsoluteLayout();
     contentArea.left = 0;
@@ -945,71 +972,39 @@ private class TimelineViewportLayout extends DefaultLayout
       if (vp.contentArea.height != caHeight) vp.contentArea.height = caHeight;
     }
 
+    var instantWidth:Float = vp.instantBlockWidth();
+
+    // Blocks are drawn by the content area itself, this only works out where they go.
     for (block in vp.eventBlocks)
     {
-      var blockLeftPos = vp.msToPixelX(block.eventData.time);
-      var blockWidthVal = Math.max(TimelineViewport.MIN_BLOCK_WIDTH, vp.msToPixelX(vp.eventEndMs(block.eventData)) - blockLeftPos);
+      var blockLeftPos = Math.fround(vp.msToPixelX(block.eventData.time));
       var blockTopPos = vp.getBlockTopPositionFromLayerIndex(block.layerIndex);
 
-      var isOffscreen =
-        (blockLeftPos + blockWidthVal < 0)
-          || (blockLeftPos > w)
-          || (blockTopPos + vp.blockHeight < 0)
-          || (blockTopPos > caHeight);
+      if (blockLeftPos > w || blockTopPos + vp.blockHeight < 0 || blockTopPos > caHeight)
+      {
+        block.hidden = true;
+        continue;
+      }
 
-      if (isOffscreen != block.hidden) block.hidden = isOffscreen;
+      block.instant = block.isInstant();
+      var blockWidthVal = block.instant ? Math.fround(instantWidth) : Math.max(TimelineViewport.MIN_BLOCK_WIDTH,
+        Math.fround(vp.msToPixelX(vp.eventEndMs(block.eventData))) - blockLeftPos);
 
-      if (isOffscreen) continue;
-      if (block.left != blockLeftPos) block.left = blockLeftPos;
-      if (block.top != blockTopPos) block.top = blockTopPos;
-      if (block.width != blockWidthVal) block.width = blockWidthVal;
-      if (block.height != vp.blockHeight) block.height = vp.blockHeight;
+      if (blockLeftPos + blockWidthVal < 0)
+      {
+        block.hidden = true;
+        continue;
+      }
 
+      var drawLeft:Float = Math.max(blockLeftPos, -TimelineViewport.BLOCK_DRAW_MARGIN);
+      var drawRight:Float = Math.min(blockLeftPos + blockWidthVal, w + TimelineViewport.BLOCK_DRAW_MARGIN);
+
+      block.hidden = false;
       block.blockLeft = blockLeftPos;
       block.blockTop = blockTopPos;
       block.blockWidth = blockWidthVal;
-
-      if (block._cachedIcon == null) block._cachedIcon = block.findComponent("block-icon", Image);
-      if (block._cachedTriangle == null) block._cachedTriangle = block.findComponent("block-instantTriangle", Image);
-
-      var icon = block._cachedIcon;
-      var triangle = block._cachedTriangle;
-      if (icon != null && triangle != null)
-      {
-        var maxIconSize = vp.blockHeight - 4;
-        var preferredPadding = maxIconSize * 0.05;
-        var iconSize:Float;
-        var iconLeft:Float;
-
-        if (blockWidthVal >= maxIconSize + preferredPadding * 2)
-        {
-          // Block is wide enough: full-size icon with padding
-          iconSize = maxIconSize;
-          iconLeft = preferredPadding;
-
-          // size triangle
-          if (triangle.width != iconSize / 2) triangle.width = iconSize / 2;
-        }
-        else
-        {
-          // Block is too narrow: fill the block and center
-          iconSize = Math.max(16, blockWidthVal);
-          iconLeft = (blockWidthVal - iconSize) / 2;
-
-          if (triangle.width != blockWidthVal) triangle.width = blockWidthVal;
-        }
-
-        var triangleColor:Null<Int> = triangle.color;
-        var blockColor:Null<Int> = block.backgroundColor;
-        if (triangleColor != blockColor) triangle.color = block.backgroundColor;
-        if (triangle.height != vp.blockHeight) triangle.height = vp.blockHeight;
-
-        if (icon.width != iconSize) icon.width = iconSize;
-        if (icon.height != iconSize) icon.height = iconSize;
-        var iconTop = (vp.blockHeight - iconSize) / 2;
-        if (icon.top != iconTop) icon.top = iconTop;
-        if (icon.left != iconLeft) icon.left = iconLeft;
-      }
+      block.drawLeft = drawLeft;
+      block.drawWidth = Math.max(1, drawRight - drawLeft);
     }
   }
 }
@@ -1021,7 +1016,6 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
   static inline var PLAYHEAD_GRAB_TOLERANCE_PX:Float = 5.0;
   static inline var DOUBLE_CLICK_MAX_DELAY:Float = 0.4;
   static inline var DOUBLE_CLICK_MAX_DIST_PX:Float = 4.0;
-
   #if FEATURE_MACOS_GESTURES
   static inline var GESTURE_PAN_SCALE_X:Float = 1.0;
   static inline var GESTURE_PAN_SCALE_Y:Float = 1.0;
@@ -1046,20 +1040,18 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
   var _panLastScreenY:Float = 0;
   var _selectionBoxStartX:Float = 0;
   var _selectionBoxStartY:Float = 0;
-
   // Where the box began in song time, so a view carried along under it leaves its corner put.
   var _selectionBoxStartMs:Float = 0;
-
   var _selectionBoxAdditive:Bool = false;
   var _selectionBoxArmed:Bool = false;
   var _selectionBoxStartSelection:Array<SongEventData> = [];
   var _dragGroupEvents:Array<TimelineEventBlock> = [];
   var _dragGroupOriginalTimes:Array<Float> = [];
   var _dragGroupOriginalLayerIndices:Array<Int> = [];
-
   // Where each dragged event is headed, each snapped from its own start.
   var _dragGroupGhostTimes:Array<Float> = [];
   var _dragGhosts:Array<Box> = [];
+  var _resizeGroup:Array<ResizeEntry> = [];
 
   public function new(viewport:TimelineViewport)
   {
@@ -1115,19 +1107,24 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
     var contentY:Float = localY - TimelineViewport.TOP_BAR_HEIGHT;
     if (contentY < 0) return null;
 
-    var i:Int = _viewport.eventBlocks.length;
-    while (i-- > 0)
+    // Selected events win over anything they overlap, so their edges can always be grabbed.
+    for (pass in 0...2)
     {
-      var block:TimelineEventBlock = _viewport.eventBlocks[i];
-      if (block.hidden) continue;
-      if (
-        localX >= block.blockLeft
-        && localX <= block.blockLeft + block.blockWidth
-        && contentY >= block.blockTop
-        && contentY <= block.blockTop + _viewport.blockHeight
-      )
+      var i:Int = _viewport.eventBlocks.length;
+      while (i-- > 0)
       {
-        return block;
+        var block:TimelineEventBlock = _viewport.eventBlocks[i];
+        if (block.hidden) continue;
+        if (block.selected != (pass == 0)) continue;
+        if (
+          localX >= block.blockLeft
+          && localX <= block.blockLeft + block.blockWidth
+          && contentY >= block.blockTop
+          && contentY <= block.blockTop + _viewport.blockHeight
+        )
+        {
+          return block;
+        }
       }
     }
     return null;
@@ -1144,16 +1141,12 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
     _ghostDurationSteps = _dragOriginalDuration;
     _ghostLayerIndex = _dragOriginalLayerIndex;
 
-    var fixed:Bool = TimelineUtil.isFixedDuration(block.eventData);
-
     switch (hitZone)
     {
       case LEFT_EDGE:
-        _dragMode = fixed ? MOVE : RESIZE_LEFT;
-        if (fixed) _dragOffsetSteps = _viewport.msToSteps(_viewport.pixelXToMs(mouseX)) - _viewport.msToSteps(block.eventData.time);
+        _dragMode = RESIZE_LEFT;
       case RIGHT_EDGE:
-        _dragMode = fixed ? MOVE : RESIZE_RIGHT;
-        if (fixed) _dragOffsetSteps = _viewport.msToSteps(_viewport.pixelXToMs(mouseX)) - _viewport.msToSteps(block.eventData.time);
+        _dragMode = RESIZE_RIGHT;
       case BODY:
         _dragMode = MOVE;
         _dragOffsetSteps = _viewport.msToSteps(_viewport.pixelXToMs(mouseX)) - _viewport.msToSteps(block.eventData.time);
@@ -1181,6 +1174,40 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
         _dragGroupGhostTimes.push(block.eventData.time);
       }
     }
+    else
+    {
+      _resizeGroup = [_makeResizeEntry(block)];
+      for (b in _viewport.eventBlocks)
+      {
+        if (b == block || !b.selected || !TimelineUtil.canResize(b.eventData)) continue;
+        // Left edge drags only make sense for events that already have a length.
+        if (_dragMode == RESIZE_LEFT && b.isInstant()) continue;
+        _resizeGroup.push(_makeResizeEntry(b));
+      }
+    }
+  }
+
+  function _makeResizeEntry(block:TimelineEventBlock):ResizeEntry
+  {
+    var instant:Bool = block.isInstant();
+    var duration:Float = TimelineUtil.getEventDurationSteps(block.eventData);
+    return {
+      event: block.eventData,
+      instant: instant,
+      origTime: block.eventData.time,
+      origDuration: duration,
+      baseDuration: instant ? 0 : duration,
+      origRawDuration: block.eventData.getFloat('duration'),
+      origEase: block.eventData.getString('ease'),
+      endMs: block.eventData.time + duration * _viewport.stepLengthAtMs(block.eventData.time)
+    };
+  }
+
+  function _restoreResizeEntry(entry:ResizeEntry):Void
+  {
+    entry.event.time = entry.origTime;
+    TimelineUtil.setEventField(entry.event, 'duration', entry.origRawDuration);
+    TimelineUtil.setEventField(entry.event, 'ease', entry.origEase);
   }
 
   function _createGhosts():Void
@@ -1223,12 +1250,15 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
     ghost.invalidateComponentStyle();
   }
 
-  function _positionGhost(ghost:Box, timeMs:Float, durationSteps:Float, layerIndex:Int):Void
+  function _positionGhost(ghost:Box, timeMs:Float, durationSteps:Float, layerIndex:Int, instant:Bool = false):Void
   {
     var endMs:Float = timeMs + durationSteps * _viewport.stepLengthAtMs(timeMs);
     var ghostLeft:Float = _viewport.msToPixelX(timeMs);
     var ghostTop:Float = _viewport.getBlockTopPositionFromLayerIndex(layerIndex);
-    var ghostWidth:Float = Math.max(TimelineViewport.MIN_BLOCK_WIDTH, _viewport.msToPixelX(endMs) - ghostLeft);
+    var ghostWidth:Float = instant ? TimelineViewport.INSTANT_BLOCK_WIDTH : Math.max(
+      TimelineViewport.MIN_BLOCK_WIDTH,
+      _viewport.msToPixelX(endMs) - ghostLeft
+    );
     ghost.left = ghostLeft;
     ghost.top = ghostTop;
     ghost.width = ghostWidth;
@@ -1285,24 +1315,40 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
     }
     else
     {
-      var newDuration:Float = TimelineUtil.getEventDurationSteps(_dragTarget.eventData);
-      var durationChanged:Bool = Math.abs(newDuration - _dragOriginalDuration) > 0.01;
+      var deltas:Array<EventMoveDelta> = [];
+      for (entry in _resizeGroup)
+      {
+        var newEase:Null<String> = entry.event.getString('ease');
+        var easeChanged:Bool = newEase != entry.origEase;
+        var newDuration:Float = TimelineUtil.getEventDurationSteps(entry.event);
+        var newTime:Float = entry.event.time;
+        var changed:Bool = easeChanged || Math.abs(newDuration - entry.origDuration) > 0.01 || Math.abs(newTime - entry.origTime) > 0.5;
+        _restoreResizeEntry(entry);
+        if (!changed) continue;
 
-      if (durationChanged)
-      {
-        var resizeEvent:TimelineEvent = new TimelineEvent(TimelineEvent.EVENT_RESIZED);
-        resizeEvent.eventData = _dragTarget.eventData;
-        resizeEvent.oldTime = _dragOriginalTime;
-        resizeEvent.newTime = _dragTarget.eventData.time;
-        resizeEvent.oldDuration = _dragOriginalDuration;
-        resizeEvent.newDuration = newDuration;
-        _viewport.dispatch(resizeEvent);
+        var raw:SongEventDataRaw = entry.event;
+        var layerName:String = raw.editorLayer ?? 'Default';
+        deltas.push({
+          event: entry.event,
+          oldTime: entry.origTime,
+          newTime: newTime,
+          oldDuration: entry.origDuration,
+          newDuration: newDuration,
+          oldLayerName: layerName,
+          newLayerName: layerName,
+          easeChanged: easeChanged,
+          oldEase: entry.origEase,
+          newEase: newEase
+        });
       }
-      else
+
+      if (deltas.length > 0)
       {
-        _dragTarget.eventData.time = _dragOriginalTime;
-        TimelineUtil.setEventDurationSteps(_dragTarget.eventData, _dragOriginalDuration);
+        var resizedEvent:TimelineEvent = new TimelineEvent(TimelineEvent.EVENTS_MOVED);
+        resizedEvent.moveDeltas = deltas;
+        _viewport.dispatch(resizedEvent);
       }
+      _resizeGroup = [];
     }
 
     _removeGhosts();
@@ -1658,8 +1704,7 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
   {
     if (_hoverBlock != null)
     {
-      _hoverBlock.removeClass("resize-left");
-      _hoverBlock.removeClass("resize-right");
+      _hoverBlock.hoverEdge = null;
       _hoverBlock = null;
     }
 
@@ -1669,23 +1714,16 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
     if (hitBlock != null)
     {
       var hitZone = hitBlock.getHitZone(localX - hitBlock.blockLeft);
-      var fixed = TimelineUtil.isFixedDuration(hitBlock.eventData);
       switch (hitZone)
       {
         case LEFT_EDGE:
-          desiredCursor = fixed ? "move" : "col-resize";
-          if (!fixed)
-          {
-            hitBlock.addClass("resize-left");
-            _hoverBlock = hitBlock;
-          }
+          desiredCursor = "col-resize";
+          hitBlock.hoverEdge = LEFT_EDGE;
+          _hoverBlock = hitBlock;
         case RIGHT_EDGE:
-          desiredCursor = fixed ? "move" : "col-resize";
-          if (!fixed)
-          {
-            hitBlock.addClass("resize-right");
-            _hoverBlock = hitBlock;
-          }
+          desiredCursor = "col-resize";
+          hitBlock.hoverEdge = RIGHT_EDGE;
+          _hoverBlock = hitBlock;
         case BODY:
           desiredCursor = "move";
       }
@@ -1740,41 +1778,59 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
 
         var durationSteps:Float = TimelineUtil.getEventDurationSteps(block.eventData);
         _applyGhostStyle(ghost, gLayer);
-        _positionGhost(ghost, gTime, durationSteps, gLayer);
+        _positionGhost(ghost, gTime, durationSteps, gLayer, block.isInstant());
       }
     }
   }
 
   function _handleDragResizeRight(mouseX:Float):Void
   {
-    if (_dragTarget == null) return;
+    if (_dragTarget == null || _resizeGroup.length == 0) return;
 
-    var endMs = _viewport.snapTime(_viewport.pixelXToMs(mouseX));
-    var newDurationSteps = _viewport.durationStepsBetween(_dragTarget.eventData.time, endMs);
+    var target:ResizeEntry = _resizeGroup[0];
+    var endMs:Float = _viewport.snapTime(_viewport.pixelXToMs(mouseX));
+    var deltaSteps:Float = _viewport.durationStepsBetween(target.origTime, endMs) - target.baseDuration;
 
-    var minSteps = TimelineUtil.getMinDurationSteps(_dragTarget.eventData);
-    if (newDurationSteps < minSteps) newDurationSteps = minSteps;
+    for (entry in _resizeGroup)
+    {
+      var minSteps:Float = TimelineUtil.getMinDurationSteps(entry.event);
+      var newDurationSteps:Float = entry.baseDuration + deltaSteps;
 
-    TimelineUtil.setEventDurationSteps(_dragTarget.eventData, newDurationSteps);
+      if (entry.instant)
+      {
+        // Can become a non instant event
+        if (newDurationSteps < minSteps)
+        {
+          _restoreResizeEntry(entry);
+          continue;
+        }
+        TimelineUtil.setEventField(entry.event, 'ease', SongEvent.DEFAULT_EASE);
+      }
+
+      TimelineUtil.setEventDurationSteps(entry.event, Math.max(minSteps, newDurationSteps));
+    }
     _viewport.refreshLayout();
   }
 
   function _handleDragResizeLeft(mouseX:Float):Void
   {
-    if (_dragTarget == null) return;
+    if (_dragTarget == null || _resizeGroup.length == 0) return;
 
-    var minSteps = TimelineUtil.getMinDurationSteps(_dragTarget.eventData);
-    var originalEndMs = _dragOriginalTime + (_dragOriginalDuration * _viewport.stepLengthAtMs(_dragOriginalTime));
+    var target:ResizeEntry = _resizeGroup[0];
+    var newStartMs:Float = _viewport.snapTime(_viewport.pixelXToMs(mouseX));
+    var deltaMs:Float = newStartMs - target.origTime;
 
-    var newStartMs = _viewport.snapTime(_viewport.pixelXToMs(mouseX));
-    var maxStart = originalEndMs - (minSteps * _viewport.stepLengthAtMs(newStartMs));
-    if (newStartMs > maxStart) newStartMs = maxStart;
-    if (newStartMs < 0) newStartMs = 0;
+    for (entry in _resizeGroup)
+    {
+      var minSteps:Float = TimelineUtil.getMinDurationSteps(entry.event);
+      var startMs:Float = entry.origTime + deltaMs;
+      var maxStart:Float = entry.endMs - (minSteps * _viewport.stepLengthAtMs(startMs));
+      if (startMs > maxStart) startMs = maxStart;
+      if (startMs < 0) startMs = 0;
 
-    var newDurationSteps = _viewport.durationStepsBetween(newStartMs, originalEndMs);
-
-    _dragTarget.eventData.time = newStartMs;
-    TimelineUtil.setEventDurationSteps(_dragTarget.eventData, newDurationSteps);
+      entry.event.time = startMs;
+      TimelineUtil.setEventDurationSteps(entry.event, _viewport.durationStepsBetween(startMs, entry.endMs));
+    }
     _viewport.refreshLayout();
   }
 
@@ -1782,8 +1838,7 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
   {
     if (!_viewport._autoScrollDragActive) return;
 
-    var modeEligible:Bool = _dragMode == SEEKING || _dragMode == MOVE || _dragMode == RESIZE_LEFT || _dragMode == RESIZE_RIGHT
-      || _dragMode == BOX_SELECTING;
+    var modeEligible:Bool = _dragMode == SEEKING || _dragMode == MOVE || _dragMode == RESIZE_LEFT || _dragMode == RESIZE_RIGHT || _dragMode == BOX_SELECTING;
     if (!modeEligible) return;
 
     if (_viewport.pixelsPerStep <= 0) return;
@@ -1856,7 +1911,7 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
     var mouseMs:Float = _viewport.pixelXToMs(localX);
 
     var newZoom:Float = _viewport.zoomLevel * (1.0 + delta);
-    if (newZoom < TimelineViewport.MIN_ZOOM) newZoom = TimelineViewport.MIN_ZOOM;
+    if (newZoom < _viewport.minZoom) newZoom = _viewport.minZoom;
     if (newZoom > TimelineViewport.MAX_ZOOM) newZoom = TimelineViewport.MAX_ZOOM;
     _viewport.cancelScrollEase();
     _viewport.chasing = true;
@@ -1887,4 +1942,20 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
   }
   #end
 }
+
+/**
+ * The starting state of one event in a resize drag.
+ */
+typedef ResizeEntry =
+{
+  event:SongEventData,
+  instant:Bool,
+  origTime:Float,
+  origDuration:Float,
+  baseDuration:Float,
+  origRawDuration:Null<Float>,
+  origEase:Null<String>,
+  endMs:Float
+};
+
 #end

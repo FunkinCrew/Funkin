@@ -88,32 +88,38 @@ class CharacterRegistry extends BaseRegistry<BaseCharacter, CharacterData, Chara
         case CharacterRenderType.AnimateAtlas:
           if (AnimateAtlasCharacter.scriptStaticHas(charScriptClass, 'queryAssets'))
           {
-            return AnimateAtlasCharacter.scriptStaticCall(charScriptClass, 'queryAssets', [type, entryId]);
+            var result:Null<Array<funkin.assets.AssetPath>> = AnimateAtlasCharacter.scriptStaticCall(charScriptClass, 'queryAssets', [type, entryId]);
+            if (result != null) return [];
           }
         case CharacterRenderType.MultiSparrow:
           if (MultiSparrowCharacter.scriptStaticHas(charScriptClass, 'queryAssets'))
           {
-            return MultiSparrowCharacter.scriptStaticCall(charScriptClass, 'queryAssets', [type, entryId]);
+            var result:Null<Array<funkin.assets.AssetPath>> = MultiSparrowCharacter.scriptStaticCall(charScriptClass, 'queryAssets', [type, entryId]);
+            if (result != null) return [];
           }
         case CharacterRenderType.Sparrow:
           if (SparrowCharacter.scriptStaticHas(charScriptClass, 'queryAssets'))
           {
-            return SparrowCharacter.scriptStaticCall(charScriptClass, 'queryAssets', [type, entryId]);
+            var result:Null<Array<funkin.assets.AssetPath>> = SparrowCharacter.scriptStaticCall(charScriptClass, 'queryAssets', [type, entryId]);
+            if (result != null) return [];
           }
         case CharacterRenderType.Packer:
           if (PackerCharacter.scriptStaticHas(charScriptClass, 'queryAssets'))
           {
-            return PackerCharacter.scriptStaticCall(charScriptClass, 'queryAssets', [type, entryId]);
+            var result:Null<Array<funkin.assets.AssetPath>> = PackerCharacter.scriptStaticCall(charScriptClass, 'queryAssets', [type, entryId]);
+            if (result != null) return [];
           }
         case CharacterRenderType.MultiAnimateAtlas:
           if (MultiAnimateAtlasCharacter.scriptStaticHas(charScriptClass, 'queryAssets'))
           {
-            return MultiAnimateAtlasCharacter.scriptStaticCall(charScriptClass, 'queryAssets', [type, entryId]);
+            var result:Null<Array<funkin.assets.AssetPath>> = MultiAnimateAtlasCharacter.scriptStaticCall(charScriptClass, 'queryAssets', [type, entryId]);
+            if (result != null) return [];
           }
         default:
           if (BaseCharacter.scriptStaticHas(charScriptClass, 'queryAssets'))
           {
-            return BaseCharacter.scriptStaticCall(charScriptClass, 'queryAssets', [type, entryId]);
+            var result:Null<Array<funkin.assets.AssetPath>> = BaseCharacter.scriptStaticCall(charScriptClass, 'queryAssets', [type, entryId]);
+            if (result != null) return [];
           }
       }
     }
@@ -141,7 +147,24 @@ class CharacterRegistry extends BaseRegistry<BaseCharacter, CharacterData, Chara
    * Returns the idle frame of a character.
    * TODO: Too similar to the other function in PixellatedIcon and really needs a damn rewrite.
    */
+  static var pixelIconCache:Map<String, Null<FlxFrame>> = new Map<String, Null<FlxFrame>>();
+
+  /**
+   * Cached version of `findCharPixelIconAsset`.
+   */
   public static function getCharPixelIconAsset(char:String):Null<FlxFrame>
+  {
+    if (pixelIconCache.exists(char))
+    {
+      var cached:Null<FlxFrame> = pixelIconCache.get(char);
+      if (cached == null || (cached.parent != null && funkin.assets.FunkinBitmapFrontend.instance.isValid(cached.parent))) return cached;
+    }
+    var frame:Null<FlxFrame> = findCharPixelIconAsset(char);
+    pixelIconCache.set(char, frame);
+    return frame;
+  }
+
+  static function findCharPixelIconAsset(char:String):Null<FlxFrame>
   {
     var charPath:String = 'ui/freeplay/characters/';
 
@@ -199,6 +222,7 @@ class CharacterRegistry extends BaseRegistry<BaseCharacter, CharacterData, Chara
   public override function loadEntries():Void
   {
     // Instead of loading the entries, we load the character data.
+    pixelIconCache.clear();
     log(' INFO '.info() + 'Parsing all entries...');
 
     var charIdList:Array<String> = fetchEntryIdsFromFiles();

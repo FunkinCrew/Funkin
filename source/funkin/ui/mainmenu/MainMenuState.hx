@@ -16,7 +16,7 @@ import funkin.api.newgrounds.Referral;
 import funkin.assets.FunkinAssetCache;
 import funkin.audio.FunkinSound;
 import funkin.graphics.FunkinCamera;
-import funkin.mobile.ui.FunkinButton;
+import funkin.touch.ui.FunkinButton;
 import funkin.ui.AtlasMenuList.AtlasMenuItem;
 import funkin.ui.MenuList.MenuListItem;
 import funkin.ui.MenuList.MenuTypedList;
@@ -35,9 +35,7 @@ import funkin.util.SwipeUtil;
 import funkin.util.TouchUtil;
 import funkin.util.WindowUtil;
 import funkin.ui.transition.Transition;
-#if FEATURE_DEBUG_MENU
-import funkin.ui.debug.DebugMenuSubState;
-#end
+import funkin.ui.transition.Transition.FlxTransition;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
 #end
@@ -45,8 +43,8 @@ import funkin.api.discord.DiscordClient;
 import funkin.api.newgrounds.NewgroundsClient;
 #end
 #if mobile
-import funkin.mobile.input.ControlsHandler;
-import funkin.mobile.util.InAppPurchasesUtil;
+import funkin.touch.input.ControlsHandler;
+import funkin.util.mobile.InAppPurchasesUtil;
 #end
 //
 // ~PATHS~
@@ -72,6 +70,16 @@ class MainMenuState extends MusicBeatState
   var overrideMusic:Bool = false;
   var uiStateMachine:UIStateMachine = new UIStateMachine();
   var canInteract(get, never):Bool;
+  // Temp bandaid
+  var ignoreFrames:Int = 0;
+
+  // this menu sucks dude
+
+  function samplePanelOpen():Void
+  {
+    if (QuickPanelState.instance?.isOpen ?? false) ignoreFrames = 3;
+    else if (ignoreFrames > 0) ignoreFrames--;
+  }
 
   function get_canInteract():Bool
   {
@@ -208,7 +216,7 @@ class MainMenuState extends MusicBeatState
       };
 
       Transition.openSubState(() -> new FreeplayState(params), {
-        assetQuery: FreeplayState.queryAssets.bind(_, params),
+        assetQuery: FreeplayState.queryAssets.bind(_, params, params.character),
         transition: Throbber,
         shouldPurgeCache: false
       });
@@ -325,18 +333,30 @@ class MainMenuState extends MusicBeatState
 
     backButton?.onConfirmStart.add(() ->
     {
+      #if FEATURE_DEBUG_MENU
+      if (QuickPanelState.instance != null) QuickPanelState.instance.allowOpen = false;
+      #end
       uiStateMachine.transition(Interacting);
       trace('BACK: Interact Start');
     });
 
     optionsButton?.onConfirmStart.add(() ->
     {
+      #if FEATURE_DEBUG_MENU
+      if (QuickPanelState.instance != null) QuickPanelState.instance.allowOpen = false;
+      #end
       uiStateMachine.transition(Interacting);
       trace('OPTIONS: Interact Start');
     });
     #end
 
     super.create();
+
+    #if FEATURE_DEBUG_MENU
+    funkin.util.plugins.SidePanelPlugin.requestPanel('mainmenu', false);
+    #end
+
+    FlxG.signals.postUpdate.add(samplePanelOpen);
 
     // This has to come AFTER!
     initLeftWatermarkText();
@@ -381,7 +401,7 @@ class MainMenuState extends MusicBeatState
   {
     if (menuItems == null) return;
 
-    var item:AtlasMenuItem = new AtlasMenuItem(name, Assets.getSparrowAtlas(Paths.image(atlas)), callback);
+    var item:AtlasMenuItem = new AtlasMenuItem(0, 0, name, Assets.getSparrowAtlas(Paths.image(atlas)), callback);
     item.fireInstantly = fireInstantly;
     item.ID = menuItems.length;
     item.scrollFactor.set();
@@ -422,6 +442,10 @@ class MainMenuState extends MusicBeatState
       optionsButton?.animation.play('idle');
       optionsButton?.resetCallbacks();
       #end
+
+      #if FEATURE_DEBUG_MENU
+      if (QuickPanelState.instance != null) QuickPanelState.instance.allowOpen = true;
+      #end
     }
 
     super.closeSubState();
@@ -439,12 +463,16 @@ class MainMenuState extends MusicBeatState
   function selectDonate()
   {
     WindowUtil.openURL(Constants.URL_ITCH);
+    #if FEATURE_DEBUG_MENU
+    if (QuickPanelState.instance != null) QuickPanelState.instance.allowOpen = true;
+    #end
   }
 
   function selectMerch()
   {
     Referral.doMerchReferral();
     uiStateMachine.transition(Idle);
+    #if FEATURE_DEBUG_MENU if (QuickPanelState.instance != null) QuickPanelState.instance.allowOpen = true; #end
   }
   #end
 
@@ -554,21 +582,6 @@ class MainMenuState extends MusicBeatState
   {
     if (!canInteract) return;
 
-    #if FEATURE_DEBUG_MENU
-    // Open the debug menu, defaults to ` / ~
-    // This includes stuff like the Chart Editor, so it should be present on all builds.
-    if (controls.DEBUG_MENU)
-    {
-      persistentUpdate = false;
-      uiStateMachine.transition(Interacting);
-
-      // Cancel the currently flickering menu item because it's about to call a state switch
-      if (menuItems != null && menuItems.busy) menuItems.cancelAccept();
-
-      FlxG.state.openSubState(new DebugMenuSubState());
-    }
-    #end
-
     #if FEATURE_DEBUG_FUNCTIONS
     // Ctrl+Alt+Shift+P = Character Unlock screen
     // Ctrl+Alt+Shift+W = Meet requirements for Pico Unlock
@@ -667,7 +680,8 @@ class MainMenuState extends MusicBeatState
     }
     #end
 
-    if (controls.BACK_P) goBack();
+    if (controls.BACK_P) trace('MENU back, ignoreFrames=$ignoreFrames');
+    if (controls.BACK_P && ignoreFrames == 0) goBack();
   }
 
   function goOptions():Void
@@ -738,5 +752,11 @@ class MainMenuState extends MusicBeatState
       default:
     }
     return results;
+  }
+
+  override function destroy():Void
+  {
+    FlxG.signals.postUpdate.remove(samplePanelOpen);
+    super.destroy();
   }
 }

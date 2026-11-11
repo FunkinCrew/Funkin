@@ -1,0 +1,136 @@
+package funkin.ui.debug.charting.commands.timing;
+
+#if FEATURE_CHART_EDITOR
+import funkin.data.song.SongData.SongTimeChange;
+import funkin.ui.debug.charting.toolboxes.ChartEditorTimingToolbox;
+import funkin.ui.debug.charting.commands.ChartEditorCommand;
+
+/**
+ * Represents a reversible action to remove a time change from the current chart.
+ */
+@:nullSafety
+@:access(funkin.ui.debug.charting.ChartEditorState)
+class RemoveTimeChangeCommand implements ChartEditorCommand
+{
+  var timeChangeIndex:Int;
+  var timeChangeIndexes:Array<Int>;
+  var previousTimeChanges:Null<Array<SongTimeChange>>;
+  var removedTimeChange:Null<Array<SongTimeChange>>;
+
+  public function new(timeChangeIndex:Int, ?otherIndexes:Array<Int>)
+  {
+    this.timeChangeIndex = timeChangeIndex;
+    timeChangeIndexes = [timeChangeIndex].concat(otherIndexes ?? []);
+  }
+
+  /**
+   * Perform the action, removing the time change from the chart.
+   *
+   * @param state The ChartEditorState to perform the command on.
+   */
+  public function execute(state:ChartEditorState):Void
+  {
+    var timeChanges:Array<SongTimeChange> = state.currentSongMetadata.timeChanges;
+    previousTimeChanges = timeChanges.copy();
+    if (timeChanges == null || timeChanges.length == 0)
+    {
+      timeChanges = [new SongTimeChange(0, 100)];
+    }
+    else
+    {
+      // Highest first, so removing one doesn't shift the ones still to go.
+      var sorted:Array<Int> = timeChangeIndexes.copy();
+      sorted.sort((a, b) -> b - a);
+      var removed:Array<SongTimeChange> = [];
+      var last:Int = -1;
+      for (index in sorted)
+      {
+        if (index == last || index < 0 || index >= timeChanges.length) continue;
+        last = index;
+        removed = timeChanges.splice(index, 1).concat(removed);
+      }
+      removedTimeChange = removed;
+    }
+
+    state.currentSongMetadata.timeChanges = timeChanges;
+    state.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/note-erase'));
+
+    state.noteDisplayDirty = true;
+    state.notePreviewDirty = true;
+    state.notePreviewViewportBoundsDirty = true;
+
+    var timingToolbox:ChartEditorTimingToolbox = cast state.getToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_TIMING_LAYOUT);
+
+    Conductor.instance.mapTimeChanges(state.currentSongMetadata.timeChanges);
+
+    if (timingToolbox != null) timingToolbox.refreshTimeChanges(timeChangeIndex - 1);
+
+    state.updateSongTime();
+    state.updateGridHeight();
+    state.moveScrollPositionToSong();
+    state.updateTimeSignature();
+  }
+
+  /**
+   * Reverse the action, restoring the time change to the chart.
+   *
+   * @param state The ChartEditorState to perform the command on.
+   */
+  public function undo(state:ChartEditorState):Void
+  {
+    if (previousTimeChanges == null)
+    {
+      previousTimeChanges = [new SongTimeChange(0, 100)];
+    }
+
+    state.currentSongMetadata.timeChanges = previousTimeChanges;
+    state.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/undo'));
+
+    state.noteDisplayDirty = true;
+    state.notePreviewDirty = true;
+    state.notePreviewViewportBoundsDirty = true;
+
+    var timingToolbox:ChartEditorTimingToolbox = cast state.getToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_TIMING_LAYOUT);
+
+    Conductor.instance.mapTimeChanges(state.currentSongMetadata.timeChanges);
+
+    if (timingToolbox != null) timingToolbox.refreshTimeChanges(timeChangeIndex);
+
+    state.updateSongTime();
+    state.updateGridHeight();
+    state.moveScrollPositionToSong();
+    state.updateTimeSignature();
+  }
+
+  /**
+   * Whether the command should display in the undo/redo menu.
+   *
+   * @param state The ChartEditorState to perform the command on.
+   * @return Whether the command should be added to the history.
+   */
+  public function shouldAddToHistory(state:ChartEditorState):Bool
+  {
+    return true;
+  }
+
+  /**
+   * Convert the action to a string. Used to display the action in the undo/redo history.
+   * @return This command, as a readable string.
+   */
+  public function toString():String
+  {
+    if (removedTimeChange != null && removedTimeChange.length > 0)
+    {
+      return
+        'TimeChange ${timeChangeIndex} :'
+        + ' ${removedTimeChange[0].timeStamp} ms :'
+        + 'BPM: ${removedTimeChange[0].bpm} '
+        + 'in ${removedTimeChange[0].timeSignatureNum}/${removedTimeChange[0].timeSignatureDen} removed';
+    }
+    else
+    {
+      return 'huh?';
+    }
+  }
+}
+#end

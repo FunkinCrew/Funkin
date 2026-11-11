@@ -19,11 +19,10 @@ import funkin.input.Controls;
 import funkin.ui.FullScreenScaleMode;
 import funkin.ui.transition.preload.hotreload.HotReloadState.HotReloadStateParams;
 #if FEATURE_TOUCH_CONTROLS
-import funkin.graphics.FunkinCamera;
-import funkin.mobile.ui.FunkinHitbox;
-import funkin.mobile.input.PreciseInputHandler;
-import funkin.mobile.ui.FunkinBackButton;
-import funkin.mobile.ui.mainmenu.FunkinOptionsButton;
+import funkin.touch.ui.FunkinHitbox;
+import funkin.touch.ui.FunkinBackButton;
+import funkin.touch.ui.mainmenu.FunkinOptionsButton;
+import funkin.touch.input.PreciseInputHandler;
 import funkin.play.notes.NoteDirection;
 #end
 
@@ -71,7 +70,12 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
   override function finishTransIn()
   {
     if (FlxStateUtil.hasSubState(this)) FlxStateUtil.closeTransitionAtTop(this);
-    else super.finishTransIn();
+    else
+      super.finishTransIn();
+
+    var stateClass:Null<Class<Dynamic>> = FlxG.state != null ? Type.getClass(FlxG.state) : null;
+    var state:String = stateClass != null ? Type.getClassName(stateClass) : 'none';
+    trace(' UI '.bold().bg_orange() + '$state: Finish transition in.');
 
     default_trans_isTransitioning = false;
   }

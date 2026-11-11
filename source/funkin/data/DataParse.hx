@@ -216,6 +216,154 @@ class DataParse
     return[for (json in jsons) Tools.getValue(json)];
   }
 
+  /**
+   * Array of JSON fields `[{key, value}, {key, value}]` to a Map of arrays of dynamic objects.
+   * @param fields
+   * @return An output like [{key: [String, String]}, {key: [Int, Int]}]
+   */
+  static function jsonFieldsToDynamicArrayMap(fields:Array<JObjectField>):Null<Map<String, Array<Dynamic>>>
+  {
+    var result:Map<String, Array<Null<Dynamic>>> = [];
+    for (field in fields)
+    {
+      switch (field.value.value)
+      {
+        case JArray(values):
+          result.set(field.name, jsonArrayToDynamicArray(values));
+        default:
+          throw 'Expected property to be an array, but it was ${field.value}.';
+      }
+    }
+    return result;
+  }
+
+
+  /**
+   * Parses the notes of a chart by hand.
+   */
+  public static function songNotesMap(json:Json, name:String):Map<String, Array<funkin.data.song.SongData.SongNoteData>>
+  {
+    switch (json.value)
+    {
+      case JObject(fields):
+        var result:Map<String, Array<funkin.data.song.SongData.SongNoteData>> = [];
+        for (field in fields)
+        {
+          switch (field.value.value)
+          {
+            case JArray(values):
+              result.set(field.name, [for (value in values) songNote(value, field.name)]);
+            default:
+              throw 'Expected property $name.${field.name} to be an array of notes, but it was ${field.value.value}.';
+          }
+        }
+        return result;
+      default:
+        throw 'Expected property $name to be a map, but it was ${json.value}.';
+    }
+  }
+
+  /**
+   * Parses a JSON field as a map of arrays of dynamic objects.
+   */
+  static function songNote(json:Json, name:String):funkin.data.song.SongData.SongNoteData
+  {
+    switch (json.value)
+    {
+      case JObject(fields):
+        var time:Null<Float> = null;
+        var data:Null<Int> = null;
+        var length:Float = 0;
+        var kind:Null<String> = null;
+        var params:Array<funkin.data.song.SongData.NoteParamData> = [];
+        for (field in fields)
+        {
+          switch (field.name)
+          {
+            case 't':
+              time = jsonFloat(field.value, 't');
+            case 'd':
+              data = Std.int(jsonFloat(field.value, 'd'));
+            case 'l':
+              length = jsonFloat(field.value, 'l');
+            case 'k':
+              switch (field.value.value)
+              {
+                case JString(value):
+                  kind = value;
+                case JNull:
+                  kind = null;
+                default:
+                  throw 'Expected note kind in $name to be a string, but it was ${field.value.value}.';
+              }
+            case 'p':
+              switch (field.value.value)
+              {
+                case JArray(values):
+                  params = [for (value in values) noteParam(value, name)];
+                case JNull:
+                  params = [];
+                default:
+                  throw 'Expected note params in $name to be an array, but it was ${field.value.value}.';
+              }
+            default:
+          }
+        }
+        if (time == null) throw 'A note in $name is missing its time (t).';
+        if (data == null) throw 'A note in $name is missing its direction (d).';
+        return new funkin.data.song.SongData.SongNoteData(time, data, length, kind ?? '', params);
+      default:
+        throw 'Expected a note in $name to be an object, but it was ${json.value}.';
+    }
+  }
+
+  static function noteParam(json:Json, name:String):funkin.data.song.SongData.NoteParamData
+  {
+    switch (json.value)
+    {
+      case JObject(fields):
+        var paramName:Null<String> = null;
+        var paramValue:Dynamic = null;
+        for (field in fields)
+        {
+          switch (field.name)
+          {
+            case 'n':
+              paramName = Tools.getValue(field.value);
+            case 'v':
+              paramValue = Tools.getValue(field.value);
+            default:
+          }
+        }
+        if (paramName == null) throw 'A note param in $name is missing its name (n).';
+        return new funkin.data.song.SongData.NoteParamData(paramName, paramValue);
+      default:
+        throw 'Expected a note param in $name to be an object, but it was ${json.value}.';
+    }
+  }
+
+  static function jsonFloat(json:Json, name:String):Float
+  {
+    switch (json.value)
+    {
+      case JNumber(value):
+        return Std.parseFloat(value);
+      default:
+        throw 'Expected property $name to be a number, but it was ${json.value}.';
+    }
+  }
+
+  public static function dynamicArrayMap(json:Json, name:String):Null<Map<String, Array<Dynamic>>>
+  {
+    switch (json.value)
+    {
+      case JObject(fields):
+        return jsonFieldsToDynamicArrayMap(fields);
+      default:
+        throw 'Expected property $name to be a map, but it was ${json.value}.';
+    }
+  }
+
   static function legacyNoteSectionArray(json:Json, name:String):Array<LegacyNoteSection>
   {
     switch (json.value)

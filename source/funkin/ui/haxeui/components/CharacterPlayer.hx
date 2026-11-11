@@ -1,5 +1,7 @@
 package funkin.ui.haxeui.components;
 
+import flixel.math.FlxRect;
+import flixel.util.FlxDestroyUtil;
 import funkin.modding.events.ScriptEvent.GhostMissNoteScriptEvent;
 import funkin.modding.events.ScriptEvent.NoteScriptEvent;
 import funkin.modding.events.ScriptEvent.HoldNoteScriptEvent;
@@ -32,6 +34,8 @@ typedef AnimationInfo =
 class CharacterPlayer extends Box
 {
   public var character:Null<BaseCharacter>;
+
+  var characterBounds:Null<FlxRect> = null;
 
   public function new(defaultToBf:Bool = true)
   {
@@ -104,6 +108,8 @@ class CharacterPlayer extends Box
     if (flip) character.flipX = !character.flipX;
     if (targetScale != 1.0) character.setScale(character.getBaseScale() * targetScale);
 
+    measureCharacter();
+
     character.animation.onFrameChange.add(onFrame);
     character.animation.onFinish.add(onFinish);
     add(character);
@@ -141,6 +147,7 @@ class CharacterPlayer extends Box
     if (character != null)
     {
       character.flipX = !character.flipX;
+      measureCharacter();
     }
 
     return flip = value;
@@ -155,10 +162,48 @@ class CharacterPlayer extends Box
     if (character != null)
     {
       character.setScale(character.getBaseScale() * value);
+      measureCharacter();
       repositionChildren();
     }
 
     return targetScale = value;
+  }
+
+  @:access(funkin.play.stage.Bopper)
+  function measureCharacter():Void
+  {
+    characterBounds = FlxDestroyUtil.put(characterBounds);
+    if (character == null) return;
+
+    for (animName in character.animation.getNameList())
+    {
+      if (animName.toLowerCase().contains('death')) continue;
+
+      character.animation.play(animName, true);
+      character.applyAnimationOffsets(animName);
+
+      for (i in 0...character.animation.curAnim.numFrames)
+      {
+        character.animation.curAnim.curFrame = i;
+        measureCurrentFrame();
+      }
+    }
+
+    character.dance(true);
+    invalidateComponentLayout();
+  }
+
+  function measureCurrentFrame():Void
+  {
+    var frameBounds:FlxRect = character.getCurrentFrameBounds(FlxRect.get(), character.camera);
+
+    if (!frameBounds.isEmpty)
+    {
+      frameBounds.offset(-character.x, -character.y);
+      characterBounds = (characterBounds == null) ? FlxRect.get().copyFrom(frameBounds) : characterBounds.union(frameBounds);
+    }
+
+    frameBounds.put();
   }
 
   function onFrame(name:String, frameNumber:Int, frameIndex:Int):Void
@@ -185,9 +230,9 @@ class CharacterPlayer extends Box
   {
     super.repositionChildren();
 
-    if (character == null) return;
-    character.x = this.cachedScreenX + (-character.globalOffsets[0] * character.scale.x);
-    character.y = this.cachedScreenY + (-character.globalOffsets[1] * character.scale.y);
+    if (character == null || characterBounds == null) return;
+    character.x = this.cachedScreenX + (paddingLeft ?? 0) - characterBounds.x;
+    character.y = this.cachedScreenY + (paddingTop ?? 0) - characterBounds.y;
   }
 
   /**
@@ -296,16 +341,14 @@ private class Layout extends DefaultLayout
   override public function calcAutoSize(?exclusions:Array<Component>):Size
   {
     var player:CharacterPlayer = cast(_component, CharacterPlayer);
-    var character:BaseCharacter = player.character;
-    if (character == null)
+    if (player.characterBounds == null)
     {
       return super.calcAutoSize(exclusions);
     }
     var size:Size = new Size();
 
-    final charSceenBounds = character.getScreenBounds();
-    size.width = charSceenBounds.width + paddingLeft + paddingRight;
-    size.height = charSceenBounds.height + paddingTop + paddingBottom;
+    size.width = player.characterBounds.width + paddingLeft + paddingRight;
+    size.height = player.characterBounds.height + paddingTop + paddingBottom;
 
     return size;
   }

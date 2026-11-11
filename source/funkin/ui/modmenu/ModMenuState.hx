@@ -33,9 +33,9 @@ import lime.system.System;
 import funkin.modding.install.ModInstaller.OneClickRequest;
 #end
 #if FEATURE_TOUCH_CONTROLS
-import funkin.mobile.input.ControlsHandler;
-import funkin.util.MathUtil;
 import funkin.util.TouchUtil;
+import funkin.util.SwipeUtil;
+import funkin.touch.input.ControlsHandler;
 #end
 
 /**
@@ -1587,7 +1587,7 @@ class ModMenuState extends MusicBeatState
     Cursor.hide();
     Transition.switchState(() -> new MainMenuState(), {
       assetQuery: MainMenuState.queryAssets,
-      transition: None
+      transition: BlackScreen(Fade(North), Fade(South))
     });
     FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu').toString());
   }

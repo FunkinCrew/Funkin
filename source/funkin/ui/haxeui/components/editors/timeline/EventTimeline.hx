@@ -85,6 +85,7 @@ class EventTimeline extends VBox
   {
     var n:Int = SNAP_GRIDS.length;
     snapIndex = ((snapIndex + by) % n + n) % n;
+    viewport?.refreshLayout();
   }
 
   /**
@@ -584,6 +585,7 @@ private class EventTimelineEvents extends Events
     }
 
     var zoomSlider = _timeline.toolbar.findComponent("zoomSlider", Slider);
+    if (zoomSlider != null && zoomSlider.min != _timeline.viewport.minZoom) zoomSlider.min = _timeline.viewport.minZoom;
     if (zoomSlider != null && zoomSlider.pos != _timeline.viewport.zoomLevel)
     {
       zoomSlider.pos = _timeline.viewport.zoomLevel;

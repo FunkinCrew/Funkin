@@ -12,7 +12,7 @@ class WaveformDataParser
   @:native('int8_min')
   static final INT8_MIN:Int = -128;
 
-  public static function interpretFlxSound(sound:Null<flixel.sound.FlxSound>):Null<WaveformData>
+  public static function interpretFlxSound(sound:Null<flixel.sound.FlxSound>, samplesPerPoint:Int = 256, mono:Bool = false):Null<WaveformData>
   {
     if (sound == null) return null;
 
@@ -26,19 +26,24 @@ class WaveformDataParser
       return null;
     }
 
-    return interpretAudioBuffer(soundBuffer);
+    return interpretAudioBuffer(soundBuffer, samplesPerPoint, mono);
   }
 
-  public static function interpretAudioBuffer(soundBuffer:lime.media.AudioBuffer):Null<WaveformData>
+  /**
+   * @param samplesPerPoint How many audio samples each data point covers.
+   * @param mono Merge every channel into one, which halves the memory for stereo audio.
+   */
+  public static function interpretAudioBuffer(soundBuffer:lime.media.AudioBuffer, samplesPerPoint:Int = 256, mono:Bool = false):Null<WaveformData>
   {
-    var channels = soundBuffer.channels;
+    var inputChannels = soundBuffer.channels;
+    var channels = mono ? 1 : inputChannels;
     var bitsPerSample = soundBuffer.bitsPerSample;
-    var samplesPerPoint:Int = 256; // I don't think we need to configure this.
 
     // TODO: Make this work better on HTML5.
     var soundData:lime.utils.Int16Array = cast soundBuffer.data;
 
-    var soundDataSampleCount:Int = Std.int(Math.ceil(soundData.length / channels / (bitsPerSample == 16 ? 2 : 1)));
+    // Lime decodes 16 bit audio into an Int16Array, so its length is already in samples and not bytes.
+    var soundDataSampleCount:Int = Std.int(Math.ceil(soundData.length / inputChannels));
     var outputPointCount:Int = Std.int(Math.ceil(soundDataSampleCount / samplesPerPoint));
 
     // Pre-allocate Vector with exact final size for better performance and memory efficiency
@@ -64,12 +69,13 @@ class WaveformDataParser
       // Process all samples in this range
       for (sampleIndex in rangeStart...rangeEnd)
       {
-        for (channelIndex in 0...channels)
+        for (channelIndex in 0...inputChannels)
         {
-          var sampleValue:Int = soundData[sampleIndex * channels + channelIndex];
+          var sampleValue:Int = soundData[sampleIndex * inputChannels + channelIndex];
+          var outputChannel:Int = mono ? 0 : channelIndex;
 
-          if (sampleValue < minValues[channelIndex]) minValues[channelIndex] = sampleValue;
-          if (sampleValue > maxValues[channelIndex]) maxValues[channelIndex] = sampleValue;
+          if (sampleValue < minValues[outputChannel]) minValues[outputChannel] = sampleValue;
+          if (sampleValue > maxValues[outputChannel]) maxValues[outputChannel] = sampleValue;
         }
       }
 
@@ -87,6 +93,78 @@ class WaveformDataParser
     return result;
   }
 
+  /**
+   * Filters the audio buffer with a high pass or low pass filter before interpreting it as waveform data.
+   * https://www.w3.org/TR/audio-eq-cookbook/
+   * https://github.com/uvcat7/ArrowVortex/blob/5b63ff72ac8e6ef6af12801ebe042acdc479324f/src/Editor/Waveform.cpp#L37-L99 (thanks arrow vortex)
+   *
+   * @param highPass `true` for a high pass filter, `false` for a low pass filter.
+   * @param cutoffHz The filter's cutoff frequency, in Hz.
+   */
+  public static function interpretAudioBufferFiltered(soundBuffer:lime.media.AudioBuffer, samplesPerPoint:Int, highPass:Bool, cutoffHz:Float):Null<WaveformData>
+  {
+    var channels:Int = soundBuffer.channels;
+    var bitsPerSample:Int = soundBuffer.bitsPerSample;
+    var sampleRate:Int = soundBuffer.sampleRate;
+    var soundData:lime.utils.Int16Array = cast soundBuffer.data;
+
+    var sampleCount:Int = Std.int(soundData.length / channels);
+    var outputPointCount:Int = Std.int(Math.ceil(sampleCount / samplesPerPoint));
+    var outputData = new haxe.ds.Vector<Int>(outputPointCount * 2);
+
+    var w0:Float = 2 * Math.PI * Math.min(cutoffHz, sampleRate * 0.45) / sampleRate;
+    var cosW0:Float = Math.cos(w0);
+
+    var q:Float = 0.7071067811865476;
+    var alpha:Float = Math.sin(w0) / (2 * q);
+    var a0:Float = 1 + alpha;
+    var b0:Float = (highPass ? (1 + cosW0) : (1 - cosW0)) / 2 / a0;
+    var b1:Float = (highPass ? -(1 + cosW0) : (1 - cosW0)) / a0;
+    var b2:Float = b0;
+    var a1:Float = -2 * cosW0 / a0;
+    var a2:Float = (1 - alpha) / a0;
+
+    var x1:Float = 0;
+    var x2:Float = 0;
+    var y1:Float = 0;
+    var y2:Float = 0;
+
+    var maxValue:Int = bitsPerSample == 16 ? INT16_MAX : INT8_MAX;
+    var minValue:Int = bitsPerSample == 16 ? INT16_MIN : INT8_MIN;
+
+    for (pointIndex in 0...outputPointCount)
+    {
+      var rangeStart:Int = pointIndex * samplesPerPoint;
+      var rangeEnd:Int = Std.int(Math.min(rangeStart + samplesPerPoint, sampleCount));
+
+      var low:Float = maxValue;
+      var high:Float = minValue;
+
+      for (sampleIndex in rangeStart...rangeEnd)
+      {
+        // Mix the channels down to mono before filtering.
+        var x0:Float = 0;
+        for (channelIndex in 0...channels)
+          x0 += soundData[sampleIndex * channels + channelIndex];
+        x0 /= channels;
+
+        var y0:Float = b0 * x0 + b1 * x1 + b2 * x2 - a1 * y1 - a2 * y2;
+        x2 = x1;
+        x1 = x0;
+        y2 = y1;
+        y1 = y0;
+
+        if (y0 < low) low = y0;
+        if (y0 > high) high = y0;
+      }
+
+      outputData[pointIndex * 2] = Std.int(Math.max(minValue, low));
+      outputData[pointIndex * 2 + 1] = Std.int(Math.min(maxValue, high));
+    }
+
+    return new WaveformData(null, 1, sampleRate, samplesPerPoint, bitsPerSample, outputPointCount, outputData.toArray());
+  }
+
   public static function parseWaveformData(path:String):Null<WaveformData>
   {
     var rawJson:String = openfl.Assets.getText(path).trim();
@@ -98,7 +176,7 @@ class WaveformDataParser
     var parser = new json2object.JsonParser<WaveformData>({
       ignoreUnknownVariables: false
     });
-    trace('[WAVEFORM] Parsing waveform data: ${contents}');
+    trace('[WAVEFORM] Parsing waveform data: ${fileName ?? 'unknown'} (${contents.length} characters)');
     parser.fromJson(contents, fileName);
 
     if (parser.errors.length > 0)

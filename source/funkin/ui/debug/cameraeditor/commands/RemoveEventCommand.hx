@@ -28,7 +28,7 @@ class RemoveEventCommand implements CameraEditorCommand
     state.currentSongChartData.events.remove(event);
     if (state.selectedSongEvents.contains(event)) state.selectedSongEvents = state.selectedSongEvents.filter(e -> e != event);
 
-    FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/note-erase'));
+    state.playEditSound('ui/editors/chart-editor/charting-sounds/note-erase');
 
     state.timeline.viewport.removeEventBlock(event);
     state.timeline.viewport.refreshLayout();
@@ -52,7 +52,7 @@ class RemoveEventCommand implements CameraEditorCommand
     }
     state.selectedSongEvents = [event];
 
-    FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/undo'));
+    state.playEditSound('ui/editors/chart-editor/charting-sounds/undo');
 
     state.timeline.viewport.addEventBlock(event);
     state.timeline.viewport.refreshLayout();

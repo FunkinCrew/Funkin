@@ -1,15 +1,19 @@
 package funkin.ui.quickpanel;
 
-import flixel.math.FlxPoint;
-import flixel.FlxSprite;
 import funkin.graphics.FunkinSprite;
-import funkin.play.PlayState;
-import flixel.util.FlxTimer;
-import funkin.ui.quickpanel.QuickPanelGroup;
-import funkin.audio.FunkinSound;
+import funkin.ui.UIStateMachine;
 
+/**
+ * The tab sticking out of the panel's edge. On touch builds it's the grabbable.
+ */
 class QuickPanelPullTab extends FunkinSprite
 {
+  /**
+   * Makes a new QuickPanelPullTab
+   * @param y The Y pos
+   * @param x The X pos
+   * @param keyboard Whether we're on keys or not
+   */
   public function new(x:Float, y:Float, keyboard:Bool = false)
   {
     super(x, y);
@@ -32,60 +36,73 @@ class QuickPanelPullTab extends FunkinSprite
 
   public function playAnimation(name:String):Void
   {
-    this.animation.play(name);
+    anim.play(name);
   }
 
-  public function press(state:PanelState)
+  /**
+   * Presses the pull-tab
+   * @param state The current ui-state.
+   */
+  public function press(state:UIState):Void
   {
     switch (state)
     {
-      case CLOSED:
+      case PanelClosed:
         playAnimation('pressLeft');
-      case OPENING:
-        // ???
-      case OPEN:
+      case PanelOpen:
         playAnimation('pressRight');
       default:
+        // No press animation in other states.
     }
   }
 
-  public function grab(state:PanelState)
+  /**
+   * Grabs the pull-tab
+   * @param state The current ui-state.
+   */
+  public function grab(state:UIState):Void
   {
     playAnimation('held');
   }
 
-  public function release(state:PanelState)
+  /**
+   * Releases the pull-tab.
+   * @param state The current ui-state.
+   */
+  public function release(state:UIState):Void
   {
     switch (state)
     {
-      case OPEN:
+      case PanelOpen:
         playAnimation('release');
       default:
         playAnimation('idleLeft');
     }
   }
 
-  public function playIdle(state:PanelState)
+  /**
+   * Plays the idle anim
+   * @param state The current ui-state.
+   */
+  public function playIdle(state:UIState):Void
   {
     switch (state)
     {
-      case CLOSED:
-        playAnimation('idleLeft');
-      case OPENING:
+      case PanelDragging:
         playAnimation('held');
-      case OPEN:
+      case PanelOpen | PanelConfirming:
         playAnimation('idleRight');
       default:
+        playAnimation('idleLeft');
     }
   }
 
+  /**
+   * Callback used when the animation is done.
+   * @param name Anim name
+   */
   function onAnimationFinished(name:String):Void
   {
-    switch (name)
-    {
-      case 'release':
-        playIdle(OPEN);
-      default:
-    }
+    if (name == 'release') playIdle(PanelOpen);
   }
 }

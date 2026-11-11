@@ -46,6 +46,7 @@ import funkin.play.event.SongEvent;
 import funkin.play.notes.NoteDirection;
 import funkin.play.notes.NoteSprite;
 import funkin.play.notes.NoteVibrationsHandler;
+import funkin.play.notes.ScrollVelocityTimeline;
 import funkin.play.notes.Strumline;
 import funkin.play.notes.SustainTrail;
 import funkin.play.notes.notekind.NoteKind;
@@ -59,6 +60,7 @@ import funkin.ui.FullScreenScaleMode;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.transition.Transition;
+import funkin.ui.transition.Transition.FlxTransition;
 import funkin.ui.transition.preload.hotreload.HotReloadState.HotReloadStateParams;
 import funkin.util.GRhythmUtil;
 import funkin.util.HapticUtil;
@@ -75,12 +77,12 @@ import funkin.ui.debug.stageeditor.StageEditorState;
 #end
 #if FEATURE_TOUCH_CONTROLS
 import funkin.util.TouchUtil;
-import funkin.mobile.input.ControlsHandler;
-import funkin.mobile.ui.FunkinHitbox;
-import funkin.mobile.ui.FunkinHitbox.FunkinHitboxControlSchemes;
+import funkin.touch.input.ControlsHandler;
+import funkin.touch.ui.FunkinHitbox;
+import funkin.touch.ui.FunkinHitbox.FunkinHitboxControlSchemes;
 #end
 #if FEATURE_MOBILE_ADVERTISEMENTS
-import funkin.mobile.util.AdMobUtil;
+import funkin.util.mobile.AdMobUtil;
 #end
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
@@ -491,6 +493,8 @@ class PlayState extends MusicBeatSubState
    * The `update()` function regularly shifts these out to trigger events.
    */
   var songEvents:Array<SongEventData> = [];
+
+  public var customEvents:funkin.play.event.CustomSongEvent.CustomEventRunner = new funkin.play.event.CustomSongEvent.CustomEventRunner();
 
   /**
    * The displayed value of the player's health.
@@ -1361,6 +1365,11 @@ class PlayState extends MusicBeatSubState
       }
     }
 
+    if (!startingSong && vocals != null && FlxG.sound.music != null)
+    {
+      vocals.updatePending(FlxG.sound.music.time, FlxG.sound.music.playing);
+    }
+
     var pauseButtonCheck:Bool = false;
     var androidPause:Bool = false;
     // So the player wouldn't miss when pressing the pause button
@@ -1390,7 +1399,7 @@ class PlayState extends MusicBeatSubState
     var decayRate:Float = 0.95;
     var dt:Float = elapsed * 60; //
 
-    var isTransitionOverlay:Bool = Std.isOfType(subState, flixel.addons.transition.Transition);
+    var isTransitionOverlay:Bool = subState is FlxTransition;
     if (subState == null || isTransitionOverlay)
     {
       if (!debugUnbindCameraZoom) FlxG.camera.zoom = currentCameraZoom * cameraBopMultiplier;
@@ -1508,6 +1517,7 @@ class PlayState extends MusicBeatSubState
     }
 
     processSongEvents();
+    customEvents.update(Conductor.instance.songPosition, event -> dispatchEvent(event));
 
     // Handle keybinds.
     processInputQueue();
@@ -1998,7 +2008,7 @@ class PlayState extends MusicBeatSubState
             variation: currentVariation
           });
           funkin.ui.transition.Transition.openPlayState(lastParams, {
-            transition: LoadingScreen(None, None),
+            transition: BlackScreen(None, Fade(South)),
             shouldStopMusic: true,
           });
         }
@@ -2723,6 +2733,13 @@ class PlayState extends MusicBeatSubState
 
     songEvents = builtEventData;
     SongEventRegistry.resetEvents(songEvents);
+    customEvents.clear();
+    for (songEvent in songEvents)
+    {
+      if (songEvent.eventKind != 'RenderDistance') continue;
+      funkin.play.event.RenderDistanceEvent.resetStrumlines();
+      break;
+    }
 
     if (!hadSongEvents) SongEventRegistry.callEvent(event);
 
@@ -2762,6 +2779,9 @@ class PlayState extends MusicBeatSubState
 
     playerStrumline.applyNoteData(playerNoteData);
     opponentStrumline.applyNoteData(opponentNoteData);
+
+    playerStrumline.scrollVelocity = new ScrollVelocityTimeline(songEvents, 'player');
+    opponentStrumline.scrollVelocity = new ScrollVelocityTimeline(songEvents, 'opponent');
   }
 
   function onStrumlineNoteIncoming(noteSprite:NoteSprite):Void
@@ -2844,7 +2864,7 @@ class PlayState extends MusicBeatSubState
 
     if (!overrideMusic && !isGamePaused && currentChart != null)
     {
-      currentChart?.playInst(1.0, currentInstrumental, false);
+      currentChart?.playInst(currentInstrumental);
     }
 
     if (FlxG.sound.music == null)
@@ -4373,7 +4393,11 @@ class PlayState extends MusicBeatSubState
   /**
    * The magical function that shall tween the scroll speed.
    */
-  public function tweenScrollSpeed(?speed:Float, duration:Float = 0, ?ease:Null<Float->Float>, strumlines:Array<String>):Void
+  /**
+   * Tween the scroll speed of some strumlines.
+   * @param startSpeed If set, the strumlines jump to this speed first and ease from it, instead of from their current speed.
+   */
+  public function tweenScrollSpeed(?speed:Float, duration:Float = 0, ?ease:Null<Float->Float>, strumlines:Array<String>, ?startSpeed:Float):Void
   {
     // Cancel the current tween if it's active.
     cancelScrollSpeedTweens();
@@ -4400,6 +4424,7 @@ class PlayState extends MusicBeatSubState
       }
       else
       {
+        if (startSpeed != null) strum.scrollSpeed = startSpeed;
         var adjustedDuration:Float = duration / playbackRate;
 
         scrollSpeedTweens.push(FlxTween.tween(strum, {

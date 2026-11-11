@@ -80,6 +80,7 @@ class WaveformData
   public function set(index:Int, value:Int)
   {
     data[index] = value;
+    mipLevels = null;
   }
 
   /**
@@ -89,7 +90,83 @@ class WaveformData
   public function maxSampleValue():Int
   {
     if (_maxSampleValue != 0) return _maxSampleValue;
-    return _maxSampleValue = Std.int(Math.pow(2, bits));
+    // Signed samples, so one bit is the sign.
+    return _maxSampleValue = Std.int(Math.pow(2, bits - 1));
+  }
+
+  @:jignored
+  var mipLevels:Null<Array<lime.utils.Int16Array>> = null;
+
+  /**
+   * Min/max pairs with every channel merged together, `[min0, max0, min1, max1, ...]`.
+   */
+  public function getMipLevel(level:Int):lime.utils.Int16Array
+  {
+    var levels:Array<lime.utils.Int16Array> = mipLevels ?? buildMipLevels();
+    return levels[Std.int(Math.max(0, Math.min(level, levels.length - 1)))];
+  }
+
+  /**
+   * @return How many mip levels `getMipLevel` can return.
+   */
+  public function mipLevelCount():Int
+  {
+    return (mipLevels ?? buildMipLevels()).length;
+  }
+
+  /**
+   * The loudest sample in the whole waveform, as a positive value.
+   */
+  public function peakValue():Int
+  {
+    var top = getMipLevel(mipLevelCount() - 1);
+    var peak:Int = Std.int(Math.max(-top[0], top[1]));
+    return (peak > 0) ? peak : 1;
+  }
+
+  @:nullSafety(Off)
+  function buildMipLevels():Array<lime.utils.Int16Array>
+  {
+    var levels:Array<lime.utils.Int16Array> = [];
+    var maxValue:Int = maxSampleValue();
+
+    var base = new lime.utils.Int16Array(Std.int(Math.max(1, length)) * 2);
+    for (i in 0...length)
+    {
+      var min:Int = maxValue - 1;
+      var max:Int = -maxValue;
+      for (c in 0...channels)
+      {
+        var offset:Int = (i * channels + c) * 2;
+        var low:Int = data[offset];
+        var high:Int = data[offset + 1];
+        if (low < min) min = low;
+        if (high > max) max = high;
+      }
+      base[i * 2] = min;
+      base[i * 2 + 1] = max;
+    }
+    levels.push(base);
+
+    var prev = base;
+    var prevLength:Int = length;
+    while (prevLength > 1)
+    {
+      var nextLength:Int = (prevLength + 1) >> 1;
+      var next = new lime.utils.Int16Array(nextLength * 2);
+      for (i in 0...nextLength)
+      {
+        var a:Int = i * 2;
+        var b:Int = (a + 1 < prevLength) ? a + 1 : a;
+        next[i * 2] = (prev[a * 2] < prev[b * 2]) ? prev[a * 2] : prev[b * 2];
+        next[i * 2 + 1] = (prev[a * 2 + 1] > prev[b * 2 + 1]) ? prev[a * 2 + 1] : prev[b * 2 + 1];
+      }
+      levels.push(next);
+      prev = next;
+      prevLength = nextLength;
+    }
+
+    return mipLevels = levels;
   }
 
   /**

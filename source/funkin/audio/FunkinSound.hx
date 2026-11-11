@@ -258,6 +258,11 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   }
 
   /**
+   * When set, one shot sounds started through `load` and `playOnce` are skipped.
+   */
+  public static var suppressOneShots:Bool = false;
+
+  /**
    * Creates a new `FunkinSound` object synchronously.
    *
    * @param embeddedSound   The embedded sound resource you want to play.  To stream, use the optional URL parameter instead.
@@ -281,6 +286,8 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     ?onComplete:Void->Void,
     ?onLoad:Void->Void):Null<FunkinSound>
   {
+    if (suppressOneShots && autoPlay && !looped) return null;
+
     var sound:FunkinSound = FunkinSound.recycle();
 
     if (Std.isOfType(embeddedSound, String))
@@ -478,6 +485,15 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     muted = value;
     updateVolume();
     return value;
+  }
+
+  /**
+   * Calculate the volume of the sound, taking into account whether it is muted.
+   */
+  override function calcTransformVolume():Float
+  {
+    if (muted) return 0.0;
+    return super.calcTransformVolume();
   }
 
   function get_paused():Bool

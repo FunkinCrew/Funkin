@@ -1,28 +1,25 @@
 package funkin.audio.visualize;
 
-import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
-import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
+import flixel.group.FlxSpriteGroup;
 import flixel.sound.FlxSound;
 import funkin.graphics.FunkinSprite;
+import funkin.vis.dsp.Bar;
 import funkin.vis.dsp.SpectralAnalyzer;
 
 using Lambda;
 
 @:nullSafety
-class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
+class ABotVis extends FlxSpriteGroup
 {
-  var analyzer:Null<SpectralAnalyzer> = null;
-  var analyzerLevelsCache:Array<Bar> = new Array<Bar>();
-  var volumes:Array<Float> = [];
+  static final BAR_COUNT:Int = 7;
 
   public var snd:Null<FlxSound> = null;
 
-  static final BAR_COUNT:Int = 7;
+  var analyzer:Null<SpectralAnalyzer> = null;
+  var analyzerCache:Array<Bar> = [];
 
-  // TODO: Make the sprites easier to soft code.
-
-  public function new(snd:FlxSound, pixel:Bool)
+  public function new(snd:FlxSound, pixel:Bool):Void
   {
     super();
 
@@ -73,9 +70,6 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
 
     for (index in 1...visCount)
     {
-      // pushes initial value
-      volumes.push(0.0);
-
       // Sum the offsets up to the current index
       var sum = function(num:Float, total:Float) return total += num;
       var posX:Float = positionX.slice(0, index).fold(sum, 0);
@@ -97,77 +91,56 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
   {
     if (snd == null) return;
 
+    if (analyzer != null) analyzer.dispose();
+
     @:privateAccess
     analyzer = new SpectralAnalyzer(snd._source, BAR_COUNT, 0.1, 40);
-    // A-Bot tuning...
-    analyzer.minDb = -65;
-    analyzer.maxDb = -25;
-    analyzer.maxFreq = 22000;
-    // we use a very low minFreq since some songs use low low subbass like a boss
-    analyzer.minFreq = 10;
-
-    #if sys
-    // On native it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
-    // So we want to manually change it!
-    analyzer.fftN = 256;
-    #end
-
-    // analyzer.maxDb = -35;
-    // analyzer.fftN = 2048;
   }
 
   public function dumpSound():Void
   {
     snd = null;
-    analyzer = null;
+
+    if (analyzer != null)
+    {
+      analyzer.dispose();
+      analyzer = null;
+    }
   }
 
-  override function update(elapsed:Float)
-  {
-    super.update(elapsed);
-  }
-
-  static inline function min(x:Int, y:Int):Int
-  {
-    return x > y ? y : x;
-  }
-
-  override function draw()
+  override function draw():Void
   {
     super.draw();
-    drawFFT();
-  }
 
-  /**
-   * TJW funkin.vis based visualizer! updateFFT() is the old nasty shit that dont worky!
-   */
-  function drawFFT():Void
-  {
-    analyzerLevelsCache = (analyzer != null) ? analyzer.getLevels(analyzerLevelsCache) : getDefaultLevels();
+    analyzerCache = analyzer != null ? analyzer.getLevels(analyzerCache) : getDefaultLevels();
 
-    for (i in 0...min(group.members.length, analyzerLevelsCache.length))
+    for (i in 0...Std.int(Math.min(group.members.length, analyzerCache.length)))
     {
-      var animFrame:Int = (FlxG.sound.volume == 0 || FlxG.sound.muted) ? 0 : Math.round(analyzerLevelsCache[i].value * 6);
+      var animFrame:Int = (FlxG.sound.volume == 0 || FlxG.sound.muted) ? 0 : Math.round(analyzerCache[i].value * 6);
 
-      // don't display if we're at 0 volume from the level
       group.members[i].visible = animFrame > 0;
 
-      // decrement our animFrame, so we can get a value from 0-5 for animation frames
       animFrame -= 1;
 
       animFrame = Math.floor(Math.min(5, animFrame));
       animFrame = Math.floor(Math.max(0, animFrame));
-
-      animFrame = Std.int(Math.abs(animFrame - 5)); // shitty dumbass flip, cuz dave got da shit backwards lol!
+      animFrame = Std.int(Math.abs(animFrame - 5));
 
       group.members[i].animation.curAnim.curFrame = animFrame;
     }
   }
 
-  /**
-   * Explicitly define the default levels to draw when the analyzer is not available.
-   * @return Array<Bar>
-   */
+  override function destroy():Void
+  {
+    if (analyzer != null)
+    {
+      analyzer.dispose();
+      analyzer = null;
+    }
+
+    super.destroy();
+  }
+
   static function getDefaultLevels():Array<Bar>
   {
     var result:Array<Bar> = [];

@@ -69,7 +69,7 @@ import funkin.api.discord.DiscordClient;
 #if FEATURE_TOUCH_CONTROLS
 import funkin.util.TouchUtil;
 import funkin.util.SwipeUtil;
-import funkin.mobile.input.ControlsHandler;
+import funkin.touch.input.ControlsHandler;
 #end
 import funkin.assets.Paths;
 import funkin.ui.transition.Transition;
@@ -464,6 +464,13 @@ class FreeplayState extends MusicBeatSubState
     // TODO: refactor DifficultySelector to *not* use `this` as input? Handle it's animations and style data in different manner
     diffSelLeft = new DifficultySelector((CUTOUT_WIDTH * DJ_POS_MULTI) + 20, grpDifficulties.y - 10, false, controls, styleData, uiStateMachine);
     diffSelRight = new DifficultySelector((CUTOUT_WIDTH * DJ_POS_MULTI) + 325, grpDifficulties.y - 10, true, controls, styleData, uiStateMachine);
+
+    // Always opened on top of another state, so it never needs its own transition.
+    @:nullSafety(Off)
+    {
+      transIn = null;
+      transOut = null;
+    }
   }
 
   private function initializeBackingCard():Void
@@ -536,7 +543,8 @@ class FreeplayState extends MusicBeatSubState
       @:privateAccess
       this._parentState._constructor = () ->
       {
-        return FreeplayState.build(null);
+        return FreeplayState.build({
+        });
       }
     }
 
@@ -1931,7 +1939,7 @@ class FreeplayState extends MusicBeatSubState
 
   override public function draw():Void
   {
-    if (criticalFailure) return;
+    if (criticalFailure && subState == null) return;
 
     super.draw();
   }
@@ -3286,7 +3294,7 @@ class FreeplayState extends MusicBeatSubState
       });
     }
 
-    new FlxTimer().start(styleData?.getStartDelay(), function(tmr:FlxTimer)
+    new FlxTimer().start(styleData?.getStartDelay(), (tmr:FlxTimer) ->
     {
       FunkinSound.emptyPartialQueue();
 
@@ -3301,7 +3309,7 @@ class FreeplayState extends MusicBeatSubState
         });
       }
       #end
-      funnyCam.fade(FlxColor.BLACK, 0.2, false, function()
+      funnyCam.fade(FlxColor.BLACK, 0.2, false, () ->
       {
         criticalFailure = true;
 
@@ -3326,9 +3334,8 @@ class FreeplayState extends MusicBeatSubState
           // playbackRate: 0.5,
           // botPlayMode: true,
         }, {
-          transition: LoadingScreen(Fade(North), Fade(South)),
-          shouldStopMusic: true,
-          shouldPurgeCache: true,
+          transition: LoadingScreen(None, Fade(South)),
+          shouldStopMusic: true
         }, false);
       });
     });
@@ -3572,18 +3579,34 @@ class FreeplayState extends MusicBeatSubState
 
   /**
    * Build an instance of `FreeplayState` that is above the `MainMenuState`.
+   * @param params FreeplayState params.
    * @return The MainMenuState with the FreeplayState as a substate.
    */
   public static function build(?params:FreeplayStateParams):MusicBeatState
   {
-    // Since CUTOUT_WIDTH is static it might retain some old incorrect values so we update it before loading freeplay
     CUTOUT_WIDTH = FullScreenScaleMode.gameCutoutSize.x / 1.5;
-    var result:MainMenuState;
-    result = new MainMenuState(true);
+    var result:MainMenuState = new MainMenuState(true);
+
+    // Assets were already loaded by whoever called Transition.switchState (see buildAssetQuery).
     result.openSubState(new FreeplayState(params));
+
     result.persistentUpdate = false;
     result.persistentDraw = true;
     return result;
+  }
+
+  /**
+   * Helper asset query covering everything needed to open Freeplay over the MainMenuState.
+   * @param type Asset Type
+   * @param params FreeplayState params.
+   * @return The list of assets to query.
+   */
+  public static function buildAssetQuery(type:AssetType, params:FreeplayStateParams):Array<AssetPath>
+  {
+    var results:Array<AssetPath> = [];
+    results.appendUnique(MainMenuState.queryAssets(type));
+    results.appendUnique(FreeplayState.queryAssets(type, params, params.character));
+    return results;
   }
 
   function favoriteSong():Void

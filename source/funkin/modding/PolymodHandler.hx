@@ -453,10 +453,17 @@ class PolymodHandler
     Polymod.addImportAlias('funkin.ui.freeplay.dj.ScriptedMultiSparrowFreeplayDJ', funkin.ui.freeplay.dj.MultiSparrowFreeplayDJ);
     Polymod.addImportAlias('funkin.ui.freeplay.dj.ScriptedPackerFreeplayDJ', funkin.ui.freeplay.dj.PackerFreeplayDJ);
     Polymod.addImportAlias('funkin.ui.story.ScriptedLevel', funkin.ui.story.Level);
+    Polymod.addImportAlias('funkin.ui.story.ScriptedPanelEntry', funkin.ui.quickpanel.PanelEntry);
     Polymod.addImportAlias('funkin.ui.transition.stickers.ScriptedStickerPack', funkin.ui.transition.stickers.StickerPack);
+    Polymod.addImportAlias('funkin.modding.module.ScriptedModule', funkin.modding.module.Module);
 
     // `FixedBitmapData` was literally just `BitmapData`.
     Polymod.addImportAlias('funkin.graphics.framebuffer.FixedBitmapData', openfl.display.BitmapData);
+
+    // 'ControlsHandler' was moved to the 'funkin.touch.input' package.
+    Polymod.addImportAlias('funkin.mobile.input.ControlsHandler', funkin.touch.input.ControlsHandler);
+
+    Polymod.addImportAlias('funkin.mobile.ui.FunkinBackButton', funkin.touch.ui.FunkinBackButton);
   }
 
   /**
@@ -515,7 +522,7 @@ class PolymodHandler
     Polymod.blacklistImport('haxe.Unserializer');
 
     // Disable access to all Mobile Utils
-    for (cls in ClassMacro.listClassesInPackage('funkin.mobile.util'))
+    for (cls in ClassMacro.listClassesInPackage('funkin.util.mobile'))
     {
       if (cls == null) continue;
       var className:String = Type.getClassName(cls);
@@ -969,7 +976,7 @@ class PolymodHandler
 
   static function get_enabledModIds():Array<String>
   {
-    #if sys
+    #if desktop
     if (!FileUtil.fileExists(ENABLED_MODS_PATH)) return [];
 
     var content:String = FileUtil.readStringFromPath(ENABLED_MODS_PATH);
@@ -981,7 +988,7 @@ class PolymodHandler
 
   static function set_enabledModIds(value:Array<String>):Array<String>
   {
-    #if sys
+    #if desktop
     var content:String = value.join('\n');
     FileUtil.writeStringToPath(ENABLED_MODS_PATH, content, Force);
     #else

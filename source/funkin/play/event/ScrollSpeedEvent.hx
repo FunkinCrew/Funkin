@@ -38,6 +38,7 @@ class ScrollSpeedEvent extends SongEvent
   static final DEFAULT_DURATION:Float = 4.0;
   static final DEFAULT_ABSOLUTE:Bool = false;
   static final DEFAULT_STRUMLINE:String = 'both'; // my special little trick
+  static final DEFAULT_USE_START:Bool = false;
 
   override public function handleEvent(data:SongEventData):Void
   {
@@ -57,12 +58,15 @@ class ScrollSpeedEvent extends SongEvent
 
     var absolute:Bool = data.getBool('absolute') ?? DEFAULT_ABSOLUTE;
 
+    var startScroll:Null<Float> = (data.getBool('useStart') ?? DEFAULT_USE_START) ? (data.getFloat('startScroll') ?? DEFAULT_SCROLL) : null;
+
     var strumlineNames:Array<String> = [];
 
     if (!absolute)
     {
       // If absolute is set to false, do the awesome multiplicative thing
       scroll = scroll * (PlayState.instance?.currentChart?.scrollSpeed ?? 1.0);
+      if (startScroll != null) startScroll = startScroll * (PlayState.instance?.currentChart?.scrollSpeed ?? 1.0);
     }
 
     switch (strumline)
@@ -87,7 +91,7 @@ class ScrollSpeedEvent extends SongEvent
           return;
         }
 
-        PlayState.instance.tweenScrollSpeed(scroll, durSeconds, easeFunction, strumlineNames);
+        PlayState.instance.tweenScrollSpeed(scroll, durSeconds, easeFunction, strumlineNames, startScroll);
     }
   }
 
@@ -105,6 +109,8 @@ class ScrollSpeedEvent extends SongEvent
    *   'easeDir': ENUM, // Easing function direction (In, Out, InOut).
    *   'strumline': ENUM, // Which strumline to change
    *   'absolute': BOOL, // True to set the scroll speed to the target level, false to set the scroll speed to (target level x base scroll speed)
+   *   'useStart': BOOL, // True to jump to 'startScroll' when the event starts, then ease from there.
+   *   'startScroll': FLOAT, // The speed to start from. Uses 'absolute' like the target.
    * }
    * @return SongEventSchema
    */
@@ -136,7 +142,7 @@ class ScrollSpeedEvent extends SongEvent
         type: SongEventFieldType.ENUM,
         keys: [
           'Linear' => 'linear',
-          'Instant (Ignores duration)' => 'INSTANT',
+          'Instant' => 'INSTANT',
           'Sine' => 'sine',
           'Quad' => 'quad',
           'Cube' => 'cube',
@@ -168,6 +174,21 @@ class ScrollSpeedEvent extends SongEvent
         type: SongEventFieldType.FRAME,
         collapsible: true,
         children: [
+          {
+            name: 'useStart',
+            title: 'Use Start Value',
+            defaultValue: DEFAULT_USE_START,
+            type: SongEventFieldType.BOOL,
+          },
+          {
+            name: 'startScroll',
+            title: 'Start Value',
+            defaultValue: DEFAULT_SCROLL,
+            min: 0.1,
+            step: 0.1,
+            type: SongEventFieldType.FLOAT,
+            units: 'x'
+          },
           {
             name: 'strumline',
             title: 'Target Strumline',

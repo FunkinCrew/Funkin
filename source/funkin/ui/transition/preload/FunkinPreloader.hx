@@ -2,7 +2,7 @@ package funkin.ui.transition.preload;
 
 import funkin.assets.FunkinAssetCache;
 import lime.app.Future;
-import funkin.mobile.util.ScreenUtil;
+import funkin.util.mobile.ScreenUtil;
 import funkin.data.BaseRegistry.LoadEntriesResult;
 import openfl.events.MouseEvent;
 import openfl.ui.Mouse;
@@ -19,6 +19,10 @@ import openfl.text.TextFormat;
 import openfl.text.TextFormatAlign;
 import funkin.assets.Assets;
 import funkin.assets.Paths.AssetPath;
+import funkin.assets.FunkinAssetCache;
+import funkin.data.BaseRegistry.LoadEntriesResult;
+import funkin.data.quickpanel.PanelRegistry;
+import funkin.data.character.CharacterRegistry;
 import funkin.data.dialogue.ConversationRegistry;
 import funkin.data.dialogue.DialogueBoxRegistry;
 import funkin.data.dialogue.SpeakerRegistry;
@@ -36,6 +40,14 @@ import funkin.data.story.level.LevelRegistry;
 import funkin.modding.module.ModuleHandler;
 import funkin.data.character.CharacterRegistry;
 import funkin.play.notes.notekind.NoteKindManager;
+import funkin.util.MathUtil;
+import funkin.util.mobile.ScreenUtil;
+import lime.app.Future;
+import openfl.display.Sprite;
+import openfl.events.MouseEvent;
+import openfl.text.TextField;
+import openfl.text.TextFormat;
+import openfl.text.TextFormatAlign;
 
 using StringTools;
 
@@ -668,6 +680,7 @@ class FunkinPreloader extends FlxBasePreloader
           futures.push(LevelRegistry.instance.loadEntriesAsync());
           futures.push(NoteStyleRegistry.instance.loadEntriesAsync());
           futures.push(PlayerRegistry.instance.loadEntriesAsync());
+          futures.push(PanelRegistry.instance.loadEntriesAsync());
           futures.push(ConversationRegistry.instance.loadEntriesAsync());
           futures.push(DialogueBoxRegistry.instance.loadEntriesAsync());
           futures.push(SpeakerRegistry.instance.loadEntriesAsync());
@@ -732,6 +745,9 @@ class FunkinPreloader extends FlxBasePreloader
         if (completeTime <= 0)
         {
           completeTime = elapsed;
+
+          // Show popups for any registry errors or script errors we encountered during that.
+          funkin.modding.PolymodErrorHandler.printQueuedErrors();
         }
 
         return 1.0;

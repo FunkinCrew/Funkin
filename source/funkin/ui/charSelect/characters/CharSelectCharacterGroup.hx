@@ -3,7 +3,6 @@ package funkin.ui.charSelect.characters;
 import funkin.audio.FunkinSound;
 import funkin.data.freeplay.player.PlayerData.PlayerCharSelectCharacterData;
 import funkin.data.freeplay.player.PlayerData.PlayerCharSelectData;
-import funkin.data.freeplay.player.PlayerData.PlayerCharSelectGFData;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.group.FunkinGroup;
 import funkin.modding.events.ScriptEvent;
@@ -109,6 +108,7 @@ class CharSelectCharacterGroup extends FunkinGroup<CharSelectCharacter>
   /**
    * Dispatches an event to all characters.
    * @param event The event to dispatch.
+   * @param finish Whether to immediately finish the event after dispatching it.
    */
   public function dispatchEvent(event:ScriptEvent):Void
   {
@@ -131,29 +131,21 @@ class CharSelectCharacterGroup extends FunkinGroup<CharSelectCharacter>
 
     if (oldGF != null)
     {
-      if (newId == 'locked')
-      {
-        oldGF.localVisible = false;
-      }
-      else
-      {
-        oldGF.kill();
-      }
+      oldGF.transitionOut(newId == 'locked');
     }
 
     if (oldPlayer != null)
     {
-      oldPlayer.playAnimation(SLIDEOUT, true);
+      oldPlayer.playAnimation(CharacterAnimation.SLIDEOUT, true);
     }
 
     newPlayer?.revive();
-    newPlayer?.playAnimation(SLIDEIN, true);
+    newPlayer?.playAnimation(CharacterAnimation.SLIDEIN, true);
 
     if (newGF != null)
     {
       newGF.localVisible = newId != 'locked';
-      newGF.revive();
-      newGF.playAnimation(IDLE);
+      newGF.transitionIn();
     }
 
     if (newId == 'locked')
@@ -180,14 +172,7 @@ class CharSelectCharacterGroup extends FunkinGroup<CharSelectCharacter>
 
     currentCharacterId = startingCharacter;
 
-    var lockedCharacter:CharSelectCharacter = createCharacter('locked', LOCKED_PLAYER, {
-      assetPath: 'ui/character-select/characters/locked',
-      animations: PlayerCharSelectData.getDefaultAnimations(LOCKED_PLAYER),
-      atlasSettings: {
-        cacheOnLoad: true,
-        filterQuality: 2, // LOW
-      }
-    });
+    var lockedCharacter:CharSelectCharacter = createCharacter('locked', LOCKED_PLAYER, CharSelectCharacter.getCharacterData('locked', LOCKED_PLAYER));
 
     // Layer the locked character on top of every other character.
     lockedCharacter.zIndex = 100;
@@ -201,35 +186,17 @@ class CharSelectCharacterGroup extends FunkinGroup<CharSelectCharacter>
       var playerCSData:Null<PlayerCharSelectData> = PlayerRegistry.instance.fetchEntry(newId)?.getCharSelectData();
       if (playerCSData == null) continue;
 
-      var playerParams:PlayerCharSelectCharacterData = {
-        assetPath: playerCSData.getAnimateAtlasAssetPath(newId),
-        renderType: playerCSData.getAssetType(),
-        scriptClass: playerCSData.characterData?.scriptClass,
-        animations: playerCSData.characterData?.animations,
-        atlasSettings: playerCSData.characterData?.atlasSettings,
-        danceEvery: playerCSData.characterData?.danceEvery,
-        offsets: playerCSData.characterData?.offsets ?? [0, 0]
-      };
+      var playerParams:Null<PlayerCharSelectCharacterData> = CharSelectCharacter.getCharacterData(newId, PLAYER);
 
       var playerCharacter:CharSelectCharacter = createCharacter(newId, PLAYER, playerParams);
 
       if (newId != startingCharacter) playerCharacter.kill();
       this.add(playerCharacter);
 
-      var girlfriendCSData:PlayerCharSelectGFData = playerCSData.gf;
-      if (girlfriendCSData != null)
+      var gfParams:Null<PlayerCharSelectCharacterData> = CharSelectCharacter.getCharacterData(newId, GF);
+      if (gfParams != null)
       {
-        var gfParams:PlayerCharSelectCharacterData = {
-          assetPath: girlfriendCSData.characterData?.assetPath ?? girlfriendCSData.assetPath,
-          renderType: girlfriendCSData.characterData?.renderType ?? 'animateatlas',
-          scriptClass: girlfriendCSData.characterData?.scriptClass,
-          animations: girlfriendCSData.characterData?.animations,
-          atlasSettings: girlfriendCSData.characterData?.atlasSettings,
-          danceEvery: girlfriendCSData.characterData?.danceEvery,
-          offsets: girlfriendCSData.characterData?.offsets ?? [0, 0]
-        };
-
-        var gfCharacter:CharSelectCharacter = createCharacter(newId, GF, gfParams, girlfriendCSData?.visualizer ?? false);
+        var gfCharacter:CharSelectCharacter = createCharacter(newId, GF, gfParams, playerCSData.gf?.visualizer ?? false);
 
         if (newId != startingCharacter) gfCharacter.kill();
         this.add(gfCharacter);

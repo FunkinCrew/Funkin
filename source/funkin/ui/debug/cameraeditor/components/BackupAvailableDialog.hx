@@ -1,9 +1,9 @@
 package funkin.ui.debug.cameraeditor.components;
 
 #if FEATURE_CAMERA_EDITOR
+import funkin.ui.debug.charting.handlers.chart.ChartEditorImportExportHandler;
 import haxe.io.Bytes;
 import funkin.util.FileUtil;
-import funkin.ui.debug.charting.handlers.ChartEditorImportExportHandler;
 import funkin.ui.debug.cameraeditor.handlers.CameraEditorNotificationHandler;
 import haxe.ui.events.MouseEvent;
 import funkin.ui.debug.cameraeditor.handlers.CameraEditorImportExportHandler;
