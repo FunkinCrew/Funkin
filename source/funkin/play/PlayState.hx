@@ -60,6 +60,7 @@ import funkin.ui.FullScreenScaleMode;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.transition.Transition;
+import funkin.ui.transition.Transition.FlxTransition;
 import funkin.ui.transition.preload.hotreload.HotReloadState.HotReloadStateParams;
 import funkin.util.GRhythmUtil;
 import funkin.util.HapticUtil;
@@ -1396,7 +1397,7 @@ class PlayState extends MusicBeatSubState
     var decayRate:Float = 0.95;
     var dt:Float = elapsed * 60; //
 
-    var isTransitionOverlay:Bool = Std.isOfType(subState, flixel.addons.transition.Transition);
+    var isTransitionOverlay:Bool = subState is FlxTransition;
     if (subState == null || isTransitionOverlay)
     {
       if (!debugUnbindCameraZoom) FlxG.camera.zoom = currentCameraZoom * cameraBopMultiplier;

@@ -4,6 +4,7 @@ import flixel.FlxCamera;
 import flixel.addons.transition.Transition as FlxTransition;
 import flixel.addons.transition.TransitionData;
 import flixel.addons.transition.FlxTransitionSprite.TransitionStatus;
+import funkin.ui.transition.Transition.FlxTransition;
 import flixel.FlxG;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.math.FlxMath;

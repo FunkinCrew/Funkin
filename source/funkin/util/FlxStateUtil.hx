@@ -2,7 +2,7 @@ package funkin.util;
 
 import flixel.FlxState;
 import flixel.FlxSubState;
-import flixel.addons.transition.Transition;
+import funkin.ui.transition.Transition.FlxTransition;
 import funkin.ui.transition.loading.LoadingState;
 
 /**
@@ -28,7 +28,7 @@ class FlxStateUtil
    */
   public static function isTransition(state:FlxState):Bool
   {
-    return Std.isOfType(state, Transition);
+    return Std.isOfType(state, FlxTransition);
   }
 
   /**
@@ -164,7 +164,7 @@ class FlxStateUtil
     {
       if (isTransition(state))
       {
-        var transition:Transition = cast state;
+        var transition:FlxTransition = cast state;
         @:privateAccess @:nullSafety(Off) transition.finishCallback = null;
         transition.close();
         return true;
@@ -175,7 +175,7 @@ class FlxStateUtil
     if (isTransition(topmostSubState))
     {
       @:nullSafety(Off)
-      var transition:Transition = cast topmostSubState;
+      var transition:FlxTransition = cast topmostSubState;
       @:privateAccess @:nullSafety(Off) transition.finishCallback = null;
       transition.close();
       return true;
@@ -203,7 +203,7 @@ class FlxStateUtil
     {
       if (isTransition(state))
       {
-        var transition:Transition = cast state;
+        var transition:FlxTransition = cast state;
         transition.close();
       }
       else
@@ -215,7 +215,7 @@ class FlxStateUtil
     {
       if (isTransition(topmostSubState))
       {
-        var transition:Transition = cast topmostSubState;
+        var transition:FlxTransition = cast topmostSubState;
         transition.close();
       }
       else

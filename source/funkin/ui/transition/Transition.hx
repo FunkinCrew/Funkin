@@ -5,6 +5,7 @@ import flixel.FlxSubState;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.transition.FlxTransitionableSubState;
 import flixel.addons.transition.TransitionData;
+import funkin.ui.transition.Transition.FlxTransition;
 import flixel.graphics.FlxGraphic;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
@@ -21,7 +22,6 @@ import funkin.ui.transition.loading.StickerLoadingState;
 import funkin.ui.transition.StickerTransition;
 import funkin.ui.transition.loading.ThrobberLoadingState;
 import funkin.ui.transition.progress.FunkinProgressBar;
-import funkin.ui.quickpanel.QuickPanelState;
 import funkin.util.FlxStateUtil;
 import funkin.util.tasks.TaskHandler;
 import funkin.assets.Assets;
@@ -105,7 +105,7 @@ class Transition
     var topState:Null<FlxState> = FlxStateUtil.getTopmostSubState(FlxG.state, false);
     if (topState == null) return false;
 
-    if (Std.isOfType(topState, flixel.addons.transition.Transition)) return true;
+    if (Std.isOfType(topState, FlxTransition)) return true;
 
     if (Std.isOfType(topState, LoadingState)) return true;
 
@@ -930,3 +930,5 @@ enum abstract FadeDirection(String)
     }
   }
 }
+
+typedef FlxTransition = flixel.addons.transition.Transition;

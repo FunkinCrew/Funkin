@@ -35,6 +35,7 @@ import funkin.util.SwipeUtil;
 import funkin.util.TouchUtil;
 import funkin.util.WindowUtil;
 import funkin.ui.transition.Transition;
+import funkin.ui.transition.Transition.FlxTransition;
 #if FEATURE_DEBUG_MENU
 import funkin.ui.debug.DebugMenuSubState;
 #end
