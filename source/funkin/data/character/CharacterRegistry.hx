@@ -88,32 +88,32 @@ class CharacterRegistry extends BaseRegistry<BaseCharacter, CharacterData, Chara
         case CharacterRenderType.AnimateAtlas:
           if (AnimateAtlasCharacter.scriptStaticHas(charScriptClass, 'queryAssets'))
           {
-            return AnimateAtlasCharacter.scriptStaticCall(charScriptClass, 'queryAssets', [type, entryId]);
+            return cast AnimateAtlasCharacter.scriptStaticCall(charScriptClass, 'queryAssets', [type, entryId]) ?? [];
           }
         case CharacterRenderType.MultiSparrow:
           if (MultiSparrowCharacter.scriptStaticHas(charScriptClass, 'queryAssets'))
           {
-            return MultiSparrowCharacter.scriptStaticCall(charScriptClass, 'queryAssets', [type, entryId]);
+            return cast MultiSparrowCharacter.scriptStaticCall(charScriptClass, 'queryAssets', [type, entryId]) ?? [];
           }
         case CharacterRenderType.Sparrow:
           if (SparrowCharacter.scriptStaticHas(charScriptClass, 'queryAssets'))
           {
-            return SparrowCharacter.scriptStaticCall(charScriptClass, 'queryAssets', [type, entryId]);
+            return cast SparrowCharacter.scriptStaticCall(charScriptClass, 'queryAssets', [type, entryId]) ?? [];
           }
         case CharacterRenderType.Packer:
           if (PackerCharacter.scriptStaticHas(charScriptClass, 'queryAssets'))
           {
-            return PackerCharacter.scriptStaticCall(charScriptClass, 'queryAssets', [type, entryId]);
+            return cast PackerCharacter.scriptStaticCall(charScriptClass, 'queryAssets', [type, entryId]) ?? [];
           }
         case CharacterRenderType.MultiAnimateAtlas:
           if (MultiAnimateAtlasCharacter.scriptStaticHas(charScriptClass, 'queryAssets'))
           {
-            return MultiAnimateAtlasCharacter.scriptStaticCall(charScriptClass, 'queryAssets', [type, entryId]);
+            return cast MultiAnimateAtlasCharacter.scriptStaticCall(charScriptClass, 'queryAssets', [type, entryId]) ?? [];
           }
         default:
           if (BaseCharacter.scriptStaticHas(charScriptClass, 'queryAssets'))
           {
-            return BaseCharacter.scriptStaticCall(charScriptClass, 'queryAssets', [type, entryId]);
+            return cast BaseCharacter.scriptStaticCall(charScriptClass, 'queryAssets', [type, entryId]) ?? [];
           }
       }
     }
