@@ -777,6 +777,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
           return;
         }
 
+        #if FEATURE_DEBUG_MENU
         if (pullTabEnabled ? FlxG.keys.justPressed.TAB : controls.DEBUG_MENU)
         {
           resetTabFade();
@@ -792,6 +793,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
           }
           return;
         }
+        #end
 
         #if FEATURE_TOUCH_CONTROLS
         updateTabTouch();

@@ -1,11 +1,9 @@
 package funkin.ui.debug.cameraeditor.components;
 
-import funkin.graphics.FunkinSprite;
-import flixel.util.FlxColor;
-import funkin.play.event.SongEvent;
-import funkin.data.song.SongData.SongEventData;
-import funkin.play.stage.Stage;
-import flixel.tweens.FlxEase;
+#if FEATURE_CAMERA_EDITOR
+import flixel.FlxCamera;
+import flixel.FlxObject;
+import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.FlxObject;
@@ -539,7 +537,6 @@ class VirtualCameraRectangle extends FlxSpriteGroup
 
     add(mainView);
 
-
     leftExt = new FunkinSliceSprite(Paths.image('ui/editors/camera-editor/vcam/vcam_slice_left'), new FlxRect(30, 30, 30, 30), 0, 0);
     leftExt.vcamPoint = vcamPoint;
     leftExt.alpha = 0.3;
@@ -873,3 +870,4 @@ class VirtualCameraRectangle extends FlxSpriteGroup
     passeR.setPosition(mainView.x + mainView.width + extraSize, mainView.y + (mainView.height / 2) - passeL.height / 2);
   }
 }
+#end
