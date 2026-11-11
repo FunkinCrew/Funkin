@@ -532,6 +532,19 @@ class CameraEditorState extends UIState implements ConsoleClass
   }
 
   /**
+   * Whether the timeline shows the chart's sub-beats and snaps to them.
+   */
+  @:bind(menubarItemShowSubBeats.selected)
+  public var showSubBeats(default, set):Bool = true;
+
+  function set_showSubBeats(val:Bool):Bool
+  {
+    showSubBeats = val;
+    if (timeline != null) timeline.viewport.showSubBeats = val;
+    return val;
+  }
+
+  /**
    * Whether the timeline zooms around the playhead rather than the cursor. Remembered between sessions.
    */
   public var zoomToPlayhead(default, set):Bool = false;
@@ -2051,6 +2064,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   public function loadTimeline():Void
   {
     timeline.setEvents(currentSongChartData.events);
+    timeline.setSubBeats(currentSongChartData.editorData?.subBeats);
     timeline.setConductor(conductorInUse);
   }
 

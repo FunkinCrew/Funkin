@@ -30,6 +30,10 @@ class TimelineBlockArea extends Box
   static inline var RING_THIN_X:Int = SLICE_SIZE;
   static inline var RING_THICK_X:Int = SLICE_SIZE * 2;
 
+  static final SUB_BEAT_COLOR:FlxColor = 0xFF4FC3F7;
+  static inline var SUB_BEAT_ALPHA:Float = 0.35;
+  static inline var SUB_BEAT_LINE_WIDTH:Int = 1;
+
   static var atlas:Null<FlxGraphic> = null;
   static var iconFrames:Map<String, FlxFrame> = [];
   static var requestedImages:Map<String, Bool> = [];
@@ -85,6 +89,8 @@ class TimelineBlockArea extends Box
     {
       if (camera == null || !camera.visible || !camera.exists) continue;
 
+      drawSubBeats(camera, vp, originX, originY, scaleX, scaleY);
+
       for (block in vp.eventBlocks)
       {
         if (block.hidden) continue;
@@ -132,6 +138,22 @@ class TimelineBlockArea extends Box
         drawImage(camera, tag, originX + (block.blockLeft + left) * scaleX, originY + (block.blockTop + top) * scaleY, tagWidth * scaleX, size * scaleY,
           FlxColor.WHITE, 1);
       }
+    }
+  }
+
+  function drawSubBeats(camera:FlxCamera, vp:TimelineViewport, originX:Float, originY:Float, scaleX:Float, scaleY:Float):Void
+  {
+    if (!vp.showSubBeats || vp.subBeats.length == 0) return;
+
+    var height:Float = Math.min(componentHeight, vp.totalLayerHeight - vp.layerScrollOffsetPx) * scaleY;
+    if (height <= 0) return;
+    for (time in vp.subBeats)
+    {
+      var x:Float = Math.fround(vp.msToPixelX(time));
+      if (x < -SUB_BEAT_LINE_WIDTH) continue;
+      if (x > componentWidth + SUB_BEAT_LINE_WIDTH) break;
+
+      drawAtlas(camera, SLICE_MID, SLICE_MID, 1, 1, originX + x * scaleX, originY, SUB_BEAT_LINE_WIDTH * scaleX, height, SUB_BEAT_COLOR, SUB_BEAT_ALPHA);
     }
   }
 

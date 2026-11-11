@@ -68,6 +68,10 @@ class TimelineViewport extends Box
   public var songPositionMs:Float;
   public var eventBlocks:Array<TimelineEventBlock> = [];
   public var layers:Array<TimelineLayerData> = [];
+
+  public var subBeats:Array<Float> = [];
+
+  public var showSubBeats:Bool = true;
   public var selectedLayerIndex:Int = 0;
   public var stepLengthMs:Float = 125.0;
   public var conductor:Null<Conductor> = null;

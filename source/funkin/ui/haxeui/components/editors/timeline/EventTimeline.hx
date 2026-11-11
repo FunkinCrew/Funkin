@@ -183,7 +183,28 @@ class EventTimeline extends VBox
     var grid:Float = snapGridSteps();
     if (grid <= 0 || viewport == null) return ms;
 
-    return viewport.stepsToMs(Math.fround(viewport.msToSteps(ms) / grid) * grid);
+    var cursorSteps:Float = viewport.msToSteps(ms);
+    var snappedSteps:Float = Math.fround(cursorSteps / grid) * grid;
+    var best:Float = viewport.stepsToMs(snappedSteps);
+    var bestDistance:Float = Math.abs(cursorSteps - snappedSteps);
+
+    if (viewport.showSubBeats) for (time in viewport.subBeats)
+    {
+      var distance:Float = Math.abs(cursorSteps - viewport.msToSteps(time));
+      if (distance < bestDistance)
+      {
+        best = time;
+        bestDistance = distance;
+      }
+    }
+    return best;
+  }
+
+  public function setSubBeats(times:Null<Array<Float>>):Void
+  {
+    var sorted:Array<Float> = times == null ? [] : times.copy();
+    sorted.sort((a, b) -> a < b ? -1 : (a > b ? 1 : 0));
+    viewport.subBeats = sorted;
   }
 
   public function loadTimelineStyles():Void
