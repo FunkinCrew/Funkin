@@ -757,6 +757,10 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
   {
   };
 
+  public function onCustomEvent(event:CustomEventScriptEvent):Void
+  {
+  };
+
   public function onStepHit(event:SongTimeScriptEvent):Void
   {
   };

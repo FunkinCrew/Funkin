@@ -752,7 +752,7 @@ class TimelineViewport extends Box
 
   public function addEventBlock(event:SongEventData):TimelineEventBlock
   {
-    if (event.eventKind != "FocusCamera" && event.eventKind != "ZoomCamera" && event.eventKind != "PlayAnimation") return null;
+    if (!TimelineUtil.isTimelineEvent(event.eventKind)) return null;
 
     var block = new TimelineEventBlock();
     block.eventData = event;

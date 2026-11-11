@@ -209,6 +209,13 @@ class Module implements IPlayStateScriptedClass implements IStateChangingScripte
   }
 
   /**
+   * Called every frame while a Custom Event runs.
+   */
+  public function onCustomEvent(event:CustomEventScriptEvent)
+  {
+  }
+
+  /**
    * Called when the countdown begins.
    */
   public function onCountdownStart(event:CountdownScriptEvent)

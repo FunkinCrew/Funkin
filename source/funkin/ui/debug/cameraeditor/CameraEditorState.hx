@@ -31,8 +31,12 @@ import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
 import funkin.input.Cursor;
 import funkin.modding.events.ScriptEvent.SongEventScriptEvent;
+import funkin.modding.events.ScriptEvent.CustomEventScriptEvent;
+import funkin.play.event.CustomSongEvent;
+import funkin.play.event.CustomSongEvent.CustomEventRunner;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
+import funkin.modding.events.ScriptEventType;
 import funkin.play.PlayState;
 import funkin.util.SortUtil;
 import funkin.play.character.BaseCharacter;
@@ -134,6 +138,8 @@ class CameraEditorState extends UIState implements ConsoleClass
    * The current instance of the Camera Editor.
    */
   public static var instance:CameraEditorState = null;
+
+  static inline var CAMERA_REPLAY_DEBOUNCE:Float = 0.2;
 
   /**
    * The time threshold at which seeking backwards in the timeline requires
@@ -294,16 +300,19 @@ class CameraEditorState extends UIState implements ConsoleClass
   }
 
   /**
-   * Whether a full camera replay is waiting for the next frame.
+   * Whether a full camera replay is waiting to run.
    */
   var cameraReplayPending:Bool = false;
 
   /**
-   * Asks for a full camera replay on the next frame.
+   * Seconds left before the waiting replay runs.
    */
+  var cameraReplayDelay:Float = 0;
+
   public function requestCameraReplay():Void
   {
     cameraReplayPending = true;
+    cameraReplayDelay = CAMERA_REPLAY_DEBOUNCE;
   }
 
   function trackPlayAnimationEvent(eventData:SongEventData):Void
@@ -556,7 +565,6 @@ class CameraEditorState extends UIState implements ConsoleClass
   /**
    * Whether the camera preview should display song events.
    */
-  @:bind(menubarItemDoSongEvents.selected)
   public var doSongEvents(default, set):Bool = true;
 
   function set_doSongEvents(val:Bool):Bool
@@ -822,6 +830,9 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     populateLoadVariationMenu();
     populateOpenRecentMenu();
+
+    menubarItemDoSongEvents.selected = true;
+    menubarItemDoSongEvents.onChange = _ -> if (doSongEvents != menubarItemDoSongEvents.selected) doSongEvents = menubarItemDoSongEvents.selected;
 
     zoomToPlayhead = Save.instance.cameraEditorZoomToPlayhead.value;
     timeline.viewport.zoomToPlayhead = zoomToPlayhead;
@@ -1095,15 +1106,11 @@ class CameraEditorState extends UIState implements ConsoleClass
           handlePlayAnimationEvent(eventData);
           trackPlayAnimationEvent(eventData);
         default:
+          doDispatch = false;
           if (doSongEvents)
           {
-            var eventEvent:SongEventScriptEvent = SongEventScriptEvent.get(eventData);
-            currentStage.onSongEvent(eventEvent);
-            eventEvent.finish();
-          }
-          else
-          {
-            doDispatch = false;
+            dispatchScriptSongEvent(eventData);
+            if (eventData.eventKind == CustomSongEvent.KIND) customEvents.start(eventData, conductorInUse);
           }
       }
 
@@ -1112,18 +1119,162 @@ class CameraEditorState extends UIState implements ConsoleClass
         dispatchEvent(eventEvent);
       }
 
-      cachedEventIndex = i + 1;
-
       eventEvent.finish();
     }
+
+    advanceEventIndex(conductorInUse.songPosition);
+
+    customEvents.update(conductorInUse.songPosition, dispatchCustomEvent);
 
     previousTime = conductorInUse.songPosition;
     if (replayPosition >= 0) replayPosition = conductorInUse.songPosition;
   }
 
+  function advanceEventIndex(position:Float):Void
+  {
+    while (cachedEventIndex < songEvents.length)
+    {
+      var next:Null<SongEventData> = songEvents[cachedEventIndex];
+      if (next != null && next.getActivationTime(conductorInUse) > position) break;
+      cachedEventIndex++;
+    }
+  }
+
+  function dispatchScriptSongEvent(eventData:SongEventData):Void
+  {
+    dispatchToStageScripts(new SongEventScriptEvent(eventData));
+  }
+
+  var customEvents:CustomEventRunner = new CustomEventRunner();
+
+  function dispatchReplayedCustomEvent(event:CustomEventScriptEvent):Void
+  {
+    dispatchCustomEvent(event);
+  }
+
+
+  var eventAnimations:Array<{sprite:FlxSprite, anim:flixel.animation.FlxAnimation, startMs:Float, finished:Bool}> = [];
+
+  function stageSprites():Array<FlxSprite>
+  {
+    var result:Array<FlxSprite> = [];
+    if (currentStage == null) return result;
+    function collect(group:flixel.group.FlxGroup.FlxTypedGroup<Dynamic>):Void
+    {
+      for (member in group.members)
+      {
+        if (member == null || !member.exists) continue;
+        if (Std.isOfType(member, FlxSprite))
+        {
+          var sprite:FlxSprite = cast member;
+          if (sprite.animation != null) result.push(sprite);
+        }
+        if (Std.isOfType(member, flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup))
+        {
+          var spriteGroup:flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup<Dynamic> = cast member;
+          collect(cast spriteGroup.group);
+        }
+        else if (Std.isOfType(member, flixel.group.FlxGroup.FlxTypedGroup)) collect(cast member);
+      }
+    }
+    collect(currentStage.group);
+    return result;
+  }
+
+  function dispatchCustomEvent(event:CustomEventScriptEvent):Void
+  {
+    var sprites:Array<FlxSprite> = stageSprites();
+    var before:Array<Null<flixel.animation.FlxAnimation>> = [for (sprite in sprites) sprite.animation.curAnim];
+    var beforeFrames:Array<Int> = [for (sprite in sprites) sprite.animation.curAnim?.curFrame ?? -1];
+    var beforeFinished:Array<Bool> = [for (sprite in sprites) sprite.animation.curAnim?.finished ?? true];
+
+    dispatchToStageScripts(event);
+
+    for (i in 0...sprites.length)
+    {
+      var sprite:FlxSprite = sprites[i];
+      var anim:Null<flixel.animation.FlxAnimation> = sprite.animation.curAnim;
+      if (anim == null) continue;
+      var started:Bool = anim != before[i] || (anim.curFrame == 0 && beforeFrames[i] != 0) || (beforeFinished[i] && !anim.finished);
+      if (!started) continue;
+
+      eventAnimations = eventAnimations.filter(entry -> entry.sprite != sprite);
+      var startMs:Float = event.eventData.getActivationTime(conductorInUse);
+      var entry = {sprite: sprite, anim: anim, startMs: startMs, finished: false};
+      eventAnimations.push(entry);
+      if (event.isReplay) seekEventAnimation(entry, startMs + event.elapsedMs);
+    }
+  }
+
+  function seekEventAnimations(position:Float):Void
+  {
+    eventAnimations = eventAnimations.filter(entry -> entry.sprite.exists && entry.sprite.animation?.curAnim == entry.anim);
+    for (entry in eventAnimations.copy()) seekEventAnimation(entry, position);
+  }
+
+  function seekEventAnimation(entry:{sprite:FlxSprite, anim:flixel.animation.FlxAnimation, startMs:Float, finished:Bool}, position:Float):Void
+  {
+    var anim:flixel.animation.FlxAnimation = entry.anim;
+    if (anim.numFrames <= 0) return;
+    var frame:Int = Std.int(Math.max(0, position - entry.startMs) / 1000 * anim.frameRate);
+    if (!anim.looped && frame >= anim.numFrames)
+    {
+      anim.finish();
+      if (!entry.finished)
+      {
+        entry.finished = true;
+        entry.sprite.animation.onFinish.dispatch(anim.name);
+      }
+      return;
+    }
+    entry.finished = false;
+    anim.curFrame = anim.looped ? frame % anim.numFrames : frame;
+  }
+
+  var pausedEventSprites:Array<FlxSprite> = [];
+  function syncCustomEventPause(playing:Bool):Void
+  {
+    if (playing)
+    {
+      if (pausedEventSprites.length == 0) return;
+      for (sprite in pausedEventSprites)
+      {
+        var anim:Null<flixel.animation.FlxAnimation> = sprite.animation?.curAnim;
+        if (anim != null) anim.paused = false;
+      }
+      pausedEventSprites = [];
+      return;
+    }
+
+    for (sprite in [for (entry in eventAnimations) entry.sprite])
+    {
+      var anim:Null<flixel.animation.FlxAnimation> = sprite.animation.curAnim;
+      if (anim == null || anim.paused || anim.finished) continue;
+      anim.paused = true;
+      if (!pausedEventSprites.contains(sprite)) pausedEventSprites.push(sprite);
+    }
+  }
+
+  function dispatchToStageScripts(event:ScriptEvent):Void
+  {
+    if (currentStage == null) return;
+    ScriptEventDispatcher.callEvent(currentStage, event);
+    currentStage.dispatchToCharacters(event);
+  }
+
+  function resetEventState():Void
+  {
+    customEvents.clear();
+    eventAnimations = [];
+    if (currentStage == null) return;
+    currentStage.songEvents = songEvents;
+    currentStage.onEventReset();
+    currentStage.dispatchToCharacters(new SongRetryEvent(currentDifficulty));
+  }
+
   override public function dispatchEvent(event:ScriptEvent, finish:Bool = true):Void
   {
-    if (!noEvents)
+    if (!noEvents || event.type == ScriptEventType.UPDATE)
     {
       super.dispatchEvent(event);
 
@@ -1200,8 +1351,12 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     if (cameraReplayPending)
     {
-      cameraReplayPending = false;
-      replayCameraTimeline(conductorInUse.songPosition, true);
+      cameraReplayDelay -= elapsed;
+      if (cameraReplayDelay <= 0)
+      {
+        cameraReplayPending = false;
+        replayCameraTimeline(conductorInUse.songPosition, true);
+      }
     }
     if (criticalFailure) return;
 
@@ -1251,6 +1406,8 @@ class CameraEditorState extends UIState implements ConsoleClass
         if (vocal.playing) vocal.pause();
       }
     }
+
+    syncCustomEventPause(currentInstrumental != null && currentInstrumental.playing);
 
     if (timeline != null && timeline.viewport != null)
     {
@@ -1370,6 +1527,8 @@ class CameraEditorState extends UIState implements ConsoleClass
    */
   public function buildStage():Void
   {
+    pausedEventSprites = [];
+    eventAnimations = [];
     invalidateCameraReplay();
     cachedEventIndex = 0;
     cachedNoteIndex = 0;
@@ -1469,7 +1628,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     resetScrollPosition();
     _shouldResetCameraPosition = true;
 
-    currentStage.onEventReset();
+    resetEventState();
   }
 
   function resetScrollPosition()
@@ -2224,7 +2383,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     if (!incremental)
     {
-      currentStage.onEventReset();
+      resetEventState();
 
       cameraRect.cancelAllTweens();
       cameraRect.zoom = defaultStageZoom;
@@ -2251,13 +2410,13 @@ class CameraEditorState extends UIState implements ConsoleClass
       {
         if (eventData == null) return false;
 
-        var activationTime:Float = eventData.getActivationTime();
+        var activationTime:Float = eventData.getActivationTime(conductorInUse);
         if (incremental && activationTime <= fromPosition) return false;
 
         return activationTime <= position;
       });
 
-      replayEvents.sort(SortUtil.eventDataByActivationTime.bind(FlxSort.ASCENDING));
+      replayEvents.sort((a, b) -> FlxSort.byValues(FlxSort.ASCENDING, a.getActivationTime(conductorInUse), b.getActivationTime(conductorInUse)));
 
       for (eventData in replayEvents)
       {
@@ -2278,21 +2437,16 @@ class CameraEditorState extends UIState implements ConsoleClass
           default:
             if (doSongEvents)
             {
-              var ev:SongEventScriptEvent = new SongEventScriptEvent(eventData);
-              currentStage.onSongEvent(ev);
+              dispatchScriptSongEvent(eventData);
+              if (eventData.eventKind == CustomSongEvent.KIND) customEvents.start(eventData, conductorInUse);
             }
         }
       }
 
-      var lastEvent:Null<SongEventData> = replayEvents[replayEvents.length - 1];
-      if (lastEvent != null)
-      {
-        cachedEventIndex = songEvents.indexOf(lastEvent) + 1;
-      }
-      else if (!incremental)
-      {
-        cachedEventIndex = 0;
-      }
+      customEvents.update(position, dispatchReplayedCustomEvent, true, true);
+
+      if (!incremental) cachedEventIndex = 0;
+      advanceEventIndex(position);
     }
 
     var notes:Array<SongNoteData> = currentNotes;
@@ -2394,11 +2548,11 @@ class CameraEditorState extends UIState implements ConsoleClass
     var dadInPlayAnimationWindow:Bool = replayDadAnimTime != null && position <= replayDadAnimWindowEnd && !dadHasNoteAfterPlayAnimation;
     var bfInPlayAnimationWindow:Bool = replayBfAnimTime != null && position <= replayBfAnimWindowEnd && !bfHasNoteAfterPlayAnimation;
 
-    if (!dadShouldKeepSinging && dad != null && !dadInPlayAnimationWindow)
+    if (!dadShouldKeepSinging && dad != null && !dadInPlayAnimationWindow && dad.danceEvery > 0)
     {
       if (!StringTools.startsWith(dad.animation.curAnim.name, 'idle')) dad.dance(true);
     }
-    if (!bfShouldKeepSinging && bf != null && !bfInPlayAnimationWindow)
+    if (!bfShouldKeepSinging && bf != null && !bfInPlayAnimationWindow && bf.danceEvery > 0)
     {
       if (!StringTools.startsWith(bf.animation.curAnim.name, 'idle')) bf.dance(true);
     }
@@ -2406,6 +2560,10 @@ class CameraEditorState extends UIState implements ConsoleClass
     noEvents = false;
 
     conductorInUse.update(position);
+
+    if (doSongEvents) customEvents.update(position, dispatchReplayedCustomEvent, true, false);
+
+    seekEventAnimations(position);
 
     if (dad != null) dad.animation.update(0);
     if (bf != null) bf.animation.update(0);
@@ -2683,9 +2841,7 @@ class CameraEditorState extends UIState implements ConsoleClass
         this.redoLastCommand();
 
       case [FlxKey.A, true, false, false, _]: // ctrl + a -> select all timeline events
-        selectedSongEvents = currentSongChartData.events.filter(e -> e.eventKind == 'FocusCamera'
-          || e.eventKind == 'ZoomCamera'
-          || e.eventKind == 'PlayAnimation');
+        selectedSongEvents = currentSongChartData.events.filter(e -> funkin.ui.haxeui.components.editors.timeline.TimelineUtil.isTimelineEvent(e.eventKind));
 
       case [FlxKey.C, true, false, false, true]: // ctrl + c -> copy
         SongDataUtils.writeItemsToClipboard({

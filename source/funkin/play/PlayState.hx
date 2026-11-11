@@ -494,6 +494,8 @@ class PlayState extends MusicBeatSubState
    */
   var songEvents:Array<SongEventData> = [];
 
+  public var customEvents:funkin.play.event.CustomSongEvent.CustomEventRunner = new funkin.play.event.CustomSongEvent.CustomEventRunner();
+
   /**
    * The displayed value of the player's health.
    * Used to provide smooth animations based on linear interpolation of the player's health.
@@ -1515,6 +1517,7 @@ class PlayState extends MusicBeatSubState
     }
 
     processSongEvents();
+    customEvents.update(Conductor.instance.songPosition, event -> dispatchEvent(event));
 
     // Handle keybinds.
     processInputQueue();
@@ -2730,6 +2733,7 @@ class PlayState extends MusicBeatSubState
 
     songEvents = builtEventData;
     SongEventRegistry.resetEvents(songEvents);
+    customEvents.clear();
     for (songEvent in songEvents)
     {
       if (songEvent.eventKind != 'RenderDistance') continue;

@@ -119,7 +119,42 @@ class TimelineBlockArea extends Box
             FlxColor.WHITE, 1);
         }
       }
+
+      for (block in vp.eventBlocks)
+      {
+        if (block.hidden || block.eventData.eventKind != funkin.play.event.CustomSongEvent.KIND) continue;
+        var tag:Null<FlxFrame> = tagFrame(funkin.play.event.CustomSongEvent.tagFor(block.eventData.getString('name')));
+        if (tag == null) continue;
+        var size:Float = iconSize(vp, block);
+        var tagWidth:Float = size * tag.frame.width / tag.frame.height;
+        var left:Float = block.blockWidth >= tagWidth + iconPadding(vp) * 2 ? iconPadding(vp) : (block.blockWidth - tagWidth) / 2;
+        var top:Float = (vp.blockHeight - size) / 2;
+        drawImage(camera, tag, originX + (block.blockLeft + left) * scaleX, originY + (block.blockTop + top) * scaleY, tagWidth * scaleX, size * scaleY,
+          FlxColor.WHITE, 1);
+      }
     }
+  }
+
+  static var tagFrames:Map<String, FlxFrame> = [];
+
+  static function tagFrame(tag:String):Null<FlxFrame>
+  {
+    if (tag.length == 0) return null;
+    var cached:Null<FlxFrame> = tagFrames.get(tag);
+    if (cached != null) return cached;
+
+    var text:flixel.text.FlxText = new flixel.text.FlxText(0, 0, 0, tag, 32);
+    text.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 32, FlxColor.WHITE, LEFT, flixel.text.FlxText.FlxTextBorderStyle.OUTLINE,
+      FlxColor.BLACK);
+    text.borderSize = 2;
+    text.drawFrame(true);
+    var graphic:FlxGraphic = FlxGraphic.fromBitmapData(text.pixels.clone(), false, 'timeline-custom-event-tag-$tag', false);
+    graphic.persist = true;
+    text.destroy();
+
+    var frame:FlxFrame = graphic.imageFrame.frame;
+    tagFrames.set(tag, frame);
+    return frame;
   }
 
   inline function maxIconSize(vp:TimelineViewport):Float

@@ -8,6 +8,13 @@ import funkin.play.event.ZoomCameraSongEvent;
 
 class TimelineUtil
 {
+  public static final TIMELINE_EVENT_KINDS:Array<String> = ['FocusCamera', 'ZoomCamera', 'PlayAnimation', 'CustomEvent'];
+
+  public static inline function isTimelineEvent(eventKind:String):Bool
+  {
+    return TIMELINE_EVENT_KINDS.contains(eventKind);
+  }
+
   /**
    * Cache for schema information per event kind.
    */

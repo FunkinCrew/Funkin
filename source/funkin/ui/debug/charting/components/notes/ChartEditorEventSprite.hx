@@ -230,16 +230,25 @@ class ChartEditorEventSprite extends FlxSprite
    */
   var chainCountText:Null<FlxText> = null;
 
+  /**
+   * The tag drawn on Custom Events.
+   */
+  var customEventTagText:Null<FlxText> = null;
+
   override public function destroy():Void
   {
     chainCountText?.destroy();
     chainCountText = null;
+    customEventTagText?.destroy();
+    customEventTagText = null;
     super.destroy();
   }
 
   override public function draw():Void
   {
     super.draw();
+
+    drawCustomEventTag();
 
     var count:Int = (overlappingEventDatas?.length ?? 0) + 1;
     if (count < 2 || isGhost) return;
@@ -255,6 +264,27 @@ class ChartEditorEventSprite extends FlxSprite
     text.cameras = this.cameras;
     text.x = this.x + this.width - text.width + 4;
     text.y = this.y + this.height - text.height + 4;
+    text.draw();
+  }
+
+  function drawCustomEventTag():Void
+  {
+    if (eventData?.eventKind != funkin.play.event.CustomSongEvent.KIND) return;
+    var tag:String = funkin.play.event.CustomSongEvent.tagFor(eventData?.getString('name'));
+    if (tag.length == 0) return;
+
+    var text:Null<FlxText> = customEventTagText;
+    if (text == null)
+    {
+      text = new haxe.ui.backend.flixel.HiResFlxText(0, 0, 0, '', 24);
+      text.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 24, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+      customEventTagText = text;
+    }
+    if (text.text != tag) text.text = tag;
+    text.cameras = this.cameras;
+    text.alpha = this.alpha;
+    text.x = this.x + (this.width - text.width) / 2;
+    text.y = this.y + (this.height - text.height) / 2;
     text.draw();
   }
 

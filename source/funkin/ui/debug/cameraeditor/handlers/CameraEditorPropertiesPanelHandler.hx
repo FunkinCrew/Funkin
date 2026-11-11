@@ -6,6 +6,7 @@ import funkin.play.event.SongEvent;
 import funkin.ui.debug.cameraeditor.components.BaseEventContainer;
 import funkin.ui.debug.cameraeditor.components.EditorContainer;
 import funkin.ui.debug.cameraeditor.components.FocusCameraContainer;
+import funkin.ui.debug.cameraeditor.components.CustomEventContainer;
 import funkin.ui.debug.cameraeditor.components.PlayAnimationContainer;
 import funkin.ui.debug.cameraeditor.components.SharedPropertiesContainer;
 import funkin.ui.debug.cameraeditor.components.ZoomCameraContainer;
@@ -65,6 +66,7 @@ class CameraEditorPropertiesPanelHandler
     registerContainer('FocusCamera', FocusCameraContainer);
     registerContainer('ZoomCamera', ZoomCameraContainer);
     registerContainer('PlayAnimation', PlayAnimationContainer);
+    registerContainer('CustomEvent', CustomEventContainer);
     registerContainer(SHARED_KIND, SharedPropertiesContainer);
   }
 

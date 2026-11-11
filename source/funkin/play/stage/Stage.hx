@@ -182,6 +182,8 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
     debugIconGroup.zIndex = 1000000;
   }
 
+  public var songEvents:Null<Array<funkin.data.song.SongData.SongEventData>> = null;
+
   /**
    * Called by the camera editor to reset the event state.
   **/
@@ -1013,6 +1015,10 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
   }
 
   public function onSongEvent(event:SongEventScriptEvent)
+  {
+  }
+
+  public function onCustomEvent(event:CustomEventScriptEvent)
   {
   }
 

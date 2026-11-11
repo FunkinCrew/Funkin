@@ -247,6 +247,10 @@ class SongEvent implements IPlayStateScriptedClass
   {
   }
 
+  public function onCustomEvent(event:CustomEventScriptEvent)
+  {
+  }
+
   public function onNoteGhostMiss(event:GhostMissNoteScriptEvent)
   {
   }

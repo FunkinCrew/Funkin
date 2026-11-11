@@ -11,7 +11,9 @@ import funkin.data.event.SongEventSchema;
 import funkin.util.Constants;
 import funkin.data.stage.StageData.StageDataProp;
 import funkin.data.stage.StageRegistry;
+import funkin.play.event.CustomSongEvent;
 import funkin.play.event.PlayAnimationSongEvent;
+import funkin.ui.haxeui.components.CustomEventParamsList;
 import funkin.play.event.SongEvent;
 import funkin.play.event.SongEventHelper;
 import funkin.play.stage.Stage;
@@ -316,6 +318,9 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
           case TextField:
             var textField:TextField = cast field;
             textField.text = value;
+          case CustomEventParamsList:
+            var list:CustomEventParamsList = cast field;
+            list.setParams(CustomSongEvent.readParams(value));
           default:
             trace(' WARNING '.bg_yellow().bold() + ' CHART EDITOR '.bold().bg_bright_yellow() + 'Field "${fieldId}" is of unknown or unsupported type.');
         }
@@ -326,6 +331,9 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
         trace(' WARNING '.bg_yellow().bold() + ' CHART EDITOR '.bold().bg_bright_yellow() + 'Field "${fieldId}" was not found in the form.');
       }
     }
+
+    var list:Null<CustomEventParamsList> = customEventParams;
+    if (list != null && !chartEditorState.eventDataToPlace.exists(CustomSongEvent.PARAMS_FIELD)) list.setParams([]);
 
     refreshAnimationOptions();
 
@@ -716,11 +724,39 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
 
     // Clear the frame.
     target.removeAllComponents();
+    customEventParams = null;
 
     recursiveChildAdd(target, schema);
+    if (eventKind == CustomSongEvent.KIND) addCustomEventParams(target);
 
     _initializing = false;
     fitScrollHeights();
+  }
+
+  var customEventParams:Null<CustomEventParamsList> = null;
+
+  function addCustomEventParams(target:Box):Void
+  {
+    var list:CustomEventParamsList = new CustomEventParamsList();
+    list.id = CustomSongEvent.PARAMS_FIELD;
+    list.setParams(CustomSongEvent.readParams(chartEditorState.eventDataToPlace.get(CustomSongEvent.PARAMS_FIELD)));
+    list.onParamsChanged = function(params)
+    {
+      chartEditorState.eventDataToPlace.set(CustomSongEvent.PARAMS_FIELD, params);
+      if (_initializing || chartEditorState.currentEventSelection.length == 0) return;
+      for (songEvent in editTargets())
+      {
+        songEvent.eventKind = chartEditorState.eventKindToPlace;
+        var value:haxe.DynamicAccess<Dynamic> = Reflect.copy(chartEditorState.eventDataToPlace);
+        value.set(CustomSongEvent.PARAMS_FIELD, CustomSongEvent.copyParams(params));
+        songEvent.value = value;
+      }
+      chartEditorState.saveDataDirty = true;
+      chartEditorState.noteDisplayDirty = true;
+      chartEditorState.noteTooltipsDirty = true;
+    };
+    target.addComponent(list);
+    customEventParams = list;
   }
 
   static final SING_POSE:EReg = ~/^sing(LEFT|DOWN|UP|RIGHT)/;
