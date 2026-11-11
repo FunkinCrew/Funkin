@@ -186,6 +186,7 @@ class Scoring
 
     return switch (absTiming)
     {
+      // LEAK!!! LEAKK!!! OH NO LEAKK!!!
       // case(_ <= PBOT1_KILLER_THRESHOLD) => true:
       //   'killer';
       case(_ <= PBOT1_SICK_THRESHOLD) => true:
@@ -329,26 +330,13 @@ class Scoring
         0;
     }
 
-    if (absTiming < WEEK7_HIT_WINDOW * WEEK7_SICK_THRESHOLD)
-    {
-      return WEEK7_SICK_SCORE;
-    }
-    else if (absTiming < WEEK7_HIT_WINDOW * WEEK7_GOOD_THRESHOLD)
-    {
-      return WEEK7_GOOD_SCORE;
-    }
-    else if (absTiming < WEEK7_HIT_WINDOW * WEEK7_BAD_THRESHOLD)
-    {
-      return WEEK7_BAD_SCORE;
-    }
-    else if (absTiming < WEEK7_HIT_WINDOW)
-    {
-      return WEEK7_SHIT_SCORE;
-    }
-    else
-    {
-      return 0;
-    }
+    return switch (absTiming) {
+        case x if (x < WEEK7_HIT_WINDOW * WEEK7_SICK_THRESHOLD): WEEK7_SICK_SCORE;
+        case x if (x < WEEK7_HIT_WINDOW * WEEK7_GOOD_THRESHOLD): WEEK7_GOOD_SCORE;
+        case x if (x < WEEK7_HIT_WINDOW * WEEK7_BAD_THRESHOLD): WEEK7_BAD_SCORE;
+        case x if (x < WEEK7_HIT_WINDOW): WEEK7_SHIT_SCORE;
+        default: 0;
+    };
   }
 
   static function judgeNoteWEEK7(msTiming:Float):String
@@ -396,26 +384,15 @@ class Scoring
 
     var completionAmount:Float = Scoring.tallyCompletion(scoreData.tallies);
 
-    if (completionAmount == Constants.RANK_PERFECT_THRESHOLD)
-    {
-      return ScoringRank.PERFECT;
-    }
-    else if (completionAmount >= Constants.RANK_EXCELLENT_THRESHOLD)
-    {
-      return ScoringRank.EXCELLENT;
-    }
-    else if (completionAmount >= Constants.RANK_GREAT_THRESHOLD)
-    {
-      return ScoringRank.GREAT;
-    }
-    else if (completionAmount >= Constants.RANK_GOOD_THRESHOLD)
-    {
-      return ScoringRank.GOOD;
-    }
-    else
-    {
-      return ScoringRank.SHIT;
-    }
+    // less ugly now
+    if (completionAmount == Constants.RANK_PERFECT_THRESHOLD) return ScoringRank.PERFECT;
+
+    return switch (completionAmount) {
+        case x if (x >= Constants.RANK_EXCELLENT_THRESHOLD): ScoringRank.EXCELLENT;
+        case x if (x >= Constants.RANK_GREAT_THRESHOLD): ScoringRank.GREAT;
+        case x if (x >= Constants.RANK_GOOD_THRESHOLD): ScoringRank.GOOD;
+        default: ScoringRank.SHIT;
+    };
   }
 
   /**
