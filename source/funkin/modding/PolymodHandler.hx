@@ -979,8 +979,10 @@ class PolymodHandler
     #if desktop
     if (!FileUtil.fileExists(ENABLED_MODS_PATH)) return [];
 
-    var content:String = FileUtil.readStringFromPath(ENABLED_MODS_PATH);
-    return content.trim().split('\n');
+    var content:String = FileUtil.readStringFromPath(ENABLED_MODS_PATH).trim();
+    if (content.length == 0) return [];
+
+    return [for (line in content.split('\n')) line.trim()].filter(modId -> modId.length > 0);
     #else
     return Save.instance.enabledModIds.value;
     #end
