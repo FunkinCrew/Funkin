@@ -1,7 +1,9 @@
 package funkin.util;
 
 import flixel.math.FlxPoint;
+#if FEATURE_HAXEUI
 import haxe.ui.core.Screen;
+#end
 
 /**
  * Utility functions related to the mouse.
@@ -46,12 +48,16 @@ class MouseUtil
     if (isDragging)
     {
       middleMouseDragCursorActive = true;
+      #if FEATURE_HAXEUI
       Screen.instance.setCursor("grabbing");
+      #end
     }
     else if (middleMouseDragCursorActive)
     {
       middleMouseDragCursorActive = false;
+      #if FEATURE_HAXEUI
       Screen.instance.setCursor("default");
+      #end
     }
   }
 
