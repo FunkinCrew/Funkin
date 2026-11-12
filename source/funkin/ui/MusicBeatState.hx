@@ -21,7 +21,7 @@ import funkin.ui.transition.preload.hotreload.HotReloadState.HotReloadStateParam
 #if FEATURE_TOUCH_CONTROLS
 import funkin.touch.ui.FunkinHitbox;
 import funkin.touch.ui.FunkinBackButton;
-import funkin.touch.ui.mainmenu.FunkinOptionsButton;
+import funkin.touch.ui.FunkinOptionsButton;
 import funkin.touch.input.PreciseInputHandler;
 import funkin.play.notes.NoteDirection;
 #end
