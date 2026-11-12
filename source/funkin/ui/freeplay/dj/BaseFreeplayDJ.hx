@@ -177,31 +177,31 @@ class BaseFreeplayDJ extends FunkinSprite implements IFreeplayScriptedClass
           if (AnimateAtlasFreeplayDJ.scriptStaticHas(scriptClass, 'queryAssets'))
           {
             var result:Null<Array<funkin.assets.AssetPath>> = AnimateAtlasFreeplayDJ.scriptStaticCall(scriptClass, 'queryAssets', [type, characterId]);
-            if (result != null) return [];
+            if (result != null) return result;
           }
         case CharacterRenderType.MultiSparrow:
           if (MultiSparrowFreeplayDJ.scriptStaticHas(scriptClass, 'queryAssets'))
           {
             var result:Null<Array<funkin.assets.AssetPath>> = MultiSparrowFreeplayDJ.scriptStaticCall(scriptClass, 'queryAssets', [type, characterId]);
-            if (result != null) return [];
+            if (result != null) return result;
           }
         case CharacterRenderType.Sparrow:
           if (SparrowFreeplayDJ.scriptStaticHas(scriptClass, 'queryAssets'))
           {
             var result:Null<Array<funkin.assets.AssetPath>> = SparrowFreeplayDJ.scriptStaticCall(scriptClass, 'queryAssets', [type, characterId]);
-            if (result != null) return [];
+            if (result != null) return result;
           }
         case CharacterRenderType.Packer:
           if (PackerFreeplayDJ.scriptStaticHas(scriptClass, 'queryAssets'))
           {
             var result:Null<Array<funkin.assets.AssetPath>> = PackerFreeplayDJ.scriptStaticCall(scriptClass, 'queryAssets', [type, characterId]);
-            if (result != null) return [];
+            if (result != null) return result;
           }
         default:
           if (BaseFreeplayDJ.scriptStaticHas(scriptClass, 'queryAssets'))
           {
             var result:Null<Array<funkin.assets.AssetPath>> = BaseFreeplayDJ.scriptStaticCall(scriptClass, 'queryAssets', [type, characterId]);
-            if (result != null) return [];
+            if (result != null) return result;
           }
       }
     }
