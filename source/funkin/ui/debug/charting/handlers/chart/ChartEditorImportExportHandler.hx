@@ -252,8 +252,8 @@ class ChartEditorImportExportHandler
     // Sort the list of files by their timestamp (newest first)
     files.sort((a:String, b:String) ->
     {
-      var aStat:sys.FileStat = sys.FileSystem.stat(haxe.io.Path.join([BACKUPS_PATH, a]));
-      var bStat:sys.FileStat = sys.FileSystem.stat(haxe.io.Path.join([BACKUPS_PATH, b]));
+      var aStat:sys.FileStat = FileUtil.getFileStat(haxe.io.Path.join([BACKUPS_PATH, a]));
+      var bStat:sys.FileStat = FileUtil.getFileStat(haxe.io.Path.join([BACKUPS_PATH, b]));
       return aStat.mtime.getTime() < bStat.mtime.getTime() ? 1 : -1;
     });
 
@@ -282,7 +282,7 @@ class ChartEditorImportExportHandler
     latestBackupName = haxe.io.Path.withoutExtension(latestBackupName);
 
     final BYTES_PER_MB:Float = 1_000_000;
-    var stat = sys.FileSystem.stat(latestBackupPath);
+    var stat = FileUtil.getFileStat(latestBackupPath);
     var sizeInMB = (stat.size / BYTES_PER_MB).round(3);
 
     return 'Full Name: ' + latestBackupName + '\nLast Modified: ' + stat.mtime.toString() + '\nSize: ' + sizeInMB + ' MB';
