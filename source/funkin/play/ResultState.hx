@@ -1153,6 +1153,11 @@ class ResultState extends MusicBeatSubState
 
         if (isChartingMode)
         {
+          // Remove cameras immediately to prevent a flash of magenta.
+          FlxG.cameras.remove(cameraBG);
+          FlxG.cameras.remove(cameraScroll);
+          FlxG.cameras.remove(cameraEverything);
+
           PlayState.instance?.close();
           FlxTimer.globalManager.clear();
           FlxTween.globalManager.clear();
