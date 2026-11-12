@@ -94,11 +94,12 @@ class ModReloader
   {
     beginStep('load enabled mods');
 
+    // Unload mods on the main thread, before reloading mods asynchronously.
+    ModuleHandler.clearModuleCache();
+    Polymod.clearScripts();
+
     TaskHandler.performSimpleTask(() ->
     {
-      ModuleHandler.clearModuleCache();
-      Polymod.clearScripts();
-
       funkin.modding.PolymodHandler.loadEnabledMods();
 
       // This task needs to be done immediately after changing the modlist.

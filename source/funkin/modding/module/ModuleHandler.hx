@@ -101,8 +101,6 @@ class ModuleHandler
         });
         trace('Finished loading modules ($completedCount / $moduleCount)');
         perf.print();
-
-        reorderModuleCache();
       }
     };
 
@@ -287,6 +285,11 @@ class ModuleHandler
     }
   }
 
+  /**
+   * Invoke an event on every registered module.
+   *
+   * @param event The script event to invoke.
+   */
   public static function callEvent(event:ScriptEvent):Void
   {
     for (moduleId in modulePriorityOrder)
@@ -314,8 +317,14 @@ class ModuleHandler
     return false;
   }
 
+  /**
+   * Invokes `onCreate()` on every module.
+   */
   public static inline function callOnCreate():Void
   {
+    // Ensure the module cache is in order before calling events.
+    reorderModuleCache();
+
     var event:ScriptEvent = ScriptEvent.get(CREATE);
     callEvent(event);
     event.finish();
