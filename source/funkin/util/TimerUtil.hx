@@ -58,7 +58,7 @@ class Sequence
 
       if (!completed)
       {
-        timer.reset((currentEvent.time - events[eventCount - 1].time) * multiplier);
+        timer.reset((currentEvent.time - this.events[eventCount - 1].time) * multiplier);
       }
       else if (this.autoDestroy)
       {
