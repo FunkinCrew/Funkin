@@ -346,7 +346,9 @@ class QuickPanelGroup extends FunkinSpriteGroup
     pullTabVisual.flipX = left;
 
     var panelWidth:Float = panelSprite != null ? panelSprite.width : 0;
-    pullExtra.localX = left ? -(pullExtra.width + panelWidth) + 5 : panelWidth - 5;
+    var overlap:Float = panelSprite != null ? 5 : 0;
+    pullExtra.localX = left ? -(pullExtra.width + panelWidth) + overlap : panelWidth - overlap;
+    // pullExtra.localX = left ? -(pullExtra.width + panelWidth) + 5 : panelWidth - 5;
 
     if (panelSprite != null)
     {
