@@ -2035,6 +2035,7 @@ class CameraEditorState extends UIState implements ConsoleClass
         camera.x = 0;
         camera.y = 0;
       }
+      cameraRect.fitViewportScale = 1.0;
 
       return;
     }
@@ -2055,6 +2056,7 @@ class CameraEditorState extends UIState implements ConsoleClass
         camera.x = (FlxG.width - gameplayWidth) / 2;
         camera.y = offset + (FlxG.height - gameplayHeight) / 2;
       }
+      cameraRect.fitViewportScale = scale;
     }
   }
 
