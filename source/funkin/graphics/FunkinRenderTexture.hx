@@ -1,16 +1,19 @@
 package funkin.graphics;
 
 import animate.internal.RenderTexture;
+import flixel.FlxSprite;
+import flixel.math.FlxRect;
+import flixel.graphics.frames.FlxFrame;
 
 /**
- * Small flixel-animate render texture override to work with Funkin's needs.
+ * Small flixel-animate render texture override for cliprect support!!
  */
 @:nullSafety
 class FunkinRenderTexture extends RenderTexture
 {
-  var parent:Null<FunkinSprite>;
+  var parent:Null<FlxSprite>;
 
-  public function new(width:Int, height:Int, ?parent:FunkinSprite)
+  public function new(width:Int, height:Int, ?parent:FlxSprite)
   {
     super(width, height);
 
@@ -19,20 +22,14 @@ class FunkinRenderTexture extends RenderTexture
 
   override public function init(width:Int, height:Int):Void
   {
-    if (_camera == null || (_camera.width != width || _camera.height != height))
-    {
-      // TODO: This is shitty, but resizing doesn't seem to work properly!!!
-      _camera?.destroy();
-      _camera = new FunkinCamera('', 0, 0, width, height);
-    }
-
     super.init(width, height);
 
     if (parent != null)
     {
+      var frame:FlxFrame = graphic.imageFrame.frame;
       if (parent.clipRect != null)
       {
-        graphic.imageFrame.frame.clip(parent.clipRect);
+        frame.clip(parent.clipRect);
       }
     }
   }

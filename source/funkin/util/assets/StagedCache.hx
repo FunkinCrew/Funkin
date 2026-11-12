@@ -186,7 +186,11 @@ class StagedCache<T> implements IStagedCache
     return existsPermanent(key) || existsCurrent(key) || existsPrevious(key);
   }
 
-  inline function existsPermanent(key:String):Bool
+  /**
+   * Check if the cache contains an asset with the given key,
+   * specifically in the permanent cache (never eligible to be purged).
+   */
+  public inline function existsPermanent(key:String):Bool
   {
     return permanent.exists(key) && permanent.get(key) != null;
   }
@@ -207,16 +211,9 @@ class StagedCache<T> implements IStagedCache
   public function keys():Array<String>
   {
     var keys:Array<String> = [];
-    #if FEATURE_MULTITHREADING
-    // MapTools can't be used for SynchronizedMap.
-    keys.appendUnique([for (k => v in permanent) k]);
-    keys.appendUnique([for (k => v in current) k]);
-    keys.appendUnique([for (k => v in previous) k]);
-    #else
-    keys.appendUnique(permanent.keyValues());
-    keys.appendUnique(current.keyValues());
-    keys.appendUnique(previous.keyValues());
-    #end
+    for (key => _ in permanent) keys.pushUnique(key);
+    for (key => _ in current) keys.pushUnique(key);
+    for (key => _ in previous) keys.pushUnique(key);
     return keys;
   }
 

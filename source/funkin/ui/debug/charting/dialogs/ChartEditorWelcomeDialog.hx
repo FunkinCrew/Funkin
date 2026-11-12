@@ -25,6 +25,8 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
   {
     super(state2, params2);
 
+    this.draggable = false;
+
     this.splashBrowse.onClick = _ -> onClickButtonBrowse();
     this.splashCreateFromSongBasicOnly.onClick = _ -> onClickLinkCreateBasicOnly();
     this.splashCreateFromSongErectOnly.onClick = _ -> onClickLinkCreateErectOnly();

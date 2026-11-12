@@ -7,16 +7,16 @@ import haxe.ui.components.NumberStepper;
 import haxe.ui.components.DropDown;
 import haxe.ui.core.Screen;
 import haxe.ui.events.UIEvent;
-import funkin.ui.debug.charting.commands.MoveItemsCommand;
-import funkin.ui.debug.charting.commands.CutItemsCommand;
-import funkin.ui.debug.charting.commands.RemoveEventsCommand;
-import funkin.ui.debug.charting.commands.RemoveItemsCommand;
-import funkin.ui.debug.charting.commands.RemoveNotesCommand;
-import funkin.ui.debug.charting.commands.FlipNotesCommand;
-import funkin.ui.debug.charting.commands.MirrorNotesCommand;
-import funkin.ui.debug.charting.commands.SelectAllItemsCommand;
-import funkin.ui.debug.charting.commands.InvertSelectedItemsCommand;
-import funkin.ui.debug.charting.commands.DeselectAllItemsCommand;
+import funkin.ui.debug.charting.commands.items.CutItemsCommand;
+import funkin.ui.debug.charting.commands.selection.DeselectAllItemsCommand;
+import funkin.ui.debug.charting.commands.notes.FlipNotesCommand;
+import funkin.ui.debug.charting.commands.selection.InvertSelectedItemsCommand;
+import funkin.ui.debug.charting.commands.notes.MirrorNotesCommand;
+import funkin.ui.debug.charting.commands.items.MoveItemsCommand;
+import funkin.ui.debug.charting.commands.events.RemoveEventsCommand;
+import funkin.ui.debug.charting.commands.items.RemoveItemsCommand;
+import funkin.ui.debug.charting.commands.notes.RemoveNotesCommand;
+import funkin.ui.debug.charting.commands.selection.SelectAllItemsCommand;
 
 @:access(funkin.ui.debug.charting.ChartEditorState)
 @:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/context-menus/selection.xml"))

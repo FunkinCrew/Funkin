@@ -1,8 +1,21 @@
 {
+  // General formatting
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": false,
+  "files.trimTrailingWhitespace": true,
+  "editor.detectIndentation": true,
+  "editor.insertSpaces": true,
+  "editor.tabSize": 2,
+  "prettier.tabWidth": 2,
+
+  // Language-specific formatting
   "[haxe]": {
     "editor.formatOnSave": true,
     "editor.formatOnPaste": true,
-    "editor.codeActionsOnSave": { "source.organizeImports": "never" },
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "never"
+    },
     "editor.defaultFormatter": "nadako.vshaxe",
     "editor.tabSize": 2
   },
@@ -16,7 +29,8 @@
     "editor.formatOnPaste": true,
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  // XML Formatting
+
+  // XML formatting
   "xml.format.enabled": true,
   "xml.format.legacy": false,
   "xml.format.emptyElements": "collapse",
@@ -47,20 +61,7 @@
   "xml.format.maxLineWidth": 0,
   "xml.format.grammarAwareFormatting": true,
 
-  // General formatting
-  "files.insertFinalNewline": true,
-  "files.trimFinalNewlines": false,
-  "files.trimTrailingWhitespace": true,
-  "editor.detectIndentation": true,
-  "editor.insertSpaces": true,
-  "editor.tabSize": 2,
-  "prettier.tabWidth": 2,
-  "files.eol": "\n",
-  "haxe.displayPort": "auto",
-  "haxe.enableCompilationServer": true,
-  "haxe.enableServerView": true,
-  "haxe.exclude": ["polymod"],
-  "haxe.displayServer": { "arguments": ["-v"] },
+  // File associations and schemas
   "files.associations": {
     "*.hxp": "haxe",
     "*.hscript": "haxe",
@@ -68,12 +69,25 @@
     "*.hxs": "haxe",
     "*.hxc": "haxe"
   },
-  "projectManager.git.baseFolders": ["./"],
+  "json.schemas": [
+    { "fileMatch": ["/hmm.json"], "url": "./.vscode/schema/hmm.json" }
+  ],
+
+  // Haxe
+  "haxe.displayPort": "auto",
+  "haxe.displayServer": { "arguments": ["-v"] },
+  "haxe.enableCompilationServer": true,
+  "haxe.enableServerView": true,
+  "haxe.exclude": ["polymod"],
+  "haxe.importsSortOrder": "all-alphabetical",
+
+  // Haxe Checkstyle
   "haxecheckstyle.sourceFolders": ["src", "source"],
   "haxecheckstyle.externalSourceRoots": [],
   "haxecheckstyle.configurationFile": "checkstyle.json",
   "haxecheckstyle.codeSimilarityBufferSize": 100,
-  "lime.projectFile": "project.hxp",
+
+  // Lime
   "lime.targets": [
     { "name": "windows", "enabled": true, "label": "Windows" },
     { "name": "mac", "enabled": true, "label": "macOS" },
@@ -202,16 +216,7 @@
       "args": ["-release", "-DGITHUB_BUILD"]
     }
   ],
-  "cmake.configureOnOpen": false,
-  "coverage-gutters.coverageFileNames": [
-    "lcov.info",
-    "cov.xml",
-    "coverage.xml",
-    "jacoco.xml",
-    "coverage.cobertura.xml"
-  ],
-  "vscord.app.privacyMode.enable": true,
-  "json.schemas": [
-    { "fileMatch": ["/hmm.json"], "url": "./.vscode/schema/hmm.json" }
-  ]
+
+  // Extensions
+  "vscord.app.privacyMode.enable": true
 }

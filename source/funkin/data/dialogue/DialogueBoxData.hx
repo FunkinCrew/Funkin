@@ -110,6 +110,7 @@ typedef DialogueBoxTextData =
    * The color to use for the shadow of the text.
    * @default `#00000000`, which is transparent.
    */
+  @:optional @:default('#00000000')
   var shadowColor:String;
 
   /**

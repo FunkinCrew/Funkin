@@ -2,6 +2,9 @@ package funkin.ui.freeplay.dj;
 
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.util.assets.FlxAnimationUtil;
+import funkin.assets.Assets;
+import funkin.assets.Paths;
+import funkin.data.freeplay.player.PlayerData;
 
 /**
  * An AnimateAtlasFreeplayDJ is a Freeplay DJ which is rendered by
@@ -12,11 +15,45 @@ import funkin.util.assets.FlxAnimationUtil;
  */
 class AnimateAtlasFreeplayDJ extends BaseFreeplayDJ
 {
+  public static function queryAssets(type:funkin.assets.Assets.AssetType,
+    characterId:String):Array<funkin.assets.Paths.AssetPath>
+  {
+    trace('~~AnimateAtlasFreeplayDJ: ${characterId}:${type}~~');
+    var playableChar = PlayerRegistry.instance.fetchEntry(characterId);
+    if (playableChar == null)
+    {
+      trace('~NO PlayableCharacter');
+      return [];
+    }
+    var playableCharData:Null<PlayerFreeplayDJData> = playableChar.getFreeplayDJData();
+
+    if (playableCharData == null)
+    {
+      trace('~NO FreeplayData');
+      return [];
+    }
+
+    var results:Array<AssetPath> = [];
+    switch (type)
+    {
+      case IMAGE:
+        results.appendUnique(Paths.animateAtlas(playableCharData.getAtlasPath()).image());
+      case JSON:
+        results.appendUnique(Paths.animateAtlas(playableCharData.getAtlasPath()).json());
+      default:
+        // Nothing
+    }
+
+    trace('Got: ${results.length} assets for ${characterId}');
+    return results;
+  }
+
   public function new(x:Float, y:Float, characterId:String)
   {
     super(x, y, characterId);
 
-    loadTextureAtlas(playableCharData.getAssetPath(), playableCharData.getAtlasSettings());
+    var assetPath:String = funkin.assets.Paths.formatRelative(playableCharData.getAssetPath(), 'gameplay/playable-characters/$characterId');
+    loadTextureAtlas(assetPath, playableCharData.getAtlasSettings());
     loadAnimations();
 
     if (playableCharData.useApplyStageMatrix() && !this.applyStageMatrix || playableCharData.useAnimatePosition)

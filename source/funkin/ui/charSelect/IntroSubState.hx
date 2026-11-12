@@ -10,7 +10,7 @@ import funkin.ui.MusicBeatSubState;
 import funkin.save.Save;
 
 /**
- * When you first enter the character select state, it will play an introductory video opening up the lights
+ * When you first enter the character select state, it will play an introductory video opening up the lights.
  */
 @:nullSafety
 class IntroSubState extends MusicBeatSubState
@@ -45,11 +45,6 @@ class IntroSubState extends MusicBeatSubState
     #if NO_FEATURE_VIDEO_PLAYBACK
     onLightsEnd();
     #end
-
-    // // Im TOO lazy to even care, so uh, yep
-    // FlxG.camera.zoom = 0.66666666666666666666666666666667;
-    // vid.x = -(FlxG.width - (FlxG.width * FlxG.camera.zoom));
-    // vid.y = -((FlxG.height - (FlxG.height * FlxG.camera.zoom)) * 0.75);
   }
 
   #if html5
@@ -113,21 +108,6 @@ class IntroSubState extends MusicBeatSubState
     }
   }
   #end
-
-  override public function update(elapsed:Float):Void
-  {
-    super.update(elapsed);
-
-    // if (!introSound.paused)
-    // {
-    //   #if html5
-    //   @:privateAccess
-    //   vid.netStream.seek(introSound.time);
-    //   #elseif hxvlc
-    //   vid.bitmap.time = Std.int(introSound.time);
-    //   #end
-    // }
-  }
 
   /**
    * When the lights video finishes, it will close the substate

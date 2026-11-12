@@ -1,5 +1,7 @@
 package funkin.ui.freeplay;
 
+import funkin.assets.Paths;
+
 import openfl.filters.BitmapFilterQuality;
 import flixel.text.FlxText;
 import flixel.group.FlxSpriteGroup;
@@ -48,7 +50,7 @@ class CapsuleText extends FlxSpriteGroup
   static function initText(songTitle:String, size:Float):FlxText
   {
     var text:FlxText = new FlxText(0, 0, 0, songTitle, Std.int(size));
-    text.font = "5by7";
+    text.font = Paths.font('ui/fonts/5by7');
     return text;
   }
 

@@ -3,14 +3,18 @@ package funkin.ui.debug.charting.toolboxes;
 #if FEATURE_CHART_EDITOR
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.data.character.CharacterData;
+import funkin.data.character.CharacterRegistry;
 import funkin.data.freeplay.album.AlbumRegistry;
 import funkin.data.song.importer.ChartManifestData;
 import funkin.data.stage.StageRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.play.notes.notestyle.NoteStyle;
-import funkin.ui.debug.charting.commands.AddNewTimeChangeCommand;
-import funkin.ui.debug.charting.commands.ModifyTimeChangeCommand;
-import funkin.ui.debug.charting.commands.RemoveTimeChangeCommand;
+import funkin.ui.debug.charting.commands.timing.AddNewTimeChangeCommand;
+import funkin.ui.debug.charting.commands.timing.ModifyTimeChangeCommand;
+import funkin.ui.debug.charting.commands.timing.RemoveTimeChangeCommand;
+import funkin.play.stage.Stage;
+import funkin.ui.debug.charting.commands.song.SetAudioOffsetCommand;
+import funkin.ui.debug.charting.commands.song.SetFreeplayPreviewCommand;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
 import funkin.ui.freeplay.Album;
 import haxe.ui.components.Button;
@@ -19,12 +23,11 @@ import haxe.ui.components.Label;
 import haxe.ui.components.NumberStepper;
 import haxe.ui.components.Slider;
 import haxe.ui.components.TextField;
-import funkin.play.stage.Stage;
 import haxe.ui.containers.Frame;
 import haxe.ui.events.UIEvent;
 
 /**
- * The toolbox which allows modifying information like Song Title, Scroll Speed, Characters/Stages, and starting BPM.
+ * The toolbox which allows modifying information like Song Title, Scroll Speed, and Characters/Stages.
  */
 // @:nullSafety // TODO: Fix null safety when used with HaxeUI build macros.
 @:access(funkin.ui.debug.charting.ChartEditorState)
@@ -42,20 +45,20 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
   var buttonCharacterPlayer:Button;
   var buttonCharacterGirlfriend:Button;
   var buttonCharacterOpponent:Button;
-  var inputBPM:NumberStepper;
-  var labelTimeStamp:Label;
-  var inputTimeStamp:NumberStepper;
-  var labelScrollSpeed:Label;
-  var inputScrollSpeed:Slider;
+  var inputAudioOffset:NumberStepper;
+  var inputPreviewStart:NumberStepper;
+  var inputPreviewLength:NumberStepper;
+  var buttonPreviewToSelection:Button;
+
+  /**
+   * Set while the audio steppers are being filled in, so that doesn't count as an edit.
+   */
+  var refreshingAudio:Bool = false;
   var frameVariation:Frame;
-  var frameDifficulty:Frame;
-  var tcDropdownItemRenderer:haxe.ui.core.ItemRenderer;
 
   public function new(chartEditorState2:ChartEditorState)
   {
     super(chartEditorState2);
-
-    tcDropdownItemRenderer = inputTimeChange.findComponent(haxe.ui.core.ItemRenderer);
 
     initialize();
 
@@ -71,8 +74,6 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
   {
     // Starting position.
     // TODO: Save and load this.
-    this.x = 150;
-    this.y = 250;
 
     inputSongId.onChange = function(event:UIEvent)
     {
@@ -185,164 +186,49 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     );
     inputStickerPack.value = startingValueStickerPack;
 
-    inputTimeChange.onChange = function(event:UIEvent)
+    inputAudioOffset.onChange = function(event:UIEvent)
     {
-      var currentTimeChange = refreshTimeChangeInputs();
-      var previousTimeChange = chartEditorState.currentSongMetadata.timeChanges[inputTimeChange.selectedIndex - 1];
-      // Set the step of the timestamp to the step.
-      inputTimeStamp.step = ((Constants.SECS_PER_MIN / (previousTimeChange?.bpm ?? currentTimeChange?.bpm ?? 100)) * Constants.MS_PER_SEC) * (4 / (previousTimeChange?.timeSignatureDen ?? currentTimeChange?.timeSignatureDen ?? 4)) / Constants.STEPS_PER_BEAT;
-      // Set the min max values of the input timestamp to previous and next time change timestamps to in the array,
-      // to prevent the conductor from breaking due to time change timestamps not being in ascending order.
-      inputTimeStamp.min = (previousTimeChange?.timeStamp ?? 0);
-      inputTimeStamp.max = (chartEditorState.currentSongMetadata.timeChanges[inputTimeChange.selectedIndex + 1]?.timeStamp ?? chartEditorState.songLengthInMs);
-      inputTimeStamp.max -= 1;
-
-      // Prevent the inital time change timestamp from being modified (it should always be 0) or removed.
-      if (inputTimeChange.selectedIndex == 0)
-      {
-        labelTimeStamp.hidden = true;
-        inputTimeStamp.hidden = true;
-        removeTimeChange.disabled = true;
-      }
-      else
-      {
-        inputTimeStamp.min += 1; // This here so it can't accidentally change the first/0 timechange timestamp to 1.
-        labelTimeStamp.hidden = false;
-        inputTimeStamp.hidden = false;
-        removeTimeChange.disabled = false;
-      }
-    };
-    var startingTimeChange = ChartEditorDropdowns.populateDropdownWithTimeChanges(inputTimeChange, chartEditorState.currentSongMetadata.timeChanges, 0);
-    inputTimeChange.selectedIndex = Std.parseInt(startingTimeChange.id);
-    inputTimeChange.value = startingTimeChange;
-
-    inputBPM.onChange = function(event:UIEvent)
-    {
-      if (event.value == null || event.value <= 0) return;
-
-      // Use a command so we can undo/redo this action.
-      var currentTimeChange = chartEditorState.currentSongMetadata.timeChanges[inputTimeChange.selectedIndex];
-      var currentBPM = currentTimeChange.bpm;
-      if (event.value != currentBPM)
-      {
-        chartEditorState.performCommand(
-          new ModifyTimeChangeCommand(
-            inputTimeChange.selectedIndex,
-            currentTimeChange.timeStamp,
-            event.value,
-            currentTimeChange.timeSignatureNum,
-            currentTimeChange.timeSignatureDen
-          )
-        );
-        inputTimeChange.value.text = '${currentTimeChange.timeStamp} ms : BPM: ${event.value} in ${currentTimeChange.timeSignatureNum}/${currentTimeChange.timeSignatureDen}';
-        tcDropdownItemRenderer.data = inputTimeChange.value;
-      }
+      if (refreshingAudio || event.value == null) return;
+      var offsetMs:Float = secondsToMs(event.value);
+      if (offsetMs == chartEditorState.currentInstrumentalOffset) return;
+      chartEditorState.performCommand(new SetAudioOffsetCommand(INSTRUMENTAL, offsetMs));
     };
 
-    inputTimeStamp.onChange = function(event:UIEvent)
+    inputPreviewStart.onChange = function(event:UIEvent)
     {
-      if (event.value == null || event.value <= 0) return;
-
-      // Use a command so we can undo/redo this action.
-      var currentTimeChange = chartEditorState.currentSongMetadata.timeChanges[inputTimeChange.selectedIndex];
-      var currentTimeStamp = currentTimeChange.timeStamp;
-      if (inputTimeChange.selectedIndex != 0 && event.value != currentTimeStamp)
-      {
-        chartEditorState.performCommand(
-          new ModifyTimeChangeCommand(
-            inputTimeChange.selectedIndex,
-            event.value,
-            currentTimeChange.bpm,
-            currentTimeChange.timeSignatureNum,
-            currentTimeChange.timeSignatureDen
-          )
-        );
-        inputTimeChange.value.text = '${event.value} ms : BPM: ${currentTimeChange.bpm} in ${currentTimeChange.timeSignatureNum}/${currentTimeChange.timeSignatureDen}';
-        tcDropdownItemRenderer.data = inputTimeChange.value;
-      }
+      if (refreshingAudio || event.value == null) return;
+      var startMs:Float = secondsToMs(event.value);
+      if (startMs == chartEditorState.currentSongFreeplayPreviewStart) return;
+      var lengthMs:Float = chartEditorState.currentSongFreeplayPreviewEnd - chartEditorState.currentSongFreeplayPreviewStart;
+      chartEditorState.performCommand(new SetFreeplayPreviewCommand(startMs, startMs + lengthMs));
     };
 
-    inputTSNum.onChange = function(event:UIEvent)
+    buttonPreviewToSelection.onClick = function(_)
     {
-      var numerator:Null<Int> = Std.parseInt(event?.data?.text);
-      if (numerator == null) return;
-      var currentTimeChange = chartEditorState.currentSongMetadata.timeChanges[inputTimeChange.selectedIndex];
-      var prevNumerator:Int = currentTimeChange.timeSignatureNum;
-      if (numerator == prevNumerator) return;
-
-      chartEditorState.performCommand(
-        new ModifyTimeChangeCommand(
-          inputTimeChange.selectedIndex,
-          currentTimeChange.timeStamp,
-          currentTimeChange.bpm,
-          numerator,
-          currentTimeChange.timeSignatureDen
-        )
-      );
-      inputTimeChange.value.text = '${currentTimeChange.timeStamp} ms : BPM: ${currentTimeChange.bpm} in ${numerator}/${currentTimeChange.timeSignatureDen}';
-      tcDropdownItemRenderer.data = inputTimeChange.value;
-    }
-
-    inputTSDen.onChange = function(event:UIEvent)
-    {
-      var denominator:Null<Int> = Std.parseInt(event?.data?.text);
-      if (denominator == null) return;
-      var currentTimeChange = chartEditorState.currentSongMetadata.timeChanges[inputTimeChange.selectedIndex];
-      var prevDenominator:Int = currentTimeChange.timeSignatureDen;
-      if (denominator == prevDenominator) return;
-
-      chartEditorState.performCommand(
-        new ModifyTimeChangeCommand(
-          inputTimeChange.selectedIndex,
-          currentTimeChange.timeStamp,
-          currentTimeChange.bpm,
-          currentTimeChange.timeSignatureNum,
-          denominator
-        )
-      );
-      inputTimeChange.value.text = '${currentTimeChange.timeStamp} ms : BPM: ${currentTimeChange.bpm} in ${currentTimeChange.timeSignatureNum}/${denominator}';
-      tcDropdownItemRenderer.data = inputTimeChange.value;
-    }
-
-    createTimeChange.onClick = function(_:UIEvent)
-    {
-      var currentTimeChangeIndex = chartEditorState.currentSongMetadata.timeChanges.indexOf(Conductor.instance.currentTimeChange);
-      chartEditorState.performCommand(
-        new AddNewTimeChangeCommand(currentTimeChangeIndex, chartEditorState.scrollPositionInMs + chartEditorState.playheadPositionInMs)
-      );
-    }
-
-    removeTimeChange.onClick = function(_:UIEvent)
-    {
-      chartEditorState.performCommand(new RemoveTimeChangeCommand(inputTimeChange.selectedIndex));
-    }
-
-    inputScrollSpeed.onChange = function(event:UIEvent)
-    {
-      var valid:Bool = event.target.value != null && event.target.value > 0;
-
-      if (valid)
+      var start:Null<Float> = chartEditorState.rangeSelectionStartMs;
+      var end:Null<Float> = chartEditorState.rangeSelectionEndMs;
+      if (start == null || end == null || end <= start)
       {
-        inputScrollSpeed.removeClass('invalid-value');
-        chartEditorState.currentSongChartScrollSpeed = event.target.value;
+        chartEditorState.warning('No Selection', 'Press Tab at the start and again at the end of the stretch to use.');
+        return;
       }
-      else
-      {
-        chartEditorState.currentSongChartScrollSpeed = 1.0;
-      }
-      labelScrollSpeed.text = 'Scroll Speed: ${chartEditorState.currentSongChartScrollSpeed}x';
+      // The selection is in chart time, and the preview plays the audio file, which the instrumental offset shifts.
+      var offset:Float = chartEditorState.currentInstrumentalOffset;
+      var startMs:Float = Math.max(0, Math.round(start - offset));
+      var endMs:Float = Math.max(startMs + 1, Math.round(end - offset));
+      chartEditorState.performCommand(new SetFreeplayPreviewCommand(startMs, endMs));
+
+      // Consume selection
+      chartEditorState.rangeSelectionStartMs = null;
+      chartEditorState.rangeSelectionEndMs = null;
     };
 
-    inputScrollSpeed.onRightClick = _ ->
+    inputPreviewLength.onChange = function(event:UIEvent)
     {
-      chartEditorState.currentSongChartScrollSpeed = 1.0;
-      inputScrollSpeed.value = 1;
-      labelScrollSpeed.text = 'Scroll Speed: 1x';
-    }
-
-    inputDifficultyRating.onChange = function(event:UIEvent)
-    {
-      chartEditorState.currentSongChartDifficultyRating = event.target.value;
+      if (refreshingAudio || event.value == null || event.value <= 0) return;
+      var endMs:Float = chartEditorState.currentSongFreeplayPreviewStart + secondsToMs(event.value);
+      if (endMs == chartEditorState.currentSongFreeplayPreviewEnd) return;
+      chartEditorState.performCommand(new SetFreeplayPreviewCommand(null, endMs));
     };
 
     buttonCharacterOpponent.onClick = function(_)
@@ -363,39 +249,33 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     refresh();
   }
 
-  // Separate function because it needs to be refreshed in some of the time change commands, updating the entire toolbox would be wasteful.
-
-  public function refreshTimeChanges(startingTimeChangeIndex:Int = 0):Void
+  static function secondsToMs(seconds:Float):Float
   {
-    // Reset time change dropdown and the associated inputs
-    var startingTimeChange = ChartEditorDropdowns.populateDropdownWithTimeChanges(
-      inputTimeChange,
-      chartEditorState.currentSongMetadata.timeChanges,
-      startingTimeChangeIndex
-    );
-    inputTimeChange.selectedIndex = Std.parseInt(startingTimeChange.id);
-    inputTimeChange.value = startingTimeChange;
-    chartEditorState.updateSongTime();
+    return Math.round(seconds * Constants.MS_PER_SEC);
   }
 
-  public function refreshTimeChangeInputs(updateDropdownText:Bool = false):Null<funkin.data.song.SongData.SongTimeChange>
+  static function msToSeconds(ms:Float):Float
   {
-    var currentTimeChange = chartEditorState.currentSongMetadata.timeChanges[inputTimeChange.selectedIndex];
-    if (currentTimeChange == null)
-    {
-      trace("No time change in timeChanges at inputTimeChange's selectedIndex!");
-      return null;
-    }
-    inputBPM.value = currentTimeChange.bpm;
-    inputTSNum.value = currentTimeChange.timeSignatureNum;
-    inputTSDen.value = currentTimeChange.timeSignatureDen;
-    inputTimeStamp.value = currentTimeChange.timeStamp;
-    if (updateDropdownText)
-    {
-      inputTimeChange.value.text = '${currentTimeChange.timeStamp} ms : BPM: ${currentTimeChange.bpm} in ${currentTimeChange.timeSignatureNum}/${currentTimeChange.timeSignatureDen}';
-      tcDropdownItemRenderer.data = inputTimeChange.value;
-    }
-    return currentTimeChange;
+    return Math.round(ms) / Constants.MS_PER_SEC;
+  }
+
+  /**
+   * Set the value of a stepper if it has changed.
+   */
+  static function setStepper(stepper:NumberStepper, value:Float):Void
+  {
+    if (stepper.value != value) stepper.value = value;
+  }
+
+  var lastCharSignature:Null<String> = null;
+
+  /**
+   * Select a dropdown item only when it isn't already selected.
+   */
+  static function selectIfChanged(dropDown:DropDown, item:{id:String, text:String}):Void
+  {
+    if (dropDown.selectedItem?.id == item.id) return;
+    dropDown.value = item;
   }
 
   override public function refresh():Void
@@ -406,64 +286,68 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     inputSongName.value = chartEditorState.currentSongMetadata.songName;
     inputSongArtist.value = chartEditorState.currentSongMetadata.artist;
     inputSongCharter.value = chartEditorState.currentSongMetadata.charter;
-    inputStage.value = chartEditorState.currentSongMetadata.playData.stage;
-    inputNoteStyle.value = chartEditorState.currentSongMetadata.playData.noteStyle;
-    inputAlbum.value = chartEditorState.currentSongMetadata.playData.album;
-    inputDifficultyRating.value = chartEditorState.currentSongChartDifficultyRating;
-    inputScrollSpeed.value = chartEditorState.currentSongChartScrollSpeed;
-    labelScrollSpeed.text = 'Scroll Speed: ${chartEditorState.currentSongChartScrollSpeed}x';
-    frameVariation.text = 'Variation: ${chartEditorState.selectedVariation.toTitleCase()}';
-    frameDifficulty.text = 'Difficulty: ${chartEditorState.selectedDifficulty.toTitleCase()}';
 
-    refreshTimeChanges();
+    refreshingAudio = true;
+    setStepper(inputAudioOffset, msToSeconds(chartEditorState.currentInstrumentalOffset));
+    setStepper(inputPreviewStart, msToSeconds(chartEditorState.currentSongFreeplayPreviewStart));
+    setStepper(inputPreviewLength, msToSeconds(chartEditorState.currentSongFreeplayPreviewEnd - chartEditorState.currentSongFreeplayPreviewStart));
+    refreshingAudio = false;
+    frameVariation.text = 'Variation: ${chartEditorState.selectedVariation.toTitleCase()}';
 
     var stageId:String = chartEditorState.currentSongMetadata.playData.stage;
     var stage:Null<Stage> = StageRegistry.instance.fetchEntry(stageId);
     if (inputStage != null)
     {
-      inputStage.value = (stage != null) ? {
+      selectIfChanged(inputStage, (stage != null) ? {
         id: stage.id,
         text: stage.stageName
       } : {
         id: 'mainStage',
         text: 'Main Stage'
-        };
+        });
     }
 
     var noteStyleId:String = chartEditorState.currentSongNoteStyle;
     var noteStyle:Null<NoteStyle> = NoteStyleRegistry.instance.fetchEntry(noteStyleId);
     if (inputNoteStyle != null)
     {
-      inputNoteStyle.value = (noteStyle != null) ? {
+      selectIfChanged(inputNoteStyle, (noteStyle != null) ? {
         id: noteStyle.id,
         text: noteStyle.getName()
       } : {
         id: 'Funkin',
         text: "Funkin'"
-        };
+        });
     }
 
     var albumId:String = chartEditorState.currentSongAlbum;
     var album:Null<Album> = AlbumRegistry.instance.fetchEntry(albumId);
     if (inputAlbum != null)
     {
-      inputAlbum.value = (album != null) ? {
+      selectIfChanged(inputAlbum, (album != null) ? {
         id: album.id,
         text: album.getAlbumName()
       } : {
         id: 'volume1',
         text: 'Volume 1'
-        };
+        });
     }
 
     var LIMIT = 6;
 
-    var charDataOpponent:Null<CharacterData> = CharacterDataParser.fetchCharacterData(chartEditorState.currentSongMetadata.playData.characters.opponent);
+    var characters = chartEditorState.currentSongMetadata.playData.characters;
+    var charSignature:String = '${characters.opponent}|${characters.girlfriend}|${characters.player}';
+
+    if (charSignature == lastCharSignature) return;
+    lastCharSignature = charSignature;
+
+    var charDataOpponent:Null<CharacterData> = CharacterRegistry.instance.fetchCharacterData(
+      chartEditorState.currentSongMetadata.playData.characters.opponent
+    );
     if (charDataOpponent != null)
     {
-      buttonCharacterOpponent.icon = haxe.ui.util.Variant.fromImageData(
-        CharacterDataParser.getCharPixelIconAsset(chartEditorState.currentSongMetadata.playData.characters.opponent)
-      );
+      var opponentIcon = CharacterRegistry.getCharPixelIconAsset(chartEditorState.currentSongMetadata.playData.characters.opponent);
+      buttonCharacterOpponent.icon = opponentIcon != null ? haxe.ui.util.Variant.fromImageData(opponentIcon) : null;
       buttonCharacterOpponent.text = charDataOpponent.name.length > LIMIT ? '${charDataOpponent.name.substr(0, LIMIT)}.' : '${charDataOpponent.name}';
     }
     else
@@ -472,12 +356,13 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       buttonCharacterOpponent.text = 'None';
     }
 
-    var charDataGirlfriend:Null<CharacterData> = CharacterDataParser.fetchCharacterData(chartEditorState.currentSongMetadata.playData.characters.girlfriend);
+    var charDataGirlfriend:Null<CharacterData> = CharacterRegistry.instance.fetchCharacterData(
+      chartEditorState.currentSongMetadata.playData.characters.girlfriend
+    );
     if (charDataGirlfriend != null)
     {
-      buttonCharacterGirlfriend.icon = haxe.ui.util.Variant.fromImageData(
-        CharacterDataParser.getCharPixelIconAsset(chartEditorState.currentSongMetadata.playData.characters.girlfriend)
-      );
+      var girlfriendIcon = CharacterRegistry.getCharPixelIconAsset(chartEditorState.currentSongMetadata.playData.characters.girlfriend);
+      buttonCharacterGirlfriend.icon = girlfriendIcon != null ? haxe.ui.util.Variant.fromImageData(girlfriendIcon) : null;
       buttonCharacterGirlfriend.text = charDataGirlfriend.name.length > LIMIT ? '${charDataGirlfriend.name.substr(0, LIMIT)}.' : '${charDataGirlfriend.name}';
     }
     else
@@ -486,12 +371,11 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       buttonCharacterGirlfriend.text = 'None';
     }
 
-    var charDataPlayer:Null<CharacterData> = CharacterDataParser.fetchCharacterData(chartEditorState.currentSongMetadata.playData.characters.player);
+    var charDataPlayer:Null<CharacterData> = CharacterRegistry.instance.fetchCharacterData(chartEditorState.currentSongMetadata.playData.characters.player);
     if (charDataPlayer != null)
     {
-      buttonCharacterPlayer.icon = haxe.ui.util.Variant.fromImageData(
-        CharacterDataParser.getCharPixelIconAsset(chartEditorState.currentSongMetadata.playData.characters.player)
-      );
+      var playerIcon = CharacterRegistry.getCharPixelIconAsset(chartEditorState.currentSongMetadata.playData.characters.player);
+      buttonCharacterPlayer.icon = playerIcon != null ? haxe.ui.util.Variant.fromImageData(playerIcon) : null;
       buttonCharacterPlayer.text = charDataPlayer.name.length > LIMIT ? '${charDataPlayer.name.substr(0, LIMIT)}.' : '${charDataPlayer.name}';
     }
     else

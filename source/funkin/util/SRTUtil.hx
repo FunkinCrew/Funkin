@@ -109,6 +109,21 @@ class SRTParser
     return SRTParser.parseFromString(rawSRTData);
   }
 
+  public static function parseFromAsset(assetPath:funkin.assets.Paths.AssetPath,
+    ?library:String,
+    ?dir:String):Array<SubtitleEntry>
+  {
+    try
+    {
+      return SRTParser.parseFromString(funkin.assets.Assets.getText(assetPath));
+    }
+    catch (e)
+    {
+      trace(e);
+      return SRTParser.parseFromString('');
+    }
+  }
+
   /**
    * Parse line like: 00:01:23,456 --> 00:01:25,678
    */

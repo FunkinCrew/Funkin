@@ -23,7 +23,7 @@ class AddEventMenu
   static final ICON_SIZE:Float = 16;
   static final ICON_PATH:String = 'assets/ui/editors/camera-editor/event-icons/';
   static final EVENT_ITEMS:Array<
-    {kind:String, label:String, icon:String, submenu:String}> = [
+    {kind:String, label:String, icon:Null<String>, submenu:String}> = [
     {
       kind: 'FocusCamera',
       label: 'Focus Camera',
@@ -41,6 +41,12 @@ class AddEventMenu
       label: 'Play Animation',
       icon: 'playanim_event.png',
       submenu: 'Character'
+    },
+    {
+      kind: 'CustomEvent',
+      label: 'Custom Event',
+      icon: null,
+      submenu: 'Script'
     },
   ];
 
@@ -86,13 +92,16 @@ class AddEventMenu
       item.text = info.label;
       item.id = info.kind;
 
-      var icon = new Image();
-      icon.id = 'menuitem-icon';
-      icon.addClass('menuitem-icon');
-      icon.resource = ICON_PATH + info.icon;
-      icon.width = ICON_SIZE;
-      icon.height = ICON_SIZE;
-      item.addComponentAt(icon, 0);
+      if (info.icon != null)
+      {
+        var icon = new Image();
+        icon.id = 'menuitem-icon';
+        icon.addClass('menuitem-icon');
+        icon.resource = ICON_PATH + info.icon;
+        icon.width = ICON_SIZE;
+        icon.height = ICON_SIZE;
+        item.addComponentAt(icon, 0);
+      }
 
       submenu.addComponent(item);
     }

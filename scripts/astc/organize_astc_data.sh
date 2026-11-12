@@ -1,8 +1,9 @@
 #!/bin/bash
 # Organizes astc-compression-data alphabetically because i hate it when it's not organized -zack
 
-INPUT_FILE="../../astc-compression-data.json"
-OUTPUT_FILE="../../astc-compression-data.json"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+INPUT_FILE="$SCRIPT_DIR/../../astc-compression-data.json"
+OUTPUT_FILE="$SCRIPT_DIR/../../astc-compression-data.json"
 
 # Check jq
 if ! command -v jq &> /dev/null; then
@@ -13,7 +14,7 @@ if ! command -v jq &> /dev/null; then
 fi
 
 if [ ! -f "$INPUT_FILE" ]; then
-    echo "❌ File $INPUT_FILE not found"
+    echo "ERROR: File $INPUT_FILE not found"
     exit 1
 fi
 
@@ -22,4 +23,4 @@ jq '.
   | .excludes = ( .excludes | sort )
 ' "$INPUT_FILE" > "$OUTPUT_FILE".tmp && mv "$OUTPUT_FILE".tmp "$OUTPUT_FILE"
 
-echo "✅ Sorted JSON written to $OUTPUT_FILE WOOHOOO !!"
+echo "SUCCESS: Sorted JSON written to $OUTPUT_FILE WOOHOOO !!"

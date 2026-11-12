@@ -44,21 +44,24 @@ class ArraySortTools
 
   /**
    * Internal recursive function for the quick sort algorithm.
-   * Written with ChatGPT!
+   * Recurses on the smaller partition and loops on the larger one
+   * to keep stack depth at O(log n) in the worst case.
    */
   static function quickSortInner<T>(input:Array<T>, low:Int, high:Int, compare:CompareFunction<T>):Void
   {
-    // When low == high, the array is empty or too small to sort.
-
-    // EDIT: Recurse on the smaller partition, and loop for the larger partition.
     while (low < high)
     {
-      // Designate the first element in the array as the pivot, then partition the array around it.
-      // Elements less than the pivot will be to the left, and elements greater than the pivot will be to the right.
-      // Return the index of the pivot.
+      // Insertion sort is faster for small partitions — quicksort's
+      // overhead just isn't worth it below ~16 elements.
+      if (high - low < 16)
+      {
+        insertionSortRange(input, low, high, compare);
+        return;
+      }
+
       var pivot:Int = quickSortPartition(input, low, high, compare);
 
-      if ((pivot) - low <= high - (pivot + 1))
+      if (pivot - low <= high - (pivot + 1))
       {
         quickSortInner(input, low, pivot, compare);
         low = pivot + 1;
@@ -72,44 +75,57 @@ class ArraySortTools
   }
 
   /**
-   * Internal function for sorting a partition of an array in the quick sort algorithm.
-   * Written with ChatGPT!
+   * Partitions a slice of the array around a pivot using median-of-three
+   * selection, which avoids O(n²) worst-case on sorted/reverse-sorted input.
    */
   static function quickSortPartition<T>(input:Array<T>, low:Int, high:Int, compare:CompareFunction<T>):Int
   {
-    // Designate the first element in the array as the pivot.
-    var pivot:T = input[low];
-    // Designate two pointers, used to divide the array into two partitions.
+    // Pick the median of first, middle, and last as the pivot.
+    // We sort these three elements in place as a side effect, which
+    // also puts sentinels at the boundaries and lets us skip a bounds check.
+    var mid:Int = low + ((high - low) >> 1);
+    if (compare(input[mid], input[low]) < 0)
+    {
+      var t:T = input[mid];
+      input[mid] = input[low];
+      input[low] = t;
+    }
+    if (compare(input[high], input[low]) < 0)
+    {
+      var t:T = input[high];
+      input[high] = input[low];
+      input[low] = t;
+    }
+    if (compare(input[mid], input[high]) < 0)
+    {
+      var t:T = input[mid];
+      input[mid] = input[high];
+      input[high] = t;
+    }
+    var pivot:T = input[high];
+
     var i:Int = low - 1;
     var j:Int = high + 1;
 
     while (true)
     {
-      // Move the left pointer to the right until it finds an element greater than the pivot.
       do
       {
         i++;
       } while (compare(input[i], pivot) < 0);
-
-        // Move the right pointer to the left until it finds an element less than the pivot.
       do
       {
         j--;
       } while (compare(input[j], pivot) > 0);
 
-        // If i and j have crossed, the array has been partitioned, and the pivot will be at the index j.
       if (i >= j) return j;
 
-      // Else, swap the elements at i and j, and start over.
-      // This slowly moves the pivot towards the middle of the partition,
-      // while moving elements less than the pivot to the left and elements greater than the pivot to the right.
       var temp:T = input[i];
       input[i] = input[j];
       input[j] = temp;
     }
 
-    // Don't expect to get here.
-    return -1;
+    return -1; // Unreachable.
   }
 
   /**
@@ -125,8 +141,23 @@ class ArraySortTools
     if (input == null || input.length <= 1) return;
     if (compare == null) throw 'No comparison function provided.';
 
+    // The existing recursive boundaries should be good enough to use for arrays too.
+    insertionSortRange(input, 0, input.length - 1, compare);
+  }
+
+  /**
+   * Sorts a specific range of the array using insertion sort.
+   * Both low and high indices are inclusive.
+   *
+   * @param input The array to sort in-place.
+   * @param low The starting index.
+   * @param high The ending index.
+   * @param compare The comparison function to use.
+   */
+  static function insertionSortRange<T>(input:Array<T>, low:Int, high:Int, compare:CompareFunction<T>):Void
+  {
     // Iterate through the array, starting at the second element.
-    for (i in 1...input.length)
+    for (i in (low + 1)...(high + 1))
     {
       // Store the current element.
       var current:T = input[i];
@@ -135,7 +166,7 @@ class ArraySortTools
 
       // While the previous element is greater than the current element,
       // move the previous element to the right and move the index to the left.
-      while (j >= 0 && compare(input[j], current) > 0)
+      while (j >= low && compare(input[j], current) > 0)
       {
         input[j + 1] = input[j];
         j--;

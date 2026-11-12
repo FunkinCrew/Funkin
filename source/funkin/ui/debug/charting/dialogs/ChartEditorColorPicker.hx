@@ -7,6 +7,7 @@ import haxe.ui.util.Color;
 import haxe.ui.events.UIEvent;
 import haxe.ui.events.MouseEvent;
 import haxe.ui.containers.dialogs.Dialog.DialogEvent;
+import haxe.ui.containers.Box;
 import flixel.util.FlxTimer;
 
 /**
@@ -50,16 +51,24 @@ class ChartEditorColorPicker extends ChartEditorBaseDialog
 
   function updatePaletteColors():Void
   {
-    colorPalette1.backgroundColor = paletteColors[0] ?? 0xFFFFFF;
-    colorPalette2.backgroundColor = paletteColors[1] ?? 0xFFFFFF;
-    colorPalette3.backgroundColor = paletteColors[2] ?? 0xFFFFFF;
-    colorPalette4.backgroundColor = paletteColors[3] ?? 0xFFFFFF;
-    colorPalette5.backgroundColor = paletteColors[4] ?? 0xFFFFFF;
-    colorPalette6.backgroundColor = paletteColors[5] ?? 0xFFFFFF;
-    colorPalette7.backgroundColor = paletteColors[6] ?? 0xFFFFFF;
-    colorPalette8.backgroundColor = paletteColors[7] ?? 0xFFFFFF;
+    var paletteBoxes:Array<Box> = [
+      colorPalette1,
+      colorPalette2,
+      colorPalette3,
+      colorPalette4,
+      colorPalette5,
+      colorPalette6,
+      colorPalette7,
+      colorPalette8
+    ];
 
-    colorPicker.currentColor = paletteColors[0] ?? 0xFFFFFF;
+    for (i in 0...paletteBoxes.length)
+    {
+      paletteBoxes[i].hidden = i >= paletteColors.length;
+      if (i < paletteColors.length) paletteBoxes[i].backgroundColor = paletteColors[i];
+    }
+
+    colorPicker.currentColor = paletteColors.length > 0 ? paletteColors[0] : 0xFFFFFF;
     trace('Set color via palette: ${colorPicker.currentColor.toHex()}');
   }
 

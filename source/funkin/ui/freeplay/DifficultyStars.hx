@@ -3,6 +3,8 @@ package funkin.ui.freeplay;
 import flixel.group.FlxSpriteGroup;
 import funkin.graphics.FunkinSprite;
 import funkin.graphics.shaders.HSVShader;
+import funkin.assets.Paths;
+import funkin.assets.Assets;
 
 @:nullSafety
 class DifficultyStars extends FlxSpriteGroup
@@ -46,6 +48,21 @@ class DifficultyStars extends FlxSpriteGroup
 
   var hsvShader:HSVShader;
 
+  public static function queryAssets(type:AssetType):Array<AssetPath>
+  {
+    switch (type)
+    {
+      case IMAGE:
+        return Paths.animateAtlas('ui/freeplay/difficulty/freeplay-stars').image();
+      case JSON:
+        return Paths.animateAtlas('ui/freeplay/difficulty/freeplay-stars').json();
+      case SHADER:
+        return [Paths.frag('ui/shaders/hsv')];
+      default:
+        return [];
+    }
+  }
+
   public function new(x:Float, y:Float)
   {
     super(x, y);
@@ -54,7 +71,7 @@ class DifficultyStars extends FlxSpriteGroup
 
     flames = new FreeplayFlames(0, 0);
 
-    stars = FunkinSprite.createTextureAtlas(0, 0, 'ui/freeplay/difficulty/freeplay-stars');
+    stars = new FunkinSprite().loadTextureAtlas('ui/freeplay/difficulty/freeplay-stars');
     stars.anim.addBySymbol('STARS_ANIM', 'diff stars', 24, false);
     stars.animation.play('STARS_ANIM');
 

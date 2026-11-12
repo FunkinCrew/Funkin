@@ -22,5 +22,15 @@ class SynchronizedMapTools
   {
     return[for (i in map.iterator()) i];
   }
+
+  /**
+   * Return a list of keys from the map (as an array, rather than an iterator).
+   * TODO: Rename this?
+   */
+  public static function keyValues<K, T>(map:Null<Map<K, T>>):Array<K>
+  {
+    if (map == null) return [];
+    return[for (k => v in map) k];
+  }
 }
 #end

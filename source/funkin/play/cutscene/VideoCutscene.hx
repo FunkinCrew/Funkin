@@ -16,7 +16,7 @@ import funkin.graphics.video.FunkinVideoSprite;
 //
 // ~PATHS~
 //
-import funkin.assets.Assets as Assets;
+import funkin.assets.Assets;
 import funkin.assets.Paths.AssetPath;
 import funkin.assets.Paths.AnimateAtlasAssetPathBuilder;
 import funkin.assets.Paths.MusicAssetPathBuilder;

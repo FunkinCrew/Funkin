@@ -5,7 +5,6 @@ import polymod.Polymod.PolymodError;
 @:nullSafety
 class PolymodErrorHandler
 {
-  #if FEATURE_MULTITHREADING
   private static var queuedErrors:Array<PolymodError> = [];
 
   /**
@@ -22,17 +21,14 @@ class PolymodErrorHandler
       onPolymodError(queuedErrors.shift());
     }
   }
-  #end
 
   public static function onPolymodError(error:PolymodError):Void
   {
-    #if FEATURE_MULTITHREADING
     if (!funkin.util.tasks.TaskHandler.isMainThread())
     {
       PolymodErrorHandler.queuedErrors.push(error);
       return;
     }
-    #end
 
     // Perform an action based on the error code.
     switch (error.code)

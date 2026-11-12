@@ -18,7 +18,20 @@ class FunkinBufferRenderer
   /**
    * The rendered texture.
    */
-  public var texture:BitmapData;
+  public var texture(get, never):BitmapData;
+
+  var _texture:Null<BitmapData> = null;
+
+  function get_texture():BitmapData
+  {
+    var current:Null<BitmapData> = _texture;
+    if (current == null)
+    {
+      current = new BitmapData(_camera.width, _camera.height, true, 0).toGPU();
+      _texture = current;
+    }
+    return current;
+  }
 
   /**
    * A signal that fires before the buffer is about to be rendered.
@@ -55,17 +68,22 @@ class FunkinBufferRenderer
    */
   public var delay:Float = 0;
 
+  /**
+   * Set to `true` every time the buffer texture is redrawn.
+   */
+  public var justRendered:Bool = false;
+
   var dirty:Bool = false;
   var initialized:Bool = false;
   var _timer:Float = 0;
   var _camera:FunkinCamera;
-  var _whiteList:Array<String> = [];
-  var _blackList:Array<String> = [];
+  var _whiteList:Map<String, Bool> = [];
+  var _whiteListCount:Int = 0;
+  var _blackList:Map<String, Bool> = [];
 
   public function new(camera:FunkinCamera)
   {
     this._camera = camera;
-    texture = new BitmapData(camera.width, camera.height, true, 0).toGPU();
   }
 
   /**
@@ -75,12 +93,13 @@ class FunkinBufferRenderer
    */
   public function resize(width:Int, height:Int):Void
   {
-    if (texture != null)
+    var current:Null<BitmapData> = _texture;
+    if (current != null)
     {
-      texture.dispose();
+      current.dispose();
     }
 
-    texture = new BitmapData(width, height, true, 0).toGPU();
+    _texture = new BitmapData(width, height, true, 0).toGPU();
   }
 
   /**
@@ -89,7 +108,7 @@ class FunkinBufferRenderer
   public function render():Void
   {
     if (!active) return;
-    if (useWhitelist && _whiteList.isEmpty()) return;
+    if (useWhitelist && _whiteListCount == 0) return;
 
     if (delay > 0)
     {
@@ -103,9 +122,10 @@ class FunkinBufferRenderer
 
       _timer += FlxG.elapsed;
 
-      if (_timer > delay)
+      if (_timer >= delay)
       {
-        _timer = 0;
+        _timer -= delay;
+        if (_timer > delay) _timer = delay;
         drawPreviousFrame();
       }
     }
@@ -122,12 +142,12 @@ class FunkinBufferRenderer
    */
   public function shouldRender(graphic:FlxGraphic):Bool
   {
-    if (_blackList.contains(graphic.key))
+    if (_blackList.exists(graphic.key))
     {
       return false;
     }
 
-    if (useWhitelist && !_whiteList.contains(graphic.key))
+    if (useWhitelist && !_whiteList.exists(graphic.key))
     {
       return false;
     }
@@ -163,16 +183,28 @@ class FunkinBufferRenderer
 
     for (key in graphicKeys)
     {
-      if (_blackList.contains(key))
-      {
-        _blackList.remove(key);
-      }
+      _blackList.remove(key);
 
-      if (!_whiteList.contains(key))
+      if (!_whiteList.exists(key))
       {
-        _whiteList.push(key);
+        _whiteList.set(key, true);
+        _whiteListCount++;
       }
     }
+  }
+
+  /**
+   * Adds a single graphic key to the blacklist, removing it from the whitelist if present.
+   * @param key The graphic key to add.
+   */
+  public function blacklistKey(key:String):Void
+  {
+    if (_whiteList.remove(key))
+    {
+      _whiteListCount--;
+    }
+
+    _blackList.set(key, true);
   }
 
   /**
@@ -203,15 +235,7 @@ class FunkinBufferRenderer
 
     for (key in graphicKeys)
     {
-      if (_whiteList.contains(key))
-      {
-        _whiteList.remove(key);
-      }
-
-      if (!_blackList.contains(key))
-      {
-        _blackList.push(key);
-      }
+      blacklistKey(key);
     }
   }
 
@@ -235,6 +259,7 @@ class FunkinBufferRenderer
     }
 
     dirty = false;
+    justRendered = true;
 
     onPostRender.dispatch();
   }
@@ -244,6 +269,8 @@ class FunkinBufferRenderer
    */
   public function destroy():Void
   {
-    texture.dispose();
+    var current:Null<BitmapData> = _texture;
+    if (current != null) current.dispose();
+    _texture = null;
   }
 }

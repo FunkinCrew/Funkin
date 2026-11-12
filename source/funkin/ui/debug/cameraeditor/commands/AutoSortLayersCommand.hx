@@ -1,13 +1,12 @@
 package funkin.ui.debug.cameraeditor.commands;
 
 #if FEATURE_CAMERA_EDITOR
-import funkin.audio.FunkinSound;
+import flixel.util.FlxSort;
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongEventDataRaw;
 import funkin.ui.haxeui.components.editors.timeline.TimelineLayerData;
 import funkin.ui.haxeui.components.editors.timeline.TimelineUtil;
 import funkin.util.SortUtil;
-import flixel.util.FlxSort;
 
 typedef AutoSortPlanLayer =
 {
@@ -154,7 +153,7 @@ class AutoSortLayersCommand implements CameraEditorCommand
       }
     }
 
-    FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/note-place'));
+    state.playEditSound('ui/editors/chart-editor/charting-sounds/note-place');
 
     viewport.layers = newLayers;
     viewport.selectedLayerIndex = 0;
@@ -189,7 +188,7 @@ class AutoSortLayersCommand implements CameraEditorCommand
       raw.editorLayer = entry.layer;
     }
 
-    FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/undo'));
+    state.playEditSound('ui/editors/chart-editor/charting-sounds/undo');
 
     viewport.layers = previousLayers.copy();
     viewport.selectedLayerIndex = 0;

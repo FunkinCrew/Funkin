@@ -9,6 +9,9 @@ import haxe.Constraints.NotVoid;
 
 /**
  * A utility class which provides functions for performing parallel tasks in a thread-safe, cross-platform manner.
+ * NOTE: You can safely issue tasks to this even when FEATURE_MULTITHREADING is disabled.
+ * Tasks will simply be run asynchronously, but still on the main thread.
+ *
  * @see https://player03.com/openfl/threads-guide/
  */
 @:access(lime.app.Future.FutureWork)
@@ -48,12 +51,14 @@ class TaskHandler
    */
   public static function performTask<T:NotVoid>(params:PerformTaskParams, promise:Promise<T>):Future<T>
   {
-    final USE_MULTITHREADING:Bool = #if FEATURE_MULTITHREADING true #else false #end;
+    // Defaults to `SINGLE_THREADED` on web, `MULTI_THREADED` on platforms that support multithreading.
+    var useMultithreading = params.useMultithreading ?? (#if FEATURE_MULTITHREADING true #else false #end);
+    var threadMode:ThreadMode = useMultithreading ? ThreadMode.MULTI_THREADED : ThreadMode.SINGLE_THREADED;
 
     params.initialState ??= {};
 
     @:privateAccess
-    var jobID:Int = FutureWork.run(params.task, promise, params.initialState, USE_MULTITHREADING ? ThreadMode.MULTI_THREADED : ThreadMode.SINGLE_THREADED);
+    var jobID:Int = FutureWork.run(params.task, promise, params.initialState, threadMode);
 
     return promise.future;
   }
@@ -69,9 +74,9 @@ class TaskHandler
    *   You can use `onComplete((result) -> {})` to perform actions in the main thread when the task is done,
    *   or `then((result) -> {})` to chain tasks together.
    */
-  public static function performSimpleTask<T:NotVoid>(task:Void->T):Future<T>
+  public static function performSimpleTask<T:NotVoid>(task:Void->T, ?useMultithreading:Bool):Future<T>
   {
-    final USE_MULTITHREADING:Bool = #if FEATURE_MULTITHREADING true #else false #end;
+    final USE_MULTITHREADING:Bool = useMultithreading ?? (#if FEATURE_MULTITHREADING true #else false #end);
     var future = new Future<T>(task, USE_MULTITHREADING);
     return future;
   }
@@ -89,6 +94,7 @@ class TaskHandler
    */
   public static function isMainThread():Bool
   {
+    // NOTE: This function works even if FEATURE_MULTITHREADING is disabled (it just always returns true).
     return ThreadPool.isMainThread();
   }
 }
@@ -110,6 +116,14 @@ typedef PerformTaskParams =
    * to pass information to the next iteration of the task.
    */
   var ?initialState:State;
+
+  /**
+   * Whether the task should be performed using a separate thread.
+   * On platforms supporting multiple threads, this effectively allows queuing parallel work.
+   *
+   * Defaults to `true` if `FEATURE_MULTITHREADING` is enabled, you can pass `false` to force the work onto the main thread.
+   */
+  var ?useMultithreading:Bool;
 }
 
 /**

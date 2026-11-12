@@ -98,6 +98,15 @@ enum abstract ScriptEventType(String) from String to String
   public var NOTE_MISS = 'NOTE_MISS';
 
   /**
+   * Called when a character holds a hold note.
+   * Important information such as note data, player/opponent, etc. are all provided.
+   *
+   * This event IS cancelable! Canceling this event prevents the hold note from being held,
+   *   and will likely result in a miss later.
+   */
+  var NOTE_HOLD_HIT = 'NOTE_HOLD_HIT';
+
+  /**
    * Called when a character lets go of a hold note.
    * Important information such as note data, player/opponent, etc. are all provided.
    *
@@ -122,6 +131,13 @@ enum abstract ScriptEventType(String) from String to String
    *   thus blocking its normal functionality.
    */
   public var SONG_EVENT = 'SONG_EVENT';
+
+  /**
+   * Called every frame while a Custom Event is running, with how far through it the song is.
+   *
+   * This event is not cancelable.
+   */
+  public var CUSTOM_EVENT = 'CUSTOM_EVENT';
 
   /**
    * Called when the song starts. This occurs as the countdown ends and the instrumental begin.

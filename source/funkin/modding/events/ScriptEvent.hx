@@ -339,6 +339,74 @@ class SongEventScriptEvent extends ScriptEvent
 }
 
 /**
+ * A custom event that gives a progress value.
+ */
+class CustomEventScriptEvent extends ScriptEvent
+{
+  public var eventData(default, null):funkin.data.song.SongData.SongEventData;
+
+  public var name(default, null):String;
+
+  public var progress(default, null):Float;
+
+  public var eased(default, null):Float;
+  public var elapsedMs(default, null):Float;
+  public var durationMs(default, null):Float;
+
+  /**
+   * At 0%.
+   */
+  public var isFirst(default, null):Bool;
+
+  /**
+   * At 100%.
+   */
+  public var isLast(default, null):Bool;
+
+  public var isReplay(default, null):Bool;
+
+  public function new(eventData:funkin.data.song.SongData.SongEventData, progress:Float, eased:Float, elapsedMs:Float, durationMs:Float, isFirst:Bool,
+      isLast:Bool, isReplay:Bool):Void
+  {
+    super(CUSTOM_EVENT, false);
+    this.eventData = eventData;
+    this.name = funkin.play.event.CustomSongEvent.nameOf(eventData);
+    this.progress = progress;
+    this.eased = eased;
+    this.elapsedMs = elapsedMs;
+    this.durationMs = durationMs;
+    this.isFirst = isFirst;
+    this.isLast = isLast;
+    this.isReplay = isReplay;
+  }
+
+
+  public function ease(value:Float):Float
+  {
+    return funkin.play.event.CustomSongEvent.easeOf(eventData)(Math.min(1, Math.max(0, value)));
+  }
+
+  public function seekAnimation(sprite:Null<flixel.FlxSprite>):Bool
+  {
+    var anim:Null<flixel.animation.FlxAnimation> = sprite?.animation?.curAnim;
+    if (anim == null || anim.numFrames <= 0) return false;
+    var frame:Int = Std.int(elapsedMs / 1000 * anim.frameRate);
+    if (!anim.looped && frame >= anim.numFrames)
+    {
+      anim.finish();
+      return true;
+    }
+    anim.curFrame = anim.looped ? frame % anim.numFrames : frame;
+    return false;
+  }
+
+  override public function toString():String
+  {
+    return 'CustomEventScriptEvent(name=$name, progress=$progress, replay=$isReplay)';
+  }
+}
+
+/**
  * An event that is fired during the update loop.
  */
 class UpdateScriptEvent extends ScriptEvent

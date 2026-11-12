@@ -3,37 +3,30 @@
   "configurations": [
     {
       // Launch in native/CPP on Windows/OSX/Linux
-      "name": "Lime Build+Debug",
+      // Builds the game first
+      "name": "Lime - Build and Debug",
       "type": "lime",
       "request": "launch"
     },
     {
       // Launch in native/CPP on Windows/OSX/Linux
-      "name": "Lime Debug (No Build)",
+      // Do not build before launching.
+      "name": "Lime - Debug (No Build)",
       "type": "lime",
       "request": "launch",
       "preLaunchTask": null
     },
     {
-      // Launch in browser
-      "name": "HTML5 Debug",
-      "type": "chrome",
-      "request": "launch",
-      "url": "http://127.0.0.1:3001",
-      "sourceMaps": true,
-      "webRoot": "${workspaceFolder}",
-      "preLaunchTask": "debug: html"
-    },
-    {
-      // Performs a build for debugging macros
-      // Debugging is attached on the compilation rather than the game itself
-      "name": "Haxe Eval",
+      // Compiles a Haxe build with debugging attached
+      // This allows for breakpoint debugging of macros
+      // Doesn't actually launch the game
+      "name": "Haxe - Macro Debug",
       "type": "haxe-eval",
       "request": "launch"
     },
     {
-      // Attaches the debugger to an already running game
-      "name": "HXCPP - Attach",
+      // Attach the HXCPP debugger to an already running game
+      "name": "Haxe - Attach to Game",
       "type": "hxcpp",
       "request": "attach"
     }

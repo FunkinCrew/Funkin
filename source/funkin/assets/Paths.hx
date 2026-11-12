@@ -49,20 +49,22 @@ class Paths implements ConsoleClass
    */
   static function build(file:String, ext:String, validate:Bool = true, ?library:String):AssetPath
   {
+    var fileName = file;
     // Remove redundant `assets/` from the path! This helps prevent `assets/assets/image.png`.
-    if (file.startsWith('assets/')) file = file.substring(7);
+    if (fileName.startsWith('assets/')) fileName = fileName.substring(7);
     // Remove redundant file extensions! This helps prevent `image.png.png`.
-    if (file.endsWith('.$ext')) file = file.substring(0, file.length - (ext.length + 1));
+    if (fileName.endsWith('.$ext')) fileName = fileName.substring(0, fileName.length - (ext.length + 1));
 
     @:privateAccess
     var shouldValidateCompat = validate && funkin.assets.Assets.initialized;
 
-    var assetPathStr = funkin.modding.compat.Paths.getPath('$file.$ext', library, shouldValidateCompat);
+    var resolvedLibrary:String = library ?? 'default';
+    var assetPathStr = funkin.modding.compat.Paths.getPath('$fileName.$ext', resolvedLibrary, shouldValidateCompat, true);
     var assetPathId:String = haxe.io.Path.withoutExtension(assetPathStr);
     var assetPathExt:String = haxe.io.Path.extension(assetPathStr);
 
     // Build the asset path.
-    var assetPath:AssetPath = new AssetPath(assetPathId, assetPathExt);
+    var assetPath:AssetPath = new AssetPath(assetPathId, assetPathExt, resolvedLibrary);
 
     if (!validate || assetPath.exists())
     {
@@ -72,6 +74,9 @@ class Paths implements ConsoleClass
     {
       trace(' ERROR '.bold().error() + 'Asset path "$assetPath" points to an asset that does not exist!');
       FlxG.log.warn('Asset path "$assetPath" points to an asset that does not exist!');
+      #if VERBOSE_ASSET_CACHE
+      funkin.util.DebugUtil.printCallStack();
+      #end
       // TODO: Improve error handling here.
       return assetPath;
     }
@@ -94,6 +99,22 @@ class Paths implements ConsoleClass
     return build(file, ext, validate, library);
   }
 
+  public static function videos(key:String, ?library:String):AssetPath
+  {
+    var path:haxe.io.Path = new haxe.io.Path(key);
+    return video(key, path.ext ?? 'mp4', true);
+  }
+
+  public static function musicMetadata(key:String, suffix:String = '', ?library:String):AssetPath
+  {
+    return json('$key-metadata$suffix', true);
+  }
+
+  public static function ui(key:String, validate:Bool = true):AssetPath
+  {
+    return xml('ui/$key', validate);
+  }
+
   /**
    * Convert a string ID directly to an asset path.
    * Try to avoid using this, ehe.
@@ -102,12 +123,72 @@ class Paths implements ConsoleClass
    * @return AssetPath
    */
   @:allow(funkin.assets.Assets) @:allow(funkin.assets.FunkinBitmapFrontend)
-  private static function raw(id:String, validate:Bool = true):AssetPath
+  private static function raw(id:String, validate:Bool = true, ?library:String):AssetPath
   {
-    var ext:String = haxe.io.Path.extension(id);
-    var idWithoutExt:String = haxe.io.Path.withoutExtension(id);
+    if (id == null || id == '') return file('', '', validate, library);
 
-    return file(idWithoutExt, ext, validate);
+    var resolvedLibrary:Null<String> = library;
+    if (resolvedLibrary == null)
+    {
+      resolvedLibrary = getLibrary(id);
+    }
+
+    var realId:String = stripLibrary(id);
+    var ext:String = haxe.io.Path.extension(realId);
+    var idWithoutExt:String = haxe.io.Path.withoutExtension(realId);
+
+    return file(idWithoutExt, ext, validate, resolvedLibrary);
+  }
+
+  /**
+   * Format a path from a relative one into the absolute one.
+   * @param file The file path to format.
+   * @param start The path to use as a starting point.
+   * @param ext The optional file extension. Leave as empty to look for an Adobe Animate texture atlas.
+   * @return String
+   */
+  public static function formatRelative(file:String, start:String, ?ext:String):String
+  {
+    // Skip doing this if the relative path already exists.
+    if (ext == null && animateAtlas(file, false).exists())
+    {
+      return file;
+    }
+
+    if (ext != null && Paths.file(file, ext, false).exists())
+    {
+      return file;
+    }
+
+    // Also check for backwards compatibility.
+    var fileLibrary:String = Paths.getLibrary(file);
+    var fileStripped:String = Paths.stripLibrary(file);
+
+    if (ext == null && animateAtlas(funkin.Paths.animateAtlas(fileStripped, fileLibrary), false).exists())
+    {
+      return file;
+    }
+
+    if (ext != null && Paths.file(funkin.modding.compat.Paths.getPath(fileStripped, fileLibrary), ext, false).exists())
+    {
+      return file;
+    }
+
+    // Trim the ending of `start` for every `../` of the file.
+    while (file.startsWith('../'))
+    {
+      file = file.substring(3);
+
+      if (start.length == 0)
+      {
+        trace(' ERROR '.bold().error() + 'Path "$file" points to an asset outside of the game\'s scope!');
+        return file;
+      }
+
+      start = start.substring(0, start.lastIndexOf('/'));
+    }
+
+    return start + '/' + file;
   }
 
   /**
@@ -118,9 +199,11 @@ class Paths implements ConsoleClass
    * @param library The asset path that the file is in
    * @return AnimateAtlasAssetPathBuilder
    */
-  public static function animateAtlas(path:String, validate:Bool = true):AnimateAtlasAssetPathBuilder
+  public static function animateAtlas(path:String, validate:Bool = true, ?library:String):AnimateAtlasAssetPathBuilder
   {
-    return new AnimateAtlasAssetPathBuilder(path);
+    path = funkin.modding.compat.Paths.getAnimateAtlasPath(path, library);
+    if (path.startsWith('assets/')) path = path.substring('assets/'.length);
+    return new AnimateAtlasAssetPathBuilder(path, library ?? 'default');
   }
 
   /**
@@ -238,6 +321,11 @@ class Paths implements ConsoleClass
   public static function music(key:String, ?suffix:String, validate:Bool = true):MusicAssetPathBuilder
   {
     return new MusicAssetPathBuilder(key, suffix);
+  }
+
+  public static function musicFile(key:String, ?suffix:String, validate:Bool = true):MusicAssetPathBuilder
+  {
+    return new MusicAssetPathBuilder(key, suffix, false);
   }
 
   /**
@@ -382,9 +470,22 @@ class AssetPath
 
   function new(id:String, ext:String, library:String = 'default')
   {
-    this.id = id;
-    this.ext = ext;
-    this.library = library;
+    var normalizedId:String = id ?? '';
+    var normalizedExt:String = ext ?? '';
+
+    if (normalizedExt == '' && normalizedId != '')
+    {
+      var inferredExt:String = Path.extension(normalizedId);
+      if (inferredExt != '')
+      {
+        normalizedId = Path.withoutExtension(normalizedId);
+        normalizedExt = inferredExt;
+      }
+    }
+
+    this.id = normalizedId;
+    this.ext = normalizedExt;
+    this.library = library ?? 'default';
   }
 
   /**
@@ -393,7 +494,12 @@ class AssetPath
    */
   public function getAssetType():AssetType
   {
-    return AssetsUtil.guessTypeByExtension(this.path);
+    if (ext != null && ext != '')
+    {
+      return AssetsUtil.guessTypeByExtension(ext);
+    }
+
+    return AssetsUtil.guessTypeByExtension(path);
   }
 
   /**
@@ -586,6 +692,9 @@ class AnimateAtlasAssetPathBuilder
    */
   public function image():Array<AssetPath>
   {
+    // Never let an invalid atlas path turn into a query for every asset under assets/.
+    if (!canListAtlasAssets()) return [];
+
     var assetPaths:Array<AssetPath> = Assets.listInPath('${id}/', AssetType.IMAGE, true);
 
     return assetPaths;
@@ -597,9 +706,26 @@ class AnimateAtlasAssetPathBuilder
    */
   public function json():Array<AssetPath>
   {
-    var assetPaths:Array<AssetPath> = Assets.listInPath('${id}/', AssetType.JSON, true);
+    // Match image(): a root/empty atlas path must not enumerate all JSON assets.
+    if (!canListAtlasAssets()) return [];
 
+    var assetPaths:Array<AssetPath> = Assets.listInPath('${id}/', AssetType.JSON, true);
     return assetPaths;
+  }
+
+  /**
+   * Whether this builder points to a specific atlas directory.
+   * An ID of "assets" makes listInPath("assets/") match the entire asset tree.
+   */
+  function canListAtlasAssets():Bool
+  {
+    var normalizedId:String = StringTools.replace(id, "\\", "/");
+    while (normalizedId.endsWith("/") && normalizedId.length > 0)
+    {
+      normalizedId = normalizedId.substr(0, normalizedId.length - 1);
+    }
+
+    return normalizedId != "" && normalizedId != "." && normalizedId != "assets";
   }
 
   /**
@@ -607,6 +733,8 @@ class AnimateAtlasAssetPathBuilder
    */
   public function imageExists():Bool
   {
+    if (this.image().length == 0) return false;
+
     for (image in this.image())
     {
       if (!image.exists())
@@ -623,6 +751,8 @@ class AnimateAtlasAssetPathBuilder
    */
   public function jsonExists():Bool
   {
+    if (this.json().length == 0) return false;
+
     for (json in this.json())
     {
       if (!json.exists())
@@ -687,7 +817,18 @@ class MusicAssetPathBuilder
 
   function new(id:String, suffix:String = '', nested:Bool = true)
   {
-    var parts = id.split('/');
+    var normalizedId = id;
+    var lowerId = normalizedId.toLowerCase();
+    var hasExtension = lowerId.endsWith(Constants.EXT_SOUND);
+
+    if (hasExtension)
+    {
+      var extensionLength = Constants.EXT_SOUND.length;
+      normalizedId = normalizedId.substr(0, normalizedId.length - extensionLength);
+      nested = false;
+    }
+
+    var parts = normalizedId.split('/');
 
     this.id = parts[parts.length - 1];
     this.dir = parts.slice(0, parts.length - 1).join('/');
@@ -701,7 +842,7 @@ class MusicAssetPathBuilder
    */
   public function audio():AssetPath
   {
-    var s = this.suffix == '' ? '' : '${this.suffix}';
+    var s = this.suffix ?? '';
     var finalPath:AssetPath = nested ? Paths.sound('$dir/$id/$id$s') : Paths.sound('$dir/$id$s');
     return finalPath;
   }
@@ -715,7 +856,7 @@ class MusicAssetPathBuilder
   {
     if (variation == null) variation = Constants.DEFAULT_VARIATION;
 
-    var s = this.suffix == '' ? '' : '${this.suffix}';
+    var s = this.suffix ?? '';
     var v = variation == Constants.DEFAULT_VARIATION ? '' : '-${variation}';
     var finalPath:AssetPath = nested ? Paths.json('$dir/$id/$id$s-metadata$v') : Paths.json('$dir/$id$s-metadata$v');
     return finalPath;
@@ -726,7 +867,7 @@ class MusicAssetPathBuilder
    */
   public function audioExists():Bool
   {
-    var s = this.suffix == '' ? '' : '${this.suffix}';
+    var s = this.suffix ?? '';
     var finalPath:AssetPath = nested ? Paths.sound('$dir/$id/$id$s', false) : Paths.sound('$dir/$id$s', false);
     return finalPath.exists();
   }
@@ -738,7 +879,7 @@ class MusicAssetPathBuilder
   {
     if (variation == null) variation = Constants.DEFAULT_VARIATION;
 
-    var s = this.suffix == '' ? '' : '${this.suffix}';
+    var s = this.suffix ?? '';
     var v = variation == Constants.DEFAULT_VARIATION ? '' : '-${variation}';
     var finalPath:AssetPath = nested ? Paths.json('$dir/$id/$id$s-metadata$v', false) : Paths.json('$dir/$id$s-metadata$v', false);
     return finalPath.exists();
@@ -752,7 +893,7 @@ class MusicAssetPathBuilder
    */
   public function withSuffix(newSuffix:String):MusicAssetPathBuilder
   {
-    return new MusicAssetPathBuilder('$dir/$id', newSuffix);
+    return new MusicAssetPathBuilder('$dir/$id', newSuffix, nested);
   }
 
   public function toString():String

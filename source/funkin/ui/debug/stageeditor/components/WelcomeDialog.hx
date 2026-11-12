@@ -45,7 +45,8 @@ class WelcomeDialog extends Dialog
       fileText.onClick = function(_)
       {
         fileText.hide();
-        loadFromFilePath(file, null, 0, 0);
+        @:privateAccess
+        loadFromFilePath(new lime.utils.DroppedFile(file), null, 0, 0);
       };
 
       #if sys
@@ -58,11 +59,11 @@ class WelcomeDialog extends Dialog
       contentRecent.addComponent(fileText);
     }
 
-    boxDrag.onClick = function(_) FileUtil.browseForFile(
-      "Open Stage Data",
-      [FileUtil.FILE_FILTER_FNFS],
-      (fileInfo) -> loadFromFilePath(fileInfo.fullPath, null, 0, 0)
-    );
+    boxDrag.onClick = function(_) FileUtil.browseForFile("Open Stage Data", [FileUtil.FILE_FILTER_FNFS], function(fileInfo):Void
+    {
+      @:privateAccess
+      loadFromFilePath(new lime.utils.DroppedFile(fileInfo.fullPath), null, 0, 0);
+    });
 
     var defaultStages:Array<String> = StageRegistry.instance.listEntryIds();
     defaultStages.sort(funkin.util.SortUtil.alphabetically);
@@ -114,7 +115,7 @@ class WelcomeDialog extends Dialog
     killDaDialog();
   }
 
-  public function loadFromFilePath(file:String, state:String, x:Float, y:Float)
+  public function loadFromFilePath(file:lime.utils.DroppedFile, state:String, x:Float, y:Float)
   {
     if (!stageEditorState.saved)
     {
@@ -136,7 +137,7 @@ class WelcomeDialog extends Dialog
       return;
     }
 
-    var bytes = FileUtil.readBytesFromPath(file);
+    var bytes = FileUtil.readBytesFromPath(file.path);
 
     if (bytes == null)
     {
@@ -145,7 +146,7 @@ class WelcomeDialog extends Dialog
     }
 
     stageEditorState.clearAssets();
-    stageEditorState.currentFile = file;
+    stageEditorState.currentFile = file.path;
     stageEditorState.unpackShitFromZip(bytes);
     killDaDialog();
   }

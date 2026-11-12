@@ -172,6 +172,10 @@ class Module implements IPlayStateScriptedClass implements IStateChangingScripte
   {
   }
 
+  public function onNoteHoldHit(event:HoldNoteScriptEvent)
+  {
+  }
+
   public function onNoteHoldDrop(event:HoldNoteScriptEvent)
   {
   }
@@ -201,6 +205,13 @@ class Module implements IPlayStateScriptedClass implements IStateChangingScripte
    * Called when a song event is triggered.
    */
   public function onSongEvent(event:SongEventScriptEvent)
+  {
+  }
+
+  /**
+   * Called every frame while a Custom Event runs.
+   */
+  public function onCustomEvent(event:CustomEventScriptEvent)
   {
   }
 

@@ -1,11 +1,10 @@
 package funkin.ui.debug.cameraeditor.commands;
 
 #if FEATURE_CAMERA_EDITOR
+import flixel.util.FlxSort;
 import funkin.data.song.SongData.SongEventData;
 import funkin.ui.haxeui.components.editors.timeline.TimelineLayerData;
-import funkin.audio.FunkinSound;
 import funkin.util.SortUtil;
-import flixel.util.FlxSort;
 
 /**
  * Represents a reversible action to remove a camera layer from the timeline.
@@ -50,7 +49,7 @@ class RemoveLayerCommand implements CameraEditorCommand
       }
     }
 
-    FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/note-erase'));
+    state.playEditSound('ui/editors/chart-editor/charting-sounds/note-erase');
 
     for (event in eventsToRemove)
     {
@@ -93,7 +92,7 @@ class RemoveLayerCommand implements CameraEditorCommand
 
     viewport.selectedLayerIndex = idx;
 
-    FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/undo'));
+    state.playEditSound('ui/editors/chart-editor/charting-sounds/undo');
 
     state.timeline.layerPanel.insertLayerRow(layer, idx);
     viewport.refreshLayout();

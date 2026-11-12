@@ -40,7 +40,8 @@ class ImageMaskShader extends FlxGraphicsShader
             vec4 originalTexture = flixel_texture2D(bitmap, openfl_TextureCoordv);
             vec4 maskTexture = flixel_texture2D(image, openfl_TextureCoordv);
 
-            gl_FragColor = vec4(originalTexture.r * maskTexture.a, originalTexture.g * maskTexture.a, originalTexture.b * maskTexture.a, maskTexture.a);
+            vec4 color = vec4(originalTexture.r * maskTexture.a, originalTexture.g * maskTexture.a, originalTexture.b * maskTexture.a, maskTexture.a);
+            gl_FragColor = color;
         }
     ')
   public function new()

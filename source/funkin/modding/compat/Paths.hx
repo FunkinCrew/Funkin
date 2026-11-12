@@ -412,8 +412,8 @@ class Paths
     'assets/data/ui/chart-editor/dialogs/upload-inst.xml' => 'assets/ui/editors/chart-editor/dialogs/upload-inst.xml',
     'assets/data/ui/chart-editor/dialogs/user-guide.xml' => 'assets/ui/editors/chart-editor/dialogs/user-guide.xml',
     'assets/data/ui/chart-editor/toolbox/iconselector.xml' => 'assets/ui/editors/chart-editor/toolbox/icon-selector.xml',
-    'assets/data/ui/chart-editor/toolbox/opponent-preview.xml' => 'assets/ui/editors/chart-editor/toolbox/opponent-preview.xml',
-    'assets/data/ui/chart-editor/toolbox/player-preview.xml' => 'assets/ui/editors/chart-editor/toolbox/player-preview.xml',
+    'assets/data/ui/chart-editor/toolboxes/opponent-preview.xml' => 'assets/ui/editors/chart-editor/toolbox/opponent-preview.xml',
+    'assets/data/ui/chart-editor/toolboxes/player-preview.xml' => 'assets/ui/editors/chart-editor/toolbox/player-preview.xml',
     'assets/data/ui/chart-editor/toolbox/playtest-properties.xml' => 'assets/ui/editors/chart-editor/toolbox/playtest-properties.xml',
     'assets/data/ui/chart-editor/toolbox/tools.xml' => 'assets/ui/editors/chart-editor/toolbox/tools.xml',
     'assets/data/ui/stage-editor/components/layers.xml' => 'assets/ui/editors/stage-editor/components/layers.xml',
@@ -2837,11 +2837,6 @@ class Paths
     'assets/sserafim/sounds/cutscene/startCutscene.ogg' => 'assets/gameplay/stages/sserafim/sounds/cutscene/start-cutscene.ogg',
     'assets/sserafim/sounds/doorKick1.ogg' => 'assets/gameplay/stages/sserafim/sounds/door-kick-1.ogg',
     'assets/sserafim/sounds/doorKick2.ogg' => 'assets/gameplay/stages/sserafim/sounds/door-kick-2.ogg',
-    'assets/stageBuild/cursorGrab.png' => 'assets/ui/editors/stage-editor/cursor-grab.png',
-    'assets/stageBuild/cursorGrabbing.png' => 'assets/ui/editors/stage-editor/cursor-grabbing.png',
-    'assets/stageBuild/cursorSelect.png' => 'assets/ui/editors/stage-editor/cursor-select.png',
-    'assets/stageBuild/stageTempImg.png' => 'assets/ui/editors/stage-editor/stage-temp-img.png',
-    'assets/stageBuild/toolbarBF.png' => 'assets/ui/editors/stage-editor/toolbar-bf.png',
     'assets/stage_light.png' => 'assets/gameplay/stages/mainStage/stage-light.png',
     'assets/stageback.png' => 'assets/gameplay/stages/mainStage/stage-back.png',
     'assets/stagecurtains.png' => 'assets/gameplay/stages/mainStage/stage-curtains.png',
@@ -3508,9 +3503,10 @@ class Paths
    * @param id The base path of the asset, including the extension.
    * @param library The asset library to use
    * @param verbose Whether to print warnings/errors if the path doesn't exist.
+   * @param useCompatibility Whether to check backwards compatibility paths.
    * @return String
    */
-  public static function getPath(id:String, library:String = 'default', verbose:Bool = true):String
+  public static function getPath(id:String, library:String = 'default', verbose:Bool = true, useCompatibility:Bool = true):String
   {
     #if FEATURE_DEBUG_TRACY
     cpp.vm.tracy.TracyProfiler.zoneScoped('Paths.getPath($id)');
@@ -3521,12 +3517,19 @@ class Paths
 
     // Filter out stuff like double slashes or backslashes.
     filePath = haxe.io.Path.normalize(filePath);
+    var excludeFilePath:String = filePath.replace('assets/', 'assets/exclude/');
 
     // If the path just exists, return it. This is the most common case.
-    if (funkin.assets.Assets.exists(filePath))
+    if (funkin.assets.Assets.exists(filePath) || funkin.assets.Assets.exists(excludeFilePath))
     {
+      #if VERBOSE_ASSET_CACHE
+      // This is too spammy, even for me.
+      // trace(' ASSETS '.bold().bg_lime() + ' Asset path "$filePath" exists, yay :)');
+      #end
       return filePath;
     }
+
+    if (!useCompatibility) return filePath;
 
     // If the path doesn't exist, it might be a mod backwards compatibility issue.
 
@@ -3534,7 +3537,9 @@ class Paths
     var compatPath = PATHS[filePath];
     if (compatPath != null)
     {
-      // trace(' WARNING '.warning() + ' Converting legacy asset path $filePath to ${PATHS[filePath]}')
+      #if VERBOSE_ASSET_CACHE
+      trace(' WARNING '.warning() + ' Converting legacy asset path $filePath to ${PATHS[filePath]}');
+      #end
       return compatPath;
     }
 
@@ -3546,7 +3551,13 @@ class Paths
 
     // Try to guess some other paths.
     var result:Null<String> = tryGuessPath(id, filePath, library);
-    if (result != null) return result;
+    if (result != null)
+    {
+      #if VERBOSE_ASSET_CACHE
+      trace(' WARNING '.warning() + ' Converting incompatible asset path $filePath to ${PATHS[filePath]}');
+      #end
+      return result;
+    }
 
     // I guess just use the filePath and suffer whatever errors result.
     if (verbose)
@@ -3660,6 +3671,8 @@ class Paths
       case 'xml': // Data or image text
         var dataFilePath:String = (library == 'default') ? 'assets/data/$id' : 'assets/$library/data/$id';
         var imageFilePath:String = (library == 'default') ? 'assets/images/$id' : 'assets/$library/images/$id';
+        // Specific redirect for health icons
+        var iconFilePath:String = (library == 'default') ? 'assets/images/icons/$fileName' : 'assets/$library/images/icons/$fileName';
         // Specific redirect for freeplay icon paths
         var freeplayIconFilePath:String = filePath
           .replace('ui/freeplay/characters/', (library == 'default') ? 'images/freeplay/icons/' : '$library/images/freeplay/icons/')
@@ -3679,6 +3692,7 @@ class Paths
 
         usePathIfExists(dataFilePath);
         usePathIfExists(imageFilePath);
+        usePathIfExists(iconFilePath);
         usePathIfExists(freeplayIconFilePath);
         usePathIfExists(freeplayDifficultyFilePath);
         usePathIfExists(storyDifficultyFilePath);
@@ -3787,5 +3801,16 @@ class Paths
 
     // No idea, sorry.
     return null;
+  }
+
+  public static function getAnimateAtlasPath(id:String, library:String = 'default'):String
+  {
+    var tryPath:String = Path.join([id, 'Animation.json']);
+
+    var compatPath:String = getPath(tryPath, library);
+
+    var result:String = Path.directory(compatPath);
+
+    return result;
   }
 }

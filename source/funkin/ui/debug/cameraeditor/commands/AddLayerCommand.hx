@@ -35,7 +35,7 @@ class AddLayerCommand implements CameraEditorCommand
 
     viewport.selectedLayerIndex = (idx < layers.length) ? idx : layers.length - 1;
 
-    FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/note-place'));
+    state.playEditSound('ui/editors/chart-editor/charting-sounds/note-place');
 
     state.timeline.layerPanel.insertLayerRow(layer, idx);
     viewport.ensureLayerVisible(viewport.selectedLayerIndex);
@@ -60,7 +60,7 @@ class AddLayerCommand implements CameraEditorCommand
     if (viewport.selectedLayerIndex >= viewport.layers.length) viewport.selectedLayerIndex = viewport.layers.length - 1;
     if (viewport.selectedLayerIndex < 0) viewport.selectedLayerIndex = 0;
 
-    FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/undo'));
+    state.playEditSound('ui/editors/chart-editor/charting-sounds/undo');
 
     state.timeline.layerPanel.removeLayerRow(layer);
     viewport.ensureLayerVisible(viewport.selectedLayerIndex);

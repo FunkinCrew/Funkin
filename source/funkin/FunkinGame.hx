@@ -1,18 +1,35 @@
 package funkin;
 
 import flixel.FlxGame;
+import funkin.Preferences;
 import funkin.modding.ScriptGuard;
 import funkin.util.logging.CrashHandler;
 import funkin.modding.PolymodHandler;
 
 class FunkinGame extends FlxGame
 {
+  public static function init():FunkinGame
+  {
+    var gameWidth:Int = 1280; // Width of the game in pixels.
+    var gameHeight:Int = 720; // Height of the game in pixels.
+    var initialState:Class<flixel.FlxState> = funkin.InitState; // The FlxState the game starts with.
+    var skipSplash:Bool = true; // Whether to skip the flixel splash screen that appears in release mode.
+    var framerate:Int = Preferences.unlockedFramerate ? 0 : Preferences.framerate; // How many frames per second the game should run at.
+
+    return new FunkinGame(gameWidth, gameHeight, initialState, framerate, framerate, skipSplash);
+  }
+
   static final UNKNOWN_LIMIT:Int = 30;
 
   var unknownErrors:Int = 0;
 
-  public function new(gameWidth:Int = 0, gameHeight:Int = 0, ?initialState:flixel.util.typeLimit.NextState.InitialState, updateFramerate:Int = 60,
-      drawFramerate:Int = 60, skipSplash:Bool = false, startFullscreen:Bool = false)
+  public function new(gameWidth:Int = 0,
+    gameHeight:Int = 0,
+    ?initialState:flixel.util.typeLimit.NextState.InitialState,
+    updateFramerate:Int = 60,
+    drawFramerate:Int = 60,
+    skipSplash:Bool = false,
+    startFullscreen:Bool = false)
   {
     super(gameWidth, gameHeight, initialState, updateFramerate, drawFramerate, skipSplash, startFullscreen);
   }

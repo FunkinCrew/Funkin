@@ -31,7 +31,7 @@ class CameraEditorFileDropHandler
    */
   public static function addDropHandler(dropTarget:DialogDropTarget):Void
   {
-    #if desktop
+    #if (desktop || (js && html5))
     if (!FlxG.stage.window.onDropFile.has(onDropFile)) FlxG.stage.window.onDropFile.add(onDropFile);
 
     dropHandlers.push(dropTarget);
@@ -46,14 +46,14 @@ class CameraEditorFileDropHandler
    */
   public static function removeDropHandler(dropTarget:DialogDropTarget):Void
   {
-    #if desktop
+    #if (desktop || (js && html5))
     dropHandlers.remove(dropTarget);
     #end
   }
 
   static final EPSILON:Float = 0.01;
 
-  static function onDropFile(path:String, state:String, x:Float, y:Float):Void
+  static function onDropFile(file:lime.utils.DroppedFile, state:String, x:Float, y:Float):Void
   {
     // a VERY short timer to wait for the mouse position to update
     new FlxTimer().start(EPSILON, function(_)
@@ -62,7 +62,7 @@ class CameraEditorFileDropHandler
       {
         if (handler.component.hitTest(FlxG.mouse.viewX, FlxG.mouse.viewY))
         {
-          handler.handler(path);
+          handler.handler(file);
           return;
         }
       }

@@ -31,7 +31,7 @@ class SongDataUtils
       var data:Int = note.data;
       var length:Float = note.length;
       var kind:Null<String> = note.kind;
-      return new SongNoteData(time, data, length, kind);
+      return new SongNoteData(time, data, length, kind, note.cloneParams());
     });
   }
 
@@ -256,10 +256,10 @@ class SongDataUtils
    * @param timeOffset The time offset to apply. If null, the first note's time will be used.
    * @return The offset notes.
    */
-  public static function buildNoteClipboard(notes:Array<SongNoteData>, ?timeOffset:Int):Array<SongNoteData>
+  public static function buildNoteClipboard(notes:Array<SongNoteData>, ?timeOffset:Float):Array<SongNoteData>
   {
     if (notes.length == 0) return notes;
-    if (timeOffset == null) timeOffset = Std.int(notes[0].time);
+    if (timeOffset == null) timeOffset = notes[0].time;
     return offsetSongNoteData(sortNotes(notes), -timeOffset);
   }
 
@@ -273,10 +273,10 @@ class SongDataUtils
    * @param timeOffset The time offset to apply. If null, the first event's time will be used.
    * @return The offset events.
    */
-  public static function buildEventClipboard(events:Array<SongEventData>, ?timeOffset:Int):Array<SongEventData>
+  public static function buildEventClipboard(events:Array<SongEventData>, ?timeOffset:Float):Array<SongEventData>
   {
     if (events.length == 0) return events;
-    if (timeOffset == null) timeOffset = Std.int(events[0].time);
+    if (timeOffset == null) timeOffset = events[0].time;
     return offsetSongEventData(sortEvents(events), -timeOffset);
   }
 
@@ -476,4 +476,8 @@ typedef SongClipboardItems =
   var valid:Bool;
   var notes:Array<SongNoteData>;
   var events:Array<SongEventData>;
+  @:optional
+  var subBeats:Array<Float>;
+  @:optional
+  var subBeatSnaps:Array<Int>;
 }

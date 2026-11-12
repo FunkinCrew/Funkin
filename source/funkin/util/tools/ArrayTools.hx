@@ -47,6 +47,16 @@ class ArrayTools
   }
 
   /**
+   * Gets the final element of an array.
+   * @param array The array to get the final element of.
+   * @return The final element of the array.
+   */
+  public static function getFinal<T>(array:Array<T>):T
+  {
+    return array[array.length - 1];
+  }
+
+  /**
    * Push an element to the array if it is not already present.
    *
    * @param input The array to push to

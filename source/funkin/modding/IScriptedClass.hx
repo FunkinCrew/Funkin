@@ -81,6 +81,11 @@ interface INoteScriptedClass extends IScriptedClass
   public function onNoteMiss(event:NoteScriptEvent):Void;
 
   /**
+   * Called when either player holds a note.
+   */
+  public function onNoteHoldHit(event:HoldNoteScriptEvent):Void;
+
+  /**
    * Called when EITHER player (usually the player) drops a hold note.
    */
   public function onNoteHoldDrop(event:HoldNoteScriptEvent):Void;
@@ -164,6 +169,11 @@ interface IPlayStateScriptedClass extends INoteScriptedClass extends IBPMSyncedS
    * Called when the song reaches an event.
    */
   public function onSongEvent(event:SongEventScriptEvent):Void;
+
+  /**
+   * Called every frame while a Custom Event runs, from 0% to 100%.
+   */
+  public function onCustomEvent(event:CustomEventScriptEvent):Void;
 
   /**
    * Called when the countdown of the song starts.

@@ -104,6 +104,10 @@ abstract SongEventSchema(SongEventSchemaRaw)
     {
       case SongEventFieldType.STRING:
         return Std.string(value);
+      case SongEventFieldType.INTEGER | SongEventFieldType.FLOAT if (field.units == 'steps'):
+        var beats:Float = Math.round(Std.parseFloat(Std.string(value)) / funkin.util.Constants.STEPS_PER_BEAT * 100) / 100;
+        if (!addUnits) return Std.string(beats);
+        return '$beats ${beats == 1 ? 'beat' : 'beats'}';
       case SongEventFieldType.INTEGER:
         var returnValue:String = Std.string(value);
         if (addUnits) return addUnitsToString(returnValue, field);

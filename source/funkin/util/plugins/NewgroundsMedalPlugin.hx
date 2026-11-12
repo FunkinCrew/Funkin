@@ -47,7 +47,7 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements Conso
 
     FlxGraphic.defaultPersist = true;
 
-    medal = FunkinSprite.createTextureAtlas((MEDAL_X) + (FullScreenScaleMode.gameCutoutSize.x / 2), MEDAL_Y, 'ui/medals/medal-popup', {
+    medal = new FunkinSprite((MEDAL_X) + (FullScreenScaleMode.gameCutoutSize.x / 2), MEDAL_Y).loadTextureAtlas('ui/medals/medal-popup', {
       swfMode: true,
       filterQuality: HIGH
     });
@@ -171,7 +171,6 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements Conso
    */
   public static function initialize():Void
   {
-    FlxG.plugins.drawOnTop = true;
     instance = new NewgroundsMedalPlugin();
     FlxG.plugins.addPlugin(instance);
 

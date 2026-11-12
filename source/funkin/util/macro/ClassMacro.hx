@@ -50,7 +50,7 @@ class ClassMacro
    * @param targetClassExpr The class to query for subclasses.
    * @return A list of classes matching the specified criteria.
    */
-  public static macro function listSubclassesOf<T>(targetClassExpr:ExprOf<Class<T>>):ExprOf<List<Class<T>>>
+  public static macro function listSubclassesOf<T>(targetClassExpr:ExprOf<Class<T>>):ExprOf<Array<Class<T>>>
   {
     if (!onGenerateCallbackRegistered)
     {

@@ -6,6 +6,7 @@ import flixel.FlxG;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;
 import flixel.addons.display.FlxRadialGauge;
+import funkin.ui.transition.Transition;
 #if html5
 import funkin.graphics.video.FlxVideo;
 #end
@@ -18,7 +19,7 @@ import funkin.util.TouchUtil;
 //
 // ~PATHS~
 //
-import funkin.assets.Assets as Assets;
+import funkin.assets.Assets;
 import funkin.assets.Paths.AssetPath;
 import funkin.assets.Paths.AnimateAtlasAssetPathBuilder;
 import funkin.assets.Paths.MusicAssetPathBuilder;
@@ -57,6 +58,25 @@ class AttractState extends MusicBeatState
 
   var pie:FlxRadialGauge;
   var holdDelta:Float = 0;
+
+  /**
+   * Return a list of all AssetPaths that this substate depends on to load.
+   * This gets called AFTER the chart gets loaded manually.
+   * @param type The type of AssetPath to return a list of paths for.
+   * @param params The parameters to use when constructing the Controls Scheme Menu.
+   * @return The assets that the loading screen should cache.
+   */
+  public static function queryAssets(type:AssetType):Array<AssetPath>
+  {
+    switch (type)
+    {
+      case VIDEO:
+        return VIDEO_PATHS;
+
+      default:
+        return [];
+    }
+  }
 
   override public function create():Void
   {
@@ -213,6 +233,9 @@ class AttractState extends MusicBeatState
     vid = null;
     #end
 
-    FlxG.switchState(() -> new TitleState());
+    Transition.switchState(() -> new TitleState(), {
+      assetQuery: TitleState.queryAssets,
+      transition: BlackScreen(Fade(North), Fade(South))
+    });
   }
 }

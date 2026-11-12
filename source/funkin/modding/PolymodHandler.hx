@@ -1,6 +1,8 @@
 package funkin.modding;
 
-import funkin.data.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterRegistry;
+import funkin.assets.Assets.AssetType;
+import funkin.assets.Paths.AssetPath;
 import funkin.data.dialogue.ConversationRegistry;
 import funkin.data.dialogue.DialogueBoxRegistry;
 import funkin.data.dialogue.SpeakerRegistry;
@@ -18,11 +20,19 @@ import funkin.play.notes.notekind.NoteKindManager;
 import funkin.save.Save;
 import funkin.util.FileUtil;
 import funkin.util.SortUtil;
+import funkin.util.VersionUtil;
 import funkin.util.macro.ClassMacro;
 import polymod.Polymod;
 import polymod.PolymodAssets.PolymodAssetType;
+import polymod.PolymodAssets;
+import polymod.PolymodConfig;
 import polymod.format.ParseRules.TextFileFormat;
-import polymod.fs.ZipFileSystem;
+import thx.semver.VersionRule;
+#if sys
+import polymod.fs.ZipFileSystem as PolymodFileSystem;
+#else
+import polymod.fs.MemoryZipFileSystem as PolymodFileSystem;
+#end
 
 /**
  * A class for interacting with Polymod, the atomic modding framework for Haxe.
@@ -47,7 +57,7 @@ class PolymodHandler
    * Using more complex rules allows mods from older compatible versions to stay functioning,
    * while preventing mods made for future versions from being installed.
    */
-  public static final API_VERSION_RULE:String = '>=0.8.0 <0.10.0';
+  public static final API_VERSION_RULE:VersionRule = '>=0.8.0 <0.10.0';
 
   /**
    * Where relative to the game executable that mods are located.
@@ -74,6 +84,11 @@ class PolymodHandler
     #end;
 
   /**
+   * The path containing the currently enabled mods.
+   */
+  public static final ENABLED_MODS_PATH:String = '$MOD_FOLDER/enabled.txt';
+
+  /**
    * Populated with the directories of mods once they're successfully loaded.
    */
   public static var loadedModDirs:Array<String> = [];
@@ -84,7 +99,7 @@ class PolymodHandler
   public static var loadedModIds:Array<String> = [];
 
   // Use SysZipFileSystem on native and MemoryZipFilesystem on web.
-  static var modFileSystem:Null<ZipFileSystem> = null;
+  static var modFileSystem:Null<PolymodFileSystem> = null;
 
   /**
    * If the mods folder doesn't exist, create it.
@@ -117,7 +132,7 @@ class PolymodHandler
     createModRoot();
     #end
     trace('Initializing Polymod (using configured mods)...');
-    loadModsById(Save.instance.enabledModIds.value);
+    loadModsById(enabledModIds);
   }
 
   /**
@@ -167,6 +182,15 @@ class PolymodHandler
     }
 
     for (modId in toRemove) modIds.remove(modId);
+
+    for (previousModId in loadedModIds)
+    {
+      if (!modIds.contains(previousModId))
+      {
+        var previousModAssets = listAllModAssetPaths(previousModId).filter((path) -> isAssetOwnedByMod(previousModId, path));
+        funkin.assets.FunkinAssetCache.instance.forceUnloadModAssets(previousModId, previousModAssets);
+      }
+    }
 
     var loadedModList:Array<ModMetadata> = polymod.Polymod.init({
       // Root directory for all mods.
@@ -273,6 +297,8 @@ class PolymodHandler
     polymod.hscript._internal.PolymodCppiaClassReference.expectedVersion = lime.app.Application.current.meta.get('version');
     #end
 
+    funkin.assets.FunkinAssetCache.instance.clearCoreAssetCache();
+
     if (async)
     {
       return Polymod.registerAllScriptClassesAsync().then((result) ->
@@ -309,12 +335,12 @@ class PolymodHandler
    * Replace the file system used for scanning.
    * NOTE: Won't replace the file system used for actual mods until you rerun `Polymod.init()`.
    *
-   * @return polymod.fs.ZipFileSystem
+   * @return polymod.fs.ZipFileSystem or polymod.fs.MemoryZipFileSystem
    */
-  static function buildFileSystem():polymod.fs.ZipFileSystem
+  static function buildFileSystem():PolymodFileSystem
   {
     polymod.Polymod.onError = PolymodErrorHandler.onPolymodError;
-    return new ZipFileSystem({
+    return new PolymodFileSystem({
       modRoot: MOD_FOLDER,
       autoScan: true
     });
@@ -356,22 +382,30 @@ class PolymodHandler
     Polymod.addImportAlias('funkin.data.dialogue.conversation.ConversationRegistry', funkin.data.dialogue.ConversationRegistry);
     Polymod.addImportAlias('funkin.data.dialogue.dialoguebox.DialogueBoxRegistry', funkin.data.dialogue.DialogueBoxRegistry);
     Polymod.addImportAlias('funkin.data.dialogue.speaker.SpeakerRegistry', funkin.data.dialogue.SpeakerRegistry);
-    Polymod.addImportAlias('funkin.play.character.CharacterDataParser', funkin.data.character.CharacterData.CharacterDataParser);
-    Polymod.addImportAlias('funkin.play.character.CharacterData.CharacterDataParser', funkin.data.character.CharacterData.CharacterDataParser);
+    Polymod.addImportAlias('funkin.play.character.CharacterDataParser', funkin.modding.compat.CharacterDataParser);
+    Polymod.addImportAlias('funkin.play.character.CharacterData.CharacterDataParser', funkin.data.character.CharacterData);
 
     Polymod.addImportAlias('funkin.modding.base.ScriptedFunkinSprite', funkin.graphics.FunkinSprite);
     Polymod.addImportAlias('funkin.modding.base.ScriptedMusicBeatState', funkin.ui.MusicBeatState);
     Polymod.addImportAlias('funkin.modding.base.ScriptedMusicBeatSubState', funkin.ui.MusicBeatSubState);
 
-    Polymod.addImportAlias('funkin.play.character.CharacterDataParser', funkin.data.character.CharacterData.CharacterDataParser);
-
     // TODO: Does this work?
     Polymod.addImportAlias('funkin.graphics.adobeanimate.FlxAtlasSprite', funkin.graphics.FunkinSprite);
     Polymod.addImportAlias('funkin.modding.base.ScriptedFlxAtlasSprite', funkin.graphics.FunkinSprite);
 
+    Polymod.addImportAlias('funkin.ui.charSelect.CharSelectSubState', funkin.ui.charSelect.CharacterSelectState);
+    Polymod.addImportAlias('funkin.ui.charSelect.CharSelectPlayer', funkin.ui.charSelect.characters.CharSelectCharacter);
+    Polymod.addImportAlias('funkin.ui.charSelect.CharSelectGF', funkin.ui.charSelect.characters.CharSelectCharacter);
+    Polymod.addImportAlias('funkin.ui.charSelect.Lock', funkin.ui.charSelect.icons.Lock);
+    Polymod.addImportAlias('funkin.ui.charSelect.Nametag', funkin.ui.charSelect.characters.Nametag);
+
     // Sandboxing for compatibility.
     Polymod.addImportAlias('funkin.play.cutscene.VideoCutscene', funkin.modding.compat.VideoCutscene);
+    Polymod.addImportAlias('funkin.data.character.CharacterDataParser', funkin.modding.compat.CharacterDataParser);
     Polymod.addImportAlias('funkin.FunkinMemory', funkin.memory.FunkinMemory);
+    #if html5
+    Polymod.addImportAlias('funkin.graphics.video.FunkinVideoSprite', funkin.modding.compat.HTML5Video);
+    #end
 
     // Backwards compatibility for many classes that were removed.
     // These are just wrapper scripted classes that extend the original class.
@@ -387,7 +421,9 @@ class PolymodHandler
     Polymod.addImportAlias('funkin.modding.base.ScriptedFlxTypedGroup', flixel.group.FlxGroup.FlxTypedGroup);
     Polymod.addImportAlias('funkin.graphics.ScriptedFunkinSprite', funkin.graphics.FunkinSprite);
     Polymod.addImportAlias('funkin.group.ScriptedFunkinGroup', funkin.group.FunkinGroup);
+    #if hxvlc
     Polymod.addImportAlias('funkin.graphics.video.ScriptedFunkinVideoSprite', funkin.graphics.video.FunkinVideoSprite);
+    #end
     Polymod.addImportAlias('funkin.play.character.ScriptedBaseCharacter', funkin.play.character.BaseCharacter);
     Polymod.addImportAlias('funkin.play.character.ScriptedSparrowCharacter', funkin.play.character.SparrowCharacter);
     Polymod.addImportAlias('funkin.play.character.ScriptedMultiSparrowCharacter', funkin.play.character.MultiSparrowCharacter);
@@ -417,10 +453,17 @@ class PolymodHandler
     Polymod.addImportAlias('funkin.ui.freeplay.dj.ScriptedMultiSparrowFreeplayDJ', funkin.ui.freeplay.dj.MultiSparrowFreeplayDJ);
     Polymod.addImportAlias('funkin.ui.freeplay.dj.ScriptedPackerFreeplayDJ', funkin.ui.freeplay.dj.PackerFreeplayDJ);
     Polymod.addImportAlias('funkin.ui.story.ScriptedLevel', funkin.ui.story.Level);
+    Polymod.addImportAlias('funkin.ui.story.ScriptedPanelEntry', funkin.ui.quickpanel.PanelEntry);
     Polymod.addImportAlias('funkin.ui.transition.stickers.ScriptedStickerPack', funkin.ui.transition.stickers.StickerPack);
+    Polymod.addImportAlias('funkin.modding.module.ScriptedModule', funkin.modding.module.Module);
 
     // `FixedBitmapData` was literally just `BitmapData`.
     Polymod.addImportAlias('funkin.graphics.framebuffer.FixedBitmapData', openfl.display.BitmapData);
+
+    // 'ControlsHandler' was moved to the 'funkin.touch.input' package.
+    Polymod.addImportAlias('funkin.mobile.input.ControlsHandler', funkin.touch.input.ControlsHandler);
+
+    Polymod.addImportAlias('funkin.mobile.ui.FunkinBackButton', funkin.touch.ui.FunkinBackButton);
   }
 
   /**
@@ -478,12 +521,8 @@ class PolymodHandler
     // Unserializer.DEFAULT_RESOLVER.resolveClass() can access blacklisted packages
     Polymod.blacklistImport('haxe.Unserializer');
 
-    // `lime.utils.AssetLibrary`
-    // If you create your own library using a manifest, AssetLibrary.__fromManifest() can access blacklisted packages apparently.
-    Polymod.blacklistImport('lime.utils.AssetLibrary');
-
     // Disable access to all Mobile Utils
-    for (cls in ClassMacro.listClassesInPackage('funkin.mobile.util'))
+    for (cls in ClassMacro.listClassesInPackage('funkin.util.mobile'))
     {
       if (cls == null) continue;
       var className:String = Type.getClassName(cls);
@@ -539,6 +578,19 @@ class PolymodHandler
     Polymod.blacklistStaticFields(haxe.Unserializer, ['run']);
     Polymod.blacklistInstanceFields(haxe.Unserializer, ['unserialize']);
 
+    // `haxe.ui`
+    // `UIRTTITools.resolveEventClass` allows you to be able to resolve clases from fallback, `bindEvent` uses this.
+    Polymod.blacklistImport("haxe.ui.backend.flixel.UIRTTITools");
+
+    // `FileSettingsPersister` can be used to load JSON files from outside of the game.
+    Polymod.blacklistImport("haxe.ui.core.FileSettingsPersister");
+
+    // `SettingsManager` can be used to access the serializer & unseralizer, both of which are blacklisted.
+    Polymod.blacklistImport("haxe.ui.core.SettingsManager");
+
+    // `FileResourceResolver` allows you to access the content of outside game files.
+    Polymod.blacklistImport("haxe.ui.parsers.ui.resolvers.FileResourceResolver");
+
     // `funkin.save.Save`
     // Direct access to save data is important for scripts (like checking unlocks),
     // but we don't want scripts to be able to perform operations like writing scores.
@@ -560,6 +612,10 @@ class PolymodHandler
     #if !html5 Polymod.blacklistInstanceFields(openfl.filesystem.FileStream, ['readObject']); #end
     Polymod.blacklistInstanceFields(openfl.net.Socket, ['readObject']);
     Polymod.blacklistInstanceFields(openfl.utils.ByteArray.ByteArrayData, ['readObject']);
+
+    // `openfl.filesystem.File`
+    // Can be used to delete files.
+    Polymod.blacklistImport('openfl.filesystem.File');
 
     // `funkin.api.*`
     // Contains functions which may allow for cheating and such.
@@ -718,7 +774,7 @@ class PolymodHandler
     var modMetadata:Array<ModMetadata> = [];
     try
     {
-      if (modFileSystem == null || force) modFileSystem = buildFileSystem();
+      if (modFileSystem == null #if sys || force #end) modFileSystem = buildFileSystem();
 
       var scanParams:Dynamic = {
         modRoot: MOD_FOLDER,
@@ -775,12 +831,11 @@ class PolymodHandler
    */
   public static function enableMod(modId:String):Void
   {
-    var enabledModIds:Array<String> = Save.instance.enabledModIds.value;
+    var enabledModIds:Array<String> = PolymodHandler.enabledModIds;
     if (!enabledModIds.contains(modId))
     {
       enabledModIds.push(modId);
-      Save.instance.enabledModIds.value = enabledModIds;
-      Save.system.flush();
+      PolymodHandler.enabledModIds = enabledModIds;
     }
   }
 
@@ -790,19 +845,17 @@ class PolymodHandler
    */
   public static function disableMod(modId:String):Void
   {
-    var enabledModIds:Array<String> = Save.instance.enabledModIds.value;
+    var enabledModIds:Array<String> = PolymodHandler.enabledModIds;
     if (enabledModIds.contains(modId))
     {
       enabledModIds.remove(modId);
-      Save.instance.enabledModIds.value = enabledModIds;
-      Save.system.flush();
+      PolymodHandler.enabledModIds = enabledModIds;
     }
   }
 
   public static function disableAllMods():Void
   {
-    Save.instance.enabledModIds.value = [];
-    Save.system.flush();
+    PolymodHandler.enabledModIds = [];
   }
 
   /**
@@ -811,7 +864,7 @@ class PolymodHandler
    */
   public static function getEnabledMods():Array<ModMetadata>
   {
-    var enabledModIds:Array<String> = Save.instance.enabledModIds.value;
+    var enabledModIds:Array<String> = PolymodHandler.enabledModIds;
     var modMetadata:Array<ModMetadata> = getAllMods();
     var enabledMods:Array<ModMetadata> = modMetadata.filter((item) ->
     {
@@ -834,7 +887,7 @@ class PolymodHandler
   public static function getDisabledMods():Array<ModMetadata>
   {
     var modMetadata:Array<ModMetadata> = getAllMods();
-    var enabledModIds:Array<String> = Save.instance.enabledModIds.value;
+    var enabledModIds:Array<String> = PolymodHandler.enabledModIds;
     var disabledMods:Array<ModMetadata> = modMetadata.filter((item) ->
     {
       return !enabledModIds.contains(item.id);
@@ -857,7 +910,7 @@ class PolymodHandler
   public static function getDisabledModsIncludingIncompatible(force:Bool = false):Array<ModMetadata>
   {
     var modMetadata:Array<ModMetadata> = getAllModsIncludingIncompatible(force);
-    var enabledModIds:Array<String> = Save.instance.enabledModIds.value;
+    var enabledModIds:Array<String> = PolymodHandler.enabledModIds;
     var disabledMods:Array<ModMetadata> = modMetadata.filter((item) ->
     {
       return !enabledModIds.contains(item.id);
@@ -910,9 +963,268 @@ class PolymodHandler
     StickerRegistry.instance.loadEntries();
     FreeplayStyleRegistry.instance.loadEntries();
 
-    CharacterDataParser.loadCharacterCache(); // TODO: Migrate characters to BaseRegistry.
+    CharacterRegistry.instance.loadEntries();
     NoteKindManager.initialize();
     ModuleHandler.loadModuleCache();
     ModuleHandler.callOnCreate();
+  }
+
+  /**
+   * The mods currently enabled.
+   */
+  public static var enabledModIds(get, set):Array<String>;
+
+  static function get_enabledModIds():Array<String>
+  {
+    #if desktop
+    if (!FileUtil.fileExists(ENABLED_MODS_PATH)) return [];
+
+    var content:String = FileUtil.readStringFromPath(ENABLED_MODS_PATH);
+    return content.trim().split('\n');
+    #else
+    return Save.instance.enabledModIds.value;
+    #end
+  }
+
+  static function set_enabledModIds(value:Array<String>):Array<String>
+  {
+    #if desktop
+    var content:String = value.join('\n');
+    FileUtil.writeStringToPath(ENABLED_MODS_PATH, content, Force);
+    #else
+    Save.instance.enabledModIds.value = value;
+    Save.system.flush();
+    #end
+
+    return value;
+  }
+
+  #if js
+  public static function addModByBytes(modPath:String, modBytes:haxe.io.Bytes)
+  {
+    if (modFileSystem == null)
+    {
+      modFileSystem = buildFileSystem();
+    }
+
+    modFileSystem.addZipFile(modPath, modBytes);
+  }
+
+  @:nullSafety(Off)
+  public static function loadModFromFileDialog(?onComplete:Void->Void):Void
+  {
+    var input:js.html.InputElement = cast js.Browser.document.createElement('input');
+    input.type = 'file';
+    input.accept = (PolymodConfig.archiveModExt ?? ['.zip']).join(',');
+    input.multiple = true;
+    input.style.display = 'none';
+    js.Browser.document.body.appendChild(input);
+
+    input.onchange = function(e)
+    {
+      var files:Array<js.html.File> = cast input.files;
+      if (files.length == 0)
+      {
+        return;
+      }
+
+      var archiveExtensions:Array<String> = [
+        for (extension in (PolymodConfig.archiveModExt ?? ['.zip'])) extension
+          .toLowerCase()
+          .startsWith('.') ? extension.toLowerCase()
+          .substr(1) : extension.toLowerCase()
+      ];
+
+      var total = 0;
+      var loaded = 0;
+      var zipData:Array<
+        {name:String, bytes:haxe.io.Bytes}> = [];
+
+      for (file in files)
+      {
+        if (!archiveExtensions.contains(haxe.io.Path.extension(file.name).toLowerCase()))
+        {
+          continue;
+        }
+
+        total++;
+
+        var reader = new js.html.FileReader();
+        reader.onload = function(_)
+        {
+          var arrayBuffer:js.lib.ArrayBuffer = reader.result;
+          var bytes = haxe.io.Bytes.ofData(arrayBuffer);
+          zipData.push({
+            name: file.name,
+            bytes: bytes
+          });
+          loaded++;
+
+          if (loaded == total)
+          {
+            if (zipData.length == 0)
+            {
+              return;
+            }
+
+            for (item in zipData)
+            {
+              addModByBytes(item.name, item.bytes);
+            }
+
+            if (onComplete != null) onComplete();
+          }
+        };
+
+        reader.onerror = function(_)
+        {
+          trace('Error reading file: ' + file.name);
+          loaded++;
+        };
+
+        reader.readAsArrayBuffer(file);
+      }
+
+      if (total == 0)
+      {
+        return;
+      }
+    };
+
+    input.click();
+  }
+  #end
+
+  public static function readModDirectory():Array<String>
+  {
+    #if sys
+    var newItems = [];
+    try
+    {
+      newItems = FileUtil.readDir(MOD_FOLDER);
+    }
+    catch (e:Dynamic)
+    {
+      trace(' MOD MENU '.bold().bg_orange() + ' Failed to read mods folder: ${Std.string(e)}');
+      return [];
+    }
+    return newItems;
+    #else
+    return getAllModIds();
+    #end
+  }
+
+  static final PERSIST_ALL_ASSETS_VERSION_RULE:thx.semver.VersionRule = '<0.9.x';
+
+  static function isAssetOwnedByMod(modId:String, assetPath:String):Bool
+  {
+    final modIndex = loadedModIds.indexOf(modId);
+    if (modIndex < 0 || modIndex >= loadedModDirs.length) return false;
+
+    final modDir = loadedModDirs[modIndex];
+    if (modDir == null || modDir.length == 0) return false;
+
+    final resolvedPath = PolymodAssets.getPath(assetPath);
+    if (resolvedPath == null || resolvedPath.length == 0) return false;
+
+    final normalizedModDir = modDir.replace('\\', '/');
+    final normalizedResolvedPath = resolvedPath.replace('\\', '/');
+
+    return normalizedResolvedPath == normalizedModDir || StringTools.startsWith(normalizedResolvedPath, normalizedModDir + '/');
+  }
+
+  /**
+   * List every asset path that a specific mod provides.
+   */
+  static function listAllModAssetPaths(modId:String):Array<String>
+  {
+    final result:Array<String> = [];
+
+    @:privateAccess
+    {
+      result.append(PolymodAssets.listInMod(modId, BYTES));
+      result.append(PolymodAssets.listInMod(modId, IMAGE));
+      result.append(PolymodAssets.listInMod(modId, AUDIO_GENERIC));
+      result.append(PolymodAssets.listInMod(modId, AUDIO_MUSIC));
+      result.append(PolymodAssets.listInMod(modId, AUDIO_SOUND));
+      result.append(PolymodAssets.listInMod(modId, VIDEO));
+      result.append(PolymodAssets.listInMod(modId, TEXT));
+      result.append(PolymodAssets.listInMod(modId, FONT));
+      result.append(PolymodAssets.listInMod(modId, UNKNOWN));
+    }
+
+    return result;
+  }
+
+  /**
+   * Get a list of assets which should be always loaded in cache.
+   *
+   * @param type The type of assets to load.
+   * @return A list of asset paths.
+   */
+  public static function queryPersistentAssets(type:AssetType):Array<AssetPath>
+  {
+    #if !html5
+    // We don't need this outside HTML5, since desktop/mobile can load assets synchronously.
+    return [];
+    #else
+    if (loadedModIds.length == 0) return [];
+
+    var results:Array<AssetPath> = [];
+
+    var availableMods:Array<ModMetadata> = getAllModsIncludingIncompatible();
+    var modMetadatas:Map<String, ModMetadata> = [];
+    // This step is kinda dumb.
+    for (modId in loadedModIds)
+    {
+      for (mod in availableMods)
+      {
+        if (mod.id == modId)
+        {
+          modMetadatas[modId] = mod;
+          break;
+        }
+      }
+    }
+
+    for (modId in loadedModIds)
+    {
+      var mod = modMetadatas[modId];
+      if (mod == null) continue;
+
+      if (!VersionUtil.validateVersionStr(mod.apiVersion, PERSIST_ALL_ASSETS_VERSION_RULE)) continue;
+
+      // If we are here, the mod is older than 0.9.0, so it won't have fully implemented queryAssets() properly.
+      // We will need to persistently load all assets from the mod.
+      @:privateAccess
+      switch (type)
+      {
+        case IMAGE:
+          results.append(PolymodAssets.listInMod(modId, IMAGE).map((path) -> funkin.assets.Paths.raw(path)));
+        case SOUND:
+          results.append(PolymodAssets.listInMod(modId, AUDIO_GENERIC).map((path) -> funkin.assets.Paths.raw(path)));
+        case VIDEO:
+          results.append(PolymodAssets.listInMod(modId, VIDEO).map((path) -> funkin.assets.Paths.raw(path)));
+        case TEXT:
+          results.append(PolymodAssets.listInMod(modId, TEXT).map((path) -> funkin.assets.Paths.raw(path)));
+        case JSON:
+          results.append(PolymodAssets.listInMod(modId, TEXT).map((path) -> funkin.assets.Paths.raw(path)));
+        case SHADER:
+          results.append(PolymodAssets.listInMod(modId, TEXT).map((path) -> funkin.assets.Paths.raw(path)));
+        case SCRIPT:
+          results.append(PolymodAssets.listInMod(modId, TEXT).map((path) -> funkin.assets.Paths.raw(path)));
+        case SCRIPTED_CLASS:
+          results.append(PolymodAssets.listInMod(modId, TEXT).map((path) -> funkin.assets.Paths.raw(path)));
+        case XML:
+          results.append(PolymodAssets.listInMod(modId, TEXT).map((path) -> funkin.assets.Paths.raw(path)));
+        case FONT:
+          results.append(PolymodAssets.listInMod(modId, FONT).map((path) -> funkin.assets.Paths.raw(path)));
+        default:
+          results.append(PolymodAssets.listInMod(modId, UNKNOWN).map((path) -> funkin.assets.Paths.raw(path)));
+      }
+    }
+
+    return results;
+    #end
   }
 }

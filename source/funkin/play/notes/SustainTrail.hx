@@ -2,11 +2,14 @@ package funkin.play.notes;
 
 import funkin.play.notes.notestyle.NoteStyle;
 import funkin.data.song.SongData.SongNoteData;
-import funkin.mobile.ui.FunkinHitbox.FunkinHitboxControlSchemes;
+import funkin.touch.ui.FunkinHitbox.FunkinHitboxControlSchemes;
 import flixel.FlxSprite;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.tile.FlxDrawTrianglesItem.DrawData;
 import flixel.math.FlxMath;
+import funkin.data.song.SongData.SongNoteData;
+import funkin.touch.ui.FunkinHitbox.FunkinHitboxControlSchemes;
+import funkin.play.notes.notestyle.NoteStyle;
 
 /**
  * This is based heavily on the `FlxStrip` class. It uses `drawTriangles()` to clip a sustain note
@@ -16,7 +19,7 @@ import flixel.math.FlxMath;
  *
  * @author MtH
  */
-class SustainTrail extends FlxSprite
+class SustainTrail extends funkin.graphics.FunkinSprite
 {
   /**
    * The triangles corresponding to the hold, followed by the endcap.
@@ -117,13 +120,9 @@ class SustainTrail extends FlxSprite
   public var customVertexData:Bool = false;
 
   public var meshMinX:Float = 0;
-
   public var meshMinY:Float = 0;
-
   public var meshMaxX:Float = 0;
-
   public var meshMaxY:Float = 0;
-
   public var trailSegments:Int = 0;
 
   /**
@@ -148,7 +147,6 @@ class SustainTrail extends FlxSprite
     super(0, 0);
 
     setupHoldNoteGraphic(noteStyle);
-    noteStyleOffsets = noteStyle.getHoldNoteOffsets();
 
     // BASIC SETUP
     this.sustainLength = sustainLength;
@@ -299,38 +297,54 @@ class SustainTrail extends FlxSprite
   }
 
   /**
+   * The id of the note style this trail's graphic was built for, so that recycling a trail for the
+   * same style can skip reloading the graphic.
+   */
+  public var builtHoldNoteStyleId:Null<String> = null;
+
+  /**
    * Creates hold note graphic and applies correct zooming
    * @param noteStyle The note style
    */
   public function setupHoldNoteGraphic(noteStyle:NoteStyle):Void
   {
-    loadGraphic(noteStyle.getHoldNoteAssetPath());
-
-    antialiasing = true;
-
-    this.isPixel = noteStyle.isHoldNotePixel();
-    if (isPixel)
+    // Everything in here depends only on the style, so it is wasted work when a recycled trail is
+    // already built for that same style.
+    if (builtHoldNoteStyleId != noteStyle.id)
     {
-      endOffset = bottomClip = 1;
-      antialiasing = false;
-    }
-    else
-    {
-      endOffset = 0.5;
-      bottomClip = 0.9;
+      builtHoldNoteStyleId = noteStyle.id;
+
+      loadGraphic(noteStyle.getHoldNoteAssetPath().toFlxGraphicAsset());
+
+      antialiasing = true;
+
+      this.isPixel = noteStyle.isHoldNotePixel();
+      if (isPixel)
+      {
+        endOffset = bottomClip = 1;
+        antialiasing = false;
+      }
+      else
+      {
+        endOffset = 0.5;
+        bottomClip = 0.9;
+      }
+
+      zoom = 1.0;
+      zoom *= noteStyle.fetchHoldNoteScale();
+
+      // CALCULATE SIZE
+      graphicWidth = graphic.width / 8 * zoom; // amount of notes * 2
+
+      noteStyleOffsets = noteStyle.getHoldNoteOffsets();
     }
 
-    zoom = 1.0;
-    zoom *= noteStyle.fetchHoldNoteScale();
-
-    // CALCULATE SIZE
-    graphicWidth = graphic.width / 8 * zoom; // amount of notes * 2
     graphicHeight = sustainHeight(sustainLength, parentStrumline?.scrollSpeed ?? 1.0);
     // instead of scrollSpeed, PlayState.SONG.speed
 
     flipY = Preferences.downscroll
     #if FEATURE_TOUCH_CONTROLS
-    || (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows && !funkin.mobile.input.ControlsHandler.hasExternalInputDevice)
+    || (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows && !funkin.touch.input.ControlsHandler.hasExternalInputDevice)
     #end;
 
     // alpha = 0.6;
@@ -338,6 +352,7 @@ class SustainTrail extends FlxSprite
     updateColorTransform();
 
     updateClipping();
+    updateHitbox();
   }
 
   function getBaseScrollSpeed()
@@ -350,11 +365,12 @@ class SustainTrail extends FlxSprite
   override function update(elapsed)
   {
     super.update(elapsed);
-    if (previousScrollSpeed != (parentStrumline?.scrollSpeed ?? 1.0))
+    var currentScrollSpeed:Float = parentStrumline?.scrollSpeed ?? 1.0;
+    if (previousScrollSpeed != currentScrollSpeed)
     {
+      previousScrollSpeed = currentScrollSpeed;
       triggerRedraw();
     }
-    previousScrollSpeed = parentStrumline?.scrollSpeed ?? 1.0;
   }
 
   /**
@@ -388,7 +404,9 @@ class SustainTrail extends FlxSprite
     }
 
     updateClipping();
-    updateHitbox();
+
+    height = graphicHeight;
+    origin.y = height * 0.5;
   }
 
   override public function updateHitbox():Void

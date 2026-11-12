@@ -6,6 +6,7 @@ import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog.DialogDropTarget;
 import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog.DialogParams;
 import funkin.util.FileUtil;
 import funkin.data.character.CharacterData;
+import funkin.data.character.CharacterRegistry;
 import haxe.io.Path;
 import haxe.ui.components.Button;
 import haxe.ui.components.Label;
@@ -69,7 +70,7 @@ class ChartEditorUploadVocalsDialog extends ChartEditorBaseDialog
 
       trace('Adding vocal upload for character ${charKey}');
 
-      var charMetadata:Null<CharacterData> = CharacterDataParser.fetchCharacterData(charKey);
+      var charMetadata:Null<CharacterData> = CharacterRegistry.instance.fetchCharacterData(charKey);
       var charName:String = charMetadata?.name ?? charKey;
 
       var vocalsEntry = new ChartEditorUploadVocalsEntry(charName);
@@ -79,49 +80,70 @@ class ChartEditorUploadVocalsDialog extends ChartEditorBaseDialog
         handler: null
       };
 
-      var onDropFile:String->Void = function(pathStr:String)
+      var onDropFile:lime.utils.DroppedFile->Void = function(file:lime.utils.DroppedFile)
       {
-        trace('Selected file: $pathStr');
-        var path:Path = new Path(pathStr);
+        final path:Path = new Path(file.path);
+        trace('Dropped file: $path');
 
-        if (chartEditorState.loadVocalsFromPath(path, charKey, this.instId, !this.hasClearedVocals))
+        file.readFile().onComplete(function(bytes:haxe.io.Bytes)
         {
-          if (isPlayer)
+          if (bytes == null)
           {
-            chartEditorState.currentSongMetadata.playData.characters.playerVocals = [playerCharId];
+            chartEditorState.error(
+              'Failed to Load Vocals',
+              'Could not read vocal track (${path.file}.${path.ext}) for variation ${chartEditorState.selectedVariation}'
+            );
+            return;
+          }
+
+          if (chartEditorState.loadVocalsFromBytes(bytes, charKey, this.instId, !this.hasClearedVocals))
+          {
+            if (isPlayer)
+            {
+              chartEditorState.currentSongMetadata.playData.characters.playerVocals = [playerCharId];
+            }
+            else
+            {
+              chartEditorState.currentSongMetadata.playData.characters.opponentVocals = [opponentCharId];
+            }
+
+            this.hasClearedVocals = true;
+            chartEditorState.success(
+              'Loaded Vocals',
+              'Loaded vocals for $charName (${path.file}.${path.ext}), variation ${chartEditorState.selectedVariation}'
+            );
+            #if FEATURE_FILE_DROP
+            vocalsEntry.vocalsEntryLabel.text = 'Voices for $charName (drag and drop, or click to browse)\nSelected file: ${path.file}.${path.ext}';
+            #else
+            vocalsEntry.vocalsEntryLabel.text = 'Voices for $charName (click to browse)\n${path.file}.${path.ext}';
+            #end
+
+            dialogNoVocals.hidden = true;
+            chartEditorState.removeDropHandler(dropHandler);
           }
           else
           {
-            chartEditorState.currentSongMetadata.playData.characters.opponentVocals = [opponentCharId];
+            trace('Failed to load vocal track (${path.file}.${path.ext})');
+
+            chartEditorState.error(
+              'Failed to Load Vocals',
+              'Failed to load vocal track (${path.file}.${path.ext}) for variation (${chartEditorState.selectedVariation})'
+            );
+
+            #if FEATURE_FILE_DROP
+            vocalsEntry.vocalsEntryLabel.text = 'Drag and drop vocals for $charName here, or click to browse.';
+            #else
+            vocalsEntry.vocalsEntryLabel.text = 'Click to browse for vocals for $charName.';
+            #end
           }
-
-          this.hasClearedVocals = true;
-          // Tell the user the load was successful.
-          chartEditorState.success('Loaded Vocals', 'Loaded vocals for $charName (${path.file}.${path.ext}), variation ${chartEditorState.selectedVariation}');
-          #if FEATURE_FILE_DROP
-          vocalsEntry.vocalsEntryLabel.text = 'Voices for $charName (drag and drop, or click to browse)\nSelected file: ${path.file}.${path.ext}';
-          #else
-          vocalsEntry.vocalsEntryLabel.text = 'Voices for $charName (click to browse)\n${path.file}.${path.ext}';
-          #end
-
-          dialogNoVocals.hidden = true;
-          chartEditorState.removeDropHandler(dropHandler);
-        }
-        else
+        }).onError(function(error:Dynamic)
         {
-          trace('Failed to load vocal track (${path.file}.${path.ext})');
-
-          chartEditorState.error(
-            'Failed to Load Vocals',
-            'Failed to load vocal track (${path.file}.${path.ext}) for variation (${chartEditorState.selectedVariation})'
-          );
-
-          #if FEATURE_FILE_DROP
-          vocalsEntry.vocalsEntryLabel.text = 'Drag and drop vocals for $charName here, or click to browse.';
-          #else
-          vocalsEntry.vocalsEntryLabel.text = 'Click to browse for vocals for $charName.';
-          #end
-        }
+            trace('Failed to read vocal track (${path.file}.${path.ext}): $error');
+            chartEditorState.error(
+              'Failed to Load Vocals',
+              'Failed to read vocal track (${path.file}.${path.ext}) for variation (${chartEditorState.selectedVariation})'
+            );
+        });
       };
 
       vocalsEntry.onClick = function(_event)

@@ -18,8 +18,12 @@ import lime.graphics.Image as LimeImage;
 import flixel.graphics.frames.FlxFrame;
 import flixel.graphics.frames.FlxFramesCollection;
 import lime.media.AudioBuffer as LimeAudioBuffer;
+#if (js && html5 && lime_howlerjs)
+import lime.media.howlerjs.Howl;
+#end
 import lime.utils.AssetCache as LimeAssetCache;
 import lime.utils.AssetType as LimeAssetType;
+import lime.utils.Assets as LimeAssets;
 import openfl.display.BitmapData;
 import openfl.media.Sound;
 import openfl.text.Font;
@@ -104,6 +108,11 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public var enabled(get, set):Bool;
 
+  /**
+   * Will be true if we prepare to purge, until we either finish purging or if the cycle gets "cancelled", i.e while a state transition.
+   */
+  public var isPurgeCycleActive(default, null):Bool = false;
+
   static function get_instance():FunkinAssetCache
   {
     if (FunkinAssetCache._instance == null) _instance = new FunkinAssetCache();
@@ -132,7 +141,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     stagedSound.onRemove.add((key:String, asset:Sound) ->
     {
       FunkinLimeAssetCache.instance.removeAudio(key);
-      // asset = null;
+      if (!isSoundBufferInUse(asset)) asset.close();
     });
 
     stagedText = new StagedCache<String>();
@@ -175,7 +184,16 @@ class FunkinAssetCache implements OpenFLIAssetCache
       #if VERBOSE_ASSET_CACHE
       trace(' ASSETS '.bold().bg_lime() + ' Force clearing asset cache...');
       #end
-      for (cache in stagedCaches) cache.clearCache();
+      for (cache in stagedCaches)
+      {
+        if (cache == stagedSound) continue;
+        cache.clearCache();
+      }
+      for (key in stagedSound.keys())
+      {
+        final sound:Null<Sound> = stagedSound.get(key, false);
+        if (sound != null && !isSoundBufferInUse(sound)) stagedSound.remove(key);
+      }
       FunkinBitmapFrontend.instance.reset();
       assetListCaches = [];
       assetListBaseCache = null;
@@ -185,7 +203,17 @@ class FunkinAssetCache implements OpenFLIAssetCache
       #if FEATURE_DEBUG_TRACY
       cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.clear($prefix)');
       #end
-      for (cache in stagedCaches) cache.clearCacheByPrefix(prefix);
+      for (cache in stagedCaches)
+      {
+        if (cache == stagedSound) continue;
+        cache.clearCacheByPrefix(prefix);
+      }
+      for (key in stagedSound.keys())
+      {
+        if (!StringTools.startsWith(key, prefix)) continue;
+        final sound:Null<Sound> = stagedSound.get(key, false);
+        if (sound != null && !isSoundBufferInUse(sound)) stagedSound.remove(key);
+      }
       FunkinBitmapFrontend.instance.resetByPrefix(prefix);
     }
   }
@@ -195,21 +223,69 @@ class FunkinAssetCache implements OpenFLIAssetCache
    * NOTE: This is a little dangerous since you're un-caching EVERYTHING, even stuff set to cache permanently.
    * Generally only do this if you plan on reloading and pre-caching important assets afterwards.
    */
-  public function forceClearCache():Void
+  public function forceClearCache(?clearPermanent:Bool = true):Void
   {
-    final CLEAR_PERMANENT:Bool = true;
-
     #if VERBOSE_ASSET_CACHE
     trace(' ASSETS '.bold().bg_lime() + ' Force clearing asset cache...');
     #end
 
     for (cache in stagedCaches)
     {
-      cache.clearCache(CLEAR_PERMANENT);
+      cache.clearCache(clearPermanent);
     }
+
     FunkinBitmapFrontend.instance.forceClear();
+    stagedBitmapData.clearCache(clearPermanent);
+
     assetListCaches = [];
     assetListBaseCache = null;
+  }
+
+  public function forceUnloadModAssets(modId:String, assetPaths:Array<String>):Void
+  {
+    forceUnloadAsset(modId);
+    for (path in assetPaths) forceUnloadAsset(path);
+  }
+
+  function forceUnloadAsset(id:String):Void
+  {
+    FunkinBitmapFrontend.instance.stagedFlxGraphic.remove(id, true);
+    stagedBitmapData.remove(id, true);
+    stagedFont.remove(id, true);
+    stagedSound.remove(id, true);
+    stagedText.remove(id, true);
+    stagedBytes.remove(id, true);
+
+    FunkinLimeAssetCache.instance.removeImage(id);
+    FunkinLimeAssetCache.instance.removeFont(id);
+    FunkinLimeAssetCache.instance.removeAudio(id);
+  }
+
+  /**
+   * Forces lime to forget all cached assets.
+   */
+  public function clearCoreAssetCache():Void
+  {
+    #if sys
+    @:privateAccess
+    for (library in lime.utils.Assets.libraries)
+    {
+      // Polymod wraps each library, so walk down to the original one.
+      var current:Null<lime.utils.AssetLibrary> = library;
+      var depth:Int = 0;
+      while (current != null && depth < 8)
+      {
+        current.cachedText.clear();
+        current.cachedBytes.clear();
+        current.cachedImages.clear();
+        current.cachedAudioBuffers.clear();
+
+        var next:Dynamic = Reflect.field(current, 'fallback');
+        current = Std.isOfType(next, lime.utils.AssetLibrary) ? cast next : null;
+        depth++;
+      }
+    }
+    #end
   }
 
   /**
@@ -219,34 +295,140 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function preparePurgeCache():Void
   {
+    isPurgeCycleActive = true;
+
     for (cache in stagedCaches) cache.preparePurgeCache();
     FunkinBitmapFrontend.instance.stagedFlxGraphic.preparePurgeCache();
   }
 
   /**
+   * End a purge cycle without purging, e.g. because the transition was cancelled and the old state stays alive.
+   * Anything the old state still uses is picked up by the next purge, which keeps whatever a live object holds.
+   */
+  public function cancelPurgeCycle():Void
+  {
+    isPurgeCycleActive = false;
+  }
+
+  /**
    * Purge any assets that were previously cached, but weren't requested again since `preparePurgeCache()` was called.
-   *
    * @param garbageCollect Whether to forcibly invoke the system's garbage collector after purging assets.
    */
   public function purgeCache(garbageCollect:Bool = false):Void
   {
-    // TODO: Cleanup purging to work with Freeplay?
-    for (cache in stagedCaches) cache.purgeCache();
+    // IMPORTANT: purgeCache() must only be called after the outgoing state has been destroyed. LoadingState defers this until postStateSwitch so that
+    // FlxSprite/FlxFrame/animation objects from the old state cannot reference disposed FlxGraphics or BitmapData.
+
+    isPurgeCycleActive = false;
+
+    for (cache in stagedCaches)
+    {
+      if (cache == stagedSound) continue;
+      cache.purgeCache();
+    }
+    stagedSound.purgeCacheByPredicate((key:String, sound:Sound) -> !isSoundBufferInUse(sound));
 
     #if FEATURE_HAXEUI
     purgeHaxeUIAssets();
     #end
 
-    // Clear everything except:
-    // - Stickers, so that graphics don't get lost during sticker transition (TODO: Fix this in LoadingState?)
-    // - `bg_graphic_` is used to render the background color on substates, it's 1x1 pixel so probably not a problem to just keep it.
-    FunkinBitmapFrontend.instance.clearExcept(['stickers/', 'bg_graphic_']);
-    // ^ Clear everything but freeplay as that has its own process, may or may not still be here depending on the future loading changes.
+    // Purge FlxGraphics the new state does not own.
+
+    // NOTE: preparePurgeCache() moved every graphic to `previous`, and loading plus the new state's create() moved everything the
+    // target wants back to `current`. So whatever is still in `previous` right now was NOT requested by the target state.
+    // (remove(), group.clear(), ...) pins its graphic forever. Instead we ask "does a live object in the current state tree use it?".
+    final stagedGraphics:StagedCache<FlxGraphic> = FunkinBitmapFrontend.instance.stagedFlxGraphic;
+    final live = FunkinBitmapFrontend.instance.collectLiveGraphics();
+
+    // Animate atlases use several graphics (spritemap1, spritemap2...) but the sprite may only expose some of them,
+    // so treat every spritemap in the same folder as a live graphic as live too.
+    final liveAtlasDirs:Map<String, Bool> = [];
+    for (graphic in live.keys())
+    {
+      final atlasDir:Null<String> = getAtlasDir(graphic.key);
+      if (atlasDir != null) liveAtlasDirs.set(atlasDir, true);
+    }
+
+    // Rescue graphics that a live object holds but nobody re-requested through the cache, by moving them back to `current`.
+    final rescue:Array<String> = [];
+    for (key => graphic in stagedGraphics.previous)
+    {
+      if (graphic == null) continue;
+      final atlasDir:Null<String> = getAtlasDir(key);
+      if (live.exists(graphic) || (atlasDir != null && liveAtlasDirs.exists(atlasDir))) rescue.push(key);
+    }
+    for (key in rescue)
+    {
+      stagedGraphics.get(key); // Reuses it
+    }
+
+    stagedGraphics.purgeCacheByPredicate((key, graphic) ->
+    {
+      // Prevent background graphics from getting purged (this screws up loading screens!)
+      // Prevent stickers from getting purged while they are in use.
+      if (key.startsWith('bg_graphic_') || key.contains('stickers')) return false;
+
+      return true;
+    });
 
     // Perform garbage collection here, after we deleted a bunch of stuff, to free the memory we're no longer using.
-    #if (cpp || neko)
+    #if (cpp || neko || js)
     if (garbageCollect) funkin.util.MemoryUtil.collect(true);
     #end
+  }
+
+  /**
+   * Gets the folder of an atlas spritemap.
+   * @param key The folder path to look for.
+   * @return The folder of an Animate atlas spritemap.
+   */
+  static function getAtlasDir(key:String):Null<String>
+  {
+    final slash:Int = key.lastIndexOf('/');
+    if (slash < 0) return null;
+    return key.substr(slash + 1).startsWith('spritemap') ? key.substr(0, slash) : null;
+  }
+
+  /**
+   * Close a Sound if it is not currently in use by any FlxSound.
+   * @param asset The Sound to check and close if unused.
+   */
+  public function releaseSoundIfUnused(asset:Null<Sound>):Void
+  {
+    if (asset == null) return;
+    if (isSoundBufferInUse(asset)) return;
+
+    // NOTE: If this somehow crashing something after all the checks, maybe only close it if it exists in previous. - Moon
+    for (key in stagedSound.keys())
+    {
+      if (stagedSound.get(key, false) == asset) return;
+    }
+
+    asset.close();
+  }
+
+  /**
+   * Whether or not a Sound's buffer is currently in use by any FlxSound.
+   * @param asset The Sound to check.
+   */
+  static function isSoundBufferInUse(asset:Sound):Bool
+  {
+    var buffer:Null<LimeAudioBuffer> = @:privateAccess asset.__buffer;
+    if (buffer == null) return false;
+
+    var sounds:Array<flixel.sound.FlxSound> = flixel.FlxG.sound.list.members.copy();
+    for (sound in flixel.FlxG.sound.defaultSoundGroup.sounds) sounds.push(sound);
+    sounds.push(flixel.FlxG.sound.music);
+
+    for (sound in sounds)
+    {
+      if (sound == null) continue;
+      var current:Null<Sound> = @:privateAccess sound._sound;
+      if (current == null) continue;
+      if (@:privateAccess current.__buffer == buffer) return true;
+    }
+
+    return false;
   }
 
   #if FEATURE_HAXEUI
@@ -468,6 +650,8 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function removeSound(id:String):Bool
   {
+    var sound:Null<Sound> = stagedSound.get(id, false);
+    if (sound != null && isSoundBufferInUse(sound)) return false;
     return stagedSound.remove(id);
   }
 
@@ -701,7 +885,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function fetchFont(assetPath:AssetPath):Future<Font>
   {
-    if (hasText(assetPath.toString()))
+    if (hasFont(assetPath.toString()))
     {
       var font:Null<Font> = getFont(assetPath.toString());
       if (font == null) return cast Future.withError('Font does not exist: ${assetPath.toString()}');
@@ -710,8 +894,21 @@ class FunkinAssetCache implements OpenFLIAssetCache
     }
     else
     {
-      return OpenFLAssets.loadFont(assetPath.toString()).then((font:Font) ->
+      return Font.loadFromFile(assetPath.toString()).then((font:Font) ->
       {
+        if (font == null) return cast Future.withError('Font did not load: ${assetPath.toString()}');
+
+        try
+        {
+          openfl.text.Font.registerFont(font);
+        }
+        catch (e:Dynamic)
+        {
+          #if VERBOSE_ASSET_CACHE
+          trace(' ASSETS '.bold().bg_lime() + ' Could not register Font globally (${assetPath.toString()}): $e');
+          #end
+        }
+
         setFont(assetPath.toString(), font);
         return Future.withValue(font);
       });
@@ -895,20 +1092,6 @@ class FunkinAssetCache implements OpenFLIAssetCache
         var ext:String = path.ext ?? '';
         var library:String = 'default';
 
-        // A bunch of hard-coded asset detections.
-
-        if (dir.startsWith('flixel/'))
-        {
-          dir = dir.substring('flixel/'.length);
-          library = 'flixel';
-        }
-
-        if (dir.startsWith('haxeui-flixel/'))
-        {
-          dir = dir.substring('haxeui-flixel/'.length);
-          library = 'haxeui-flixel';
-        }
-
         if (dir == 'assets') dir = 'assets/';
 
         if (dir.startsWith('assets/')) dir = dir.substring('assets/'.length);
@@ -986,6 +1169,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
       if (permanent)
       {
+        #if VERBOSE_ASSET_CACHE
+        trace(' ASSETS '.bold().bg_lime() + ' Permanently Cached BitmapData: ${assetPath.toString()}');
+        #end
         stagedBitmapData.cachePermanent(assetPath.toString(), bitmapData);
       }
       promise.complete(validateBitmapData(bitmapData));
@@ -1023,7 +1209,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
       if (permanent)
       {
         #if VERBOSE_ASSET_CACHE
-        trace(' ASSETS '.bold().bg_lime() + ' Cached FlxGraphic: ${assetPath.toString()}');
+        trace(' ASSETS '.bold().bg_lime() + ' Permanently Cached FlxGraphic: ${assetPath.toString()}');
         #end
         FunkinBitmapFrontend.instance.stagedFlxGraphic.cachePermanent(assetPath.toString(), flxGraphic);
         cacheBitmapData(assetPath, true); // We need the bitmapdata to persist too.
@@ -1041,6 +1227,26 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
     return promise.future;
   }
+
+  #if (js && html5 && lime_howlerjs)
+  /**
+   * This is needed on HTML5 because loading the Lime AudioBuffer does not necessarily
+   * start the Howler request until the sound is explicitly loaded.
+   * @param sound
+   */
+  function preloadAudioAsset(sound:Sound):Void
+  {
+    if (sound == null) return;
+
+    final buffer:Null<LimeAudioBuffer> = @:privateAccess sound.__buffer;
+    if (buffer == null) return;
+
+    final howl:Null<Howl> = @:privateAccess buffer.__srcHowl;
+    if (howl == null || howl.state() != 'unloaded') return;
+
+    howl.load();
+  }
+  #end
 
   /**
    * Cache a Sound asynchronously.
@@ -1062,17 +1268,35 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
     fetchSound(assetPath).then((sound:Sound) ->
     {
-      // On success, resolve the promise with true
+      if (sound == null)
+      {
+        promise.complete(false);
+        return Future.withValue(sound);
+      }
 
+      // On success, resolve the promise with true
       if (permanent)
       {
         #if VERBOSE_ASSET_CACHE
-        trace(' ASSETS '.bold().bg_lime() + ' Cached Sound: ${assetPath.toString()}');
+        trace(' ASSETS '.bold().bg_lime() + ' Permanently Cached Sound: ${assetPath.toString()}');
         #end
         stagedSound.cachePermanent(assetPath.toString(), sound);
       }
 
-      promise.complete(sound != null);
+      #if (js && html5 && lime_howlerjs)
+      try
+      {
+        preloadAudioAsset(sound);
+      }
+      catch (err:Dynamic)
+      {
+        #if VERBOSE_ASSET_CACHE
+        trace(' ASSETS '.bold().bg_lime() + ' WARNING '.warning() + ' Could not preload Sound (${assetPath}): ${err}');
+        #end
+      }
+      #end
+
+      promise.complete(true);
       return Future.withValue(sound);
     }).onError((err) ->
       {
@@ -1109,7 +1333,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
       if (permanent)
       {
         #if VERBOSE_ASSET_CACHE
-        trace(' ASSETS '.bold().bg_lime() + ' Cached Text: ${assetPath.toString()}');
+        trace(' ASSETS '.bold().bg_lime() + ' Permanently Cached Text: ${assetPath.toString()}');
         #end
         stagedText.cachePermanent(assetPath.toString(), text);
       }
@@ -1148,7 +1372,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     {
       // On success, resolve the promise with true
       #if VERBOSE_ASSET_CACHE
-      trace(' ASSETS '.bold().bg_lime() + ' Cached Font: ${assetPath.toString()}');
+      trace(' ASSETS '.bold().bg_lime() + ' Permanently Cached Font: ${assetPath.toString()}');
       #end
 
       // Always permanent cache fonts.
@@ -1190,7 +1414,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
       if (bytes != null && permanent)
       {
         #if VERBOSE_ASSET_CACHE
-        trace(' ASSETS '.bold().bg_lime() + ' Cached Bytes: ${assetPath.toString()}');
+        trace(' ASSETS '.bold().bg_lime() + ' Permanently Cached Bytes: ${assetPath.toString()}');
         #end
         stagedBytes.cachePermanent(assetPath.toString(), bytes);
       }
@@ -1338,53 +1562,115 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function debug_listCachedAssets():Void
   {
-    trace(' ASSETS '.bold().bg_lime() + ' Cached assets:');
-    trace(' ASSETS '.bold().bg_lime() + ' BITMAP DATA:');
+    trace(' ASSETS '.bold().bg_lime() + ' ==CACHED ASSETS==');
     var keys:Array<String> = stagedBitmapData.keys();
     keys.sort(SortUtil.alphabetically);
-    for (key in keys)
+    trace(' ASSETS '.bold().bg_lime() + ' BITMAP DATA:');
+    if (keys.length > 0)
     {
-      trace(' ASSETS '.bold().bg_lime() + '- $key');
+      for (key in keys)
+      {
+        var bitmapData = stagedBitmapData.get(key);
+        if (bitmapData == null) continue;
+
+        var output:String = ' - $key';
+        if (stagedBitmapData.existsPermanent(key)) output += ' [P]';
+        if (!bitmapData.readable) output += ' [GPU]';
+        trace(' ASSETS '.bold().bg_lime() + output);
+      }
+    }
+    else
+    {
+      trace(' ASSETS '.bold().bg_lime() + ' - [none]');
     }
 
-    trace(' ASSETS '.bold().bg_lime() + ' FLX GRAPHIC:');
     var keys:Array<String> = FunkinBitmapFrontend.instance.stagedFlxGraphic.keys();
     keys.sort(SortUtil.alphabetically);
-    for (key in keys)
+    trace(' ASSETS '.bold().bg_lime() + ' FLXGRAPHIC:');
+    if (keys.length > 0)
     {
-      trace(' ASSETS '.bold().bg_lime() + ' - $key');
+      for (key in keys)
+      {
+        var flxGraphic = FunkinBitmapFrontend.instance.stagedFlxGraphic.get(key);
+        if (flxGraphic == null) continue;
+
+        var output:String = ' - $key';
+        if (FunkinBitmapFrontend.instance.stagedFlxGraphic.existsPermanent(key)) output += ' [P]';
+        if (!flxGraphic.bitmap.readable) output += ' [GPU]';
+        trace(' ASSETS '.bold().bg_lime() + output);
+      }
+    }
+    else
+    {
+      trace(' ASSETS '.bold().bg_lime() + ' - [none]');
     }
 
-    trace(' ASSETS '.bold().bg_lime() + ' FONT:');
     var keys:Array<String> = stagedFont.keys();
     keys.sort(SortUtil.alphabetically);
-    for (key in keys)
+    trace(' ASSETS '.bold().bg_lime() + ' FONT:');
+    if (keys.length > 0)
     {
-      trace(' ASSETS '.bold().bg_lime() + ' - $key');
+      for (key in keys)
+      {
+        var output:String = '- $key';
+        if (stagedFont.existsPermanent(key)) output += ' [P]';
+        trace(' ASSETS '.bold().bg_lime() + output);
+      }
+    }
+    else
+    {
+      trace(' ASSETS '.bold().bg_lime() + ' - [none]');
     }
 
-    trace(' ASSETS '.bold().bg_lime() + ' SOUND:');
     var keys:Array<String> = stagedSound.keys();
     keys.sort(SortUtil.alphabetically);
-    for (key in keys)
+    trace(' ASSETS '.bold().bg_lime() + ' SOUND:');
+    if (keys.length > 0)
     {
-      trace(' ASSETS '.bold().bg_lime() + '- $key');
+      for (key in keys)
+      {
+        var output:String = '- $key';
+        if (stagedSound.existsPermanent(key)) output += ' [P]';
+        trace(' ASSETS '.bold().bg_lime() + output);
+      }
+    }
+    else
+    {
+      trace(' ASSETS '.bold().bg_lime() + ' - [none]');
     }
 
-    trace(' ASSETS '.bold().bg_lime() + ' TEXT:');
     var keys:Array<String> = stagedText.keys();
     keys.sort(SortUtil.alphabetically);
-    for (key in keys)
+    trace(' ASSETS '.bold().bg_lime() + ' TEXT:');
+    if (keys.length > 0)
     {
-      trace(' ASSETS '.bold().bg_lime() + ' - $key');
+      for (key in keys)
+      {
+        var output:String = '- $key';
+        if (stagedText.existsPermanent(key)) output += ' [P]';
+        trace(' ASSETS '.bold().bg_lime() + output);
+      }
+    }
+    else
+    {
+      trace(' ASSETS '.bold().bg_lime() + ' - [none]');
     }
 
-    trace(' ASSETS '.bold().bg_lime() + 'BYTES:');
     var keys:Array<String> = stagedBytes.keys();
     keys.sort(SortUtil.alphabetically);
-    for (key in keys)
+    trace(' ASSETS '.bold().bg_lime() + 'BYTES:');
+    if (keys.length > 0)
     {
-      trace(' ASSETS '.bold().bg_lime() + ' - $key');
+      for (key in keys)
+      {
+        var output:String = '- $key';
+        if (stagedBytes.existsPermanent(key)) output += ' [P]';
+        trace(' ASSETS '.bold().bg_lime() + output);
+      }
+    }
+    else
+    {
+      trace(' ASSETS '.bold().bg_lime() + ' - [none]');
     }
   }
 
@@ -1540,37 +1826,27 @@ class FunkinLimeAssetCache extends LimeAssetCache
    */
   override public function clear(?prefix:String):Void
   {
-    if (prefix == null)
+    for (key in cb_audio.keys())
     {
-      // Clear maps without overriding them, to preserve callbacks.
-      cb_audio.clear();
-      cb_font.clear();
-      cb_image.clear();
+      if (prefix == null || StringTools.startsWith(key, prefix))
+      {
+        removeAudio(key);
+      }
     }
-    else
+
+    for (key in cb_font.keys())
     {
-      for (key in cb_audio.keys())
+      if (prefix == null || StringTools.startsWith(key, prefix))
       {
-        if (StringTools.startsWith(key, prefix))
-        {
-          cb_audio.remove(key);
-        }
+        removeFont(key);
       }
+    }
 
-      for (key in cb_font.keys())
+    for (key in cb_image.keys())
+    {
+      if (prefix == null || StringTools.startsWith(key, prefix))
       {
-        if (StringTools.startsWith(key, prefix))
-        {
-          cb_font.remove(key);
-        }
-      }
-
-      for (key in cb_image.keys())
-      {
-        if (StringTools.startsWith(key, prefix))
-        {
-          cb_image.remove(key);
-        }
+        removeImage(key);
       }
     }
   }
@@ -1629,7 +1905,11 @@ class FunkinLimeAssetCache extends LimeAssetCache
    */
   public function removeAudio(id:String):Void
   {
+    final audio = cb_audio.get(id);
     cb_audio.remove(id);
+
+    LimeAssets.unload(id, LimeAssetType.SOUND);
+    if (audio != null) audio.dispose();
   }
 
   /**
@@ -1639,6 +1919,8 @@ class FunkinLimeAssetCache extends LimeAssetCache
   public function removeFont(id:String):Void
   {
     cb_font.remove(id);
+
+    LimeAssets.unload(id, LimeAssetType.FONT);
   }
 
   /**
@@ -1648,6 +1930,8 @@ class FunkinLimeAssetCache extends LimeAssetCache
   public function removeImage(id:String):Void
   {
     cb_image.remove(id);
+
+    LimeAssets.unload(id, LimeAssetType.IMAGE);
   }
 
   public function toString():String

@@ -116,11 +116,7 @@ class MemoryUtil
    */
   public static function supportsGCMem():Bool
   {
-    #if !html5
     return true;
-    #else
-    return false;
-    #end
   }
 
   /**
@@ -129,6 +125,18 @@ class MemoryUtil
   public static function getGCMemory():Float
   {
     return openfl.system.System.totalMemoryNumber;
+  }
+
+  /**
+   * @return Bytes handed out by the collector since its last collection.
+   */
+  public static function getGCAllocatedSinceCollect():Float
+  {
+    #if cpp
+    return cpp.vm.Gc.memInfo64(cpp.vm.Gc.MEM_INFO_CURRENT);
+    #else
+    return 0;
+    #end
   }
 
   /**
@@ -164,6 +172,8 @@ class MemoryUtil
   {
     #if cpp
     cpp.vm.Gc.run(major);
+    #elseif (js && html5)
+    untyped js.Syntax.code("if (typeof globalThis !== 'undefined' && typeof globalThis.gc === 'function') globalThis.gc();");
     #else
     throw 'Not implemented!';
     #end

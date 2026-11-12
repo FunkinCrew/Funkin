@@ -32,6 +32,8 @@ class FunkinDebugDisplay extends Sprite
 
   var deltaTimeout:Float;
   var times:Array<Float>;
+
+  var timesHead:Int = 0;
   var color:Int;
   var fps:Int;
   var fpsPeak:Int;
@@ -174,9 +176,16 @@ class FunkinDebugDisplay extends Sprite
 
     times.push(currentTime);
 
-    while (times[0] < currentTime - Constants.MS_PER_SEC)
+    var cutoff:Float = currentTime - Constants.MS_PER_SEC;
+    while (timesHead < times.length && times[timesHead] < cutoff)
     {
-      times.shift();
+      timesHead++;
+    }
+
+    if (timesHead > 256 && timesHead * 2 > times.length)
+    {
+      times.splice(0, timesHead);
+      timesHead = 0;
     }
 
     if (deltaTimeout < UPDATE_DELAY)
@@ -185,7 +194,7 @@ class FunkinDebugDisplay extends Sprite
       return;
     }
 
-    fps = times.length;
+    fps = times.length - timesHead;
 
     if (fps > fpsPeak) fpsPeak = fps;
 

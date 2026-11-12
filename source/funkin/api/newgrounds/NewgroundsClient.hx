@@ -14,7 +14,7 @@ import io.newgrounds.utils.SaveSlotList;
 import io.newgrounds.utils.ScoreBoardList;
 import io.newgrounds.objects.User;
 #if FEATURE_MOBILE_WEBVIEW
-import funkin.mobile.util.WebViewUtil;
+import funkin.util.mobile.WebViewUtil;
 #end
 
 @:build(funkin.util.macro.EnvironmentMacro.build())

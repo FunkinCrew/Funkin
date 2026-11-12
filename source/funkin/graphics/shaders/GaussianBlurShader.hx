@@ -1,6 +1,8 @@
 package funkin.graphics.shaders;
 
 import flixel.addons.display.FlxRuntimeShader;
+import funkin.assets.Paths;
+import funkin.assets.Assets;
 
 /**
  * Note... not actually gaussian!

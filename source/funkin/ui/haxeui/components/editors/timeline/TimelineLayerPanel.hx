@@ -48,6 +48,25 @@ class TimelineLayerPanel extends VBox
     _layerContainer.top = -offsetPx;
   }
 
+  var _appliedLayerHeight:Float = -1;
+
+  /**
+   * Keeps the names the same height as the rows they stand beside.
+   */
+  public function setLayerHeight(layerHeight:Float):Void
+  {
+    if (layerHeight == _appliedLayerHeight) return;
+    _appliedLayerHeight = layerHeight;
+
+    for (layer => handles in _handlesByLayer) handles.row.height = layerHeight - 2;
+    if (_layerContainer != null) _layerContainer.syncComponentValidation();
+  }
+
+  function _rowHeight():Float
+  {
+    return (viewport != null ? viewport.layerHeight : TimelineViewport.LAYER_HEIGHT) - 2;
+  }
+
   /**
    * "cold load" path — rebuilds every layer row from scratch.
    * commands should use `insertLayerRow` / `removeLayerRow` / `refreshSelectedHighlight`
@@ -118,7 +137,7 @@ class TimelineLayerPanel extends VBox
   {
     var row:HBox = new HBox();
     row.percentWidth = 100;
-    row.height = TimelineViewport.LAYER_HEIGHT - 2;
+    row.height = _rowHeight();
     row.customStyle.verticalAlign = "center";
     row.customStyle.paddingLeft = 6;
     row.customStyle.paddingRight = 6;

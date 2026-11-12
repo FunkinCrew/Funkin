@@ -104,6 +104,8 @@ class AnsiUtil
   @:noCompletion
   static final REGEX_ANSI_CODES:EReg = ~/\x1b\[[0-9;]*m/g;
   @:noCompletion
+  static final REGEX_HYPER_LINK:EReg = ~/\x1b\]8;;[^\x07]*\x07/g;
+  @:noCompletion
   static var codesSupported:Null<Bool> = null;
 
   /**
@@ -504,13 +506,26 @@ class AnsiUtil
   }
 
   /**
+   * Add a hyperlink onto this string.
+   * Allows the text to be clickable & redirects you to the link in a terminal.
+   *
+   * @param str The input string to format.
+   * @param url The URL to redirect to.
+   *
+   * @return The string wihth a hyperlink.
+   */
+  public static function link(str:String, url:String):String
+  {
+    if (url == null || url.length <= 0 || !isColorCodesSupported()) return str;
+    return '\x1b]8;;$url\x07$str\x1b]8;;\x07';
+  }
+
+  /**
    * Whether ANSI codes are supported or not.
    *
    * @return `true` if ANSI codes are supported, `false` otherwise.
    */
-  @SuppressWarnings([
-    "checkstyle:SimplifyBooleanExpression"
-  ])
+  @SuppressWarnings(["checkstyle:SimplifyBooleanExpression"])
   public static function isColorCodesSupported():Bool
   {
     if (codesSupported == null)
@@ -569,7 +584,8 @@ class AnsiUtil
 
           if (codesSupported != true)
           {
-            codesSupported = getEnvSafe('TERM_PROGRAM') == 'iTerm.app'
+            codesSupported =
+              getEnvSafe('TERM_PROGRAM') == 'iTerm.app'
               || getEnvSafe('TERM_PROGRAM') == 'Apple_Terminal'
               || getEnvSafe('COLORTERM') != null
               || getEnvSafe('ANSICON') != null
@@ -587,8 +603,8 @@ class AnsiUtil
   }
 
   @:noCompletion
-  static function stripCodes(output:String):String
+  public static function stripCodes(output:String, force:Bool = false):String
   {
-    return isColorCodesSupported() ? output : REGEX_ANSI_CODES.replace(output, '');
+    return (isColorCodesSupported() && !force) ? output : REGEX_HYPER_LINK.replace(REGEX_ANSI_CODES.replace(output, ''), '');
   }
 }

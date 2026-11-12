@@ -87,7 +87,6 @@ class ResultScore extends FlxTypedSpriteGroup<ScoreNum>
     }
   }
 
-
   public function updateScore(scoreNew:Int)
   {
     scoreShit = scoreNew;
@@ -185,6 +184,7 @@ class ScoreNum extends FlxSprite
       {
         new FlxTimer().start((finalDelay) / 24, _ ->
         {
+          if (animation?.curAnim == null) return;
           animation.play(animation.curAnim.name, true, false, 0);
         });
         // fuck

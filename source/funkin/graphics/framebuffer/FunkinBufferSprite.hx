@@ -222,20 +222,25 @@ class FunkinBufferSprite extends FunkinSprite
 
     if (this.filters != null && this.filters.length > 0)
     {
-      filterRenderer.applyFilters(renderer.texture);
+      if (renderer.justRendered || _renderTextureDirty || !filtered)
+      {
+        filterRenderer.applyFilters(renderer.texture);
+        renderer.justRendered = false;
+        _renderTextureDirty = false;
+      }
 
       if (filtered)
       {
-        camera.drawPixels(filterRenderer.graphic?.imageFrame.frame, null, matrix, colorTransform, blend, antialiasing, shader);
+        camera.drawPixels(filterRenderer.graphic?.imageFrame.frame, null, matrix, colorTransform, blend, antialiasing, shader, blendTarget);
       }
       else
       {
-        camera.drawPixels(frame, framePixels, matrix, colorTransform, blend, antialiasing, shader);
+        camera.drawPixels(frame, framePixels, matrix, colorTransform, blend, antialiasing, shader, blendTarget);
       }
     }
     else
     {
-      camera.drawPixels(frame, framePixels, matrix, colorTransform, blend, antialiasing, shader);
+      camera.drawPixels(frame, framePixels, matrix, colorTransform, blend, antialiasing, shader, blendTarget);
     }
   }
 }
