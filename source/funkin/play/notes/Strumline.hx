@@ -335,19 +335,10 @@ class Strumline extends FlxSpriteGroup
   public function mayGhostTap():Bool
   {
     // Any notes in range of the strumline.
-    if (getNotesMayHit().length > 0)
+    if (getNotesMayHit().length > 0 || getHoldNotesHitOrMissed().length > 0 || ghostTapTimer > 0.0)
     {
       return false;
     }
-    // Any hold notes in range of the strumline.
-    if (getHoldNotesHitOrMissed().length > 0)
-    {
-      return false;
-    }
-
-    // Note has been hit recently.
-    if (ghostTapTimer > 0.0) return false;
-
     // **yippee**
     return true;
   }
@@ -388,9 +379,7 @@ class Strumline extends FlxSpriteGroup
 
     for (note in notes.members)
     {
-      if (note == null) continue;
-      if (note.alive) continue;
-
+      if (note == null || note.alive) continue;
       if (note.noteData == target) return note;
     }
 
@@ -408,9 +397,7 @@ class Strumline extends FlxSpriteGroup
 
     for (holdNote in holdNotes.members)
     {
-      if (holdNote == null) continue;
-      if (holdNote.alive) continue;
-
+      if (holdNote == null || holdNote.alive) continue;
       if (holdNote.noteData == target) return holdNote;
     }
 
@@ -426,8 +413,7 @@ class Strumline extends FlxSpriteGroup
 
     for (note in notes.members)
     {
-      if (note == null) continue;
-      if (!note.alive) continue;
+      if (note == null || !note.alive) continue;
 
       notes.remove(note);
       notesVwoosh.add(note);
@@ -447,8 +433,7 @@ class Strumline extends FlxSpriteGroup
 
     for (holdNote in holdNotes.members)
     {
-      if (holdNote == null) continue;
-      if (!holdNote.alive) continue;
+      if (note == null || !note.alive) continue;
 
       holdNotes.remove(holdNote);
       holdNotesVwoosh.add(holdNote);
@@ -527,8 +512,7 @@ class Strumline extends FlxSpriteGroup
 
     for (note in notes.members)
     {
-      if (note == null) continue;
-      if (!note.alive) continue;
+      if (note == null || !note.alive) continue;
 
       note.yOffset = 200;
       if (isDownscroll)
@@ -546,8 +530,7 @@ class Strumline extends FlxSpriteGroup
 
     for (holdNote in holdNotes.members)
     {
-      if (holdNote == null) continue;
-      if (!holdNote.alive) continue;
+      if (holdNote == null || !holdNote.alive) continue;
 
       holdNote.yOffset = 200;
       if (isDownscroll)
@@ -1075,8 +1058,7 @@ class Strumline extends FlxSpriteGroup
    */
   public function playNoteSplash(direction:NoteDirection):Void
   {
-    if (!showNotesplash) return;
-    if (!noteStyle.isNoteSplashEnabled()) return;
+    if (!showNotesplash || !noteStyle.isNoteSplashEnabled()) return;
 
     var splash:NoteSplash = this.constructNoteSplash();
 
@@ -1103,8 +1085,7 @@ class Strumline extends FlxSpriteGroup
    */
   public function playNoteHoldCover(holdNote:SustainTrail):Void
   {
-    if (!showNotesplash) return;
-    if (!noteStyle.isHoldNoteCoverEnabled()) return;
+    if (!showNotesplash || !noteStyle.isHoldNoteCoverEnabled()) return;
 
     var cover:NoteHoldCover = this.constructNoteHoldCover();
 
@@ -1477,9 +1458,7 @@ class Strumline extends FlxSpriteGroup
     var value:Float = Math.NEGATIVE_INFINITY;
     for (member in group.members)
     {
-      if (member == null) continue;
-      // SKIP THE BACKGROUND
-      if (member == this.background) continue;
+      if (member == null || member == this.background) continue;
 
       var maxY:Float;
       if (member.flixelType == SPRITEGROUP)
