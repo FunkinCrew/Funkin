@@ -18,6 +18,7 @@ import funkin.util.WindowUtil;
 import funkin.input.Controls;
 import funkin.ui.FullScreenScaleMode;
 import funkin.ui.transition.preload.hotreload.HotReloadState.HotReloadStateParams;
+import funkin.graphics.FunkinCamera;
 #if FEATURE_TOUCH_CONTROLS
 import funkin.touch.ui.FunkinHitbox;
 import funkin.touch.ui.FunkinBackButton;
