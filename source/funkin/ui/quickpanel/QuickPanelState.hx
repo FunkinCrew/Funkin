@@ -444,6 +444,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
 
     duckMusic();
     movePanel(panel.openX, instant);
+    pauseTimers(true);
 
     panel.setTabOnTop(true);
     panel.pullTabVisual.release(curState);
@@ -467,6 +468,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
 
     restoreMusic();
     movePanel(panel.closedX, instant);
+    pauseTimers(false);
 
     panel.setTabOnTop(true);
     panel.pullTabVisual.playIdle(curState);
@@ -482,6 +484,20 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
   {
     if (!pullTabEnabled) return;
     inactivityTimer = -1;
+  }
+
+  /**
+   * Pause all active timers.
+   */
+  function pauseTimers(isActive:Bool):Void
+  {
+    FlxTimer.globalManager.forEach(function(timers:FlxTimer)
+    {
+      if (!transitionTimers.contains(timers))
+      {
+        timers.active = isActive;
+      }
+    });
   }
 
   /**
