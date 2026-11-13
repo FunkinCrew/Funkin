@@ -735,41 +735,37 @@ class ModMenuState extends MusicBeatState
         [BackToMenu];
       case [DisabledModList, FlxDirection.DOWN]:
         [OpenModsFolder];
-      case [
-        DisabledModList,
-        FlxDirection.LEFT | FlxDirection.RIGHT
-      ]:
+      case [DisabledModList, FlxDirection.LEFT]:
+        [Done];
+      case [DisabledModList, FlxDirection.RIGHT]:
         [EnabledModList];
 
       case [EnabledModList, FlxDirection.UP]:
         [BackToMenu];
       case [EnabledModList, FlxDirection.DOWN]:
         [Done];
-      case [
-        EnabledModList,
-        FlxDirection.LEFT | FlxDirection.RIGHT
-      ]:
-        [DisabledModList];
+      case [EnabledModList, FlxDirection.LEFT]:
+        [DisabledModList, OpenModsFolder];
+      case [EnabledModList, FlxDirection.RIGHT]:
+        [OpenModsFolder];
 
       case [OpenModsFolder, FlxDirection.UP]:
         [DisabledModList, EnabledModList, BackToMenu];
       case [OpenModsFolder, FlxDirection.DOWN]:
         [BackToMenu];
-      case [
-        OpenModsFolder,
-        FlxDirection.LEFT | FlxDirection.RIGHT
-      ]:
+      case [OpenModsFolder, FlxDirection.LEFT]:
+        [EnabledModList, DisabledModList];
+      case [OpenModsFolder, FlxDirection.RIGHT]:
         [Done];
 
       case [Done, FlxDirection.UP]:
         [EnabledModList, DisabledModList, BackToMenu];
       case [Done, FlxDirection.DOWN]:
         [BackToMenu];
-      case [
-        Done,
-        FlxDirection.LEFT | FlxDirection.RIGHT
-      ]:
+      case [Done, FlxDirection.LEFT]:
         [OpenModsFolder];
+      case [Done, FlxDirection.RIGHT]:
+        [DisabledModList, EnabledModList];
 
       // The back button remembers which column you came from, so its jiffy
       case [BackToMenu, FlxDirection.DOWN]:
