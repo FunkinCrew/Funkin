@@ -1257,6 +1257,14 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
     if (easeDirField != null && easeDirField.hidden == visible) easeDirField.hidden = !visible;
   }
 
+  override public function disposeComponent():Void
+  {
+    _dotTimer?.cancel();
+    _pauseTimer?.cancel();
+
+    super.disposeComponent();
+  }
+
   /**
    * Constructs a new Event toolbox for the given Chart Editor.
    * @param chartEditorState The Chart Editor state to build the toolbox for.
