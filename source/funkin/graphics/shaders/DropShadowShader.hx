@@ -281,7 +281,7 @@ class DropShadowShader extends FlxShader
    */
   public function loadAltMask(path:String):Void
   {
-    altMaskImage = Assets.getBitmapData(path, false);
+    altMaskImage = funkin.assets.Assets.getBitmapData(funkin.assets.Paths.image(path));
   }
 
   /**
