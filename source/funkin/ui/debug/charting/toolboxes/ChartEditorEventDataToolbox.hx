@@ -1151,6 +1151,27 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
 
   var _lastEaseKey:Null<String> = null;
 
+  function stopEasePreviewTimers():Void
+  {
+    _dotTimer?.cancel();
+    _pauseTimer?.cancel();
+    _dotTimer = null;
+    _pauseTimer = null;
+  }
+
+  function canUpdateEaseDot():Bool
+  {
+    @:privateAccess
+    return easeDotImage != null && !_initializing && !easeDotImage._isDisposed && !this._isDisposed;
+  }
+
+  override function onDestroy():Void
+  {
+    stopEasePreviewTimers();
+
+    super.onDestroy();
+  }
+
   function updateEasePreview():Void
   {
     if (easeGraphImage == null || easeDotImage == null) return;
@@ -1233,7 +1254,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
         _pauseTimer ??= new FlxTimer();
         _pauseTimer.start(_loopPause, function(p:FlxTimer):Void
         {
-          if (easeDotImage != null && !_initializing)
+          if (canUpdateEaseDot())
           {
             _dotIndex = 0;
             if (SongEventHelper.liveFrame(_easeDotSprites[0]) != null) easeDotImage.resource = SongEventHelper.liveFrame(_easeDotSprites[0]);
@@ -1242,7 +1263,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
           }
         }, 1);
       }
-      else if (easeDotImage != null && !_initializing && SongEventHelper.liveFrame(_easeDotSprites[_dotIndex]) != null) easeDotImage.resource = SongEventHelper.liveFrame(_easeDotSprites[_dotIndex]);
+      else if (canUpdateEaseDot() && SongEventHelper.liveFrame(_easeDotSprites[_dotIndex]) != null) easeDotImage.resource = SongEventHelper.liveFrame(_easeDotSprites[_dotIndex]);
     };
 
     _dotTimer ??= new FlxTimer();
