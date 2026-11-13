@@ -155,11 +155,11 @@ class CameraEditorImportExportHandler
   public static function buildFNFCDataFromCurrentChart(state:CameraEditorState):FNFCData
   {
     return {
-      songMetadatas: state.songMetadatas,
-      songChartDatas: state.songDatas,
-      manifest: state.songManifestData,
-      instrumentals: state.audioInstTrackData,
-      vocals: state.audioVocalTrackData
+      songMetadatas: state.songMetadatas.clone(),
+      songChartDatas: state.songDatas.clone(),
+      manifest: state.songManifestData.clone(),
+      instrumentals: state.audioInstTrackData.clone(),
+      vocals: state.audioVocalTrackData.clone()
     };
   }
 

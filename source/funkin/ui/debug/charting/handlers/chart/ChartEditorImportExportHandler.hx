@@ -291,14 +291,14 @@ class ChartEditorImportExportHandler
     #end
   }
 
-  static function buildFNFCDataFromCurrentChart(state:ChartEditorState):FNFCData
+  public static function buildFNFCDataFromCurrentChart(state:ChartEditorState):FNFCData
   {
     return {
-      songMetadatas: state.songMetadata,
-      songChartDatas: state.songChartData,
-      manifest: state.songManifestData,
-      instrumentals: state.audioInstTrackData,
-      vocals: state.audioVocalTrackData
+      songMetadatas: state.songMetadata.clone(),
+      songChartDatas: state.songChartData.clone(),
+      manifest: state.songManifestData.clone(),
+      instrumentals: state.audioInstTrackData.clone(),
+      vocals: state.audioVocalTrackData.clone()
     };
   }
 

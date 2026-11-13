@@ -44,9 +44,8 @@ class MapTools
   /**
    * Create a new array with all elements of the given array, to prevent modifying the original.
    */
-  public static function clone<K, T>(map:Null<Map<K, T>>):Null<Map<K, T>>
+  public static function clone<K, T>(map:Map<K, T>):Map<K, T>
   {
-    if (map == null) return null;
     return map.copy();
   }
 

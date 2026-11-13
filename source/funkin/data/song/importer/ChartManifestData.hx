@@ -1,11 +1,12 @@
 package funkin.data.song.importer;
 
+import funkin.util.tools.ICloneable;
 import funkin.util.tools.ISerializable;
 
 /**
  * A helper JSON blob found in `.fnfc` files.
  */
-class ChartManifestData implements ISerializable
+class ChartManifestData implements ISerializable implements ICloneable<ChartManifestData>
 {
   /**
    * The current semantic version of the chart manifest data.
@@ -123,6 +124,16 @@ class ChartManifestData implements ISerializable
   function updateVersionToLatest():Void
   {
     this.version = CHART_MANIFEST_DATA_VERSION;
+  }
+
+  public function clone():ChartManifestData
+  {
+    var result = new ChartManifestData(this.version);
+
+    result.version = this.version;
+    result.songId = this.songId;
+
+    return result;
   }
 
   /**

@@ -193,7 +193,21 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   /**
    * Zoom levels the grid can be scaled to.
    */
-  public static final ZOOM_LEVELS:Array<Float> = [0.1, 0.15, 0.25, 0.375, 0.5, 0.75, 1, 1.5, 2, 3, 4, 6, 8];
+  public static final ZOOM_LEVELS:Array<Float> = [
+    0.1,
+    0.15,
+    0.25,
+    0.375,
+    0.5,
+    0.75,
+    1,
+    1.5,
+    2,
+    3,
+    4,
+    6,
+    8
+  ];
 
   /**
    * The index of the default zoom level in `ZOOM_LEVELS`.
@@ -1183,8 +1197,20 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     hitsoundsMuted = value;
     if (wasMuted && !value && hitsoundVolumePlayer <= 0.0 && hitsoundVolumeOpponent <= 0.0)
     {
-      restoreAudioVolume(hitsoundVolumePlayer, preferencesVolumeHitsoundPlayer, preferencesLabelVolumeHitsoundPlayer, 'Player', () -> hitsoundVolumePlayer = 1.0);
-      restoreAudioVolume(hitsoundVolumeOpponent, preferencesVolumeHitsoundOpponent, preferencesLabelVolumeHitsoundOpponent, 'Opponent', () -> hitsoundVolumeOpponent = 1.0);
+      restoreAudioVolume(
+        hitsoundVolumePlayer,
+        preferencesVolumeHitsoundPlayer,
+        preferencesLabelVolumeHitsoundPlayer,
+        'Player',
+        () -> hitsoundVolumePlayer = 1.0
+      );
+      restoreAudioVolume(
+        hitsoundVolumeOpponent,
+        preferencesVolumeHitsoundOpponent,
+        preferencesLabelVolumeHitsoundOpponent,
+        'Opponent',
+        () -> hitsoundVolumeOpponent = 1.0
+      );
     }
     return hitsoundsMuted;
   }
@@ -1289,6 +1315,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * The amount of vertical steps the note sprite has moved by since the user started dragging.
    */
   var dragTargetCurrentStep:Float = 0;
+
   var dragTargetCurrentColumn:Int = 0;
   var dragAlignToSubBeats:Bool = false;
   var dragStartCursorStep:Float = 0;
@@ -1297,6 +1324,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * Where the cursor was when the drag started, in steps, before snapping. Alt drags move freely from here.
    */
   var dragStartCursorFractionalStep:Float = 0;
+
   var dragStartCursorColumn:Int = 0;
   // Hold Note Dragging
 
@@ -1328,8 +1356,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     // This value is true if all elements of the current selection are also in the new selection.
     var newSet:haxe.ds.ObjectMap<SongNoteData, Bool> = new haxe.ds.ObjectMap();
-    for (note in value)
-      newSet.set(note, true);
+    for (note in value) newSet.set(note, true);
     var isSuperset:Bool = true;
     for (note in currentNoteSelection)
     {
@@ -1370,8 +1397,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     // This value is true if all elements of the current overlapping array are also in the new array.
     var newSet:haxe.ds.ObjectMap<SongNoteData, Bool> = new haxe.ds.ObjectMap();
-    for (note in value)
-      newSet.set(note, true);
+    for (note in value) newSet.set(note, true);
     var isSuperset:Bool = true;
     for (note in currentOverlappingNotes)
     {
@@ -1467,7 +1493,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var noteDisplayDirty:Bool = true;
 
   var notesNeedSort:Bool = true;
-
   // bunch of caches for various sets of notes and events.
   var windowNotes:Array<SongNoteData> = [];
   var windowNoteSet:haxe.ds.ObjectMap<SongNoteData, Bool> = new haxe.ds.ObjectMap();
@@ -2622,17 +2647,16 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   var menuBarItemNoteSnapIncrease:MenuItem;
 
-
   /**
    * The `View -> Downscroll` menu item.
    */
   var menubarItemDownscroll:MenuCheckBox;
 
-
   /**
    * The `View -> Waveforms` menu item.
    */
   var menubarItemViewWaveforms:MenuCheckBox;
+
   var menubarItemViewDifficultyHeatmap:MenuCheckBox;
   var menubarItemViewPlayerView:MenuCheckBox;
 
@@ -2670,7 +2694,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * The `Preferences -> Audio -> Metronome Volume` slider.
    */
   var preferencesVolumeMetronome:Slider;
-
 
   /**
    * The `Preferences -> Audio -> Player Hitsound Volume` label.
@@ -2885,10 +2908,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   var gridGhostPlayhead:FlxSpriteGroup = new FlxSpriteGroup();
   var gridGhostPlayheadText:Null<flixel.text.FlxText> = null;
-
   var gridGhostPlayheadOpponentPart:Null<flixel.FlxSprite> = null;
   var gridGhostPlayheadEventPart:Null<flixel.FlxSprite> = null;
-
   var gridGhostPlayheadOpponent:FlxSpriteGroup = new FlxSpriteGroup();
   var gridGhostPlayheadOpponentText:Null<flixel.text.FlxText> = null;
 
@@ -3137,8 +3158,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   override function getHotReloadParams():HotReloadStateParams
   {
-    @:privateAccess
-    var nextState = () -> new ChartEditorState({
+    var chartEditorParams = {
       loadFromPath: currentWorkingFilePath,
       loadFromFNFCData: (
         currentWorkingFilePath == null
@@ -3147,7 +3167,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       targetSongDifficulty: this.selectedDifficulty,
       targetSongVariation: this.selectedVariation,
       targetSongPosition: scrollPositionInMs + playheadPositionInMs
-    });
+    };
 
     return {
       onComplete: () ->
@@ -3158,7 +3178,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           FlxTransitionableState.skipNextTransIn = true;
         }
       },
-      targetState: nextState
+      targetState: () -> new ChartEditorState(chartEditorParams)
     }
   }
 
@@ -3856,7 +3876,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * PLAYTEST FUNCTIONS
    */
   // ====================
-
   /**
    * COMMAND FUNCTIONS
    */
@@ -3933,7 +3952,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * GRAPHICS FUNCTIONS
    */
   // ====================
-
   /**
    * AUDIO FUNCTIONS
    */
@@ -3965,17 +3983,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var eventChainFollowers:haxe.ds.ObjectMap<SongEventData, Bool> = new haxe.ds.ObjectMap();
 
   var eventChainRest:haxe.ds.ObjectMap<SongEventData, Array<SongEventData>> = new haxe.ds.ObjectMap();
-
   /**
    * SCROLLING FUNCTIONS
    */
   // ====================
-
   /**
    * HAXEUI FUNCTIONS
    */
   // ==================
-
   /**
    * STATIC FUNCTIONS
    */
@@ -3994,11 +4009,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var stackedNotesRevision:Int = -1;
   var stackedNotesSource:Null<Array<SongNoteData>> = null;
   var stackedNotesThreshold:Float = -1;
-
   var longestHoldRevision:Int = -1;
   var longestHoldSource:Null<Array<SongNoteData>> = null;
   var longestHoldMs:Float = 0;
-
   var _currentEvents = null;
   var _allowedEvents = null;
   var _eventTarget:Null<CharacterPlayer> = null;
@@ -4016,7 +4029,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     playerVocalsMuted = value;
     if (wasMuted && !value)
     {
-      restoreAudioVolume(audioVocalTrackGroup.playerVolume, preferencesVolumeVocalsPlayer, preferencesLabelVolumeVocalsPlayer, 'Player', () -> audioVocalTrackGroup.playerVolume = 1.0);
+      restoreAudioVolume(
+        audioVocalTrackGroup.playerVolume,
+        preferencesVolumeVocalsPlayer,
+        preferencesLabelVolumeVocalsPlayer,
+        'Player',
+        () -> audioVocalTrackGroup.playerVolume = 1.0
+      );
     }
     this.applyVocalMutes();
     return playerVocalsMuted;
@@ -4033,7 +4052,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     opponentVocalsMuted = value;
     if (wasMuted && !value)
     {
-      restoreAudioVolume(audioVocalTrackGroup.opponentVolume, preferencesVolumeVocalsOpponent, preferencesLabelVolumeVocalsOpponent, 'Opponent', () -> audioVocalTrackGroup.opponentVolume = 1.0);
+      restoreAudioVolume(
+        audioVocalTrackGroup.opponentVolume,
+        preferencesVolumeVocalsOpponent,
+        preferencesLabelVolumeVocalsOpponent,
+        'Opponent',
+        () -> audioVocalTrackGroup.opponentVolume = 1.0
+      );
     }
     this.applyVocalMutes();
     return opponentVocalsMuted;
