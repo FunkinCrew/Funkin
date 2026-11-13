@@ -33,14 +33,44 @@ class StateMachine
   public var currentState:Null<LogicalState>;
 
   /**
+   * The id of the current state.
+   */
+  public var currentStateId(get, never):String;
+
+  public function get_currentStateId():String
+  {
+    return currentState?.id ?? '';
+  }
+
+  /**
    * The previous state of this state machine.
    */
   public var previousState:Null<LogicalState>;
 
   /**
+   * The id of the previous state.
+   */
+  public var previousStateId(get, never):String;
+
+  public function get_previousStateId():String
+  {
+    return previousState?.id ?? '';
+  }
+
+  /**
    * The state the machine uses as an initial and default state.
    */
   public var defaultState:Null<LogicalState>;
+
+  /**
+   * The id of the default state.
+   */
+  public var defaultStateId(get, never):String;
+
+  public function get_defaultStateId():String
+  {
+    return defaultState?.id ?? '';
+  }
 
   /**
    * List of states of the machine.

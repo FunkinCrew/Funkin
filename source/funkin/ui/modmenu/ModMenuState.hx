@@ -24,6 +24,7 @@ import funkin.ui.transition.Transition;
 import funkin.ui.transition.preload.hotreload.HotReloadState;
 import funkin.util.FileUtil;
 import funkin.util.PropertyAnimator;
+import funkin.util.stateMachine.StateMachine;
 import haxe.io.Path;
 #if android
 import funkin.external.android.DataFolderUtil;
@@ -222,7 +223,7 @@ class ModMenuState extends MusicBeatState
 
     // uiState
     uiState = new UIStateMachine();
-    uiState.onStateChanged(onUIStateChange);
+    uiState.onStateChange.add(onUIStateChange);
   }
 
   override public function create():Void
@@ -394,6 +395,7 @@ class ModMenuState extends MusicBeatState
     {
       uiState.transition((enabled) ? Idle : Disabled);
     });
+
     installer.build(camHUD);
 
     enabledModItems.repositionItems();
@@ -461,7 +463,7 @@ class ModMenuState extends MusicBeatState
 
   function pressBackButton():Void
   {
-    if (uiState.is(Exiting) || !uiState.transition(Exiting)) return;
+    if (uiState.is(Exiting) || !uiState.transition(UIState.Exiting)) return;
     backPressStage = 1;
     playBackButtonAnimation('press', true);
   }
@@ -716,7 +718,7 @@ class ModMenuState extends MusicBeatState
       });
 
     doneButtonAnimator.playAnimation('accept');
-    uiState.transition(Exiting);
+    uiState.transition(UIState.Exiting);
   }
 
   // NAVIGATION //
@@ -1018,11 +1020,11 @@ class ModMenuState extends MusicBeatState
   {
     if (uiState.is(Idle) && lists.hasTransitions)
     {
-      uiState.transition(Interacting);
+      uiState.transition(UIState.Interacting);
     }
     else if (uiState.is(Interacting) && !lists.hasTransitions)
     {
-      uiState.transition(Idle);
+      uiState.transition(UIState.Idle);
     }
   }
 
@@ -1031,7 +1033,7 @@ class ModMenuState extends MusicBeatState
    * @param previous The previous state we were in.
    * @param current The current state we have now.
    */
-  function onUIStateChange(previous:UIState, current:UIState):Void
+  function onUIStateChange(result:StateTransitionResult):Void
   {
     heldDirection = null;
   }
@@ -1239,7 +1241,7 @@ class ModMenuState extends MusicBeatState
     {
       if (TouchUtil.justReleased && TouchUtil.overlapsComplex(buttonBackToMenu))
       {
-        uiState.transition(Exiting);
+        uiState.transition(UIState.Exiting);
 
         backPressStage = 2;
 
@@ -1599,7 +1601,7 @@ class ModMenuState extends MusicBeatState
    */
   function backToMainMenu():Void
   {
-    uiState.transition(Exiting);
+    uiState.transition(UIState.Exiting);
     FlxG.keys.enabled = false;
     Cursor.hide();
     Transition.switchState(() -> new MainMenuState(), {

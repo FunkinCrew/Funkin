@@ -41,6 +41,7 @@ import funkin.play.scoring.Scoring.ScoringRank;
 import funkin.play.song.Song;
 import funkin.save.Save;
 import funkin.save.Save.SaveScoreData;
+import funkin.ui.UIStateMachine;
 import funkin.ui.AtlasText;
 import funkin.ui.FullScreenScaleMode;
 import funkin.ui.MusicBeatSubState;

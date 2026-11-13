@@ -1,172 +1,165 @@
 package funkin.ui;
 
+import funkin.util.stateMachine.LogicalState;
+import funkin.util.stateMachine.StateMachine;
+
 /**
- * Simple state machine for UI components
- * Replaces scattered boolean flags with clean state management
+ * States of ui.
  */
-enum UIState
+enum abstract UIState(String) from String to String
 {
-  // Main Menu / Freeplay
-  Idle;
-  Interacting;
-  EnteringMainMenu;
-  EnteringFreeplay;
-  Exiting;
-  Disabled;
-  // Character Select
-  UnlockAnimation;
-  CharacterSelected;
-  // Quick Panel
-  PanelClosed;
-  PanelLoading;
-  PanelDragging;
-  PanelOpen;
-  PanelConfirming;
+  // GENERAL
+
+  /**
+   * Idling in a menu.
+   */
+  public var Idle = 'Idle';
+
+  /**
+   * Interacting in a menu.
+   */
+  public var Interacting = 'Interacting';
+
+  /**
+   * Exiting a menu.
+   */
+  public var Exiting = 'Exiting';
+
+  /**
+   * The machine is disabled.
+   */
+  public var Disabled = 'Disabled';
+
+  // MAIN MENU
+
+  /**
+   * Entering the Main Menu.
+   */
+  public var EnteringMainMenu = 'EnteringMainMenu';
+
+  // FREEPLAY
+
+  /**
+   * Entering the Freeplay.
+   */
+  public var EnteringFreeplay = 'EnteringFreeplay';
+
+  // STORY MENU
+
+  /**
+   * Entering the Story Menu.
+   */
+  public var EnteringStoryMenu = 'EnteringStoryMenu';
+
+  /**
+   * Selected a level.
+   */
+  public var LevelSelected = 'LevelSelected';
+
+  // CHARACTER SELECT
+
+  /**
+   * Playing the unlock animation.
+   */
+  public var UnlockAnimation = 'UnlockAnimation';
+
+  /**
+   * Selected a character.
+   */
+  public var CharacterSelected = 'CharacterSelected';
+
+  // QUICK PANEL
+
+  /**
+   * The panel is open.
+   */
+  public var PanelOpen = 'PanelOpen';
+
+  /**
+   * The panel is closed.
+   */
+  public var PanelClosed = 'PanelClosed';
+
+  /**
+   * The panel is loading.
+   */
+  public var PanelLoading = 'PanelLoading';
+
+  /**
+   * The panel is getting dragged.
+   */
+  public var PanelDragging = 'PanelDragging';
+
+  /**
+   * The panel is confirming.
+   */
+  public var PanelConfirming = 'PanelConfirming';
 }
 
 /**
- * Note: Not to be confust with FlxState or FlxSubState!
- * State as in the design pattern!
- * https://refactoring.guru/design-patterns/state
- *
- * TODO: Generalize this a bit more to allow the UIState enum be defined with any enum
+ * A state machine for ui.
  */
 @:nullSafety
-class UIStateMachine
+class UIStateMachine extends StateMachine
 {
   /**
-   * The current state of this state machine.
+   * List of all the ui states.
+   *
+   * TODO: maybe it should use a macros...
    */
-  public var currentState(default, null):UIState = Idle;
+  public static final stateList:Array<String> = [
+    Idle,
+    Interacting,
+    Exiting,
+    Disabled,
+    EnteringMainMenu,
+    EnteringFreeplay,
+    EnteringStoryMenu,
+    LevelSelected,
+    UnlockAnimation,
+    CharacterSelected,
+    PanelOpen,
+    PanelClosed,
+    PanelLoading,
+    PanelDragging,
+    PanelConfirming
+  ];
 
   /**
-   * The previous state of this state machine.
+   * A default map of valid transitions.
    */
-  public var previousState(default, null):UIState = Idle;
+  public static final defaultTransitionMap:Map<String, Array<String>> = [
+    Idle => [
+      Interacting,
+      EnteringMainMenu,
+      EnteringFreeplay,
+      Exiting,
+      Disabled,
+      CharacterSelected,
+      UnlockAnimation
+    ],
+    EnteringMainMenu => [Idle, Exiting, Disabled, Interacting],
+    Interacting => [
+      Idle,
+      EnteringMainMenu,
+      EnteringFreeplay,
+      Exiting,
+      Disabled
+    ],
+    Exiting => [Idle],
+    Disabled => [Idle, UnlockAnimation],
+    EnteringFreeplay => [Idle],
+    CharacterSelected => [Idle, Exiting],
+    UnlockAnimation => [Idle]
+  ];
 
-  /**
-   * The state this machine starts in and returns to on `reset()`.
-   */
-  var defaultState:UIState = Idle;
-
-  var label:String = 'ui';
-  var validTransitions:Map<UIState, Array<UIState>>;
-  var onStateChange:Array<(UIState, UIState) -> Void> = [];
-
-  public function new(label:String = 'ui',
-    ?transitions:Map<UIState, Array<UIState>>,
-    ?initialState:UIState)
+  public function new(id:String = '',
+    ?transitions:Map<String, Array<String>>,
+    ?defaultStateId:String)
   {
-    this.label = label;
+    var validTransitions:Map<String, Array<String>> = (transitions != null) ? transitions : defaultTransitionMap;
 
-    if (initialState != null)
-    {
-      defaultState = initialState;
-      currentState = initialState;
-      previousState = initialState;
-    }
-
-    // Default valid transitions if none provided
-    validTransitions = transitions != null ? transitions : [
-      Idle => [
-        Interacting,
-        EnteringMainMenu,
-        EnteringFreeplay,
-        Exiting,
-        Disabled,
-        CharacterSelected,
-        UnlockAnimation
-      ],
-      EnteringMainMenu => [Idle, Exiting, Disabled, Interacting],
-      Interacting => [
-        Idle,
-        EnteringMainMenu,
-        EnteringFreeplay,
-        Exiting,
-        Disabled
-      ],
-      Exiting => [Idle],
-      Disabled => [Idle, UnlockAnimation],
-      EnteringFreeplay => [Idle],
-      CharacterSelected => [Idle, Exiting],
-      UnlockAnimation => [Idle]
-    ];
-  }
-
-  /**
-   * Checks if the current state can transition to the given state.
-   * @param from The state to transition from.
-   * @param to The state to transition to.
-   * @return `true` if it's possible, `false` otherwise.
-   */
-  public function canTransition(from:UIState, to:UIState):Bool
-  {
-    if (from != currentState) return false;
-
-    var allowedStates = validTransitions.get(from);
-    return allowedStates != null && allowedStates.contains(to);
-  }
-
-  /**
-   * Transitions to the given state.
-   * @param newState The state to transition to.
-   * @return `true` if the transition was successful, `false` otherwise.
-   */
-  public function transition(newState:UIState):Bool
-  {
-    // Allow same-state transitions (idempotent)
-    if (currentState == newState)
-    {
-      log('State transition ${currentState} -> ${newState} (no change)');
-      return true;
-    }
-
-    if (!canTransition(currentState, newState))
-    {
-      log('State transition: ${currentState} -> ${newState} (INVALID, blocked)');
-      return false;
-    }
-
-    previousState = currentState;
-    currentState = newState;
-
-    log('State transition ${previousState} -> ${currentState}');
-
-    // Notify listeners
-    for (callback in onStateChange)
-    {
-      callback(previousState, currentState);
-    }
-
-    return true;
-  }
-
-  /**
-   * A callback that is called whenever the state changes.
-   * @param callback A custom function to call when the state changes.
-   */
-  public function onStateChanged(callback:(UIState, UIState) -> Void):Void
-  {
-    onStateChange.push(callback);
-  }
-
-  /**
-   * Resets the state machine to the default state.
-   */
-  public function reset():Void
-  {
-    previousState = currentState;
-    currentState = defaultState;
-  }
-
-  /**
-   * Checks whether the current state is the given state.
-   * @param state The state to check.
-   * @return `true` if the current state is the given state, `false` otherwise.
-   */
-  public function is(state:UIState):Bool
-  {
-    return currentState == state;
+    super(id, stateList, validTransitions, defaultStateId);
   }
 
   /**
@@ -175,12 +168,20 @@ class UIStateMachine
    */
   public function canInteract():Bool
   {
-    // Entering is an enabled state since we want to be able to interact even during the screen fade wipe thing
-    return currentState == Idle || currentState == EnteringMainMenu || currentState == CharacterSelected || currentState == PanelOpen;
-  }
+    if (currentState == null)
+    {
+      return false;
+    }
 
-  static function log(message:String):Void
-  {
-    trace(' UI '.bold().bg_orange() + ' $message');
+    final interactableStateIds:Array<String> = [Idle, EnteringMainMenu, CharacterSelected, PanelOpen];
+    for (stateId in interactableStateIds)
+    {
+      if (currentState.id == stateId)
+      {
+        return true;
+      }
+    }
+
+    return false;
   }
 }

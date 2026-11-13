@@ -470,7 +470,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
       return;
     }
 
-    if (!uiState.is(PanelOpen) && !uiState.transition(PanelOpen)) return;
+    if (!uiState.is(PanelOpen) && !uiState.transition(UIState.PanelOpen)) return;
 
     duckMusic();
     movePanel(panel.openX, instant);
@@ -493,7 +493,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
 
     closeBlocker();
 
-    if (!uiState.is(PanelClosed)) uiState.transition(PanelClosed);
+    if (!uiState.is(PanelClosed)) uiState.transition(UIState.PanelClosed);
 
     restoreMusic();
     movePanel(panel.closedX, instant);
@@ -1021,7 +1021,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
    */
   function grabPanel():Void
   {
-    if (!uiState.transition(PanelDragging)) return;
+    if (!uiState.transition(UIState.PanelDragging)) return;
 
     // Stop any open/close tween so it doesn't fight the finger.
     cancelMoveTween();
@@ -1138,7 +1138,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
       return;
     }
 
-    if (!uiState.transition(PanelConfirming)) return;
+    if (!uiState.transition(UIState.PanelConfirming)) return;
 
     panel.playAccept(curSelected, isTransitioning);
     FunkinSound.playSoundOnce(Paths.sound('ui/main-menu/confirm-menu'));
@@ -1363,7 +1363,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
   {
     // Already loading, or nothing to block.
     if (uiState.is(PanelLoading) || FlxG.state == null) return;
-    if (!uiState.transition(PanelLoading)) return;
+    if (!uiState.transition(UIState.PanelLoading)) return;
 
     blockerPendingFrames = 0;
 
@@ -1650,7 +1650,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
 
   inline function get_controls():Controls return PlayerSettings.player1.controls;
 
-  inline function get_curState():UIState return uiState.currentState;
+  inline function get_curState():UIState return uiState.currentState.id;
 
   inline function get_isOpen():Bool return uiState.is(PanelOpen);
 

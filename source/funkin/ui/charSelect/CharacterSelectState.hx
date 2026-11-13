@@ -520,7 +520,7 @@ class CharacterSelectState extends MusicBeatSubState
   {
     super.create();
 
-    uiStateMachine.transition(Disabled);
+    uiStateMachine.transition(UIState.Disabled);
 
     loadAvailableCharacters();
 
@@ -740,7 +740,7 @@ class CharacterSelectState extends MusicBeatSubState
   {
     if (locksToUnlock.length > 0)
     {
-      uiStateMachine.transition(UnlockAnimation);
+      uiStateMachine.transition(UIState.UnlockAnimation);
 
       // We loop the idle animation since there's no music playing during the unlock sequence
       // Without looping, the characters would bop once and awkwardly remain static for 2 seconds
@@ -889,7 +889,7 @@ class CharacterSelectState extends MusicBeatSubState
       forceRestart: true,
       onLoad: (_) ->
       {
-        uiStateMachine.transition(Idle);
+        uiStateMachine.transition(UIState.Idle);
 
         characters.dispatchEvent(new ScriptEvent(CREATE));
       }
@@ -1024,7 +1024,7 @@ class CharacterSelectState extends MusicBeatSubState
       return;
     }
 
-    uiStateMachine.transition(CharacterSelected);
+    uiStateMachine.transition(UIState.CharacterSelected);
 
     inputHandler.reset();
     cursors.confirm();
@@ -1064,7 +1064,7 @@ class CharacterSelectState extends MusicBeatSubState
 
   function deselectCharacter():Void
   {
-    uiStateMachine.transition(Idle);
+    uiStateMachine.transition(UIState.Idle);
 
     selectTimer.cancel();
     cursors.unconfirm();
@@ -1131,7 +1131,7 @@ class CharacterSelectState extends MusicBeatSubState
 
   function goToFreeplay():Void
   {
-    uiStateMachine.transition(Exiting);
+    uiStateMachine.transition(UIState.Exiting);
 
     autoFollow = false;
 
