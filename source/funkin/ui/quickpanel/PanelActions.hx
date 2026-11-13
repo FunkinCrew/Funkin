@@ -74,6 +74,12 @@ class PanelActions
   static function openOptions():Void
   {
     QuickPanelState.stopMusic();
+
+    var s:MusicBeatState = cast FlxG.state;
+    @:privateAccess
+    var path:String = s._asc?.fullyQualifiedName ?? Type.getClassName(Type.getClass(FlxG.state));
+    OptionsState.backState = path;
+
     Transition.switchState(() -> new OptionsState(), {
       assetQuery: OptionsState.queryAssets,
       transition: None,
