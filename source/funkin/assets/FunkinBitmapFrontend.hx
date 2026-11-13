@@ -176,9 +176,18 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
 
   override public function findKeyForBitmap(bmd:BitmapData):Null<String>
   {
-    for (assetPath in stagedFlxGraphic.keys())
+    for (assetPath => obj in stagedFlxGraphic.permanent)
     {
-      var obj = stagedFlxGraphic.get(assetPath);
+      if (obj != null && obj.bitmap == bmd) return assetPath;
+    }
+
+    for (assetPath => obj in stagedFlxGraphic.current)
+    {
+      if (obj != null && obj.bitmap == bmd) return assetPath;
+    }
+
+    for (assetPath => obj in stagedFlxGraphic.previous)
+    {
       if (obj != null && obj.bitmap == bmd) return assetPath;
     }
 

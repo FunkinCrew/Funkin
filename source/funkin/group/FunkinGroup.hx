@@ -787,15 +787,16 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
    */
   public inline function clear():Void
   {
-    for (child in children)
+    final oldChildren:Array<T> = children;
+    children = [];
+
+    for (child in oldChildren)
     {
       if (child == null) continue;
       funkin.util.FlxTweenUtil.cancelPointTweens(child);
 
       child.destroy();
     }
-
-    children = [];
   }
 
   /**

@@ -1277,11 +1277,10 @@ class Assets implements ConsoleClass
   {
     var results:Array<AssetPath> = list(type);
 
-    // We don't need to cache this filter operation because it only takes a couple nanoseconds.
     var prefix:String = (defaultPrefix && !path.startsWith('assets/')) ? 'assets/$path' : path;
     return results.filter((assetPath:AssetPath) ->
     {
-      return assetPath.exists() && assetPath.toString().startsWith(prefix);
+      return assetPath.toString().startsWith(prefix) && assetPath.exists();
     });
   }
 
