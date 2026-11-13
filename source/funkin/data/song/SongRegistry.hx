@@ -8,6 +8,7 @@ import funkin.data.song.SongData.SongMetadata;
 import funkin.data.song.SongData.SongMusicData;
 import funkin.play.song.Song;
 import funkin.util.VersionUtil;
+import funkin.util.macro.SongDataValidator;
 import funkin.util.tools.ISingleton;
 import funkin.data.DefaultRegistryImpl;
 #if FEATURE_MULTITHREADING
@@ -79,6 +80,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
   override function clearEntries():Void
   {
     log('Destroying ${countEntries()} entries in registry...');
+    SongDataValidator.clearLists();
 
     for (entry in entries)
     {
@@ -412,6 +414,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
         fileName: fileName,
         contents: contents
       }:
+        SongDataValidator.checkChartValidity(contents, id, variation);
         parser.fromJson(contents, fileName);
       default:
         return null;
