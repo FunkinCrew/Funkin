@@ -425,15 +425,30 @@ class Controls extends FlxActionSet
 
   inline function get_VOLUME_UP():Bool
   {
-    return _volume_up.check();
+    return _volume_up.checkPressed();
+  }
+
+  public var VOLUME_UP_P(get, never):Bool;
+
+  inline function get_VOLUME_UP_P():Bool
+  {
+    return _volume_up.checkJustPressed();
   }
 
   public var VOLUME_DOWN(get, never):Bool;
 
   inline function get_VOLUME_DOWN():Bool
   {
-    return _volume_down.check();
+    return _volume_down.checkPressed();
   }
+
+  public var VOLUME_DOWN_P(get, never):Bool;
+
+  inline function get_VOLUME_DOWN_P():Bool
+  {
+    return _volume_down.checkJustPressed();
+  }
+  
 
   public var VOLUME_MUTE(get, never):Bool;
 
@@ -774,8 +789,10 @@ class Controls extends FlxActionSet
       case DEBUG_DISPLAY:
         func(_debug_display, JUST_PRESSED);
       case VOLUME_UP:
+        func(_volume_up, PRESSED);
         func(_volume_up, JUST_PRESSED);
       case VOLUME_DOWN:
+        func(_volume_down, PRESSED);
         func(_volume_down, JUST_PRESSED);
       case VOLUME_MUTE:
         func(_volume_mute, JUST_PRESSED);
