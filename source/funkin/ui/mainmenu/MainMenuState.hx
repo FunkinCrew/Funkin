@@ -702,6 +702,11 @@ class MainMenuState extends MusicBeatState
     });
   }
 
+  override function getConstructor():NextState
+  {
+    return () -> new MainMenuState(false);
+  }
+  
   /**
    * Return a list of all AssetPaths that this state depends on to load.
    * @param type The type of AssetPath to return a list of paths for.
