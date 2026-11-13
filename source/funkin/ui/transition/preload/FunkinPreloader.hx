@@ -378,6 +378,7 @@ class FunkinPreloader extends FlxBasePreloader
           var elapsedInitializingScripts:Float = elapsed - initializingScriptsStartTime;
           if (initializingScriptsComplete && elapsedInitializingScripts >= Constants.PRELOADER_MIN_STAGE_TIME)
           {
+            funkin.modding.PolymodErrorHandler.printQueuedErrors();
             currentState = CachingGraphics;
             return 0.0;
           }
@@ -398,6 +399,7 @@ class FunkinPreloader extends FlxBasePreloader
         {
           if (initializingScriptsComplete)
           {
+            funkin.modding.PolymodErrorHandler.printQueuedErrors();
             currentState = CachingGraphics;
           }
         }
