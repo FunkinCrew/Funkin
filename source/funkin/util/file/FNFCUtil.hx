@@ -424,6 +424,7 @@ class FNFCUtil
     var vocals:Map<String, Bytes> = [];
 
     var variation:String = metadata.variation.isBlank() ? Constants.DEFAULT_VARIATION : metadata.variation;
+    var trackKeySuffix:String = (variation.isBlank() || variation == Constants.DEFAULT_VARIATION) ? '' : '-${variation}';
 
     // Get the player vocal list and opponent vocal list
     // If either are null, default to the player and opponent characters
@@ -434,7 +435,6 @@ class FNFCUtil
 
     for (voiceId in voicesList)
     {
-      var trackKeySuffix:String = (variation.isBlank() || variation == Constants.DEFAULT_VARIATION) ? '' : '-${variation}';
       var trackKey:String = '$voiceId$trackKeySuffix';
       // For example, for voice ID "bf" on variation "pico", the file name would be "Voices-bf-pico.ogg"
 
@@ -467,12 +467,27 @@ class FNFCUtil
       if (voicePath == null)
       {
         var originalVoicePath:String = funkin.Paths.voices(songId, '-$originalVoiceId$trackKeySuffix');
-        throw 'Could not locate vocal track: $originalVoicePath';
+        trace(' ERROR '.error() + ' Could not locate vocal track: $originalVoicePath');
+        continue;
       }
 
       var voiceBytes:Null<Bytes> = Assets.getBytes(voicePath);
-      if (voiceBytes == null) throw 'Could not load vocals: $voicePath';
-      vocals.set(trackKey, voiceBytes);
+      if (voiceBytes != null) vocals.set(trackKey, voiceBytes);
+    }
+
+    var foundLegacyPath:Null<String> = null;
+
+    var legacyFilePath:Null<String> = funkin.Paths.voices(songId, trackKeySuffix);
+    if (Assets.exists(legacyFilePath)) foundLegacyPath = legacyFilePath;
+    if (foundLegacyPath == null)
+    {
+      legacyFilePath = funkin.Paths.voices(songId, '');
+      if (Assets.exists(legacyFilePath)) foundLegacyPath = legacyFilePath;
+    }
+    if (vocals.size() == 0 && foundLegacyPath != null)
+    {
+      var voiceBytes:Null<Bytes> = Assets.getBytes(foundLegacyPath);
+      if (voiceBytes != null) vocals.set('', voiceBytes);
     }
 
     return vocals;

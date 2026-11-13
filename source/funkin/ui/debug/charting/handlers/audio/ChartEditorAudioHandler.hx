@@ -166,6 +166,8 @@ class ChartEditorAudioHandler
    */
   public static function playVocals(state:ChartEditorState, charType:CharacterType, variation:String = ''):Bool
   {
+    var trackKeySuffix:String = (variation.isBlank() || variation == Constants.DEFAULT_VARIATION) ? '' : '-${variation}';
+
     var vocalTrackIds:Array<String> = [];
     var oppositeVocalTracksIds:Array<String> = [];
 
@@ -182,12 +184,24 @@ class ChartEditorAudioHandler
         // Do nothing.
     }
 
-    var totalVoicesCount = (vocalTrackIds.length + oppositeVocalTracksIds.length);
-    var shouldUseLegacyVocals = totalVoicesCount == 0 && state.audioVocalTrackData.exists(''); // Setup for Voices.ogg
+    var totalVoiceTracks = vocalTrackIds.concat(oppositeVocalTracksIds);
+    var validVoiceTracks = totalVoiceTracks.filter((trackBaseKey:String) ->
+    {
+      var trackKey:String = '$trackBaseKey$trackKeySuffix';
+      var vocalTrackData:Null<Bytes> = state.audioVocalTrackData.get(trackKey);
+      if (vocalTrackData == null) return false;
+      var vocalTrack:Null<FunkinSound> = SoundUtil.buildSoundFromBytes(vocalTrackData); // maybe not the best idea
+      if (vocalTrack == null) return false;
+      vocalTrack.destroy();
+      vocalTrack = null;
+      return true;
+    }).length;
+    var totalVoicesCount = totalVoiceTracks.length;
+    var shouldUseLegacyVocals = validVoiceTracks == 0 && state.audioVocalTrackData.exists(''); // Setup for Voices.ogg
     // we set up legacy vocals as the bf side for ease of use
     var setUpLegacyVocals = shouldUseLegacyVocals && charType == BF;
 
-    if (vocalTrackIds.length == 0 && !setUpLegacyVocals)
+    if (validVoiceTracks == 0 && !setUpLegacyVocals)
     {
       // Didn't play vocals because there are no vocal tracks for this character type on this variation.
       // state.warning('Failed to play vocals', 'No vocal tracks found in chart data for character type $charType.');
@@ -210,33 +224,34 @@ class ChartEditorAudioHandler
         firstVocalTrackKey = '';
       }
     }
-
-    for (trackBaseKey in vocalTrackIds)
+    else
     {
-      var trackKeySuffix:String = (variation.isBlank() || variation == Constants.DEFAULT_VARIATION) ? '' : '-${variation}';
-      var trackKey:String = '$trackBaseKey$trackKeySuffix';
-      // For example, for voice ID "bf" on variation "pico", the file name would be "Voices-bf-pico.ogg"
-
-      trace('CHART EDITOR: Switching vocals to "$trackKey"');
-
-      var vocalTrackData:Null<Bytes> = state.audioVocalTrackData.get(trackKey);
-
-      if (vocalTrackData == null)
+      for (trackBaseKey in vocalTrackIds)
       {
-        state.warning('Failed to play vocals', 'Failed to load vocal track "$trackKey" for character type $charType.');
-        continue;
+        var trackKey:String = '$trackBaseKey$trackKeySuffix';
+        // For example, for voice ID "bf" on variation "pico", the file name would be "Voices-bf-pico.ogg"
+
+        trace('CHART EDITOR: Switching vocals to "$trackKey"');
+
+        var vocalTrackData:Null<Bytes> = state.audioVocalTrackData.get(trackKey);
+
+        if (vocalTrackData == null)
+        {
+          state.warning('Failed to play vocals', 'Failed to load vocal track "$trackKey" for character type $charType.');
+          continue;
+        }
+
+        var vocalTrack:Null<FunkinSound> = SoundUtil.buildSoundFromBytes(vocalTrackData);
+
+        if (vocalTrack == null)
+        {
+          state.warning('Failed to play vocals', 'Failed to parse vocal track "$trackKey" for character type $charType.');
+          continue;
+        }
+
+        vocalTracks.push(vocalTrack);
+        if (firstVocalTrackKey == null) firstVocalTrackKey = trackKey;
       }
-
-      var vocalTrack:Null<FunkinSound> = SoundUtil.buildSoundFromBytes(vocalTrackData);
-
-      if (vocalTrack == null)
-      {
-        state.warning('Failed to play vocals', 'Failed to parse vocal track "$trackKey" for character type $charType.');
-        continue;
-      }
-
-      vocalTracks.push(vocalTrack);
-      if (firstVocalTrackKey == null) firstVocalTrackKey = trackKey;
     }
 
     var firstVocalTrack:Null<FunkinSound> = vocalTracks[0];
