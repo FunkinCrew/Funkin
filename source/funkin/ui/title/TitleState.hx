@@ -60,12 +60,12 @@ class TitleState extends MusicBeatState
     {
       case IMAGE:
         results.append([
-          Paths.image('ui/title/logo-bumpin'),
           Paths.image('ui/title/gf-dance-title'),
 
           Paths.image('ui/title/newgrounds-logo-animated'),
           Paths.image('ui/title/newgrounds-logo-classic'),
-          Paths.image('ui/title/newgrounds-logo')
+          Paths.image('ui/title/newgrounds-logo'),
+          Paths.animateAtlas('ui/title/logo-bumpin').image()
         ]);
 
         #if mobile
@@ -76,7 +76,6 @@ class TitleState extends MusicBeatState
 
       case XML:
         results.append([
-          Paths.xml('ui/title/logo-bumpin'),
           Paths.xml('ui/title/gf-dance-title')
         ]);
 
@@ -89,7 +88,8 @@ class TitleState extends MusicBeatState
       case JSON:
         results.append([
           Paths.music('ui/main-menu/freaky-menu').metadata(),
-          Paths.music('ui/title/girlfriends-ringtone').metadata()
+          Paths.music('ui/title/girlfriends-ringtone').metadata(),
+          Paths.animateAtlas('ui/title/logo-bumpin').json()
         ]);
         #if mobile
         results.append(Paths.animateAtlas('ui/title/title-screen-text-mobile').json());
@@ -143,9 +143,10 @@ class TitleState extends MusicBeatState
     bg.screenCenter();
     add(bg);
 
-    logoBl = new FunkinSprite(-150 + (FullScreenScaleMode.gameCutoutSize.x / 2.5), -100);
-    logoBl.frames = Assets.getSparrowAtlas(Paths.image('ui/title/logo-bumpin'));
-    logoBl.animation.addByPrefix('bump', 'logo bumpin', 24);
+    logoBl = new FunkinSprite(-150 + (FullScreenScaleMode.gameCutoutSize.x / 2.5), -100).loadTextureAtlas('ui/title/logo-bumpin', {
+      cacheOnLoad: true
+    });
+    logoBl.anim.addByFrameLabel('bump', 'logo bumpin', 24);
     logoBl.animation.play('bump');
     logoBl.shader = swagShader.shader;
     logoBl.updateHitbox();
