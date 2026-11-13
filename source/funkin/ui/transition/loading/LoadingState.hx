@@ -90,6 +90,9 @@ class LoadingState extends MusicBeatSubState
       {
         _parentState.persistentDraw = false;
       }
+
+      // Kill any camera flash from the previous state.
+      FlxG.camera.stopFlash();
     }
   }
 
@@ -520,9 +523,6 @@ class LoadingState extends MusicBeatSubState
         FlxG.sound.music = null;
       }
     }
-
-    // Kill any camera flash from the previous state.
-    FlxG.camera.stopFlash();
 
     switch (target)
     {
