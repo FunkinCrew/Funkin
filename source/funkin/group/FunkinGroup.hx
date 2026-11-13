@@ -117,12 +117,9 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
 
     maxSize = value;
 
-    if (size > maxSize && maxSize > 0)
+    if (maxSize > 0)
     {
-      for (child in 0...size)
-      {
-        if (child > maxSize) remove(children[child]);
-      }
+      while (size > maxSize) remove(children[size - 1]);
     }
 
     return maxSize;
@@ -175,7 +172,7 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
         var childW:Float = childGroup.width;
         if (childW <= 0) continue;
         left = child.localX * scale.x;
-        right = left + childW * scale.x;
+        right = left + childW;
       }
       else
       {
@@ -212,13 +209,13 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
         var childGroup:FunkinGroup<Dynamic> = cast child;
         var childH:Float = childGroup.height;
         if (childH <= 0) continue;
-        top = child.localY;
-        bottom = top + childH * scale.y;
+        top = child.localY * scale.y;
+        bottom = top + childH;
       }
       else
       {
         if (child.scale.y != scale.y * child.localScale.y) continue;
-        top = child.localY;
+        top = child.localY * scale.y;
         bottom = top + child.frameHeight * child.scale.y;
       }
 
@@ -340,11 +337,6 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
     for (child in children)
     {
       if (child != null && child.exists && child.active) child.update(elapsed);
-
-      if (this.scrollFactor.x != 1 || this.scrollFactor.y != 1)
-      {
-        child.scrollFactor.set(child.scrollFactor.x * this.scrollFactor.x, child.scrollFactor.y * this.scrollFactor.y);
-      }
     }
   }
 
@@ -370,15 +362,21 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
     final scaleX:Float = preciseScale ? scale.x : 1;
     final scaleY:Float = preciseScale ? scale.y : 1;
 
+    final pivot:Bool = precise && (scaleX != 1 || scaleY != 1 || sin != 0 || cos != 1);
+
+    final syncScroll:Bool = scrollFactor.x != 1 || scrollFactor.y != 1;
+
     for (child in children)
     {
-      if (child != null && child.exists && child.active)
+      if (child != null && child.exists)
       {
         child.angle = angle + child.localAngle;
         child.scale.x = scale.x * child.localScale.x;
         child.scale.y = scale.y * child.localScale.y;
 
-        if (precise)
+        if (syncScroll) child.scrollFactor.copyFrom(scrollFactor);
+
+        if (pivot)
         {
           final halfWidth:Float = child.width / 2;
           final halfHeight:Float = child.height / 2;
@@ -432,6 +430,7 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
 
     var newChild:T = cast new FlxSprite();
     children.push(newChild);
+    newChild.container = cast this;
     return newChild;
   }
 
@@ -446,6 +445,7 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
   {
     if (size < index) return null;
     children.insert(index, child);
+    child.container = cast this;
     return child;
   }
 
@@ -464,8 +464,8 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
         grp.remove(child);
         add(child);
         // update child's local position so the child stays where it was
-        child.localX = x - child.x;
-        child.localY = y - child.y;
+        child.localX = child.x - x;
+        child.localY = child.y - y;
       }
     }
   }
@@ -494,7 +494,7 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
     var index = children.indexOf(child);
     if (index != -1) children.splice(index, 1);
 
-    child.container = null;
+    if (child != null) child.container = null;
 
     return child;
   }
@@ -535,12 +535,16 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
     var left:Float = x + _renderTextureRect.x;
     var top:Float = y + _renderTextureRect.y;
 
+    _renderTexture.exactSize = (this.filters != null && this.filters.length > 0);
+
     if (clipRect != null)
     {
       _renderTextureClipRect.set(clipRect.x - left, clipRect.y - top, clipRect.width, clipRect.height);
 
       left += _renderTextureClipRect.x;
       top += _renderTextureClipRect.y;
+
+      if (_renderTextureClipRect.width < 1 || _renderTextureClipRect.height < 1) return true;
 
       _renderTexture.init(Std.int(_renderTextureClipRect.width), Std.int(_renderTextureClipRect.height));
     }
@@ -597,14 +601,18 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
     return true;
   }
 
+  var _textureCameras:Array<FlxCamera> = [];
+
   function drawToRenderTexture(textureCamera:FlxCamera, offsetX:Float, offsetY:Float):Void
   {
+    _textureCameras[0] = textureCamera;
+
     for (child in children)
     {
       if (child == null || !child.exists || !child.visible) continue;
 
       var cacheCameras:Array<FlxCamera> = child.cameras;
-      child.cameras = [textureCamera];
+      child.cameras = _textureCameras;
 
       if (Std.isOfType(child, FunkinGroup))
       {
@@ -781,6 +789,9 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
   {
     for (child in children)
     {
+      if (child == null) continue;
+      funkin.util.FlxTweenUtil.cancelPointTweens(child);
+
       child.destroy();
     }
 

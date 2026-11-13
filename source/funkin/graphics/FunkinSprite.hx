@@ -1445,6 +1445,9 @@ class FunkinSprite extends FlxAnimate
     // @:nullSafety(Off)
     // frames = null;
     // ^ Might be useful but its like a micro enhancement in terms of optimization. Keeping it regardless -Moon
+
+    funkin.util.FlxTweenUtil.cancelPointTweens(this);
+
     super.destroy();
 
     filterRenderer.destroy();
