@@ -7,6 +7,7 @@ import funkin.data.BaseRegistry.LoadEntriesResult;
 import funkin.data.DefaultRegistryImpl;
 import funkin.data.character.CharacterData;
 import funkin.data.character.CharacterData.CharacterRenderType;
+import funkin.data.character.CharacterData.CharacterVariationData;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
 import flixel.graphics.frames.FlxFrame;
@@ -46,6 +47,11 @@ class CharacterRegistry extends BaseRegistry<BaseCharacter, CharacterData, Chara
   #else
   static final characterScriptedClass:Map<String, String> = [];
   #end
+
+  final variationChildrenByBase:Map<String, Array<CharacterVariation>> = new Map<String, Array<CharacterVariation>>();
+  final variationParentById:Map<String, String> = new Map<String, String>();
+  final variationById:Map<String, CharacterVariation> = new Map<String, CharacterVariation>();
+
   static final DEFAULT_CHAR_ID:String = 'UNKNOWN';
 
   public function new()
@@ -219,6 +225,190 @@ class CharacterRegistry extends BaseRegistry<BaseCharacter, CharacterData, Chara
     }
   }
 
+  /**
+   * Builds the variation lookup indexes from explicit CharacterData declarations.
+   */
+  function rebuildCharacterVariations():Void
+  {
+    variationChildrenByBase.clear();
+    variationParentById.clear();
+    variationById.clear();
+
+    var characterIds:Array<String> = characterCache.keys().array();
+    characterIds.sort(Reflect.compare);
+
+    var declarations:Map<String, CharacterVariationLink> = new Map<String, CharacterVariationLink>();
+
+    for (characterId in characterIds)
+    {
+      var characterData:Null<CharacterData> = characterCache.get(characterId);
+      if (characterData == null) continue;
+
+      var variationData:Null<CharacterVariationData> = characterData.variation;
+      if (variationData == null) continue;
+
+      var parentId:String = variationData.parent.trim();
+      if (parentId == '')
+      {
+        log(' WARN '.warning() + 'Ignoring variation ${characterId}: parent character ID is empty.');
+        continue;
+      }
+
+      var displayName:String = characterData.name;
+      var authoredName:Null<String> = variationData.name;
+      if (authoredName != null && authoredName.trim() != '') displayName = authoredName.trim();
+
+      declarations.set(characterId, {
+        parentId: parentId,
+        name: displayName
+      });
+    }
+
+    var usedNamesByBase:Map<String, Map<String, Bool>> = new Map<String, Map<String, Bool>>();
+
+    for (variationId in characterIds)
+    {
+      var declaration:Null<CharacterVariationLink> = declarations.get(variationId);
+      if (declaration == null) continue;
+
+      var variationData:Null<CharacterData> = characterCache.get(variationId);
+      var baseData:Null<CharacterData> = characterCache.get(declaration.parentId);
+      if (variationData == null) continue;
+      if (baseData == null)
+      {
+        log(' WARN '.warning() + 'Ignoring variation ${variationId}: parent character ${declaration.parentId} does not exist.');
+        continue;
+      }
+      if (declaration.parentId == variationId)
+      {
+        log(' WARN '.warning() + 'Ignoring variation ${variationId}: a character cannot be its own parent.');
+        continue;
+      }
+      if (declarations.exists(declaration.parentId))
+      {
+        log(' WARN '.warning() + 'Ignoring nested variation ${variationId}: parent ${declaration.parentId} is also a variation.');
+        continue;
+      }
+
+      var displayName:String = declaration.name.trim();
+      if (displayName == '') displayName = variationData.name;
+      if (displayName.trim() == '') displayName = variationId;
+
+      var usedNames:Null<Map<String, Bool>> = usedNamesByBase.get(declaration.parentId);
+      if (usedNames == null)
+      {
+        usedNames = new Map<String, Bool>();
+        usedNamesByBase.set(declaration.parentId, usedNames);
+      }
+
+      var normalizedName:String = displayName.toLowerCase();
+      if (usedNames.exists(normalizedName))
+      {
+        log(' WARN '.warning() + 'Ignoring variation ${variationId}: ${declaration.parentId} already has a variation named "${displayName}".');
+        continue;
+      }
+      usedNames.set(normalizedName, true);
+
+      var variationEntry:CharacterVariation = {
+        id: variationId,
+        name: displayName,
+        isDefault: false
+      };
+
+      variationParentById.set(variationId, declaration.parentId);
+      variationById.set(variationId, variationEntry);
+
+      var children:Array<CharacterVariation> = variationChildrenByBase.get(declaration.parentId) ?? [];
+      children.push(variationEntry);
+      variationChildrenByBase.set(declaration.parentId, children);
+    }
+
+    for (baseId in variationChildrenByBase.keys())
+    {
+      var children:Null<Array<CharacterVariation>> = variationChildrenByBase.get(baseId);
+      if (children == null) continue;
+      children.sort(function(a:CharacterVariation, b:CharacterVariation):Int
+      {
+        var nameOrder:Int = Reflect.compare(a.name.toLowerCase(), b.name.toLowerCase());
+        return nameOrder != 0 ? nameOrder : Reflect.compare(a.id, b.id);
+      });
+    }
+  }
+
+  /**
+   * Returns the base character ID for a character or variation.
+   * Returns null when the requested character is not registered.
+   */
+  public function getBaseCharacterId(charId:String):Null<String>
+  {
+    if (charId.trim() == '') return null;
+
+    var characterData:Null<CharacterData> = fetchCharacterData(charId);
+    if (characterData == null) return null;
+
+    var parentId:Null<String> = variationParentById.get(charId);
+    if (parentId != null) return parentId;
+
+    return charId;
+  }
+
+  /**
+   * Returns the display name for a variation, or null for a base character.
+   */
+  public function getVariationName(charId:String):Null<String>
+  {
+    if (charId.trim() == '') return null;
+
+    var variationEntry:Null<CharacterVariation> = variationById.get(charId);
+    return variationEntry == null ? null : variationEntry.name;
+  }
+
+  /**
+   * Returns the selectable variations for a character. The base character is
+   * always the first entry and is exposed as the "Default" variation.
+   */
+  public function getCharacterVariations(charId:String):Array<CharacterVariation>
+  {
+    var baseId:Null<String> = getBaseCharacterId(charId);
+    if (baseId == null) return [];
+
+    var resolvedBaseId:String = baseId;
+    var baseData:Null<CharacterData> = fetchCharacterData(resolvedBaseId);
+    if (baseData == null) return [];
+    if (variationParentById.exists(resolvedBaseId)) return [];
+
+    var result:Array<CharacterVariation> = [];
+    var defaultEntry:CharacterVariation = {
+      id: resolvedBaseId,
+      name: 'Default',
+      isDefault: true
+    };
+    result.push(defaultEntry);
+
+    var variationEntries:Null<Array<CharacterVariation>> = variationChildrenByBase.get(resolvedBaseId);
+    if (variationEntries == null) return result;
+
+    for (variationEntry in variationEntries)
+    {
+      result.push(variationEntry);
+    }
+
+    return result;
+  }
+
+  /**
+   * Lists only base characters, excluding entries registered as variations.
+   */
+  public function listBaseCharacterIds():Array<String>
+  {
+    return listEntryIds().filter((charId:String) ->
+    {
+      var characterData:Null<CharacterData> = fetchCharacterData(charId);
+      if (characterData == null) return false;
+      return !variationParentById.exists(charId);
+    });
+  }
+
   public override function loadEntries():Void
   {
     // Instead of loading the entries, we load the character data.
@@ -245,6 +435,8 @@ class CharacterRegistry extends BaseRegistry<BaseCharacter, CharacterData, Chara
         continue;
       }
     }
+
+    rebuildCharacterVariations();
 
     var scriptedCharClassNames1:Array<String> = SparrowCharacter.listScriptClasses();
     if (scriptedCharClassNames1.length > 0)
@@ -460,6 +652,7 @@ class CharacterRegistry extends BaseRegistry<BaseCharacter, CharacterData, Chara
         var current:Int = characterCache.size() + entryDataErrors.length;
         if (current == entryCount)
         {
+          rebuildCharacterVariations();
           entryCount = 0; // Reset the entry count so it can be used for scripted classes now.
           entryLoadingState = 'sparrow'; // Move to loading scripted characters.
           loadScriptedEntriesAsync();
@@ -856,6 +1049,11 @@ class CharacterRegistry extends BaseRegistry<BaseCharacter, CharacterData, Chara
 
   public override function clearEntries():Void
   {
+    pixelIconCache.clear();
+    variationChildrenByBase.clear();
+    variationParentById.clear();
+    variationById.clear();
+
     if (characterCache != null)
     {
       characterCache.clear();
@@ -932,6 +1130,19 @@ class CharacterRegistry extends BaseRegistry<BaseCharacter, CharacterData, Chara
 
     return null;
   }
+}
+
+typedef CharacterVariationLink =
+{
+  var parentId:String;
+  var name:String;
+}
+
+typedef CharacterVariation =
+{
+  var id:String;
+  var name:String;
+  var isDefault:Bool;
 }
 
 typedef CharacterEntryParams =
