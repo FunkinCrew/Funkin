@@ -42,8 +42,10 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
     {
       case IMAGE:
         results.push(Paths.image('ui/freeplay/interface/freeplay-capsule/box-inst'));
+        results.push(Paths.image('ui/freeplay/interface/difficulty-selector'));
       case XML:
         results.push(Paths.xml('ui/freeplay/interface/freeplay-capsule/box-inst'));
+        results.push(Paths.xml('ui/freeplay/interface/difficulty-selector'));
       default:
         // Nothing
     }
