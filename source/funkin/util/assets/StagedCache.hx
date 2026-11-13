@@ -211,9 +211,29 @@ class StagedCache<T> implements IStagedCache
   public function keys():Array<String>
   {
     var keys:Array<String> = [];
-    for (key => _ in permanent) keys.pushUnique(key);
-    for (key => _ in current) keys.pushUnique(key);
-    for (key => _ in previous) keys.pushUnique(key);
+    var seen:Map<String, Bool> = [];
+
+    for (key => _ in permanent)
+    {
+      if (seen.exists(key)) continue;
+      seen.set(key, true);
+      keys.push(key);
+    }
+
+    for (key => _ in current)
+    {
+      if (seen.exists(key)) continue;
+      seen.set(key, true);
+      keys.push(key);
+    }
+
+    for (key => _ in previous)
+    {
+      if (seen.exists(key)) continue;
+      seen.set(key, true);
+      keys.push(key);
+    }
+
     return keys;
   }
 
