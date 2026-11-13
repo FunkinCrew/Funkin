@@ -38,14 +38,16 @@ class AnimateAtlasCharacter extends BaseCharacter
    */
   public static function queryAssets(type:AssetType, entryId:String, ?params:CharacterEntryParams):Array<AssetPath>
   {
-    // trace('ASSETS: Querying assets for Animate Atlas character "${charId}"')
+    trace('ASSETS: Querying assets for Animate Atlas character "${entryId}"');
+
     // Specific implementations handle figuring out which assets to load.
     var results:Array<AssetPath> = BaseCharacter.queryBaseAssets(type, entryId, params);
 
-    var _data:Null<CharacterData> = CharacterRegistry.instance.fetchCharacterData(entryId);
-    if (_data == null) return results; // No assets if data couldn't be parsed.
+    var data:Null<CharacterData> = CharacterRegistry.instance.fetchCharacterData(entryId);
+    if (data == null) return results;
 
-    var assetPath = Paths.animateAtlas(_data.assetPath);
+    var relativePath:String = Paths.stripLibrary(funkin.assets.Paths.formatRelative(data.assetPath, 'gameplay/characters/$entryId'));
+    var assetPath:AnimateAtlasAssetPathBuilder = Paths.animateAtlas(relativePath);
 
     switch (type)
     {
@@ -54,11 +56,6 @@ class AnimateAtlasCharacter extends BaseCharacter
       case JSON:
         results.append(assetPath.json());
 
-        var atlasDir:String = Paths.stripLibrary(funkin.assets.Paths.formatRelative(_data.assetPath, 'gameplay/characters/$entryId'));
-        var animJson = Paths.json('$atlasDir/Animation', false).orNull();
-        var mapJson = Paths.json('$atlasDir/spritemap1', false).orNull();
-        if (animJson != null) results.append([animJson]);
-        if (mapJson != null) results.append([mapJson]);
       default:
         // Nothing
     }
