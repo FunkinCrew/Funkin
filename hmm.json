@@ -61,7 +61,7 @@
     {
       "name": "flixel",
       "type": "git",
-      "ref": "3cc530639ba6e70fb1ea9b41c5da9749260dfc45",
+      "ref": "bd0407d7b22db530d636c9d6ff9f10fdfc2e8a53",
       "url": "https://github.com/FunkinCrew/flixel"
     },
     {
@@ -124,7 +124,7 @@
     {
       "name": "hxcpp",
       "type": "git",
-      "ref": "2c38e141704465b41ddff59bfdaab42121ab64ed",
+      "ref": "9a5ef43df75c00296b64b8ed84289b9a4fce577e",
       "url": "https://github.com/FunkinCrew/hxcpp"
     },
     {
