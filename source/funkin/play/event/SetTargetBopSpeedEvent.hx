@@ -91,12 +91,14 @@ class SetTargetBopSpeedSongEvent extends SongEvent
       {
         name: 'target',
         title: 'Target',
+        tooltip: 'Name of character or prop to point to.',
         type: SongEventFieldType.STRING,
         defaultValue: DEFAULT_TARGET,
       },
       {
         name: 'rate',
         title: 'Rate',
+        tooltip: 'The new rate at which to bop to.',
         defaultValue: Constants.DEFAULT_PROP_RATE,
         min: 0,
         step: 0.25,
