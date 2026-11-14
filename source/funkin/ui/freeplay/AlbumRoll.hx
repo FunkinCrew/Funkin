@@ -132,11 +132,6 @@ class AlbumRoll extends FlxSpriteGroup
     refresh();
   }
 
-  public function refresh():Void
-  {
-    sort(SortUtil.byZIndex, FlxSort.ASCENDING);
-  }
-
   /**
    * Apply exit movers for the album roll.
    * @param exitMovers The exit movers to apply.

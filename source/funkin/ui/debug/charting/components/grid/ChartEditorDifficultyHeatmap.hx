@@ -40,7 +40,6 @@ class ChartEditorDifficultyHeatmap extends FlxTypedGroup<FlxSprite>
   static final LABEL_WIDTH:Int = 220;
 
   var chartEditorState:ChartEditorState;
-
   var sections:Array<DiffCalcSection> = [];
   var ratings:Array<Float> = [];
 
@@ -78,8 +77,12 @@ class ChartEditorDifficultyHeatmap extends FlxTypedGroup<FlxSprite>
   public function setChart(notes:Array<SongNoteData>, scrollSpeed:Float, opponentShown:Bool = true):Void
   {
     var conductor:Conductor = Conductor.instance;
-    sections = DiffCalcUtil.sectionStrains(notes, time -> Math.floor(conductor.getTimeInSteps(time) / Constants.STEPS_PER_BEAT + 0.001),
-      beat -> conductor.getBeatTimeInMs(beat), opponentShown) ?? [];
+    sections = DiffCalcUtil.sectionStrains(
+      notes,
+      time -> Math.floor(conductor.getTimeInSteps(time) / Constants.STEPS_PER_BEAT + 0.001),
+      beat -> conductor.getBeatTimeInMs(beat),
+      opponentShown
+    ) ?? [];
     ratings = [for (section in sections) DiffCalcUtil.strainToRating(section.strain, scrollSpeed)];
 
     // The hardest spots, kept apart so the labels spread over the song.
@@ -102,7 +105,7 @@ class ChartEditorDifficultyHeatmap extends FlxTypedGroup<FlxSprite>
    * @param viewTop The top of the visible grid area on screen.
    * @param viewBottom The bottom of the visible grid area on screen.
    */
-  public function refresh(gridX:Float, gridY:Float, viewTop:Float, viewBottom:Float):Void
+  public function refreshMap(gridX:Float, gridY:Float, viewTop:Float, viewBottom:Float):Void
   {
     var size:Int = ChartEditorState.GRID_SIZE;
     var strumline:Int = ChartEditorState.STRUMLINE_SIZE;
@@ -163,7 +166,13 @@ class ChartEditorDifficultyHeatmap extends FlxTypedGroup<FlxSprite>
     var total:Float = 0;
     for (part in section.causes) total += part;
     var parts:Array<String> = [];
-    var names:Array<String> = ['Speed', 'Patterns', 'Rhythm', 'Chords', 'Jacks'];
+    var names:Array<String> = [
+      'Speed',
+      'Patterns',
+      'Rhythm',
+      'Chords',
+      'Jacks'
+    ];
     for (c in 0...section.causes.length)
     {
       var percent:Int = total > 0 ? Math.round(section.causes[c] / total * 100) : 0;
@@ -216,7 +225,8 @@ class ChartEditorDifficultyHeatmap extends FlxTypedGroup<FlxSprite>
 
   function getLabel(index:Int):FlxText
   {
-    while (labels.length <= index) labels.push(makeText());
+    while (labels.length <= index)
+      labels.push(makeText());
     return labels[index];
   }
 
@@ -243,11 +253,16 @@ class ChartEditorDifficultyHeatmap extends FlxTypedGroup<FlxSprite>
   {
     return switch (cause)
     {
-      case Speed: 'Speed';
-      case PatternBreaks: 'Patterns';
-      case RhythmChanges: 'Rhythm';
-      case Chords: 'Chords';
-      case Jacks: 'Jacks';
+      case Speed:
+        'Speed';
+      case PatternBreaks:
+        'Patterns';
+      case RhythmChanges:
+        'Rhythm';
+      case Chords:
+        'Chords';
+      case Jacks:
+        'Jacks';
     }
   }
 }

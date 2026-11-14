@@ -337,15 +337,6 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     return true;
   }
 
-  /**
-   * Refreshes the state, by redoing the render order of all sprites.
-   * It does this based on the `zIndex` of each prop.
-   */
-  public function refresh():Void
-  {
-    sort(SortUtil.byZIndex, FlxSort.ASCENDING);
-  }
-
   @:nullSafety(Off)
   override function startOutro(onComplete:() -> Void):Void
   {

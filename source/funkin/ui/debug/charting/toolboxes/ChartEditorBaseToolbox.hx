@@ -41,7 +41,7 @@ class ChartEditorBaseToolbox extends CollapsibleDialog
   /**
    * Override to implement this.
    */
-  public function refresh()
+  public override function refresh()
   {
   }
 }

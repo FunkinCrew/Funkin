@@ -105,7 +105,6 @@ class Strumline extends FlxSpriteGroup
 
   // Used in-game to control the scroll speed within a song
   public var scrollSpeed:Float = 1.0;
-
   public var scrollVelocity:Null<ScrollVelocityTimeline> = null;
   public var visualSongPosition(default, null):Float = 0.0;
 
@@ -344,14 +343,6 @@ class Strumline extends FlxSpriteGroup
     this.background.alpha = Preferences.strumlineBackgroundOpacity / 100.0 * alpha;
 
     return value;
-  }
-
-  /**
-   * Refresh the strumline, sorting its children by z-index.
-   */
-  public function refresh():Void
-  {
-    sort(SortUtil.byZIndex, FlxSort.ASCENDING);
   }
 
   override function get_width():Float
@@ -770,23 +761,11 @@ class Strumline extends FlxSpriteGroup
         {
           if (isDownscroll)
           {
-            holdNote.y =
-              this.y
-              - INITIAL_OFFSET
-              + visualNoteY(holdNote.strumTime)
-              - holdNote.height
-              + STRUMLINE_SIZE / 2
-              + holdNote.yOffset;
+            holdNote.y = this.y - INITIAL_OFFSET + visualNoteY(holdNote.strumTime) - holdNote.height + STRUMLINE_SIZE / 2 + holdNote.yOffset;
           }
           else
           {
-            holdNote.y =
-              this.y
-              - INITIAL_OFFSET
-              + visualNoteY(holdNote.strumTime)
-              + yOffset
-              + STRUMLINE_SIZE / 2
-              + holdNote.yOffset;
+            holdNote.y = this.y - INITIAL_OFFSET + visualNoteY(holdNote.strumTime) + yOffset + STRUMLINE_SIZE / 2 + holdNote.yOffset;
           }
         }
 
@@ -820,22 +799,11 @@ class Strumline extends FlxSpriteGroup
         {
           if (isDownscroll)
           {
-            holdNote.y =
-              this.y
-              - INITIAL_OFFSET
-              + visualNoteY(holdNote.strumTime)
-              - holdNote.height
-              + STRUMLINE_SIZE / 2
-              + holdNote.yOffset;
+            holdNote.y = this.y - INITIAL_OFFSET + visualNoteY(holdNote.strumTime) - holdNote.height + STRUMLINE_SIZE / 2 + holdNote.yOffset;
           }
           else
           {
-            holdNote.y =
-              this.y
-              - INITIAL_OFFSET
-              + visualNoteY(holdNote.strumTime)
-              + STRUMLINE_SIZE / 2
-              + holdNote.yOffset;
+            holdNote.y = this.y - INITIAL_OFFSET + visualNoteY(holdNote.strumTime) + STRUMLINE_SIZE / 2 + holdNote.yOffset;
           }
         }
       }
@@ -1031,7 +999,8 @@ class Strumline extends FlxSpriteGroup
     var styleIdByKind:Map<String, String> = [];
     var styleById:Map<String, NoteStyle> = [];
 
-    var resolveStyle = function(kind:Null<String>):NoteStyle {
+    var resolveStyle = function(kind:Null<String>):NoteStyle
+    {
       var key:String = kind ?? '';
       var knownId:Null<String> = styleIdByKind.get(key);
       if (knownId != null) return styleById.get(knownId) ?? this.noteStyle;
