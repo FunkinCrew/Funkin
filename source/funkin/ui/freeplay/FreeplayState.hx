@@ -3423,7 +3423,6 @@ class FreeplayState extends MusicBeatSubState
       clearPreviews();
       FlxG.sound.music?.pause();
 
-      if (previewTransition != null) previewTransition.cancel();
       // Add a timer to delay the song preview to prevent overlapping or cutting out.
       previewTransition = new FlxTimer().start(FADE_IN_DELAY, function(_):Void
       {
