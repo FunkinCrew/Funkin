@@ -293,15 +293,6 @@ class MusicBeatSubState extends FlxTransitionableSubState implements IEventHandl
   }
 
   /**
-   * Refreshes the state, by redoing the render order of all sprites.
-   * It does this based on the `zIndex` of each prop.
-   */
-  public function refresh()
-  {
-    sort(SortUtil.byZIndex, FlxSort.ASCENDING);
-  }
-
-  /**
    * Called when a step is hit in the current song.
    * Continues outside of PlayState, for things like animations in menus.
    * @return Whether the event should continue (not canceled).

@@ -91,7 +91,7 @@ class EaseGraphPreview extends HBox
    * Re-read `event` and refresh dropdowns + preview. Call after an external
    * mutation to the bound event.
    */
-  public function refresh():Void
+  public override function refresh():Void
   {
     _loading = true;
 

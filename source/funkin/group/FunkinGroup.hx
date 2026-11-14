@@ -12,7 +12,6 @@ import flixel.util.FlxDestroyUtil;
 import flixel.util.FlxSort;
 import funkin.graphics.FunkinRenderTexture;
 import funkin.graphics.FunkinSprite;
-import funkin.util.SortUtil;
 import openfl.filters.BitmapFilter;
 
 /**
@@ -119,7 +118,8 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
 
     if (maxSize > 0)
     {
-      while (size > maxSize) remove(children[size - 1]);
+      while (size > maxSize)
+        remove(children[size - 1]);
     }
 
     return maxSize;
@@ -717,12 +717,12 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
   }
 
   /**
-   * Refreshes the group, by redoing the render order of all children.
-   * It does this based on the `zIndex` of each child.
+   * Refreshes the group, by redoing the render order of all objects.
+   * It does this based on the `zIndex` of each object.
    */
   public function refresh():Void
   {
-    sort(SortUtil.byZIndex);
+    sort(FlxSort.byZIndex, FlxSort.ASCENDING);
   }
 
   /**

@@ -458,10 +458,10 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    * Refreshes the stage, by redoing the render order of all props.
    * It does this based on the `zIndex` of each prop.
    */
-  public function refresh():Void
+  public override function refresh():Void
   {
     // loop over and reapply vcam
-    forEachAlive(function(prop:FlxSprite)
+    forEachAlive((prop:FlxSprite) ->
     {
       if (Std.isOfType(prop, FunkinSprite))
       {
@@ -484,7 +484,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
       }
     });
 
-    sort(SortUtil.byZIndex, FlxSort.ASCENDING);
+    super.refresh();
   }
 
   /**
