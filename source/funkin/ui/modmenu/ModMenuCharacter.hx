@@ -172,7 +172,7 @@ class ModMenuCharacter extends FunkinSprite
   var hasLoadedCharacter:Bool = false;
 
   #if html5
-  /** 
+  /**
    * Prevents an older character/data request from replacing a newer selection.
    */
   var characterLoadToken:Int = 0;
@@ -703,6 +703,12 @@ class ModMenuCharacter extends FunkinSprite
     {
       @:privateAccess
       jsonString = Polymod.assetLibrary.getTextDirectly(assetPath.toString(), '');
+
+      //
+      if (jsonString == null || jsonString == '')
+      {
+        jsonString = Assets.getText(assetPath);
+      }
     }
     else
     {
