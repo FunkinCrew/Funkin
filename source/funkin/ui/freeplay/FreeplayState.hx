@@ -3016,6 +3016,30 @@ class FreeplayState extends MusicBeatSubState
       return;
     }
 
+    var hasAltInstrumentals:Bool = false;
+    for (songCapsule in availableSongCapsules)
+    {
+      var song:Null<Song> = songCapsule.freeplayData?.data;
+      if (song == null) continue;
+
+      var characterVariations:Array<String> = song.getVariationsByCharacter(currentCharacter);
+      var targetDifficulty:Null<SongDifficulty> = song.getDifficulty(currentDifficulty, null, characterVariations);
+      if (targetDifficulty == null) continue;
+
+      var altInstrumentalIds:Array<String> = song.listAltInstrumentalIds(currentDifficulty, targetDifficulty.variation);
+      if (altInstrumentalIds.length > 0)
+      {
+        hasAltInstrumentals = true;
+        break;
+      }
+    }
+
+    if (!hasAltInstrumentals)
+    {
+      capsuleOnConfirmRandom(availableSongCapsules, 'default');
+      return;
+    }
+
     uiStateMachine.transition(Exiting);
     var instrumentalChoices:Array<String> = ['default', 'random'];
 
