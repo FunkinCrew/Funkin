@@ -315,6 +315,11 @@ class ChartEditorThemeHandler
     selectionSquareGraphic.destroyOnNoUse = false;
     state.selectionSquareGraphic = selectionSquareGraphic;
 
+    for (selectionSquare in state.renderedSelectionSquares.members)
+    {
+      selectionSquare.loadGraphic(selectionSquareGraphic);
+    }
+
     var existingBox:Null<FlxSliceSprite> = state.selectionBoxSprite;
     if (existingBox != null)
     {
