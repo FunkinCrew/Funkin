@@ -10,6 +10,12 @@ using StringTools;
 @:nullSafety
 class WindowUtil
 {
+  #if (desktop || html5)
+  static var wasMaximizedBeforeFullscreen:Bool = false;
+  static var fullscreenRequested:Bool = false;
+  static var fullscreenKeyDown:Bool = false;
+  #end
+
   /**
    * Sanitizes a URL via a regex.
    *
@@ -110,6 +116,8 @@ class WindowUtil
     });
 
     #if (desktop || html5)
+    fullscreenRequested = openfl.Lib.application.window.fullscreen;
+
     openfl.Lib.current.stage.addEventListener(openfl.events.KeyboardEvent.KEY_DOWN, (e:openfl.events.KeyboardEvent) ->
     {
       #if FEATURE_HAXEUI
@@ -134,7 +142,55 @@ class WindowUtil
 
         if (e.keyCode == key)
         {
-          openfl.Lib.application.window.fullscreen = !openfl.Lib.application.window.fullscreen;
+          if (fullscreenKeyDown) return;
+          fullscreenKeyDown = true;
+
+          final window = openfl.Lib.application.window;
+          trace('WINDOW  F11 pressed (fullscreen=${window.fullscreen}, requested=${fullscreenRequested}, maximized=${window.maximized})');
+
+          if (fullscreenRequested)
+          {
+            window.fullscreen = false;
+            fullscreenRequested = false;
+            trace('WINDOW  Requested fullscreen=false (fullscreen=${window.fullscreen}, maximized=${window.maximized})');
+
+            // Windows finishes leaving fullscreen asynchronously. Restore the
+            // maximized state after that transition has completed.
+            if (wasMaximizedBeforeFullscreen)
+            {
+              haxe.Timer.delay(() ->
+              {
+                trace('WINDOW  Fullscreen transition (fullscreen=${window.fullscreen}, maximized=${window.maximized})');
+                if (!window.fullscreen && !window.maximized)
+                {
+                  window.maximized = true;
+                  trace('WINDOW  Restored maximized state (fullscreen=${window.fullscreen}, maximized=${window.maximized})');
+                }
+              }, 100);
+            }
+            wasMaximizedBeforeFullscreen = false;
+          }
+          else
+          {
+            wasMaximizedBeforeFullscreen = window.maximized;
+            window.fullscreen = true;
+            fullscreenRequested = true;
+            trace('WINDOW  Requested fullscreen=true (fullscreen=${window.fullscreen}, maximized=${window.maximized})');
+          }
+
+          break;
+        }
+      }
+    });
+
+    openfl.Lib.current.stage.addEventListener(openfl.events.KeyboardEvent.KEY_UP, (e:openfl.events.KeyboardEvent) ->
+    {
+      for (key in PlayerSettings.player1.controls.getKeysForAction(WINDOW_FULLSCREEN))
+      {
+        if (e.keyCode == key)
+        {
+          fullscreenKeyDown = false;
+          break;
         }
       }
     });
