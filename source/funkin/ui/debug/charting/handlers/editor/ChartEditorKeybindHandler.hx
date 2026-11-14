@@ -19,6 +19,7 @@ import funkin.ui.debug.charting.commands.notes.ExtendNoteLengthCommand;
 import funkin.ui.debug.charting.commands.notes.FlipNotesCommand;
 import funkin.ui.debug.charting.commands.selection.InvertSelectedItemsCommand;
 import funkin.ui.debug.charting.commands.notes.MirrorNotesCommand;
+import funkin.ui.debug.charting.commands.notes.ModifyNotesLengthCommand;
 import funkin.ui.debug.charting.commands.items.PasteItemsCommand;
 import funkin.ui.debug.charting.selection.ChartEditorSelectableItems;
 import funkin.ui.debug.charting.commands.events.RemoveEventsCommand;
@@ -679,6 +680,20 @@ class ChartEditorKeybindHandler
           state.performCommand(new RemoveEventsCommand(state.currentEventSelection));
         }
       }
+    }
+
+    // E = Increase Notes Length
+    if (!state.pressingControl() && FlxG.keys.justPressed.E && state.currentNoteSelection.length > 0)
+    {
+      // Increase selected notes length according to the current note snap level
+      state.performCommand(new ModifyNotesLengthCommand(state.currentNoteSelection, state.noteSnapRatio * Conductor.instance.stepLengthMs));
+    }
+
+    // Q = Decrease Notes Length
+    if (!state.pressingControl() && FlxG.keys.justPressed.Q && state.currentNoteSelection.length > 0)
+    {
+      // Decrease selected notes length according to the current note snap level
+      state.performCommand(new ModifyNotesLengthCommand(state.currentNoteSelection, state.noteSnapRatio * Conductor.instance.stepLengthMs * -1));
     }
 
     // CTRL + F = Flip Notes
