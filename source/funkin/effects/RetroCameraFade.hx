@@ -20,13 +20,13 @@ class RetroCameraFade
    * Stops the fade running on the given camera, if there is one.
    * @return Whether a fade was interrupted.
    */
-  static function cancelFade(camera:FlxCamera):Bool
+  public static function cancelFade(camera:FlxCamera):Bool
   {
     // Drop fades whose timers were cleared elsewhere, like on a state switch.
     var staleCameras:Array<FlxCamera> = [];
     for (otherCamera => otherTimer in fadeTimers)
     {
-      if (otherCamera != camera && (otherTimer.finished || !otherTimer.active)) staleCameras.push(otherCamera);
+      if (otherCamera != camera && otherTimer.finished) staleCameras.push(otherCamera);
     }
     for (staleCamera in staleCameras)
     {
@@ -41,6 +41,54 @@ class RetroCameraFade
     fadeTimers.remove(camera);
 
     return true;
+  }
+
+  /**
+   * Pauses the fade running on the given camera, if there is one.
+   * @return Whether a fade was successfully paused.
+   */
+  public static function pauseFade(camera:FlxCamera):Bool
+  {
+    var fadeTimer:Null<FlxTimer> = fadeTimers.get(camera);
+    if (fadeTimer == null || !fadeTimer.active) return false;
+
+    fadeTimer.active = false;
+    return true;
+  }
+
+  /**
+   * Resumes the paused fade running on the given camera, if there is one.
+   * @return Whether a fade was successfully resumed.
+   */
+  public static function resumeFade(camera:FlxCamera):Bool
+  {
+    var fadeTimer:Null<FlxTimer> = fadeTimers.get(camera);
+    if (fadeTimer == null || fadeTimer.active) return false;
+
+    fadeTimer.active = true;
+    return true;
+  }
+
+  /**
+   * Pauses all active fades across all cameras.
+   */
+  public static function pauseAllFades():Void
+  {
+    for (camera => timer in fadeTimers)
+    {
+      if (timer.active) timer.active = false;
+    }
+  }
+
+  /**
+   * Resumes all paused fades across all cameras.
+   */
+  public static function resumeAllFades():Void
+  {
+    for (camera => timer in fadeTimers)
+    {
+      if (!timer.active && !timer.finished) timer.active = true;
+    }
   }
 
   static function finishFade(camera:FlxCamera, timer:FlxTimer):Void
