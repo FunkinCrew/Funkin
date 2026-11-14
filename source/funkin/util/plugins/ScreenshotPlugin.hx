@@ -265,7 +265,25 @@ class ScreenshotPlugin extends FlxBasic
 
     onPreScreenshot.dispatch();
 
-    var shot:Bitmap = new Bitmap(BitmapData.fromImage(FlxG.stage.window.readPixels()));
+    FlxG.stage.window.readPixelsAsync(onCapture);
+  }
+
+  function onCapture(image:Null<lime.graphics.Image>):Void
+  {
+    if (image == null)
+    {
+      trace(' WARNING '.warning() + ' Failed to take a screenshot.');
+
+      if (wasMouseHidden && !FlxG.mouse.visible)
+      {
+        wasMouseHidden = false;
+        Cursor.show();
+      }
+
+      return;
+    }
+
+    var shot:Bitmap = new Bitmap(BitmapData.fromImage(image));
     if (screenshotBeingSpammed)
     {
       // Save the screenshots to the buffer instead
