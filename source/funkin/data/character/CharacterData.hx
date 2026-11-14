@@ -116,17 +116,6 @@ class CharacterData
   public var flipX:Null<Bool>;
 
   /**
-   * NOTE: This only applies to animate atlas characters.
-   *
-   * Whether to apply the stage matrix, if it was exported from a symbol instance.
-   * Also positions the Texture Atlas as it displays in Animate.
-   * Turning this on is only recommended if you prepositioned the character in Animate.
-   * For other cases, it should be turned off to act similarly to a normal FlxSprite.
-   */
-  @:optional
-  public var applyStageMatrix:Null<Bool>;
-
-  /**
    * Various settings for the prop.
    * Only available for texture atlases.
    */
@@ -162,7 +151,6 @@ class CharacterData
   public static final DEFAULT_SCALE:Float = 1;
   public static final DEFAULT_SCROLL:Array<Float> = [0, 0];
   public static final DEFAULT_STARTINGANIM:String = 'idle';
-  public static final DEFAULT_APPLYSTAGEMATRIX:Bool = false;
   public static final DEFAULT_ANIMTYPE:String = 'framelabel';
   public static final DEFAULT_ATLASSETTINGS:funkin.data.stage.StageData.TextureAtlasData = {
     swfMode: true,
@@ -309,11 +297,6 @@ class CharacterData
     if (input.flipX == null)
     {
       input.flipX = DEFAULT_FLIPX;
-    }
-
-    if (input.applyStageMatrix == null)
-    {
-      input.applyStageMatrix = DEFAULT_APPLYSTAGEMATRIX;
     }
 
     if (input.atlasSettings == null)
