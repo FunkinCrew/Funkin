@@ -122,7 +122,7 @@ class Paths implements ConsoleClass
    * @param id The asset path to convert.
    * @return AssetPath
    */
-  @:allow(funkin.assets.Assets) @:allow(funkin.assets.FunkinBitmapFrontend) @:allow(funkin.audio.FunkinSound)
+  @:allow(funkin.assets.Assets) @:allow(funkin.assets.FunkinBitmapFrontend)
   static function raw(id:String, validate:Bool = true, ?library:String):AssetPath
   {
     if (id == null || id == '') return file('', '', validate, library);

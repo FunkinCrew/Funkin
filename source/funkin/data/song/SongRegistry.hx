@@ -330,6 +330,12 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
     return parser.value.migrate();
   }
 
+  /**
+   * Parse `SongMusicData` from a Music Asset Path.
+   *
+   * @param assetPath The Music asset path. Call `Paths.music()` to get one.
+   * @return The song metadata for the music track.
+   */
   public function parseMusicMetadata(assetPath:MusicAssetPathBuilder):Null<SongMusicData>
   {
     var parser = new json2object.JsonParser<SongMusicData>({

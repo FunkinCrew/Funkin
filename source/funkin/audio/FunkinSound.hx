@@ -785,7 +785,7 @@ typedef FunkinPartialMusicParams =
 };
 
 /**
- * Additional parameters for `FunkinSound.playMusic()`
+ * Additional parameters for the deprecated `FunkinSound.playMusic()`
  */
 typedef FunkinMusicCompatParams =
 {
