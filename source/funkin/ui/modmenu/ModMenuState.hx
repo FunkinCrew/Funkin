@@ -690,7 +690,7 @@ class ModMenuState extends MusicBeatState
   }
 
   var acceptDelay:Float = 0;
-  var oldSelection:ModMenuSelection;
+  var oldSelection:ModMenuSelection = DisabledModList;
   var playingElectrocution:Bool = false;
 
   /**
