@@ -535,7 +535,16 @@ class ModMenuState extends MusicBeatState
       }
     }
 
-    handleSelection();
+    var usingTouch:Bool = false;
+
+    #if FEATURE_TOUCH_CONTROLS
+    if (!ControlsHandler.usingExternalInputDevice)
+    {
+      usingTouch = true;
+    }
+    #end
+
+    if (!usingTouch) handleSelection();
   }
 
   #if FEATURE_ONE_CLICK_INSTALL
