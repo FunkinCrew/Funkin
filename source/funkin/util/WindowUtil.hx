@@ -187,7 +187,11 @@ class WindowUtil
    * @param title The title text displayed in the window header.
    * @param buttons Optional list of custom button labels for the dialog.
    */
-  public static function alert(type:lime.ui.MessageBoxType = INFORMATION, ?message:String, ?title:String, ?buttons:Array<String>) {
+  public static function alert(type:lime.ui.MessageBoxType = INFORMATION,
+    ?message:String,
+    ?title:String,
+    ?buttons:Array<String>)
+  {
     @:privateAccess
     FlxG.sound?.onFocusLost();
 
@@ -213,11 +217,11 @@ class WindowUtil
     #if lime_bgfx
     if (value == OFF)
     {
-      lime.graphics.bgfx.BGFX.reset(lime.graphics.bgfx.BGFX.RESET_NONE);
+      lime.graphics.bgfx.BGFX.reset(lime.graphics.bgfx.BGFX.RESET_FLIP_AFTER_RENDER);
     }
     else
     {
-      lime.graphics.bgfx.BGFX.reset(lime.graphics.bgfx.BGFX.RESET_VSYNC);
+      lime.graphics.bgfx.BGFX.reset(lime.graphics.bgfx.BGFX.RESET_VSYNC | lime.graphics.bgfx.BGFX.RESET_FLIP_AFTER_RENDER);
     }
     #else
     var res:Bool = FlxG.stage.application.window.setVSyncMode(value);
