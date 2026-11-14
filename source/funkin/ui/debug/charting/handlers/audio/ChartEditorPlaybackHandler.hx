@@ -354,6 +354,15 @@ class ChartEditorPlaybackHandler
    */
   public static function easeToSongTimeMs(state:ChartEditorState, songTimeMs:Float):Void
   {
+    if ((state.audioInstTrack != null && state.audioInstTrack.isPlaying) || state.audioVocalTrackGroup.playing)
+    {
+      state.stopAudioPlayback();
+      state.scrollPositionInMs = songTimeMs;
+      state.moveSongToScrollPosition();
+      state.currentScrollEase = state.scrollPositionInPixels;
+      state.startAudioPlayback();
+      return;
+    }
     state.easeSongToScrollPosition(ChartEditorTimeScale.msToPixels(songTimeMs));
   }
 
