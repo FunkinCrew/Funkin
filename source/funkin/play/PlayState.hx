@@ -1016,7 +1016,7 @@ class PlayState extends MusicBeatSubState
     }
 
     Conductor.instance.mapTimeChanges(currentChart.timeChanges);
-    var pre:Float = (Conductor.instance.beatLengthMs * -5) + startTimestamp;
+    var pre:Float = (Conductor.instance.beatLengthMs * -Constants.COUNTDOWN_LENGTH_BEATS) + startTimestamp;
 
     trace('Attempting to start at ' + pre);
     trace('startTimestamp ${startTimestamp}');
@@ -1292,7 +1292,7 @@ class PlayState extends MusicBeatSubState
 
       // so the song doesn't start too early :D
       var vwooshDelay:Float = 0.5;
-      Conductor.instance.update(-vwooshDelay * 1000 + startTimestamp + Conductor.instance.beatLengthMs * -5);
+      Conductor.instance.update(-vwooshDelay * 1000 + startTimestamp + Conductor.instance.beatLengthMs * -Constants.COUNTDOWN_LENGTH_BEATS);
 
       // timer for vwoosh
       vwooshTimer.start(vwooshDelay, function(_)

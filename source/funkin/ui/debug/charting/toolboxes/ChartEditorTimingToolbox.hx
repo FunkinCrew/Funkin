@@ -420,7 +420,7 @@ class ChartEditorTimingToolbox extends ChartEditorBaseToolbox implements ChartEd
 
   static function formatTime(ms:Float):String
   {
-    var totalSeconds:Float = Math.max(0, ms) / Constants.MS_PER_SEC;
+    var totalSeconds:Float = ms / Constants.MS_PER_SEC;
     var minutes:Int = Std.int(totalSeconds / 60);
     var seconds:Float = totalSeconds - minutes * 60;
     var secondsText:String = '${Math.floor(seconds * 1000) / 1000}';

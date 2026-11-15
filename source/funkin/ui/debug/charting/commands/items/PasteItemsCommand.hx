@@ -60,7 +60,7 @@ class PasteItemsCommand implements ChartEditorCommand
     addedNotes = SongDataUtils.offsetSongNoteData(currentClipboard.notes, targetTimestamp);
     addedNotes = SongDataUtils.clampSongNoteData(addedNotes, 0.0, msCutoff);
     addedEvents = SongDataUtils.offsetSongEventData(currentClipboard.events, targetTimestamp);
-    addedEvents = SongDataUtils.clampSongEventData(addedEvents, 0.0, msCutoff);
+    addedEvents = SongDataUtils.clampSongEventData(addedEvents, -state.countdownLengthInMs, msCutoff);
 
     removedNotes.clear();
     var mergedNotes:Array<SongNoteData> = SongNoteDataUtils.concatOverwrite(state.currentSongChartNoteData, addedNotes, removedNotes);
@@ -75,7 +75,7 @@ class PasteItemsCommand implements ChartEditorCommand
     var copiedSnaps:Array<Int> = currentClipboard.subBeatSnaps ?? [];
     for (i in 0...copiedSubBeats.length)
     {
-      var time:Float = (copiedSubBeats[i] + targetTimestamp).clamp(0, msCutoff);
+      var time:Float = (copiedSubBeats[i] + targetTimestamp).clamp(-state.countdownLengthInMs, msCutoff);
       if (state.isTimeOnSnap(time)) continue;
       pastedSubBeats.push(time);
       if (i < copiedSnaps.length) state.rememberSubBeatSnap(time, copiedSnaps[i]);

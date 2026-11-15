@@ -69,7 +69,7 @@ class MoveItemsCommand implements ChartEditorCommand
     {
       // Clone the notes to prevent editing from affecting the history.
       var resultEvent = event.clone();
-      resultEvent.time = (resultEvent.time + offset).clamp(0, Conductor.instance.getStepTimeInMs(state.lastSnappedGridStep));
+      resultEvent.time = (resultEvent.time + offset).clamp(-state.countdownLengthInMs, Conductor.instance.getStepTimeInMs(state.lastSnappedGridStep));
 
       movedEvents.pushUnique(resultEvent);
     }

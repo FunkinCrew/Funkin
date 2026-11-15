@@ -69,7 +69,7 @@ class AlignItemsToSubBeatsCommand implements ChartEditorCommand
     for (i in 0...events.length)
     {
       var resultEvent:SongEventData = events[i].clone();
-      resultEvent.time = eventTimes[i].clamp(0, maxTime);
+      resultEvent.time = eventTimes[i].clamp(-state.countdownLengthInMs, maxTime);
       movedEvents.pushUnique(resultEvent);
     }
 
@@ -83,7 +83,7 @@ class AlignItemsToSubBeatsCommand implements ChartEditorCommand
     {
       var before:Array<Float> = state.currentSubBeats().copy();
       subBeatsBefore = before;
-      setSubBeats(state, before.concat([for (time in newSubBeats) time.clamp(0, maxTime)]));
+      setSubBeats(state, before.concat([for (time in newSubBeats) time.clamp(-state.countdownLengthInMs, maxTime)]));
     }
 
     state.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/note-place'));

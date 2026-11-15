@@ -196,6 +196,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
       updateChainHover(null, null);
     });
 
+    toolboxEventsChainBeat.min = -Constants.COUNTDOWN_LENGTH_BEATS;
     toolboxEventsChainBeat.onChange = function(event:UIEvent)
     {
       if (refreshingBeat || event.value == null || movingGroup.length == 0) return;

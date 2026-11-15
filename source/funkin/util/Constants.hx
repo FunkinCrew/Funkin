@@ -506,6 +506,11 @@ class Constants
   public static final TITLE_ATTRACT_DELAY:Float = 37.5;
 
   /**
+   * How many beats it takes the game's countdown to tick down.
+   */
+  public static final COUNTDOWN_LENGTH_BEATS:Float = 5;
+
+  /**
    * HEALTH VALUES
    */
   // ==============================

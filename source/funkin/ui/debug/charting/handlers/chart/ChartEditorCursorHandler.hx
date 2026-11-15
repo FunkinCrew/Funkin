@@ -316,7 +316,7 @@ class ChartEditorCursorHandler
     var cursorFractionalStep:Float = ChartEditorTimeScale.pixelsToStep(cursorY);
     var cursorMs:Float = Conductor.instance.getStepTimeInMs(cursorFractionalStep);
     // Round the cursor step to the nearest snap quant.
-    var cursorSnappedStep:Float = Math.max(0, Math.fround(cursorFractionalStep / state.noteSnapRatio) * state.noteSnapRatio);
+    var cursorSnappedStep:Float = Math.max(-state.countdownLengthInSteps, Math.fround(cursorFractionalStep / state.noteSnapRatio) * state.noteSnapRatio);
     cursorSnappedStep = Math.min(cursorSnappedStep, state.lastSnappedGridStep);
 
     cursorSnappedStep = state.snapToSubBeat(cursorFractionalStep, cursorSnappedStep);
@@ -329,7 +329,10 @@ class ChartEditorCursorHandler
 
     if (state.showCursorLine && state.gridCursorLine != null && (draggedStep != null || (overlapsGrid && !state.isCursorOverHaxeUI)))
     {
-      var lineStep:Float = (draggedStep != null) ? (draggedStep + state.dragTargetCurrentStep).clamp(0, state.lastSnappedGridStep) : cursorSnappedStep;
+      var lineStep:Float = (draggedStep != null) ? (
+        draggedStep
+        + state.dragTargetCurrentStep
+      ).clamp(-state.countdownLengthInSteps, state.lastSnappedGridStep) : cursorSnappedStep;
       state.gridCursorLine.visible = true;
       state.gridCursorLine.x = state.gridTiledSprite.x;
       state.gridCursorLine.y = Math.round(state.gridToScreenY(ChartEditorTimeScale.stepToPixels(lineStep))) - Std.int(state.gridCursorLine.height / 2);
@@ -604,8 +607,8 @@ class ChartEditorCursorHandler
         FlxG.mouse.viewY,
         (state.notePreview?.y ?? 0.0),
         (state.notePreview?.y ?? 0.0) + (state.notePreview?.height ?? 0.0),
-        state.isViewDownscroll ? state.songLengthInPixels : 0,
-        state.isViewDownscroll ? 0 : state.songLengthInPixels
+        state.isViewDownscroll ? state.songLengthInPixels : -state.countdownLengthInPixels,
+        state.isViewDownscroll ? -state.countdownLengthInPixels : state.songLengthInPixels
       );
 
       state.currentScrollEase = clickedPosInPixels;
@@ -716,7 +719,9 @@ class ChartEditorCursorHandler
         state.scrollMouseToGrid();
 
         // calculate distance between the position dragged to and the original position.
-        var dragDistanceSteps:Float = Conductor.instance.getTimeInSteps(cursorSnappedMs).clamp(0, state.lastSnappedGridStep) - state.dragStartCursorStep;
+        var dragDistanceSteps:Float =
+          Conductor.instance.getTimeInSteps(cursorSnappedMs).clamp(-state.countdownLengthInSteps, state.lastSnappedGridStep)
+          - state.dragStartCursorStep;
 
         // Alt drags freely, off the snap.
         if (FlxG.keys.pressed.ALT)
@@ -732,12 +737,15 @@ class ChartEditorCursorHandler
           if (anchorStep != null && dragDistanceSteps != 0)
           {
             var rawStep:Float = anchorStep + cursorFractionalStep - state.dragStartCursorFractionalStep;
-            var gridStep:Float = Math.min(Math.max(0, Math.fround(rawStep / state.noteSnapRatio) * state.noteSnapRatio), state.lastSnappedGridStep);
+            var gridStep:Float = Math.min(
+              Math.max(-state.countdownLengthInSteps, Math.fround(rawStep / state.noteSnapRatio) * state.noteSnapRatio),
+              state.lastSnappedGridStep
+            );
             dragDistanceSteps = state.snapToSubBeat(rawStep, gridStep) - anchorStep;
           }
         }
 
-        var selectionEndStep:Float = 0;
+        var selectionEndStep:Float = -state.countdownLengthInSteps;
         for (note in state.currentNoteSelection)
         {
           selectionEndStep = Math.max(selectionEndStep, note.getStepTime() + note.getStepLength() + 1);
@@ -747,7 +755,10 @@ class ChartEditorCursorHandler
           selectionEndStep = Math.max(selectionEndStep, event.getStepTime() + 1);
         }
 
-        var maxDragDistanceSteps:Float = Math.max(Math.floor((state.gridLengthInSteps - selectionEndStep) / state.noteSnapRatio) * state.noteSnapRatio, 0);
+        var maxDragDistanceSteps:Float = Math.max(
+          Math.floor((state.gridLengthInSteps - selectionEndStep) / state.noteSnapRatio) * state.noteSnapRatio,
+          -state.countdownLengthInSteps
+        );
         if (dragDistanceSteps > maxDragDistanceSteps) dragDistanceSteps = maxDragDistanceSteps;
 
         var dragDistanceColumns:Int = cursorGridPos - state.dragStartCursorColumn;
@@ -978,9 +989,12 @@ class ChartEditorCursorHandler
                   ChartEditorNoteUtil.cloneNoteParams(state.noteParamsToPlace)
                 );
 
-                state.performCommand(new AddNotesCommand([newNoteData], state.pressingControl()));
+                if (cursorSnappedMs >= 0) // Disallow placing notes during the countdown.
+                {
+                  state.performCommand(new AddNotesCommand([newNoteData], state.pressingControl()));
 
-                state.currentPlaceNoteData = newNoteData;
+                  state.currentPlaceNoteData = newNoteData;
+                }
               }
             }
           }
