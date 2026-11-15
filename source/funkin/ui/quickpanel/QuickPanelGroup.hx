@@ -36,6 +36,26 @@ class QuickPanelGroup extends FunkinSpriteGroup
   static final BUTTON_PADDING:Float = 20;
 
   /**
+   * The padding between buttons when the panel scrolls.
+   */
+  static final SCROLL_BUTTON_PADDING:Float = 8;
+
+  /**
+   * Distance from a visible edge button to its preview.
+   */
+  static final PREVIEW_DISTANCE:Float = 93;
+
+  /**
+   * Scale of a preview at rest.
+   */
+  static final PREVIEW_SCALE:Float = 0.72;
+
+  /**
+   * Alpha of a preview at rest.
+   */
+  static final PREVIEW_ALPHA:Float = 0.5;
+
+  /**
    * The button angle range
    */
   static final BUTTON_ANGLE_RANGE:Float = 5;
@@ -322,7 +342,8 @@ class QuickPanelGroup extends FunkinSpriteGroup
         x: 0,
         y: 0,
         angle: 0,
-        alpha: 1
+        alpha: 1,
+        previewScaled: false
       });
     }
 
@@ -539,9 +560,11 @@ class QuickPanelGroup extends FunkinSpriteGroup
     if (buttons.length == 0 || panelSprite == null) return;
 
     var slots:Int = visibleSlots;
+    var scrolling:Bool = buttons.length > VISIBLE_COUNT;
+    var padding:Float = scrolling ? SCROLL_BUTTON_PADDING : BUTTON_PADDING;
     var centerSlot:Float = (slots - 1) / 2;
     var angleStep:Float = BUTTON_ANGLE_RANGE / 2;
-    var fullHeight:Float = (QuickPanelButton.ITEM_HEIGHT * slots) + (BUTTON_PADDING * (slots - 1));
+    var fullHeight:Float = (QuickPanelButton.ITEM_HEIGHT * slots) + (padding * (slots - 1));
     var startY:Float = (FlxG.height / 2) - (fullHeight / 2);
     var baseX:Float = left ? -panelSprite.width + 58 : 98;
 
@@ -556,9 +579,16 @@ class QuickPanelGroup extends FunkinSpriteGroup
 
       var target:ButtonTarget = buttonTargets[index];
       target.x = left ? baseX + dist : baseX - dist;
-      target.y = startY + ((QuickPanelButton.ITEM_HEIGHT + BUTTON_PADDING) * slot);
+      target.y = startY + ((QuickPanelButton.ITEM_HEIGHT + padding) * slot);
       target.angle = left ? -targetAngle : targetAngle;
       target.alpha = inView ? 1 : 0;
+
+      // Show only the nearest item beyond each edge as a scroll cue.
+      if (scrolling && (slot == -1 || slot == slots))
+      {
+        target.y = slot == -1 ? startY - PREVIEW_DISTANCE : startY + ((QuickPanelButton.ITEM_HEIGHT + padding) * (slots - 1)) + PREVIEW_DISTANCE;
+        target.alpha = PREVIEW_ALPHA;
+      }
 
       button.inView = inView;
       button.repositionSide(left);
@@ -592,7 +622,38 @@ class QuickPanelGroup extends FunkinSpriteGroup
   function updateButtonSlide(elapsed:Float):Void
   {
     var t:Float = 1 - Math.pow(0.01, elapsed / BUTTON_SLIDE_DURATION);
-    for (index => button in buttons) moveButton(button, buttonTargets[index], t);
+    var scrolling:Bool = buttons.length > VISIBLE_COUNT;
+    var step:Float = QuickPanelButton.ITEM_HEIGHT + SCROLL_BUTTON_PADDING;
+    var firstY:Float = (FlxG.height - QuickPanelButton.ITEM_HEIGHT - step * (VISIBLE_COUNT - 1)) / 2;
+    var lastY:Float = firstY + step * (VISIBLE_COUNT - 1);
+
+    for (index => button in buttons)
+    {
+      var target:ButtonTarget = buttonTargets[index];
+      moveButton(button, target, t);
+      if (scrolling) updatePreviewScale(button, target, firstY, lastY);
+    }
+  }
+
+  /**
+   * Scales an item according to its position while it moves into or out of view.
+   */
+  function updatePreviewScale(button:QuickPanelButton, target:ButtonTarget, firstY:Float, lastY:Float):Void
+  {
+    var distance:Float = Math.max(0, Math.max(firstY - button.localY, button.localY - lastY));
+    if (distance > 0.001)
+    {
+      var amount:Float = Math.min(distance / PREVIEW_DISTANCE, 1);
+      var scale:Float = FlxMath.lerp(1, PREVIEW_SCALE, amount);
+      button.localScale.set(scale, scale);
+      target.previewScaled = true;
+    }
+    else if (target.previewScaled)
+    {
+      // Stop controlling the scale once the selection animation can take over.
+      button.localScale.set(1, 1);
+      target.previewScaled = false;
+    }
   }
 
   /**
@@ -635,6 +696,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
     for (i => button in buttons) if (i == index || button.selected) button.selected = (i == index);
 
     var step:Float = SLICE_ANGLE_RANGE / 2;
+    if (buttons.length > VISIBLE_COUNT) step *= (QuickPanelButton.ITEM_HEIGHT + SCROLL_BUTTON_PADDING) / (QuickPanelButton.ITEM_HEIGHT + BUTTON_PADDING);
     var centerSlot:Float = (visibleSlots - 1) / 2;
 
     panelShader.sliceVisible = true;
@@ -854,4 +916,5 @@ typedef ButtonTarget =
   var y:Float;
   var angle:Float;
   var alpha:Float;
+  var previewScaled:Bool;
 }
