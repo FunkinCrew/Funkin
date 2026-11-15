@@ -2770,6 +2770,10 @@ class CameraEditorState extends UIState implements ConsoleClass
       currentStage = null;
     }
 
+    funkin.play.GameOverSubState.reset();
+    funkin.play.PauseSubState.reset();
+    funkin.play.Countdown.reset();
+
     destroyHaxeUIComponents();
 
     writePreferences(!saved);
