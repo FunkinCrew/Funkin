@@ -10,6 +10,10 @@
       "blocksize": "6x6"
     },
     {
+      "asset": "assets/ui/mods/base-icon.png",
+      "blocksize": "4x4"
+    },
+    {
       "asset": "assets/gameplay/characters/otis-speaker/otis_flashes.png",
       "blocksize": "4x4"
     },
