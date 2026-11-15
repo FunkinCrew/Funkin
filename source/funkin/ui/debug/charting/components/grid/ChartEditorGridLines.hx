@@ -151,12 +151,13 @@ class ChartEditorGridLines
       divider.setPosition(grid.x + ChartEditorState.GRID_SIZE * ChartEditorState.STRUMLINE_SIZE * (i + 1) - dividerWidth / 2, viewTopScreen);
     }
 
-    lines.setPosition(grid.x, grid.y);
-    subBeats.setPosition(grid.x, grid.y);
-    markers.setPosition(grid.x, grid.y);
+    var yPos:Float = grid.y + chartEditorState.countdownLengthInPixels;
+    lines.setPosition(grid.x, yPos);
+    subBeats.setPosition(grid.x, yPos);
+    markers.setPosition(grid.x, yPos);
 
-    var viewTop:Float = viewTopScreen - grid.y;
-    var viewBottom:Float = viewBottomScreen - grid.y;
+    var viewTop:Float = viewTopScreen - yPos;
+    var viewBottom:Float = viewBottomScreen - yPos;
     if (force || viewTop < builtTop || viewBottom > builtBottom)
     {
       var margin:Float = FlxG.height * 0.5;

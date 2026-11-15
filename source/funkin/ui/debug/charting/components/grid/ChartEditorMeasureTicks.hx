@@ -71,7 +71,7 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
     ticksHeight = height;
     measureTicksSprite.setGraphicSize(ChartEditorState.GRID_SIZE, Math.max(1, height) + FlxG.height * 2);
     measureTicksSprite.updateHitbox();
-    measureTicksSprite.y = this.y - FlxG.height;
+    measureTicksSprite.y = this.y - FlxG.height - chartEditorState.countdownLengthInPixels;
     updateMeasureNumbers(true);
   }
 
@@ -95,7 +95,7 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
     measureTicksSprite.makeSolidColor(2, 2, backingColor);
     measureTicksSprite.setGraphicSize(ChartEditorState.GRID_SIZE, Math.max(1, ticksHeight) + FlxG.height * 2);
     measureTicksSprite.updateHitbox();
-    measureTicksSprite.y = this.y - FlxG.height;
+    measureTicksSprite.y = this.y - FlxG.height - chartEditorState.countdownLengthInPixels;
 
     // Destroy these so they get rebuilt with the right theme later.
     measureNumbers.forEach(function(measureNumber:FlxText)
@@ -116,9 +116,8 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
     // This is the earliest measure we'll need to display a tick for.
     var currentMeasure:Int = Math.floor(Conductor.instance.getTimeInMeasures(chartEditorState.scrollPositionInMs));
     if (previousMeasure == currentMeasure && !force) return;
-    if (currentMeasure < 0) currentMeasure = previousMeasure = 0;
-    else
-      previousMeasure = currentMeasure;
+
+    previousMeasure = currentMeasure;
 
     // Remove existing measure numbers.
     measureNumbers.forEachAlive(function(measureNumber:FlxText)
@@ -133,22 +132,32 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
     {
       // NOTE: i = 0 when rendering Measure 1 here.
       var targetMeasure:Int = currentMeasure + i - 1;
-      if (targetMeasure < 0) continue;
-
       var measureTimeInMs:Float = Conductor.instance.getMeasureTimeInMs(targetMeasure);
+      if (targetMeasure < 0)
+      {
+        // Display beat ticks for the countdown instead.
+        var beatStart:Int = Math.floor(Conductor.instance.getTimeInSteps(measureTimeInMs) / Constants.STEPS_PER_BEAT);
+        var beatEnd:Int = Math.floor(beatStart + Constants.STEPS_PER_BEAT);
+
+        for (i in beatStart...beatEnd)
+        {
+          var beatTimeInPixels:Float = ChartEditorTimeScale.stepToPixels(i * Constants.STEPS_PER_BEAT);
+          var display:String = '${Math.abs(i) - 1}';
+          if (display == '0') display = 'Go!';
+
+          placeMeasureNumber(beatTimeInPixels, display, true);
+        }
+
+        continue;
+      }
 
       var measureTimeInPixels:Float = ChartEditorTimeScale.msToPixels(measureTimeInMs);
 
       // If we've gone past the end of the song, we're done.
       if (measureTimeInPixels > chartEditorState.songLengthInPixels) break;
 
-      // Handle the case where the measure at the end of the song is too short to display a measure number.
-      final MIN_MEASURE_HEIGHT:Float = 24; // The minimum height of a measure, in pixels, in order for a measure number to display.
-      var shouldDisplayMeasureNumber:Bool = measureTimeInPixels + MIN_MEASURE_HEIGHT <= chartEditorState.songLengthInPixels;
-
-      var relativeMeasureTimeInPixels:Float = measureTimeInPixels + this.y;
-
       final SCREEN_PADDING:Float = FlxG.height;
+      var relativeMeasureTimeInPixels:Float = measureTimeInPixels + this.y;
 
       // Far below the visible area, quit it.
       if (relativeMeasureTimeInPixels > FlxG.height + SCREEN_PADDING)
@@ -156,21 +165,31 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
         break;
       }
 
-      // Else, display a number and divider.
-
-      if (shouldDisplayMeasureNumber)
-      {
-        // Reuse an existing number. If we need a new number, create one with makeMeasureNumber().
-        final REVIVE:Bool = true;
-        var measureNumber = measureNumbers.recycle(makeMeasureNumber, false, REVIVE);
-
-        // Measures are base ZERO gah!
-        final OFFSET = 2;
-        measureNumber.text = '${targetMeasure + 1}';
-        measureNumber.y = relativeMeasureTimeInPixels + OFFSET;
-        measureNumber.x = this.x;
-      }
+      placeMeasureNumber(measureTimeInPixels, '${targetMeasure + 1}');
     }
+  }
+
+  function placeMeasureNumber(height:Float, text:String, isCountdown:Bool = false)
+  {
+    // Handle the case where the measure at the end of the song is too short to display a measure number.
+    final MIN_MEASURE_HEIGHT:Float = 24; // The minimum height of a measure, in pixels, in order for a measure number to display.
+    var shouldDisplayMeasureNumber:Bool = height + MIN_MEASURE_HEIGHT <= chartEditorState.songLengthInPixels;
+
+    if (!shouldDisplayMeasureNumber) return;
+
+    // Else, display a number and divider.
+
+    // Reuse an existing number. If we need a new number, create one with makeMeasureNumber().
+    final REVIVE:Bool = true;
+    var measureNumber = measureNumbers.recycle(makeMeasureNumber, false, REVIVE);
+
+    // Measures are base ZERO gah!
+    final OFFSET = 2;
+    measureNumber.text = text;
+    measureNumber.y = height + this.y + OFFSET;
+    measureNumber.x = this.x;
+
+    measureNumber.color = isCountdown ? FlxColor.YELLOW : FlxColor.WHITE;
   }
 
   function makeMeasureNumber():FlxText

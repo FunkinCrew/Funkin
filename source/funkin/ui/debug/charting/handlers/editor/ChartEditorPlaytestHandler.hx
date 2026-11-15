@@ -61,7 +61,7 @@ class ChartEditorPlaytestHandler
     state.stopAudioPlayback(false);
 
     var startTimestamp:Float = 0;
-    if (state.playtestStartTime) startTimestamp = state.scrollPositionInMs + state.playheadPositionInMs;
+    if (state.playtestStartTime) startTimestamp = Math.max(0, state.scrollPositionInMs + state.playheadPositionInMs);
 
     var playbackRate:Float = 1.0;
     if (state.playtestAudioSettings)

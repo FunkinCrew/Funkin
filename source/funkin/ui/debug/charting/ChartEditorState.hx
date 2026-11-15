@@ -46,6 +46,7 @@ import funkin.input.Cursor;
 import funkin.input.TurboButtonHandler;
 import funkin.input.TurboKeyHandler;
 import funkin.modding.events.ScriptEvent;
+import funkin.play.Countdown.CountdownStep;
 import funkin.play.PlayState;
 import funkin.play.PlayStatePlaylist;
 import funkin.play.character.BaseCharacter.CharacterType;
@@ -54,6 +55,7 @@ import funkin.play.components.Subtitles;
 import funkin.play.event.SongEvent;
 import funkin.play.notes.NoteSprite;
 import funkin.play.notes.notekind.NoteKindManager;
+import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.song.Song;
 import funkin.play.stage.Stage;
 import funkin.save.Save;
@@ -423,7 +425,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   }
 
   /**
-   * Last step a note can be snapped to while still fitting on the grid.
    * Dependent on the current note snap.
    */
   var lastSnappedGridStep(get, never):Float;
@@ -450,17 +451,51 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     return value;
   }
 
+  /**
+   * How long the countdown for this song lasts, in milliseconds.
+   * Always based on the first BPM change.
+   */
+  var countdownLengthInMs(get, never):Float;
+
+  function get_countdownLengthInMs():Float
+  {
+    @:privateAccess
+    var denominator:Int = Conductor.instance.timeChanges[0]?.timeSignatureDen ?? Constants.DEFAULT_TIME_SIGNATURE_DEN;
+    var firstBeatLengthInMs:Float = ((Constants.SECS_PER_MIN / Conductor.instance.startingBPM) * Constants.MS_PER_SEC) * (4 / denominator);
+    return (firstBeatLengthInMs * Constants.COUNTDOWN_LENGTH_BEATS);
+  }
+
+  /**
+   * How long the countdown for this song lasts, in steps.
+   */
+  var countdownLengthInSteps(get, never):Float;
+
+  function get_countdownLengthInSteps():Float
+  {
+    return (Constants.COUNTDOWN_LENGTH_BEATS * Constants.STEPS_PER_BEAT);
+  }
+
+  /**
+   * How long the countdown for this song lasts, in pixels.
+   */
+  var countdownLengthInPixels(get, never):Float;
+
+  function get_countdownLengthInPixels():Float
+  {
+    return Std.int(ChartEditorTimeScale.stepToPixels(Math.ceil(countdownLengthInSteps)));
+  }
+
   // Scroll Position
 
   /**
    * The relative scroll position in the song, in pixels.
    * One pixel is 1/40 of 1 step, and 1/160 of 1 beat.
    */
-  var scrollPositionInPixels(default, set):Float = -1.0;
+  var scrollPositionInPixels(default, set):Float = 0.0;
 
   function set_scrollPositionInPixels(value:Float):Float
   {
-    if (value < 0)
+    if (value < -countdownLengthInPixels)
     {
       // If we're scrolling up, and we hit the top,
       // but the playhead is in the middle, move the playhead up.
@@ -470,11 +505,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         playheadPositionInPixels -= amount;
       }
 
-      value = 0;
+      value = -countdownLengthInPixels;
     }
 
     // Make sure playhead doesn't scroll outside the song.
-    if (value + playheadPositionInPixels < 0) playheadPositionInPixels = -value;
+    if (value + playheadPositionInPixels < -countdownLengthInPixels) playheadPositionInPixels = -countdownLengthInPixels - value;
     if (value + playheadPositionInPixels > songLengthInPixels) playheadPositionInPixels = songLengthInPixels - value;
 
     if (value > songLengthInPixels) value = songLengthInPixels;
@@ -489,20 +524,22 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // Move the grid sprite to the correct position.
     if (gridTiledSprite != null && measureTicks != null)
     {
-      gridTiledSprite.y = -scrollPositionInPixels + (GRID_INITIAL_Y_POS);
+      gridTiledSprite.y = -scrollPositionInPixels + (GRID_INITIAL_Y_POS) - countdownLengthInPixels;
 
       // The waveforms only rebuild when the view leaves the chunk they cover.
       for (member in audioWaveforms.members)
       {
-        if (member != null) member.refresh(gridTiledSprite.y);
+        if (member != null) member.refresh(gridTiledSprite.y + countdownLengthInPixels);
       }
     }
 
+    var yPos:Float = (gridTiledSprite == null ? 0.0 : (gridTiledSprite.y + countdownLengthInPixels));
+
     // Move the rendered notes to the correct position.
-    renderedNotes.setPosition(gridTiledSprite?.x ?? 0.0, gridTiledSprite?.y ?? 0.0);
-    renderedHoldNotes.setPosition(gridTiledSprite?.x ?? 0.0, gridTiledSprite?.y ?? 0.0);
-    renderedEvents.setPosition(gridTiledSprite?.x ?? 0.0, gridTiledSprite?.y ?? 0.0);
-    renderedSelectionSquares.setPosition(gridTiledSprite?.x ?? 0.0, gridTiledSprite?.y ?? 0.0);
+    renderedNotes.setPosition(gridTiledSprite?.x ?? 0.0, yPos);
+    renderedHoldNotes.setPosition(gridTiledSprite?.x ?? 0.0, yPos);
+    renderedEvents.setPosition(gridTiledSprite?.x ?? 0.0, yPos);
+    renderedSelectionSquares.setPosition(gridTiledSprite?.x ?? 0.0, yPos);
     gridLines?.refresh(gridLinesDirty);
     gridLinesDirty = false;
     // Offset the selection box start position, if we are dragging.
@@ -563,7 +600,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function set_playheadPositionInPixels(value:Float):Float
   {
     // Make sure playhead doesn't go outside the song.
-    if (value + scrollPositionInPixels < 0) value = -scrollPositionInPixels;
+    if (value + scrollPositionInPixels < -countdownLengthInPixels) value = -countdownLengthInPixels - scrollPositionInPixels;
     if (value + scrollPositionInPixels > songLengthInPixels) value = songLengthInPixels - scrollPositionInPixels;
 
     this.playheadPositionInPixels = value;
@@ -3636,6 +3673,38 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // Show the mouse cursor.
     // Just throwing this somewhere convenient and infrequently called because sometimes Flixel's debug thing hides the cursor.
     if (!isPlaytesting) Cursor.show();
+
+    // For negative times during playback, we want to play the countdown sounds at certain beats.
+    var noteStyle:Null<NoteStyle> = NoteStyleRegistry.instance.fetchEntry(currentSongNoteStyle);
+    if (!isPlaytesting && (audioInstTrack?.playing ?? false) && noteStyle != null)
+    {
+      var step:Null<CountdownStep> = switch (Conductor.instance.currentBeat)
+      {
+        case -5:
+          CountdownStep.BEFORE;
+        case -4:
+          CountdownStep.THREE;
+        case -3:
+          CountdownStep.TWO;
+        case -2:
+          CountdownStep.ONE;
+        case -1:
+          CountdownStep.GO;
+        case 0:
+          CountdownStep.AFTER;
+        default:
+          null;
+      }
+
+      if (step != null)
+      {
+        var path = noteStyle.getCountdownSoundPath(step);
+        if (path != null)
+        {
+          FunkinSound.playOnce(path.toFlxSoundAsset(), Constants.COUNTDOWN_VOLUME, null, null);
+        }
+      }
+    }
 
     return true;
   }

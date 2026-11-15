@@ -126,12 +126,7 @@ class Constants
   /**
    * Maps the plural path segment in a GameBanana profile URL onto the API's model name.
    */
-  public static final ONE_CLICK_MODELS:Map<String, String> = [
-    'mods' => 'Mod',
-    'tools' => 'Tool',
-    'sounds' => 'Sound',
-    'wips' => 'Wip'
-  ];
+  public static final ONE_CLICK_MODELS:Map<String, String> = ['mods' => 'Mod', 'tools' => 'Tool', 'sounds' => 'Sound', 'wips' => 'Wip'];
 
   /**
    * The GameBanana category that holds mod folders for the base game.
@@ -509,6 +504,11 @@ class Constants
    * Time (in seconds) to wait on the Title Screen before entering the Attract State.
    */
   public static final TITLE_ATTRACT_DELAY:Float = 37.5;
+
+  /**
+   * How many beats it takes the game's countdown to tick down.
+   */
+  public static final COUNTDOWN_LENGTH_BEATS:Float = 5;
 
   /**
    * HEALTH VALUES

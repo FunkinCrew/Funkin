@@ -381,7 +381,7 @@ class ChartEditorPlaybackHandler
    */
   public static function easeSongToScrollPosition(state:ChartEditorState, targetScrollPosition:Float):Void
   {
-    state.currentScrollEase = Math.max(0, targetScrollPosition);
+    state.currentScrollEase = Math.max(-state.countdownLengthInPixels, targetScrollPosition);
     state.currentScrollEase = Math.min(state.currentScrollEase, state.songLengthInPixels);
     state.scrollPositionInPixels = MathUtil.snap(
       MathUtil.smoothLerpPrecision(state.scrollPositionInPixels, state.currentScrollEase, FlxG.elapsed, ChartEditorState.SCROLL_EASE_DURATION, 1 / 1000),

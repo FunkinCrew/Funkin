@@ -587,19 +587,21 @@ class ChartEditorNoteDisplayHandler
   {
     if (state.gridTiledSprite == null) throw 'ERROR: Tried to build note groups, but gridTiledSprite is null! Check ChartEditorState.buildGrid().';
 
-    state.renderedHoldNotes.setPosition(state.gridTiledSprite.x, state.gridTiledSprite.y);
+    var positions:Array<Float> = [state.gridTiledSprite.x, state.gridTiledSprite.y + state.countdownLengthInPixels];
+
+    state.renderedHoldNotes.setPosition(positions[0], positions[1]);
     state.add(state.renderedHoldNotes);
     state.renderedHoldNotes.zIndex = 24;
 
-    state.renderedNotes.setPosition(state.gridTiledSprite.x, state.gridTiledSprite.y);
+    state.renderedNotes.setPosition(positions[0], positions[1]);
     state.add(state.renderedNotes);
     state.renderedNotes.zIndex = 25;
 
-    state.renderedEvents.setPosition(state.gridTiledSprite.x, state.gridTiledSprite.y);
+    state.renderedEvents.setPosition(positions[0], positions[1]);
     state.add(state.renderedEvents);
     state.renderedEvents.zIndex = 25;
 
-    state.renderedSelectionSquares.setPosition(state.gridTiledSprite.x, state.gridTiledSprite.y);
+    state.renderedSelectionSquares.setPosition(positions[0], positions[1]);
     state.add(state.renderedSelectionSquares);
     state.renderedSelectionSquares.zIndex = 26;
   }
