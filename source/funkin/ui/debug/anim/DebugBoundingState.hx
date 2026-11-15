@@ -45,6 +45,8 @@ class DebugBoundingState extends FlxState
   var dropDownSetup:Bool = false;
   var onionSkinChar:BaseCharacter;
   var txtOffsetShit:FlxText;
+  var txtFrames:FlxText;
+  var txtZoom:FlxText;
   var offsetEditorDialog:CollapsibleDialog;
   var offsetAnimationDropdown:DropDown;
   var haxeUIFocused(get, default):Bool = false;
@@ -114,6 +116,8 @@ class DebugBoundingState extends FlxState
     initSpritesheetView();
     initOffsetView();
 
+    initZoomText();
+
     Cursor.show();
 
     super.create();
@@ -121,6 +125,17 @@ class DebugBoundingState extends FlxState
 
   var bf:FlxSprite;
   var swagOutlines:FlxSprite;
+
+  function initZoomText()
+  {
+    txtZoom = new FlxText(20, 20, 0, "", 20);
+    txtZoom.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 26, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    txtZoom.cameras = [hudCam];
+    txtZoom.text = 'Zoom: ' + Math.round(FlxG.camera.zoom * 100) / 100;
+    txtZoom.x = FlxG.width - txtZoom.width - 20;
+    txtZoom.y = FlxG.height - 20 - txtOffsetShit.height;
+    add(txtZoom);
+  }
 
   function initSpritesheetView():Void
   {
@@ -208,6 +223,13 @@ class DebugBoundingState extends FlxState
     txtOffsetShit.y = FlxG.height - 20 - txtOffsetShit.height;
     offsetView.add(txtOffsetShit);
 
+    txtFrames = new FlxText(20, 20, 0, "", 20);
+    txtFrames.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 26, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    txtFrames.cameras = [hudCam];
+    txtFrames.y = txtOffsetShit.y - txtFrames.height;
+    txtFrames.text = 'Frame: 1/1';
+    offsetView.add(txtFrames);
+
     var characters:Array<String> = CharacterRegistry.instance.listEntryIds();
     characters.sort(SortUtil.alphabetically);
 
@@ -288,6 +310,8 @@ class DebugBoundingState extends FlxState
 
   override function update(elapsed:Float)
   {
+    if (swagChar != null) txtFrames.text = 'Frame: ' + (swagChar.animation.curAnim.curFrame + 1) + '/' + swagChar.animation.curAnim.numFrames;
+
     if (FlxG.keys.justPressed.ONE)
     {
       var lv:DropDown = offsetEditorDialog.findComponent("swapper", DropDown);
@@ -304,6 +328,7 @@ class DebugBoundingState extends FlxState
       {
         FlxG.camera.focusOn(swagChar.getMidpoint());
         FlxG.camera.zoom = 0.95;
+        updateZoomText();
       }
     }
 
@@ -357,11 +382,18 @@ class DebugBoundingState extends FlxState
       FlxG.camera.zoom *= rawScale;
       if (FlxG.camera.zoom < 0.1) FlxG.camera.zoom = 0.1;
       if (FlxG.camera.zoom > 10.0) FlxG.camera.zoom = 10.0;
+      updateZoomText();
       return;
     }
 
     FlxG.camera.scroll.x -= (-dx * TRACKPAD_PAN_SCALE) / FlxG.camera.zoom;
     FlxG.camera.scroll.y -= (dy * TRACKPAD_PAN_SCALE) / FlxG.camera.zoom;
+  }
+
+  function updateZoomText()
+  {
+    txtZoom.text = 'Zoom: ' + Math.round(FlxG.camera.zoom * 100) / 100;
+    txtZoom.x = FlxG.width - txtZoom.width - 20;
   }
 
   function resetWindowTitle():Void
