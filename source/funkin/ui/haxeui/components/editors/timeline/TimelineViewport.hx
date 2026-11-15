@@ -2,9 +2,9 @@ package funkin.ui.haxeui.components.editors.timeline;
 
 #if FEATURE_CAMERA_EDITOR
 import funkin.Conductor;
-import funkin.graphics.shaders.TimelineShader;
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongEventDataRaw;
+import funkin.graphics.shaders.TimelineShader;
 import funkin.play.event.SongEvent;
 import funkin.ui.haxeui.components.editors.timeline.EventTimeline.TimelinePlaybackAutoScrollMode;
 import funkin.ui.haxeui.components.editors.timeline.TimelineEvent.EventMoveDelta;
@@ -15,15 +15,15 @@ import haxe.ui.components.Image;
 import haxe.ui.containers.Box;
 import haxe.ui.core.Component;
 import haxe.ui.core.CompositeBuilder;
-import haxe.ui.events.MouseEvent;
 import haxe.ui.core.Screen;
+import haxe.ui.events.MouseEvent;
 import haxe.ui.layouts.AbsoluteLayout;
 import haxe.ui.layouts.DefaultLayout;
 #if FEATURE_MACOS_GESTURES
-import lime.ui.Gesture;
-import lime.ui.Gesture.GestureType;
 import funkin.input.macos.FunkinGesture;
 import funkin.util.HaxeUIUtil;
+import lime.ui.Gesture.GestureType;
+import lime.ui.Gesture;
 #end
 
 @:composite(TimelineViewportEvents, TimelineViewportBuilder, TimelineViewportLayout)
@@ -1259,10 +1259,8 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
     var endMs:Float = timeMs + durationSteps * _viewport.stepLengthAtMs(timeMs);
     var ghostLeft:Float = _viewport.msToPixelX(timeMs);
     var ghostTop:Float = _viewport.getBlockTopPositionFromLayerIndex(layerIndex);
-    var ghostWidth:Float = instant ? TimelineViewport.INSTANT_BLOCK_WIDTH : Math.max(
-      TimelineViewport.MIN_BLOCK_WIDTH,
-      _viewport.msToPixelX(endMs) - ghostLeft
-    );
+    var ghostWidth:Float = instant ? _viewport.instantBlockWidth() : Math.max(TimelineViewport.MIN_BLOCK_WIDTH,
+      _viewport.msToPixelX(endMs) - ghostLeft);
     ghost.left = ghostLeft;
     ghost.top = ghostTop;
     ghost.width = ghostWidth;
@@ -1946,7 +1944,6 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
   }
   #end
 }
-
 /**
  * The starting state of one event in a resize drag.
  */
@@ -1961,5 +1958,4 @@ typedef ResizeEntry =
   origEase:Null<String>,
   endMs:Float
 };
-
 #end
