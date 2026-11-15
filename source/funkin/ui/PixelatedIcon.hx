@@ -58,6 +58,11 @@ class PixelatedIcon extends FunkinSprite
       {
         lastValidIconName = iconName;
       }
+      else if (Paths.image('gameplay/characters/${iconName}/freeplay-' + '${iconName}', false).exists())
+      {
+        charPath = 'gameplay/characters/${iconName}/freeplay-';
+        lastValidIconName = iconName;
+      }
 
       if (i < charIDParts.length - 1) iconName += '-';
     }
