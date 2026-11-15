@@ -426,9 +426,11 @@ class ModMenuState extends MusicBeatState
       disabledModItems.deselectAll();
     }
 
+    #if ((sys && !mobile) || (js && html5))
     FlxG.stage.window.onDropFile.add(onDropFile);
     FlxG.stage.window.onDropBegin.add(startFileDropHover);
     FlxG.stage.window.onDropComplete.add(hideFileDropHover);
+    #end
 
     FlxG.autoPause = false;
 
@@ -472,8 +474,6 @@ class ModMenuState extends MusicBeatState
 
   function hideFileDropHover(x:Float, y:Float):Void
   {
-    if (!canDropFiles()) return;
-
     installer.hideDropOverlay();
   }
 
@@ -496,9 +496,11 @@ class ModMenuState extends MusicBeatState
     installer?.destroy();
 
     FlxG.autoPause = Preferences.autoPause;
+    #if ((sys && !mobile) || (js && html5))
     FlxG.stage.window.onDropFile.remove(onDropFile);
     FlxG.stage.window.onDropBegin.remove(startFileDropHover);
     FlxG.stage.window.onDropComplete.remove(hideFileDropHover);
+    #end
 
     ambience.destroy();
 
