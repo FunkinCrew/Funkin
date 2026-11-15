@@ -38,6 +38,8 @@ class WelcomeDialog extends Dialog
 
     this.destroyOnClose = true;
 
+    this.draggable = false;
+
     // Add items to the Recent Charts list
     #if sys
     for (chartPath in cameraEditorState.previousWorkingFilePaths)
