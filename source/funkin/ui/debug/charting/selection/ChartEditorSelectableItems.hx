@@ -147,17 +147,16 @@ class ChartEditorSelectableItems<T> implements ChartEditorSelectable implements 
     var grabbable:Bool = canGrab(item);
     onPress(item, grabbable);
     var items:Array<T> = dragItems(item);
-    drag =
-      {
-        item: item,
-        startY: FlxG.mouse.viewY,
-        grabOffset: FlxG.mouse.viewY - itemScreenY(item),
-        moved: false,
-        grabbable: grabbable,
-        wasOnlySelection: wasOnlySelection,
-        items: items,
-        originalTimes: [for (i in items) getTime(i)]
-      };
+    drag = {
+      item: item,
+      startY: FlxG.mouse.viewY,
+      grabOffset: FlxG.mouse.viewY - itemScreenY(item),
+      moved: false,
+      grabbable: grabbable,
+      wasOnlySelection: wasOnlySelection,
+      items: items,
+      originalTimes: [for (i in items) getTime(i)]
+    };
   }
 
   function updateDrag(current:SelectableDrag<T>):Void
@@ -230,12 +229,16 @@ class ChartEditorSelectableItems<T> implements ChartEditorSelectable implements 
   /**
    * Move items while dragging, without a command.
    */
-  function setTimes(items:Array<T>, times:Array<Float>):Void {}
+  function setTimes(items:Array<T>, times:Array<Float>):Void
+  {
+  }
 
   /**
    * Turn a finished drag into an undoable command.
    */
-  function commitMove(items:Array<T>, targetTimes:Array<Float>):Void {}
+  function commitMove(items:Array<T>, targetTimes:Array<Float>):Void
+  {
+  }
 
   /**
    * Where a dragged item lands, in steps. By default the current snap.
@@ -281,15 +284,21 @@ class ChartEditorSelectableItems<T> implements ChartEditorSelectable implements 
     return selected.copy();
   }
 
-  function onPress(item:T, grabbing:Bool):Void {}
+  function onPress(item:T, grabbing:Bool):Void
+  {
+  }
 
   /**
    * The mouse came up without dragging.
    * @param wasOnlySelection Whether this item was already the only picked one before the click.
    */
-  function onClickReleased(item:T, wasOnlySelection:Bool):Void {}
+  function onClickReleased(item:T, wasOnlySelection:Bool):Void
+  {
+  }
 
-  function onSelectionChanged():Void {}
+  function onSelectionChanged():Void
+  {
+  }
 
   // ChartEditorListKeyTarget
 
@@ -304,11 +313,17 @@ class ChartEditorSelectableItems<T> implements ChartEditorSelectable implements 
     return hasSelection();
   }
 
-  public function copySelection():Void {}
+  public function copySelection():Void
+  {
+  }
 
-  public function pasteSelection():Void {}
+  public function pasteSelection():Void
+  {
+  }
 
-  public function deleteSelection():Void {}
+  public function deleteSelection():Void
+  {
+  }
 }
 
 typedef SelectableDrag<T> =

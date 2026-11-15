@@ -18,15 +18,10 @@ class ChartEditorCommentHandler
   static final COMMENT_PANEL_GAP:Float = 60;
 
   static final COMMENT_PANEL_WIDTH:Float = 300;
-
   static final COMMENT_PANEL_MIN_WIDTH:Float = 160;
-
   static final COMMENT_PANEL_HEIGHT:Float = 160;
-
   static final COMMENT_PANEL_COLLAPSED_HEIGHT:Float = 32;
-
   static final COMMENT_PANEL_BORDER:Float = 1;
-
   static final COMMENT_PANEL_FADE:Float = 24;
 
   /**

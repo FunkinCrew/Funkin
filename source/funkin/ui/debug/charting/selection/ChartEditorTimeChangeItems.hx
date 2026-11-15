@@ -35,7 +35,7 @@ class ChartEditorTimeChangeItems extends ChartEditorSelectableItems<SongTimeChan
    */
   public function selectedIndexes():Array<Int>
   {
-    return [for (timeChange in selected) timeChanges.indexOf(timeChange)].filter(index -> index >= 0);
+    return[for (timeChange in selected) timeChanges.indexOf(timeChange)].filter(index -> index >= 0);
   }
 
   /**
@@ -62,7 +62,7 @@ class ChartEditorTimeChangeItems extends ChartEditorSelectableItems<SongTimeChan
   override function itemsInBox(left:Float, right:Float, startMs:Float, endMs:Float):Array<SongTimeChange>
   {
     if (state.gridLines == null) return [];
-    return [for (index in state.gridLines.timeChangesInBox(left, startMs, endMs)) timeChanges[index]];
+    return[for (index in state.gridLines.timeChangesInBox(left, startMs, endMs)) timeChanges[index]];
   }
 
   override function getTime(item:SongTimeChange):Float

@@ -48,6 +48,7 @@ class ChartEditorNotificationHandler
 
     return builders;
   }
+
   /**
    * Reposition all notifications to the bottom right corner.
    * @param state The current state of the chart editor.

@@ -113,7 +113,11 @@ class ChartEditorCommentItems extends ChartEditorSelectableItems<CommentData>
     var picked:Array<CommentData> = sortedSelection();
     if (picked.length == 0) return;
     var start:Float = picked[0].time;
-    copied = [for (comment in picked) {time: comment.time - start, text: comment.text, color: comment.color}];
+    copied = [for (comment in picked) {
+      time: comment.time - start,
+      text: comment.text,
+      color: comment.color
+    }];
     ChartEditorSelectableItems.lastCopied = this;
     state.success('Copied Comments', picked.length == 1 ? 'Copied 1 comment.' : 'Copied ${picked.length} comments.');
   }
@@ -125,7 +129,11 @@ class ChartEditorCommentItems extends ChartEditorSelectableItems<CommentData>
   {
     if (copied.length == 0) return;
     var playheadMs:Float = state.scrollPositionInMs + state.playheadPositionInMs;
-    var pasted:Array<CommentData> = [for (comment in copied) {time: playheadMs + comment.time, text: comment.text, color: comment.color}];
+    var pasted:Array<CommentData> = [for (comment in copied) {
+      time: playheadMs + comment.time,
+      text: comment.text,
+      color: comment.color
+    }];
     state.performCommand(new AddCommentCommand(pasted[0], pasted.slice(1), true));
   }
 

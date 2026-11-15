@@ -26,7 +26,10 @@ class SetNoteKindCommand implements ChartEditorCommand
    * @param params The params each note gets, in the same order.
    * @param label What the undo history calls this.
    */
-  public function new(notes:Array<SongNoteData>, kinds:Array<Null<String>>, params:Array<Array<NoteParamData>>, label:String = 'Set Note Kind')
+  public function new(notes:Array<SongNoteData>,
+    kinds:Array<Null<String>>,
+    params:Array<Array<NoteParamData>>,
+    label:String = 'Set Note Kind')
   {
     this.notes = notes;
     this.kinds = kinds;
@@ -57,7 +60,9 @@ class SetNoteKindCommand implements ChartEditorCommand
     state.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/undo'));
   }
 
-  function apply(state:ChartEditorState, newKinds:Array<Null<String>>, newParams:Array<Array<NoteParamData>>):Void
+  function apply(state:ChartEditorState,
+    newKinds:Array<Null<String>>,
+    newParams:Array<Array<NoteParamData>>):Void
   {
     for (i in 0...notes.length)
     {

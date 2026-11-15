@@ -17,7 +17,6 @@ class HaxeUITextHistory
   static inline var GROUP_MS:Float = 750;
 
   static inline var MAX_STEPS:Int = 100;
-
   static var field:Null<TextField> = null;
   static var lastText:String = '';
   static var lastChangeTicks:Float = -1;

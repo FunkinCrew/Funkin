@@ -1694,7 +1694,6 @@ class ChartEditorDialogHandler
 
       if (deleteOriginal)
       {
-
         state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
         state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
 

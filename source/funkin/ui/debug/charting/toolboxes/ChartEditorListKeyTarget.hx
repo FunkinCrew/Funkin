@@ -17,9 +17,7 @@ interface ChartEditorListKeyTarget
   public function isListShown():Bool;
 
   public function copySelection():Void;
-
   public function pasteSelection():Void;
-
   public function deleteSelection():Void;
 }
 #end

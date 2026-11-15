@@ -74,6 +74,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
   static final MIN_CHAIN_LIST_HEIGHT:Float = 64;
 
   static final MIN_EVENT_DATA_HEIGHT:Float = 240;
+
   var toolboxEventsChainBeat:NumberStepper;
 
   /**
@@ -117,6 +118,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
   static final CHAIN_ACTIVE_STYLE:String = 'background-color: #3C8DF0; background-opacity: 0.45;';
   static final CHAIN_HOVER_STYLE:String = 'background-color: #888888; background-opacity: 0.2;';
   static final CHAIN_DIM_STYLE:String = 'color: #888888;';
+
   var easeGraphImage:Image;
   var easeDotImage:Image;
   var _easeGraphSprite:Null<flixel.FlxSprite> = null;
@@ -501,7 +503,10 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
     addLabel.text = '+ Add event at this beat';
     addLabel.styleString = CHAIN_DIM_STYLE;
     add.addComponent(addLabel);
-    add.onClick = _ -> { addToChain(); };
+    add.onClick = _ ->
+    {
+      addToChain();
+    };
     toolboxEventsChainList.addComponent(add);
 
     styleChainRows();
@@ -520,7 +525,8 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
     });
   }
 
-  var chainRows:Array<{row:HBox, event:Null<SongEventData>}> = [];
+  var chainRows:Array<
+    {row:HBox, event:Null<SongEventData>}> = [];
   var hoveredChainRow:Null<HBox> = null;
 
   function makeChainRow():HBox
@@ -528,7 +534,10 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
     var row:HBox = new HBox();
     row.percentWidth = 100;
     row.styleString = CHAIN_ROW_STYLE;
-    chainRows.push({row: row, event: null});
+    chainRows.push({
+      row: row,
+      event: null
+    });
     return row;
   }
 
@@ -587,14 +596,20 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
 
     var duplicate:MenuItem = new MenuItem();
     duplicate.text = 'Duplicate';
-    duplicate.onClick = _ -> { addCopyToChain(event); };
+    duplicate.onClick = _ ->
+    {
+      addCopyToChain(event);
+    };
     menu.addComponent(duplicate);
 
     menu.addComponent(new MenuSeparator());
 
     var remove:MenuItem = new MenuItem();
     remove.text = 'Remove';
-    remove.onClick = _ -> { removeFromChain(event); };
+    remove.onClick = _ ->
+    {
+      removeFromChain(event);
+    };
     menu.addComponent(remove);
 
     ChartEditorContextMenuHandler.openCustomContextMenu(chartEditorState, menu);
@@ -687,7 +702,8 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
   function addToChain():Void
   {
     if (chainEvents.length == 0) return;
-    var added:SongEventData = new SongEventData(chainEvents[0].time, chartEditorState.eventKindToPlace, {});
+    var added:SongEventData = new SongEventData(chainEvents[0].time, chartEditorState.eventKindToPlace, {
+    });
     chartEditorState.performCommand(new funkin.ui.debug.charting.commands.events.AddEventsCommand([added], true));
     chainActive = added;
     chainActiveIndex = chainEvents.length;
@@ -778,14 +794,26 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
   {
     var characters = chartEditorState.currentSongMetadata.playData.characters;
     var targets:Array<EventFieldOption> = [
-      {text: 'Player (${characters.player ?? 'none'})', value: 'boyfriend'},
-      {text: 'Opponent (${characters.opponent ?? 'none'})', value: 'dad'},
-      {text: 'Girlfriend (${characters.girlfriend ?? 'none'})', value: 'girlfriend'}
+      {
+        text: 'Player (${characters.player ?? 'none'})',
+        value: 'boyfriend'
+      },
+      {
+        text: 'Opponent (${characters.opponent ?? 'none'})',
+        value: 'dad'
+      },
+      {
+        text: 'Girlfriend (${characters.girlfriend ?? 'none'})',
+        value: 'girlfriend'
+      }
     ];
     for (prop in stageProps())
     {
       if (prop.name == null || prop.name == '') continue;
-      targets.push({text: 'Prop (${prop.name})', value: prop.name});
+      targets.push({
+        text: 'Prop (${prop.name})',
+        value: prop.name
+      });
     }
     return targets;
   }
@@ -795,10 +823,14 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
     var characters = chartEditorState.currentSongMetadata.playData.characters;
     var charId:Null<String> = switch (target)
     {
-      case 'boyfriend' | 'bf' | 'player': characters.player;
-      case 'dad' | 'opponent': characters.opponent;
-      case 'girlfriend' | 'gf': characters.girlfriend;
-      default: null;
+      case 'boyfriend' | 'bf' | 'player':
+        characters.player;
+      case 'dad' | 'opponent':
+        characters.opponent;
+      case 'girlfriend' | 'gf':
+        characters.girlfriend;
+      default:
+        null;
     }
     var animations:Array<AnimationData> = [];
     if (charId != null) animations = CharacterRegistry.instance.fetchCharacterData(charId)?.animations ?? [];
@@ -814,7 +846,10 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
       var animName:Null<String> = animation.name;
       if (animName == null || animName == '' || seen.exists(animName) || SING_POSE.match(animName)) continue;
       seen.set(animName, true);
-      names.push({text: animName, value: animName});
+      names.push({
+        text: animName,
+        value: animName
+      });
     }
     names.sort((a, b) -> a.text < b.text ? -1 : (a.text > b.text ? 1 : 0));
     return names;
@@ -883,7 +918,10 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
         return;
       }
     }
-    dropDown.dataSource.add({text: text, value: text});
+    dropDown.dataSource.add({
+      text: text,
+      value: text
+    });
     dropDown.selectedIndex = dropDown.dataSource.size - 1;
   }
 
@@ -1148,7 +1186,6 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
   }
 
   var currentEaseHBox:HBox = null;
-
   var _lastEaseKey:Null<String> = null;
 
   function stopEasePreviewTimers():Void
@@ -1263,7 +1300,10 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
           }
         }, 1);
       }
-      else if (canUpdateEaseDot() && SongEventHelper.liveFrame(_easeDotSprites[_dotIndex]) != null) easeDotImage.resource = SongEventHelper.liveFrame(_easeDotSprites[_dotIndex]);
+      else if (
+        canUpdateEaseDot()
+        && SongEventHelper.liveFrame(_easeDotSprites[_dotIndex]) != null
+      ) easeDotImage.resource = SongEventHelper.liveFrame(_easeDotSprites[_dotIndex]);
     };
 
     _dotTimer ??= new FlxTimer();

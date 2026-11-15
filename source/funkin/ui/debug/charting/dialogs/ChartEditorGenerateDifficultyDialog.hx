@@ -33,18 +33,18 @@ class ChartEditorGenerateDifficultyDialog extends Dialog
   var chartEditorState:ChartEditorState;
   var variation:String;
   var difficulty:String;
-
   var sourceNotes:Array<SongNoteData>;
   var scrollSpeed:Float;
   var conductor:Conductor;
   var editorData:Null<SongChartEditorData>;
-
   var inputName:TextField;
   var inputSnap:DropDown;
   var inputCut:NumberStepper;
   var labelPreview:Label;
 
-  public function new(chartEditorState:ChartEditorState, variation:String, difficulty:String)
+  public function new(chartEditorState:ChartEditorState,
+    variation:String,
+    difficulty:String)
   {
     super();
     this.chartEditorState = chartEditorState;
@@ -77,7 +77,10 @@ class ChartEditorGenerateDifficultyDialog extends Dialog
 
     inputSnap = new DropDown();
     inputSnap.dataSource = new ArrayDataSource();
-    for (quant in ChartEditorState.SNAP_QUANTS) inputSnap.dataSource.add({text: '1/$quant', value: quant});
+    for (quant in ChartEditorState.SNAP_QUANTS) inputSnap.dataSource.add({
+      text: '1/$quant',
+      value: quant
+    });
     inputSnap.selectedIndex = ChartEditorState.SNAP_QUANTS.indexOf(8);
     inputSnap.percentWidth = 100;
     body.addComponent(row('Snap limit', inputSnap));
@@ -241,7 +244,9 @@ class ChartEditorGenerateDifficultyDialog extends Dialog
   /**
    * Open the panel for a difficulty.
    */
-  public static function open(chartEditorState:ChartEditorState, variation:String, difficulty:String):ChartEditorGenerateDifficultyDialog
+  public static function open(chartEditorState:ChartEditorState,
+    variation:String,
+    difficulty:String):ChartEditorGenerateDifficultyDialog
   {
     var dialog:ChartEditorGenerateDifficultyDialog = new ChartEditorGenerateDifficultyDialog(chartEditorState, variation, difficulty);
     dialog.zIndex = 1000;

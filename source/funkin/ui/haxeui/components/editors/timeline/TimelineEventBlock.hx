@@ -31,6 +31,7 @@ class TimelineEventBlock
    * Where the event starts and how long it is on screen.
    */
   public var blockLeft:Float = 0;
+
   public var blockTop:Float = 0;
   public var blockWidth:Float = 0;
 
@@ -38,6 +39,7 @@ class TimelineEventBlock
    * The part of the block that gets drawn, cut down to the visible area.
    */
   public var drawLeft:Float = 0;
+
   public var drawWidth:Float = 0;
 
   /**
@@ -50,7 +52,9 @@ class TimelineEventBlock
    */
   public var instant:Bool = false;
 
-  public function new() {}
+  public function new()
+  {
+  }
 
   /**
    * Colors the block based on the layer it is on.

@@ -52,9 +52,12 @@ class RenderDistanceEvent extends SongEvent
     if (state == null) return [];
     return switch (target)
     {
-      case 'player': [state.playerStrumline];
-      case 'opponent': [state.opponentStrumline];
-      default: [state.playerStrumline, state.opponentStrumline];
+      case 'player':
+        [state.playerStrumline];
+      case 'opponent':
+        [state.opponentStrumline];
+      default:
+        [state.playerStrumline, state.opponentStrumline];
     }
   }
 

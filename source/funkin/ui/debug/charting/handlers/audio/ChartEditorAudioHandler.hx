@@ -399,7 +399,7 @@ class ChartEditorAudioHandler
   public static function wipeInstrumentalData(state:ChartEditorState):Void
   {
     state.audioInstTrackData.clear();
-    for (key in [for (k in state.audioWaveformDataCache.keys()) k])
+    for (key in[for (k in state.audioWaveformDataCache.keys()) k])
     {
       if (key.startsWith(ChartEditorState.INSTRUMENTAL_WAVEFORM_CACHE_PREFIX)) state.audioWaveformDataCache.remove(key);
     }
@@ -457,12 +457,26 @@ class ChartEditorAudioHandler
       var results = state.waveformFilterResults;
       sys.thread.Thread.create(() ->
       {
-        var data = funkin.audio.waveform.WaveformDataParser.interpretAudioBufferFiltered(buffer, ChartEditorState.WAVEFORM_SAMPLES_PER_POINT, highPass, cutoffHz);
+        var data = funkin.audio.waveform.WaveformDataParser.interpretAudioBufferFiltered(
+          buffer,
+          ChartEditorState.WAVEFORM_SAMPLES_PER_POINT,
+          highPass,
+          cutoffHz
+        );
         data?.mipLevelCount();
-        results.add({generation: generation, waveform: waveform, data: data});
+        results.add({
+          generation: generation,
+          waveform: waveform,
+          data: data
+        });
       });
       #else
-      waveform.overlayData = funkin.audio.waveform.WaveformDataParser.interpretAudioBufferFiltered(buffer, ChartEditorState.WAVEFORM_SAMPLES_PER_POINT, highPass, cutoffHz);
+      waveform.overlayData = funkin.audio.waveform.WaveformDataParser.interpretAudioBufferFiltered(
+        buffer,
+        ChartEditorState.WAVEFORM_SAMPLES_PER_POINT,
+        highPass,
+        cutoffHz
+      );
       state.waveformsDirty = true;
       #end
     }

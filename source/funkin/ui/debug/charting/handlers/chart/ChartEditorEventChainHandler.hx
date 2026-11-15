@@ -2,6 +2,7 @@ package funkin.ui.debug.charting.handlers.chart;
 
 #if FEATURE_CHART_EDITOR
 import funkin.data.song.SongData.SongEventData;
+
 using Lambda;
 
 @:access(funkin.ui.debug.charting.ChartEditorState)

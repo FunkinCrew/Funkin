@@ -12,7 +12,9 @@ class WaveformDataParser
   @:native('int8_min')
   static final INT8_MIN:Int = -128;
 
-  public static function interpretFlxSound(sound:Null<flixel.sound.FlxSound>, samplesPerPoint:Int = 256, mono:Bool = false):Null<WaveformData>
+  public static function interpretFlxSound(sound:Null<flixel.sound.FlxSound>,
+    samplesPerPoint:Int = 256,
+    mono:Bool = false):Null<WaveformData>
   {
     if (sound == null) return null;
 
@@ -33,7 +35,9 @@ class WaveformDataParser
    * @param samplesPerPoint How many audio samples each data point covers.
    * @param mono Merge every channel into one, which halves the memory for stereo audio.
    */
-  public static function interpretAudioBuffer(soundBuffer:lime.media.AudioBuffer, samplesPerPoint:Int = 256, mono:Bool = false):Null<WaveformData>
+  public static function interpretAudioBuffer(soundBuffer:lime.media.AudioBuffer,
+    samplesPerPoint:Int = 256,
+    mono:Bool = false):Null<WaveformData>
   {
     var inputChannels = soundBuffer.channels;
     var channels = mono ? 1 : inputChannels;
@@ -101,7 +105,10 @@ class WaveformDataParser
    * @param highPass `true` for a high pass filter, `false` for a low pass filter.
    * @param cutoffHz The filter's cutoff frequency, in Hz.
    */
-  public static function interpretAudioBufferFiltered(soundBuffer:lime.media.AudioBuffer, samplesPerPoint:Int, highPass:Bool, cutoffHz:Float):Null<WaveformData>
+  public static function interpretAudioBufferFiltered(soundBuffer:lime.media.AudioBuffer,
+    samplesPerPoint:Int,
+    highPass:Bool,
+    cutoffHz:Float):Null<WaveformData>
   {
     var channels:Int = soundBuffer.channels;
     var bitsPerSample:Int = soundBuffer.bitsPerSample;
@@ -144,8 +151,7 @@ class WaveformDataParser
       {
         // Mix the channels down to mono before filtering.
         var x0:Float = 0;
-        for (channelIndex in 0...channels)
-          x0 += soundData[sampleIndex * channels + channelIndex];
+        for (channelIndex in 0...channels) x0 += soundData[sampleIndex * channels + channelIndex];
         x0 /= channels;
 
         var y0:Float = b0 * x0 + b1 * x1 + b2 * x2 - a1 * y1 - a2 * y2;

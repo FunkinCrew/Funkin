@@ -264,7 +264,8 @@ class ChartEditorHoldNoteSprite extends SustainTrail
     // Notes far in the song will start far down, but the group they belong to will have a high negative offset.
     // noteData.getStepTime() returns a calculated value which accounts for BPM changes
     var overrideStep:Null<Float> = overrideStepTime;
-    var stepTime:Float = (overrideStep != null) ? overrideStep : inline this.noteData.getStepTime();
+    var stepTime:Float = (overrideStep != null) ? overrideStep :
+    inline this.noteData.getStepTime();
     if (stepTime >= 0)
     {
       this.y = (overrideStep != null) ? ChartEditorTimeScale.stepToPixels(overrideStep) : ChartEditorTimeScale.timeToPixels(this.noteData.time, stepTime);

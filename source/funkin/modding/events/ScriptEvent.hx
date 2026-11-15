@@ -344,11 +344,8 @@ class SongEventScriptEvent extends ScriptEvent
 class CustomEventScriptEvent extends ScriptEvent
 {
   public var eventData(default, null):funkin.data.song.SongData.SongEventData;
-
   public var name(default, null):String;
-
   public var progress(default, null):Float;
-
   public var eased(default, null):Float;
   public var elapsedMs(default, null):Float;
   public var durationMs(default, null):Float;
@@ -365,8 +362,14 @@ class CustomEventScriptEvent extends ScriptEvent
 
   public var isReplay(default, null):Bool;
 
-  public function new(eventData:funkin.data.song.SongData.SongEventData, progress:Float, eased:Float, elapsedMs:Float, durationMs:Float, isFirst:Bool,
-      isLast:Bool, isReplay:Bool):Void
+  public function new(eventData:funkin.data.song.SongData.SongEventData,
+    progress:Float,
+    eased:Float,
+    elapsedMs:Float,
+    durationMs:Float,
+    isFirst:Bool,
+    isLast:Bool,
+    isReplay:Bool):Void
   {
     super(CUSTOM_EVENT, false);
     this.eventData = eventData;
@@ -379,7 +382,6 @@ class CustomEventScriptEvent extends ScriptEvent
     this.isLast = isLast;
     this.isReplay = isReplay;
   }
-
 
   public function ease(value:Float):Float
   {

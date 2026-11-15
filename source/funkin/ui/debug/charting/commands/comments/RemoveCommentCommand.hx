@@ -14,7 +14,8 @@ class RemoveCommentCommand implements ChartEditorCommand
 {
   var comments:Array<CommentData>;
 
-  public function new(comment:CommentData, ?otherComments:Array<CommentData>)
+  public function new(comment:CommentData,
+    ?otherComments:Array<CommentData>)
   {
     this.comments = [comment].concat(otherComments ?? []);
   }

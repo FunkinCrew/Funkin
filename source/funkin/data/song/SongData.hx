@@ -577,8 +577,7 @@ class SongChartData implements ICloneable<SongChartData> implements ISerializabl
   @:order(funkin.util.Constants.DEFAULT_DIFFICULTY_LIST_FULL)
   public var scrollSpeed:Map<String, Float>;
   public var events:Array<SongEventData>;
-  @:order(funkin.util.Constants.DEFAULT_DIFFICULTY_LIST_FULL)
-  @:jcustomparse(funkin.data.DataParse.songNotesMap)
+  @:order(funkin.util.Constants.DEFAULT_DIFFICULTY_LIST_FULL) @:jcustomparse(funkin.data.DataParse.songNotesMap)
   public var notes:Map<String, Array<SongNoteData>>;
 
   /**
@@ -765,9 +764,7 @@ class SongChartEditorData implements ICloneable<SongChartEditorData>
   public var eventLayers:Array<EventLayerData>;
 
   public var comments:Array<CommentData>;
-
-  @:optional
-  @:default([])
+  @:optional @:default([])
   public var subBeats:Array<Float>;
   @:optional
   public var subBeatSnaps:Null<Map<String, Int>>;

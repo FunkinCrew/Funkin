@@ -21,6 +21,7 @@ class VoicesGroup extends SoundGroup
    * The matching offset is stored at the same index in pendingVoiceOffsets.
    */
   var pendingVoices:Array<FunkinSound> = [];
+
   var pendingVoiceOffsets:Array<Float> = [];
 
   /**

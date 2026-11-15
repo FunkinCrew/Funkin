@@ -30,6 +30,7 @@ import funkin.ui.debug.charting.commands.selection.SelectAllItemsCommand;
 import funkin.ui.debug.charting.commands.selection.SelectItemsCommand;
 import funkin.ui.debug.charting.toolboxes.ChartEditorListKeyTarget;
 import haxe.ui.containers.menus.Menu;
+
 using Lambda;
 
 @:access(haxe.ui.tooltips.ToolTipManager)
@@ -43,7 +44,10 @@ class ChartEditorKeybindHandler
   public static function handleScrollKeybinds(state:ChartEditorState):Void
   {
     // Don't scroll when the user is interacting with the UI, unless a playbar button (the << >> ones) is pressed.
-    if ((state.isHaxeUIFocused || (state.isCursorOverHaxeUI && !state.canScrollComment && state.scrollAnchorScreenPos == null)) && state.playbarButtonPressed == null) return;
+    if
+      ((state.isHaxeUIFocused || (state.isCursorOverHaxeUI && !state.canScrollComment && state.scrollAnchorScreenPos == null))
+        && state.playbarButtonPressed == null
+      ) return;
 
     var scrollAmount:Float = 0; // Amount to scroll the grid.
     var playheadAmount:Float = 0; // Amount to scroll the playhead relative to the grid.
@@ -282,7 +286,10 @@ class ChartEditorKeybindHandler
     }
 
     shouldEase = true;
-    if (shouldPause && (state.audioInstTrack?.isPlaying || state.audioVocalTrackGroup.playing)) state.stopAudioPlayback(); // Only do this once, not every frame
+    if (
+      shouldPause
+      && (state.audioInstTrack?.isPlaying || state.audioVocalTrackGroup.playing)
+    ) state.stopAudioPlayback(); // Only do this once, not every frame
 
     if (shouldSnap && state.currentScrollEase != null)
     {
@@ -396,7 +403,11 @@ class ChartEditorKeybindHandler
 
     // Look for notes within half a snap of the playhead, since placing rounds to the nearest snap.
     var halfSnapMs:Float = Conductor.instance.getTypeLengthAtMs(playheadSnappedMs, 'step') * state.noteSnapRatio / 2;
-    var notesAtPos:Array<SongNoteData> = SongDataUtils.getNotesInTimeRange(state.currentSongChartNoteData, playheadSnappedMs - halfSnapMs, playheadSnappedMs + halfSnapMs);
+    var notesAtPos:Array<SongNoteData> = SongDataUtils.getNotesInTimeRange(
+      state.currentSongChartNoteData,
+      playheadSnappedMs - halfSnapMs,
+      playheadSnappedMs + halfSnapMs
+    );
     notesAtPos = SongDataUtils.getNotesWithData(notesAtPos, [column]);
 
     if (notesAtPos.length > 0)
@@ -407,7 +418,13 @@ class ChartEditorKeybindHandler
     else if (!removeNoteInstead)
     {
       trace('Placing note. ${column}');
-      var newNoteData:SongNoteData = new SongNoteData(playheadSnappedMs, column, 0, state.noteKindToPlace, ChartEditorNoteUtil.cloneNoteParams(state.noteParamsToPlace));
+      var newNoteData:SongNoteData = new SongNoteData(
+        playheadSnappedMs,
+        column,
+        0,
+        state.noteKindToPlace,
+        ChartEditorNoteUtil.cloneNoteParams(state.noteParamsToPlace)
+      );
       state.performCommand(new AddNotesCommand([newNoteData], state.pressingControl()));
       state.currentLiveInputPlaceNoteData[column] = newNoteData;
     }
@@ -692,7 +709,13 @@ class ChartEditorKeybindHandler
     if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.SHIFT && FlxG.keys.pressed.ALT && FlxG.keys.justPressed.M)
     {
       state.performCommand(
-        new MirrorNotesCommand(state.currentNoteSelection, state.menubarItemMirrorFlipWithinStrumline.selected, !state.menubarItemMirrorFlipWithinStrumline.selected, true, true)
+        new MirrorNotesCommand(
+          state.currentNoteSelection,
+          state.menubarItemMirrorFlipWithinStrumline.selected,
+          !state.menubarItemMirrorFlipWithinStrumline.selected,
+          true,
+          true
+        )
       );
     }
 
@@ -829,13 +852,27 @@ class ChartEditorKeybindHandler
     }
 
     // B = Add or remove a sub-beat under the mouse.
-    if (!state.pressingControl() && !FlxG.keys.pressed.SHIFT && !FlxG.keys.pressed.ALT && FlxG.keys.justPressed.B && !state.isHaxeUIDialogOpen && !state.isHaxeUIFocused)
+    if (
+      !state.pressingControl()
+      && !FlxG.keys.pressed.SHIFT
+      && !FlxG.keys.pressed.ALT
+      && FlxG.keys.justPressed.B
+      && !state.isHaxeUIDialogOpen
+      && !state.isHaxeUIFocused
+    )
     {
       state.toggleSubBeatAtCursor();
     }
 
     // ALT + B = New Comment.
-    if (!state.pressingControl() && !FlxG.keys.pressed.SHIFT && FlxG.keys.pressed.ALT && FlxG.keys.justPressed.B && !state.isHaxeUIDialogOpen && !state.isHaxeUIFocused)
+    if (
+      !state.pressingControl()
+      && !FlxG.keys.pressed.SHIFT
+      && FlxG.keys.pressed.ALT
+      && FlxG.keys.justPressed.B
+      && !state.isHaxeUIDialogOpen
+      && !state.isHaxeUIFocused
+    )
     {
       // Add a new comment at the grid playhead's position.
       var playheadPosMs:Float = state.scrollPositionInMs + state.playheadPositionInMs;
@@ -956,8 +993,9 @@ class ChartEditorKeybindHandler
     state.clipboardValid = true;
     // Doesn't use a command because it's not undoable.
 
-    SongDataUtils.writeItemsToClipboard(CopyItemsCommand.buildClipboard(state, state.currentNoteSelection, state.currentEventSelection,
-      state.subBeatItems.selectedTimes()));
+    SongDataUtils.writeItemsToClipboard(
+      CopyItemsCommand.buildClipboard(state, state.currentNoteSelection, state.currentEventSelection, state.subBeatItems.selectedTimes())
+    );
   }
 }
 #end

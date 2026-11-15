@@ -23,7 +23,19 @@ class CustomEventContainer extends BaseEventContainer
   var paramsList:CustomEventParamsList;
 
   static final EASES:Array<String> = [
-    'linear', 'sine', 'quad', 'cube', 'quart', 'quint', 'expo', 'smoothStep', 'smootherStep', 'elastic', 'back', 'bounce', 'circ'
+    'linear',
+    'sine',
+    'quad',
+    'cube',
+    'quart',
+    'quint',
+    'expo',
+    'smoothStep',
+    'smootherStep',
+    'elastic',
+    'back',
+    'bounce',
+    'circ'
   ];
   static final EASE_DIRS:Array<String> = ['In', 'Out', 'InOut'];
 
@@ -82,7 +94,10 @@ class CustomEventContainer extends BaseEventContainer
   {
     var dropdown:DropDown = new DropDown();
     dropdown.width = 160;
-    for (value in values) dropdown.dataSource.add({id: value, text: value});
+    for (value in values) dropdown.dataSource.add({
+      id: value,
+      text: value
+    });
     return dropdown;
   }
 

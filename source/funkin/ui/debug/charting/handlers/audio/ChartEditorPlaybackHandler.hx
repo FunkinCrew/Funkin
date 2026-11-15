@@ -12,6 +12,7 @@ import funkin.play.notes.NoteSprite;
 import funkin.modding.events.ScriptEvent;
 import funkin.util.Constants;
 import funkin.util.MathUtil;
+
 using Lambda;
 
 @:access(funkin.ui.debug.charting.ChartEditorState)
@@ -124,7 +125,9 @@ class ChartEditorPlaybackHandler
           state.audioVocalTrackGroup.time = state.audioInstTrack.time;
         }
         // Move the playhead.
-        state.playheadPositionInPixels = ChartEditorTimeScale.stepToPixels(Conductor.instance.currentStepTime + Conductor.instance.instrumentalOffsetSteps) - state.scrollPositionInPixels;
+        state.playheadPositionInPixels =
+          ChartEditorTimeScale.stepToPixels(Conductor.instance.currentStepTime + Conductor.instance.instrumentalOffsetSteps)
+          - state.scrollPositionInPixels;
 
         // We don't move the song to scroll position, or update the note sprites.
       }
@@ -142,7 +145,9 @@ class ChartEditorPlaybackHandler
 
         // We need time in fractional steps here to allow the song to actually play.
         // Also account for a potentially offset playhead.
-        state.scrollPositionInPixels = ChartEditorTimeScale.stepToPixels(Conductor.instance.currentStepTime + Conductor.instance.instrumentalOffsetSteps) - state.playheadPositionInPixels;
+        state.scrollPositionInPixels =
+          ChartEditorTimeScale.stepToPixels(Conductor.instance.currentStepTime + Conductor.instance.instrumentalOffsetSteps)
+          - state.playheadPositionInPixels;
 
         // DO NOT move song to scroll position here specifically.
 
@@ -231,10 +236,16 @@ class ChartEditorPlaybackHandler
   static function ghostShown(state:ChartEditorState, songMs:Float, visualMs:Float):Bool
   {
     if (Math.abs(visualMs - songMs) <= 0.5) return false;
-    return Math.abs(ChartEditorTimeScale.msToPixels(visualMs) - (state.scrollPositionInPixels + state.playheadPositionInPixels)) >= ChartEditorState.PLAYHEAD_HEIGHT;
+    return Math.abs(
+      ChartEditorTimeScale.msToPixels(visualMs) - (state.scrollPositionInPixels + state.playheadPositionInPixels)
+    ) >= ChartEditorState.PLAYHEAD_HEIGHT;
   }
 
-  static function placeGhost(ghost:flixel.group.FlxSpriteGroup, text:Null<flixel.text.FlxText>, state:ChartEditorState, visualMs:Float, textX:Float):Void
+  static function placeGhost(ghost:flixel.group.FlxSpriteGroup,
+    text:Null<flixel.text.FlxText>,
+    state:ChartEditorState,
+    visualMs:Float,
+    textX:Float):Void
   {
     ghost.y = ChartEditorTimeScale.msToPixels(visualMs) - state.scrollPositionInPixels + ChartEditorState.GRID_INITIAL_Y_POS;
     if (text == null) return;
@@ -258,14 +269,39 @@ class ChartEditorPlaybackHandler
       var style:Null<funkin.play.notes.notestyle.NoteStyle> = funkin.data.notestyle.NoteStyleRegistry.instance.fetchEntry(state.currentSongNoteStyle);
       strumlineOffsetY = style?.getStrumlineOffsets()[1] ?? 0;
     }
-    placeView(state, state.gridPlayerView, state.gridPlayerViewEdge, gridX + width, width, songMs, ChartEditorTimeScale.visualTime(songMs), downscroll,
-      strumlineOffsetY);
-    placeView(state, state.gridOpponentView, state.gridOpponentViewEdge, gridX, width, songMs, ChartEditorTimeScale.visualTime(songMs, true), downscroll,
-      strumlineOffsetY);
+    placeView(
+      state,
+      state.gridPlayerView,
+      state.gridPlayerViewEdge,
+      gridX + width,
+      width,
+      songMs,
+      ChartEditorTimeScale.visualTime(songMs),
+      downscroll,
+      strumlineOffsetY
+    );
+    placeView(
+      state,
+      state.gridOpponentView,
+      state.gridOpponentViewEdge,
+      gridX,
+      width,
+      songMs,
+      ChartEditorTimeScale.visualTime(songMs, true),
+      downscroll,
+      strumlineOffsetY
+    );
   }
 
-  static function placeView(state:ChartEditorState, sprite:Null<flixel.FlxSprite>, edge:Null<flixel.FlxSprite>, left:Float, width:Float, songMs:Float,
-      visualMs:Float, downscroll:Bool, strumlineOffsetY:Float):Void
+  static function placeView(state:ChartEditorState,
+    sprite:Null<flixel.FlxSprite>,
+    edge:Null<flixel.FlxSprite>,
+    left:Float,
+    width:Float,
+    songMs:Float,
+    visualMs:Float,
+    downscroll:Bool,
+    strumlineOffsetY:Float):Void
   {
     if (sprite == null || edge == null) return;
     sprite.visible = state.showPlayerView;
@@ -273,8 +309,13 @@ class ChartEditorPlaybackHandler
     if (!sprite.visible) return;
 
     var endMs:Float = ChartEditorTimeScale.playerViewEnd(visualMs, songMs, downscroll, strumlineOffsetY);
-    var top:Float = (Math.abs(visualMs - songMs) > 0.5) ? ChartEditorTimeScale.msToPixels(visualMs) - state.scrollPositionInPixels
-      + ChartEditorState.GRID_INITIAL_Y_POS : state.playheadPositionInPixels + ChartEditorState.GRID_INITIAL_Y_POS;
+    var top:Float =
+      (Math.abs(
+        visualMs - songMs
+      ) > 0.5) ? ChartEditorTimeScale.msToPixels(
+        visualMs
+      ) - state.scrollPositionInPixels + ChartEditorState.GRID_INITIAL_Y_POS : state.playheadPositionInPixels
+        + ChartEditorState.GRID_INITIAL_Y_POS;
     var cutoff:Float = ChartEditorTimeScale.msToPixels(Math.max(0, endMs)) - state.scrollPositionInPixels + ChartEditorState.GRID_INITIAL_Y_POS;
     sprite.setPosition(left, top);
     sprite.offset.set(0, 0);
@@ -328,7 +369,9 @@ class ChartEditorPlaybackHandler
 
   public static function moveScrollPositionToSong(state:ChartEditorState):Void
   {
-    state.scrollPositionInPixels = ChartEditorTimeScale.stepToPixels(Conductor.instance.currentStepTime + Conductor.instance.instrumentalOffsetSteps) - state.playheadPositionInPixels;
+    state.scrollPositionInPixels =
+      ChartEditorTimeScale.stepToPixels(Conductor.instance.currentStepTime + Conductor.instance.instrumentalOffsetSteps)
+      - state.playheadPositionInPixels;
     state.currentScrollEase = state.scrollPositionInPixels;
   }
 

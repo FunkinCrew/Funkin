@@ -12,6 +12,7 @@ import funkin.ui.debug.charting.selection.ChartEditorSelectable;
 import funkin.data.event.SongEventRegistry;
 import funkin.data.event.SongEventSchema;
 import haxe.ui.containers.menus.MenuCheckBox;
+
 using Lambda;
 
 @:access(funkin.ui.debug.charting.ChartEditorState)

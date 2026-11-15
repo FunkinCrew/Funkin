@@ -30,7 +30,6 @@ interface ChartEditorSelectable
   public function selectInBox(left:Float, right:Float, startMs:Float, endMs:Float, additive:Bool):Bool;
 
   public function hasSelection():Bool;
-
   public function clearSelection():Void;
 }
 #end

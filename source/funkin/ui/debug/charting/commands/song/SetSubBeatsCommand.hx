@@ -14,21 +14,25 @@ class SetSubBeatsCommand implements ChartEditorCommand
 {
   var before:Array<Float>;
   var after:Array<Float>;
-
   var pickAfter:Array<Float>;
   var label:String;
-
   var notes:Array<SongNoteData>;
-
   var notesBefore:Array<Float>;
   var notesAfter:Array<Float>;
-
   var events:Array<SongEventData>;
   var eventsBefore:Array<Float>;
   var eventsAfter:Array<Float>;
 
-  public function new(before:Array<Float>, after:Array<Float>, pickAfter:Array<Float>, label:String, ?notes:Array<SongNoteData>, ?notesBefore:Array<Float>,
-      ?notesAfter:Array<Float>, ?events:Array<SongEventData>, ?eventsBefore:Array<Float>, ?eventsAfter:Array<Float>)
+  public function new(before:Array<Float>,
+    after:Array<Float>,
+    pickAfter:Array<Float>,
+    label:String,
+    ?notes:Array<SongNoteData>,
+    ?notesBefore:Array<Float>,
+    ?notesAfter:Array<Float>,
+    ?events:Array<SongEventData>,
+    ?eventsBefore:Array<Float>,
+    ?eventsAfter:Array<Float>)
   {
     this.events = events ?? [];
     this.eventsBefore = eventsBefore ?? [];

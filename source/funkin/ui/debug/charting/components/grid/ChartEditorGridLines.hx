@@ -55,7 +55,6 @@ class ChartEditorGridLines
   static final SIGNATURE_MARKER_COLOR:FlxColor = 0xFF7A6414;
 
   var chartEditorState:ChartEditorState;
-
   var lineColor:FlxColor = FlxColor.WHITE;
 
   /**
@@ -64,9 +63,7 @@ class ChartEditorGridLines
   public var subBeats(default, null):FlxTypedSpriteGroup<FlxSprite> = new FlxTypedSpriteGroup<FlxSprite>();
 
   static final SUB_BEAT_COLOR:FlxColor = 0xFF4FC3F7;
-
   static final SUB_BEAT_ALPHA:Float = 0.9;
-
   static final SUB_BEAT_LINE_WIDTH:Int = 3;
 
   /**
@@ -298,7 +295,9 @@ class ChartEditorGridLines
   /**
    * Add the BPM and time signature markers for a specific time change.
    */
-  function addTimeChangeMarkers(timeChanges:Array<funkin.data.song.SongData.SongTimeChange>, index:Int, step:Float):Void
+  function addTimeChangeMarkers(timeChanges:Array<funkin.data.song.SongData.SongTimeChange>,
+    index:Int,
+    step:Float):Void
   {
     var timeChange = timeChanges[index];
     var previous = (index > 0) ? timeChanges[index - 1] : null;
@@ -401,7 +400,8 @@ class ChartEditorGridLines
       measureStep = start + (measure - measureStart) * measureSteps;
     }
 
-    var showBeats:Bool = chartEditorState.showBeatLines
+    var showBeats:Bool =
+      chartEditorState.showBeatLines
       && ChartEditorTimeScale.stepToPixels(from + beatSteps) - ChartEditorTimeScale.stepToPixels(from) >= ChartEditorThemeHandler.GRID_MIN_BEAT_PIXELS;
 
     if (showBeats)

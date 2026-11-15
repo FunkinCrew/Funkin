@@ -22,8 +22,16 @@ class MoveResizeEventCommand implements CameraEditorCommand
   var oldEase:Null<String>;
   var newEase:Null<String>;
 
-  public function new(event:SongEventData, oldTime:Float, oldDuration:Float, oldLayerName:String, newTime:Float, newDuration:Float, newLayerName:String,
-      easeChanged:Bool = false, ?oldEase:String, ?newEase:String)
+  public function new(event:SongEventData,
+    oldTime:Float,
+    oldDuration:Float,
+    oldLayerName:String,
+    newTime:Float,
+    newDuration:Float,
+    newLayerName:String,
+    easeChanged:Bool = false,
+    ?oldEase:String,
+    ?newEase:String)
   {
     this.easeChanged = easeChanged;
     this.oldEase = oldEase;

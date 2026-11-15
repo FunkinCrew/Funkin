@@ -20,7 +20,9 @@ class AddCommentCommand implements ChartEditorCommand
    */
   var selectAdded:Bool;
 
-  public function new(comment:CommentData, ?otherComments:Array<CommentData>, selectAdded:Bool = false)
+  public function new(comment:CommentData,
+    ?otherComments:Array<CommentData>,
+    selectAdded:Bool = false)
   {
     this.comments = [comment].concat(otherComments ?? []);
     this.selectAdded = selectAdded;

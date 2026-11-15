@@ -47,14 +47,20 @@ class CustomSongEvent extends SongEvent
       if (entry == null) continue;
       var name:Dynamic = Reflect.field(entry, 'name');
       var value:Dynamic = Reflect.field(entry, 'value');
-      result.push({name: name != null ? Std.string(name) : '', value: value != null ? Std.string(value) : ''});
+      result.push({
+        name: name != null ? Std.string(name) : '',
+        value: value != null ? Std.string(value) : ''
+      });
     }
     return result;
   }
 
   public static function copyParams(params:Array<CustomEventParam>):Array<CustomEventParam>
   {
-    return [for (param in params) {name: param.name, value: param.value}];
+    return[for (param in params) {
+      name: param.name,
+      value: param.value
+    }];
   }
 
   public static function param(data:SongEventData, name:String):Null<String>
@@ -90,16 +96,17 @@ class CustomSongEvent extends SongEvent
 
   // If you want to use a list just separate the values with commas.
   // "true (true.gif), false (false.gif)"
+
   public static function paramList(data:SongEventData, name:String):Array<String>
   {
     var text:Null<String> = param(data, name);
     if (text == null || StringTools.trim(text).length == 0) return [];
-    return [for (part in text.split(',')) StringTools.trim(part)];
+    return[for (part in text.split(',')) StringTools.trim(part)];
   }
 
   public static function paramBoolList(data:SongEventData, name:String):Array<Bool>
   {
-    return [for (part in paramList(data, name)) ['true', 'yes', 'on', '1'].contains(part.toLowerCase())];
+    return[for (part in paramList(data, name)) ['true', 'yes', 'on', '1'].contains(part.toLowerCase())];
   }
 
   public static function paramFloatList(data:SongEventData, name:String):Array<Float>
@@ -223,7 +230,11 @@ class CustomSongEvent extends SongEvent
         title: 'Easing Direction',
         defaultValue: 'InOut',
         type: SongEventFieldType.ENUM,
-        keys: ['In' => 'In', 'Out' => 'Out', 'In/Out' => 'InOut']
+        keys: [
+          'In' => 'In',
+          'Out' => 'Out',
+          'In/Out' => 'InOut'
+        ]
       }
     ]);
   }
@@ -242,7 +253,9 @@ class CustomEventRunner
 {
   var active:Array<RunningCustomEvent> = [];
 
-  public function new() {}
+  public function new()
+  {
+  }
 
   public function clear():Void
   {
@@ -255,10 +268,18 @@ class CustomEventRunner
     var startMs:Float = data.getActivationTime(conductor);
     var steps:Float = CustomSongEvent.durationStepsOf(data);
     var endMs:Float = steps > 0 ? conductor.getStepTimeInMs(conductor.getTimeInSteps(startMs) + steps) : startMs;
-    active.push({data: data, startMs: startMs, endMs: endMs, started: false});
+    active.push({
+      data: data,
+      startMs: startMs,
+      endMs: endMs,
+      started: false
+    });
   }
 
-  public function update(songMs:Float, dispatch:CustomEventScriptEvent->Void, isReplay:Bool = false, ?finished:Bool):Void
+  public function update(songMs:Float,
+    dispatch:CustomEventScriptEvent->Void,
+    isReplay:Bool = false,
+    ?finished:Bool):Void
   {
     if (active.length == 0) return;
     var running:Array<RunningCustomEvent> = active.copy();

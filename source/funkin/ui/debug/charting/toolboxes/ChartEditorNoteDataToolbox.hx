@@ -51,8 +51,8 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
   var toolboxNotesCustomKind:TextField;
   var toolboxNotesParamsFrame:Frame;
   var toolboxNotesParamsGrid:Grid;
-
-  var rowViews:Array<{kind:String, row:HBox, tag:Label, name:Label, count:Label}> = [];
+  var rowViews:Array<
+    {kind:String, row:HBox, tag:Label, name:Label, count:Label}> = [];
   var hoveredRow:Null<HBox> = null;
 
   /**
@@ -67,7 +67,6 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
 
   var builtKinds:String = '';
   var builtParamsKey:String = '~';
-
   var paramComponents:Array<Component> = [];
   var refreshing:Bool = false;
 
@@ -186,7 +185,10 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
 
     // Picking notes changes the kind new notes get, so their params have to match it.
     var placeKind:String = chartEditorState.noteKindToPlace ?? '';
-    if (chartEditorState.noteParamsToPlace.length != NoteKindManager.getParams(placeKind).length) chartEditorState.noteParamsToPlace = defaultParams(placeKind);
+    if (chartEditorState.noteParamsToPlace.length != NoteKindManager
+      .getParams(placeKind)
+      .length
+    ) chartEditorState.noteParamsToPlace = defaultParams(placeKind);
 
     var kinds:Array<String> = listKinds();
     var signature:String = kinds.join('\n');
@@ -278,7 +280,13 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
       row.onRightClick = _ -> if (kind != CUSTOM_ROW) openRowMenu(kind);
 
       toolboxNotesKindRows.addComponent(row);
-      rowViews.push({kind: kind, row: row, tag: tag, name: name, count: count});
+      rowViews.push({
+        kind: kind,
+        row: row,
+        tag: tag,
+        name: name,
+        count: count
+      });
     }
   }
 
@@ -325,10 +333,7 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
     if (notes.length > 0)
     {
       var kinds:Array<Null<String>> = [for (note in notes) kind.length == 0 ? null : kind];
-      var params:Array<Array<NoteParamData>> = [
-        for (note in notes)
-          (note.kind ?? '') == kind ? note.params : defaultParams(kind)
-      ];
+      var params:Array<Array<NoteParamData>> = [for (note in notes) (note.kind ?? '') == kind ? note.params : defaultParams(kind)];
       chartEditorState.performCommand(new SetNoteKindCommand(notes, kinds, params));
     }
     builtParamsKey = '~';
@@ -337,7 +342,7 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
 
   static function defaultParams(kind:String):Array<NoteParamData>
   {
-    return [for (param in NoteKindManager.getParams(kind)) new NoteParamData(param.name, param.data?.defaultValue)];
+    return[for (param in NoteKindManager.getParams(kind)) new NoteParamData(param.name, param.data?.defaultValue)];
   }
 
   function selectNotesOfKind(kind:String):Void
@@ -449,14 +454,12 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
 
     var notes:Array<SongNoteData> = selectedNotes.filter(note -> (note.kind ?? '') == kind && index < note.params.length);
     if (notes.length == 0) return;
-    var params:Array<Array<NoteParamData>> = [
-      for (note in notes)
-      {
-        var copy:Array<NoteParamData> = ChartEditorNoteUtil.cloneNoteParams(note.params);
-        copy[index].value = value;
-        copy;
-      }
-    ];
+    var params:Array<Array<NoteParamData>> = [for (note in notes)
+    {
+      var copy:Array<NoteParamData> = ChartEditorNoteUtil.cloneNoteParams(note.params);
+      copy[index].value = value;
+      copy;
+    }];
     chartEditorState.performCommand(new SetNoteKindCommand(notes, [for (note in notes) note.kind], params, 'Set Note Param'));
   }
 
@@ -487,8 +490,7 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
     hoveredRow = target;
 
     var active:Null<String> = activeKind();
-    for (view in rowViews)
-      styleRow(view.row, view.kind == active || (view.kind == CUSTOM_ROW && !toolboxNotesCustomBox.hidden));
+    for (view in rowViews) styleRow(view.row, view.kind == active || (view.kind == CUSTOM_ROW && !toolboxNotesCustomBox.hidden));
   }
 
   static function setText(label:Label, text:String):Void
@@ -500,7 +502,10 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
   {
     var item:MenuItem = new MenuItem();
     item.text = text;
-    item.onClick = _ -> { action(); };
+    item.onClick = _ ->
+    {
+      action();
+    };
     menu.addComponent(item);
     return item;
   }

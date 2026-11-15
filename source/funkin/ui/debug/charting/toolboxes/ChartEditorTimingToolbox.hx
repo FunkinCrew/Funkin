@@ -62,7 +62,8 @@ class ChartEditorTimingToolbox extends ChartEditorBaseToolbox implements ChartEd
   /**
    * The row for each time change (for rebuilding)
    */
-  var rowViews:Array<{row:HBox, name:Label, time:Label, info:Label}> = [];
+  var rowViews:Array<
+    {row:HBox, name:Label, time:Label, info:Label}> = [];
 
   var addRow:Null<HBox> = null;
   var hoveredRow:Null<HBox> = null;
@@ -203,14 +204,22 @@ class ChartEditorTimingToolbox extends ChartEditorBaseToolbox implements ChartEd
         chartEditorState.listKeyTarget = this;
         select(index);
       };
-      row.onDblClick = _ -> { jumpTo(index); };
+      row.onDblClick = _ ->
+      {
+        jumpTo(index);
+      };
       row.onRightClick = _ ->
       {
         chartEditorState.listKeyTarget = this;
         openRowMenu(index);
       };
       timingToolboxRows.addComponent(row);
-      rowViews.push({row: row, name: name, time: time, info: info});
+      rowViews.push({
+        row: row,
+        name: name,
+        time: time,
+        info: info
+      });
     }
 
     var add:HBox = makeRow();
@@ -218,7 +227,10 @@ class ChartEditorTimingToolbox extends ChartEditorBaseToolbox implements ChartEd
     addLabel.text = '+ Add time change at playhead';
     addLabel.styleString = DIM_STYLE;
     add.addComponent(addLabel);
-    add.onClick = _ -> { addAtPlayhead(); };
+    add.onClick = _ ->
+    {
+      addAtPlayhead();
+    };
     timingToolboxRows.addComponent(add);
     addRow = add;
 
@@ -364,7 +376,10 @@ class ChartEditorTimingToolbox extends ChartEditorBaseToolbox implements ChartEd
   {
     var item:MenuItem = new MenuItem();
     item.text = text;
-    item.onClick = _ -> { action(); };
+    item.onClick = _ ->
+    {
+      action();
+    };
     menu.addComponent(item);
     return item;
   }
@@ -416,7 +431,8 @@ class ChartEditorTimingToolbox extends ChartEditorBaseToolbox implements ChartEd
   /**
    * The BPM and time signature copied with Ctrl+C.
    */
-  static var copiedTimeChange:Null<{bpm:Float, numerator:Int, denominator:Int}> = null;
+  static var copiedTimeChange:Null<
+    {bpm:Float, numerator:Int, denominator:Int}> = null;
 
   public function containsMouse():Bool
   {
@@ -432,7 +448,11 @@ class ChartEditorTimingToolbox extends ChartEditorBaseToolbox implements ChartEd
   {
     var timeChange:Null<SongTimeChange> = timeChanges[selectedIndex];
     if (timeChange == null) return;
-    copiedTimeChange = {bpm: timeChange.bpm, numerator: timeChange.timeSignatureNum, denominator: timeChange.timeSignatureDen};
+    copiedTimeChange = {
+      bpm: timeChange.bpm,
+      numerator: timeChange.timeSignatureNum,
+      denominator: timeChange.timeSignatureDen
+    };
     chartEditorState.success('Copied Time Change', '${formatNumber(timeChange.bpm)} BPM, ${timeChange.timeSignatureNum}/${timeChange.timeSignatureDen}');
   }
 

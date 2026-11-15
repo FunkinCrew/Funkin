@@ -83,7 +83,8 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
    */
   var closeActiveField:Null<Bool->Void> = null;
 
-  var hoverRows:Array<{row:HBox, style:String}> = [];
+  var hoverRows:Array<
+    {row:HBox, style:String}> = [];
   var hoveredRow:Null<HBox> = null;
 
   public function new(chartEditorState2:ChartEditorState)
@@ -110,8 +111,11 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
     difficultyInputScrollSpeed.onRightClick = _ -> setScrollSpeed(1.0);
     difficultyEstimateRating.onClick = function(_)
     {
-      var rating:Null<Float> = DiffCalcUtil.calculate(chartEditorState.currentSongChartNoteData ?? [], chartEditorState.currentSongChartScrollSpeed,
-        DiffCalcUtil.opponentShownFor(chartEditorState.currentSongId));
+      var rating:Null<Float> = DiffCalcUtil.calculate(
+        chartEditorState.currentSongChartNoteData ?? [],
+        chartEditorState.currentSongChartScrollSpeed,
+        DiffCalcUtil.opponentShownFor(chartEditorState.currentSongId)
+      );
       if (rating == null)
       {
         chartEditorState.warning('Cannot Estimate', 'The chart needs at least two player notes.');
@@ -239,7 +243,10 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
         difficultyToolboxRows.addComponent(buildAddRow('+ Add difficulty', ROW_STYLE, () -> startEditing('$variation:')));
     }
 
-    difficultyToolboxRows.addComponent(buildAddRow('+ Add variation', ADD_VARIATION_STYLE, () -> { chartEditorState.openAddVariationDialog(true); }));
+    difficultyToolboxRows.addComponent(buildAddRow('+ Add variation', ADD_VARIATION_STYLE, () ->
+    {
+      chartEditorState.openAddVariationDialog(true);
+    }));
 
     refreshDetails();
   }
@@ -259,7 +266,10 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
     info.styleString = DIM_STYLE;
     row.addComponent(info);
 
-    row.onRightClick = _ -> { openVariationMenu(variation); };
+    row.onRightClick = _ ->
+    {
+      openVariationMenu(variation);
+    };
     return row;
   }
 
@@ -284,7 +294,10 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
       chartEditorState.listKeyTarget = this;
       switchTo(variation, difficulty);
     };
-    row.onDblClick = _ -> { startEditing('$variation:$difficulty'); };
+    row.onDblClick = _ ->
+    {
+      startEditing('$variation:$difficulty');
+    };
     row.onRightClick = _ ->
     {
       chartEditorState.listKeyTarget = this;
@@ -328,7 +341,8 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
     row.onRightClick = _ ->
     {
       var menu:Menu = makeMenu();
-      addMenuItem(menu, 'Add to Difficulty List', () -> {
+      addMenuItem(menu, 'Add to Difficulty List', () ->
+      {
         chartEditorState.performDifficultyChange('List Difficulty', function()
         {
           var metadata:Null<SongMetadata> = chartEditorState.songMetadata.get(variation);
@@ -351,7 +365,10 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
     label.text = text;
     label.styleString = DIM_STYLE;
     row.addComponent(label);
-    row.onClick = _ -> { action(); };
+    row.onClick = _ ->
+    {
+      action();
+    };
     return row;
   }
 
@@ -415,7 +432,10 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
     var row:HBox = new HBox();
     row.percentWidth = 100;
     row.styleString = selected ? style + SELECTED_STYLE : style;
-    if (hoverable && !selected) hoverRows.push({row: row, style: style});
+    if (hoverable && !selected) hoverRows.push({
+      row: row,
+      style: style
+    });
     return row;
   }
 
@@ -484,7 +504,9 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
   function switchTo(variation:String, difficulty:String):Void
   {
     if (variation == chartEditorState.selectedVariation && difficulty == chartEditorState.selectedDifficulty) return;
-    chartEditorState.performCommand(new SwitchDifficultyCommand(chartEditorState.selectedDifficulty, difficulty, chartEditorState.selectedVariation, variation));
+    chartEditorState.performCommand(
+      new SwitchDifficultyCommand(chartEditorState.selectedDifficulty, difficulty, chartEditorState.selectedVariation, variation)
+    );
     updateTree();
   }
 
@@ -501,7 +523,10 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
         startEditing('$variation:$copy');
       }
     });
-    addMenuItem(menu, 'Generate...', () -> { ChartEditorGenerateDifficultyDialog.open(chartEditorState, variation, difficulty); });
+    addMenuItem(menu, 'Generate...', () ->
+    {
+      ChartEditorGenerateDifficultyDialog.open(chartEditorState, variation, difficulty);
+    });
 
     var others:Array<String> = chartEditorState.availableVariations.filter(v -> v != variation);
     if (others.length > 0)
@@ -518,7 +543,8 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
           var id:String = ChartEditorDifficultyHandler.uniqueDifficultyId(difficulty, taken);
           chartEditorState.performDifficultyChange('Copy Difficulty', () -> chartEditorState.duplicateDifficulty(variation, difficulty, target, id));
         });
-        addMenuItem(moveMenu, target.toTitleCase(), () -> {
+        addMenuItem(moveMenu, target.toTitleCase(), () ->
+        {
           chartEditorState.performDifficultyChange('Move Difficulty', () -> chartEditorState.moveDifficulty(variation, difficulty, target));
         });
       }
@@ -544,12 +570,19 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
     if (variation != Constants.DEFAULT_VARIATION)
     {
       menu.addComponent(new MenuSeparator());
-      addMenuItem(menu, 'Delete Variation', () -> confirm('Delete the ${variation.toTitleCase()} variation and all of its difficulties?', 'Delete Variation',
-        () -> chartEditorState.performDifficultyChange('Delete Variation', function()
-        {
-          chartEditorState.removeVariation(variation);
-          return true;
-        })));
+      addMenuItem(
+        menu,
+        'Delete Variation',
+        () -> confirm(
+          'Delete the ${variation.toTitleCase()} variation and all of its difficulties?',
+          'Delete Variation',
+          () -> chartEditorState.performDifficultyChange('Delete Variation', function()
+          {
+            chartEditorState.removeVariation(variation);
+            return true;
+          })
+        )
+      );
     }
     showMenu(menu);
   }
@@ -566,7 +599,10 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
   {
     var item:MenuItem = new MenuItem();
     item.text = text;
-    item.onClick = _ -> { action(); };
+    item.onClick = _ ->
+    {
+      action();
+    };
     menu.addComponent(item);
     return item;
   }
@@ -588,17 +624,22 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
   function confirmRemoveDifficulty(variation:String, difficulty:String):Void
   {
     if (isLastDifficulty(variation)) return;
-    confirm('Delete ${difficulty.toTitleCase()} from ${variation.toTitleCase()}?', 'Delete Difficulty', () -> chartEditorState.performDifficultyChange('Delete Difficulty', function()
-    {
-      chartEditorState.removeDifficulty(variation, difficulty);
-      return true;
-    }));
+    confirm(
+      'Delete ${difficulty.toTitleCase()} from ${variation.toTitleCase()}?',
+      'Delete Difficulty',
+      () -> chartEditorState.performDifficultyChange('Delete Difficulty', function()
+      {
+        chartEditorState.removeDifficulty(variation, difficulty);
+        return true;
+      })
+    );
   }
 
   /**
    * The difficulty that was last copied with Ctrl+C, including its variation and difficulty ID.
    */
-  static var copiedDifficulty:Null<{variation:String, difficulty:String}> = null;
+  static var copiedDifficulty:Null<
+    {variation:String, difficulty:String}> = null;
 
   public function containsMouse():Bool
   {
@@ -612,7 +653,10 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
 
   public function copySelection():Void
   {
-    copiedDifficulty = {variation: chartEditorState.selectedVariation, difficulty: chartEditorState.selectedDifficulty};
+    copiedDifficulty = {
+      variation: chartEditorState.selectedVariation,
+      difficulty: chartEditorState.selectedDifficulty
+    };
     chartEditorState.success('Copied Difficulty', 'Copied ${copiedDifficulty.difficulty.toTitleCase()} (${copiedDifficulty.variation.toTitleCase()}).');
   }
 
@@ -627,7 +671,10 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
     var taken:Array<String> = chartEditorState.songMetadata.get(target)?.playData.difficulties ?? [];
     var base:String = source.variation == target ? '${source.difficulty}-copy' : source.difficulty;
     var id:String = ChartEditorDifficultyHandler.uniqueDifficultyId(base, taken);
-    if (chartEditorState.performDifficultyChange('Paste Difficulty', () -> chartEditorState.duplicateDifficulty(source.variation, source.difficulty, target, id))) updateTree();
+    if (chartEditorState.performDifficultyChange(
+      'Paste Difficulty',
+      () -> chartEditorState.duplicateDifficulty(source.variation, source.difficulty, target, id)
+    )) updateTree();
   }
 
   public function deleteSelection():Void
@@ -687,8 +734,10 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
 
       var version:Null<thx.semver.Version> = VersionUtil.getVersionFromJSON(data);
       var metadata:Null<SongMetadata> = null;
-      if (VersionUtil.validateVersion(version, SongRegistry.SONG_METADATA_VERSION_RULE)) metadata = SongRegistry.instance.parseEntryMetadataRawWithMigration(data,
-        fileReference.name, version);
+      if (VersionUtil.validateVersion(
+        version,
+        SongRegistry.SONG_METADATA_VERSION_RULE
+      )) metadata = SongRegistry.instance.parseEntryMetadataRawWithMigration(data, fileReference.name, version);
 
       if (metadata == null)
       {
@@ -718,8 +767,10 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
 
       var version:Null<thx.semver.Version> = VersionUtil.getVersionFromJSON(data);
       var chartData:Null<SongChartData> = null;
-      if (VersionUtil.validateVersion(version, SongRegistry.SONG_CHART_DATA_VERSION_RULE)) chartData = SongRegistry.instance.parseEntryChartDataRawWithMigration(data,
-        fileReference.name, version);
+      if (VersionUtil.validateVersion(
+        version,
+        SongRegistry.SONG_CHART_DATA_VERSION_RULE
+      )) chartData = SongRegistry.instance.parseEntryChartDataRawWithMigration(data, fileReference.name, version);
 
       if (chartData == null)
       {

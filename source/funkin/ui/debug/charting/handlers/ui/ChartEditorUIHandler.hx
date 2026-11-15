@@ -38,6 +38,7 @@ import haxe.ui.containers.menus.MenuItem;
 import haxe.ui.core.Screen;
 import haxe.ui.events.DragEvent;
 import haxe.ui.events.UIEvent;
+
 using Lambda;
 
 @:access(haxe.ui.tooltips.ToolTipManager)
@@ -460,15 +461,33 @@ class ChartEditorUIHandler
     state.menubarItemFlipNotes.onClick = _ -> state.performCommand(new FlipNotesCommand(state.currentNoteSelection));
 
     state.menubarItemMirrorX.onClick = _ -> state.performCommand(
-      new MirrorNotesCommand(state.currentNoteSelection, state.menubarItemMirrorFlipWithinStrumline.selected, !state.menubarItemMirrorFlipWithinStrumline.selected, true, false)
+      new MirrorNotesCommand(
+        state.currentNoteSelection,
+        state.menubarItemMirrorFlipWithinStrumline.selected,
+        !state.menubarItemMirrorFlipWithinStrumline.selected,
+        true,
+        false
+      )
     );
 
     state.menubarItemMirrorY.onClick = _ -> state.performCommand(
-      new MirrorNotesCommand(state.currentNoteSelection, state.menubarItemMirrorFlipWithinStrumline.selected, !state.menubarItemMirrorFlipWithinStrumline.selected, false, true)
+      new MirrorNotesCommand(
+        state.currentNoteSelection,
+        state.menubarItemMirrorFlipWithinStrumline.selected,
+        !state.menubarItemMirrorFlipWithinStrumline.selected,
+        false,
+        true
+      )
     );
 
     state.menubarItemMirrorXY.onClick = _ -> state.performCommand(
-      new MirrorNotesCommand(state.currentNoteSelection, state.menubarItemMirrorFlipWithinStrumline.selected, !state.menubarItemMirrorFlipWithinStrumline.selected, true, true)
+      new MirrorNotesCommand(
+        state.currentNoteSelection,
+        state.menubarItemMirrorFlipWithinStrumline.selected,
+        !state.menubarItemMirrorFlipWithinStrumline.selected,
+        true,
+        true
+      )
     );
 
     state.menubarItemSelectAllNotes.onClick = _ -> state.performCommand(new SelectAllItemsCommand(true, false));
@@ -752,11 +771,31 @@ class ChartEditorUIHandler
     state.menubarItemPlaybackSpeed.onChange = _ -> state.applyPlaybackSpeed(state.menubarItemPlaybackSpeed.pos / 50.0);
     state.menubarItemPlaybackSpeed.onRightClick = _ -> state.setPlaybackSpeed(1.0);
 
-    state.menubarItemToggleToolboxDifficulty.onChange = event -> state.setToolboxStateFromMenu(ChartEditorState.CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT, state.menubarItemToggleToolboxDifficulty, event.value);
-    state.menubarItemToggleToolboxMetadata.onChange = event -> state.setToolboxStateFromMenu(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT, state.menubarItemToggleToolboxMetadata, event.value);
-    state.menubarItemToggleToolboxTiming.onChange = event -> state.setToolboxStateFromMenu(ChartEditorState.CHART_EDITOR_TOOLBOX_TIMING_LAYOUT, state.menubarItemToggleToolboxTiming, event.value);
-    state.menubarItemToggleToolboxNoteData.onChange = event -> state.setToolboxStateFromMenu(ChartEditorState.CHART_EDITOR_TOOLBOX_NOTE_DATA_LAYOUT, state.menubarItemToggleToolboxNoteData, event.value);
-    state.menubarItemToggleToolboxEventData.onChange = event -> state.setToolboxStateFromMenu(ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT, state.menubarItemToggleToolboxEventData, event.value);
+    state.menubarItemToggleToolboxDifficulty.onChange = event -> state.setToolboxStateFromMenu(
+      ChartEditorState.CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT,
+      state.menubarItemToggleToolboxDifficulty,
+      event.value
+    );
+    state.menubarItemToggleToolboxMetadata.onChange = event -> state.setToolboxStateFromMenu(
+      ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT,
+      state.menubarItemToggleToolboxMetadata,
+      event.value
+    );
+    state.menubarItemToggleToolboxTiming.onChange = event -> state.setToolboxStateFromMenu(
+      ChartEditorState.CHART_EDITOR_TOOLBOX_TIMING_LAYOUT,
+      state.menubarItemToggleToolboxTiming,
+      event.value
+    );
+    state.menubarItemToggleToolboxNoteData.onChange = event -> state.setToolboxStateFromMenu(
+      ChartEditorState.CHART_EDITOR_TOOLBOX_NOTE_DATA_LAYOUT,
+      state.menubarItemToggleToolboxNoteData,
+      event.value
+    );
+    state.menubarItemToggleToolboxEventData.onChange = event -> state.setToolboxStateFromMenu(
+      ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT,
+      state.menubarItemToggleToolboxEventData,
+      event.value
+    );
     state.menubarItemToggleToolboxPlayerPreview.onChange = event ->
     {
       state.setToolboxStateFromMenu(ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT, state.menubarItemToggleToolboxPlayerPreview, event.value);

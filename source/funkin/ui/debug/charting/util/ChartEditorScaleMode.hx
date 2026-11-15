@@ -14,11 +14,10 @@ class ChartEditorScaleMode extends BaseScaleMode
    * The smallest size the editor is laid out at, in game pixels.
    */
   static final MIN_WIDTH:Int = 1280;
-  static final MIN_HEIGHT:Int = 720;
 
+  static final MIN_HEIGHT:Int = 720;
   public static final MIN_UI_SCALE:Float = 0.5;
   public static final MAX_UI_SCALE:Float = 2.0;
-
   static var instance:Null<ChartEditorScaleMode> = null;
   static var previous:Null<BaseScaleMode> = null;
 

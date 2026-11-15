@@ -493,7 +493,11 @@ class ModMenuInstaller
 
       final ratio:Float = bytesLoaded / bytesTotal;
 
-      popup.showProgress(mod.name, '${credit}\nDownloading... ${Math.round(ratio * 100)}%\n${formatFilesize(bytesLoaded + 1)} out of ${formatFilesize(bytesTotal)}', ratio);
+      popup.showProgress(
+        mod.name,
+        '${credit}\nDownloading... ${Math.round(ratio * 100)}%\n${formatFilesize(bytesLoaded + 1)} out of ${formatFilesize(bytesTotal)}',
+        ratio
+      );
     }, function(archivePath:String):Void
     {
       if (installCancelled) return;

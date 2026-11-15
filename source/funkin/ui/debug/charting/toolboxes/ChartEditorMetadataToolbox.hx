@@ -54,6 +54,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
    * Set while the audio steppers are being filled in, so that doesn't count as an edit.
    */
   var refreshingAudio:Bool = false;
+
   var frameVariation:Frame;
 
   public function new(chartEditorState2:ChartEditorState)
@@ -272,7 +273,8 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
   /**
    * Select a dropdown item only when it isn't already selected.
    */
-  static function selectIfChanged(dropDown:DropDown, item:{id:String, text:String}):Void
+  static function selectIfChanged(dropDown:DropDown, item:
+    {id:String, text:String}):Void
   {
     if (dropDown.selectedItem?.id == item.id) return;
     dropDown.value = item;

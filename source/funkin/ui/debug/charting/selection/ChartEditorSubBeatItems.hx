@@ -21,6 +21,7 @@ class ChartEditorSubBeatItems extends ChartEditorSelectableItems<Int>
    * The last copied sub-beats, relative to the first one.
    */
   var copied:Array<Float> = [];
+
   var copiedSnaps:Array<Int> = [];
 
   /**
@@ -29,12 +30,10 @@ class ChartEditorSubBeatItems extends ChartEditorSelectableItems<Int>
   static final ATTACHED_NOTE_MS:Float = 1;
 
   var dragStartTimes:Array<Float> = [];
-
   var attachedNotes:Array<Array<SongNoteData>> = [];
   var attachedTimes:Array<Array<Float>> = [];
   var attachedEvents:Array<Array<SongEventData>> = [];
   var attachedEventTimes:Array<Array<Float>> = [];
-
   var subBeats(get, never):Array<Float>;
 
   function get_subBeats():Array<Float>
@@ -47,7 +46,7 @@ class ChartEditorSubBeatItems extends ChartEditorSelectableItems<Int>
    */
   public function selectedTimes():Array<Float>
   {
-    return [for (index in selected) if (index >= 0 && index < subBeats.length) subBeats[index]];
+    return[for (index in selected) if (index >= 0 && index < subBeats.length) subBeats[index]];
   }
 
   /**
@@ -100,7 +99,7 @@ class ChartEditorSubBeatItems extends ChartEditorSelectableItems<Int>
   override function itemsInBox(left:Float, right:Float, startMs:Float, endMs:Float):Array<Int>
   {
     if (right < tagLeft()) return [];
-    return [for (i in 0...subBeats.length) if (subBeats[i] >= startMs && subBeats[i] <= endMs) i];
+    return[for (i in 0...subBeats.length) if (subBeats[i] >= startMs && subBeats[i] <= endMs) i];
   }
 
   /**
@@ -201,8 +200,20 @@ class ChartEditorSubBeatItems extends ChartEditorSelectableItems<Int>
         eventsAfter.push(attachedEventTimes[i][j] + delta);
       }
     }
-    state.performCommand(new SetSubBeatsCommand(subBeats, after, targetTimes, items.length == 1 ? 'Move Sub-Beat' : 'Move Sub-Beats', notes, notesBefore,
-      notesAfter, events, eventsBefore, eventsAfter));
+    state.performCommand(
+      new SetSubBeatsCommand(
+        subBeats,
+        after,
+        targetTimes,
+        items.length == 1 ? 'Move Sub-Beat' : 'Move Sub-Beats',
+        notes,
+        notesBefore,
+        notesAfter,
+        events,
+        eventsBefore,
+        eventsAfter
+      )
+    );
     attachedNotes = [];
     attachedTimes = [];
     attachedEvents = [];

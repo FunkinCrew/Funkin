@@ -371,9 +371,12 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
   {
     var buttonId:FlxGamepadInputID = switch (axis)
     {
-      case TRIGGER_LEFT: LEFT_TRIGGER;
-      case TRIGGER_RIGHT: RIGHT_TRIGGER;
-      default: return;
+      case TRIGGER_LEFT:
+        LEFT_TRIGGER;
+      case TRIGGER_RIGHT:
+        RIGHT_TRIGGER;
+      default:
+        return;
     }
 
     var buttonListEntry = _buttonList.get(gamepad.id);
@@ -449,7 +452,8 @@ class PreciseInputList extends FlxKeyList
 {
   var _preciseInputManager:PreciseInputManager;
 
-  public function new(state:FlxInputState, preciseInputManager:FlxKeyManager<Dynamic, Dynamic>)
+  public function new(state:FlxInputState,
+    preciseInputManager:FlxKeyManager<Dynamic, Dynamic>)
   {
     super(state, preciseInputManager);
 

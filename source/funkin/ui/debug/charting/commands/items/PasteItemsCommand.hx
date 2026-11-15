@@ -23,7 +23,6 @@ class PasteItemsCommand implements ChartEditorCommand
   var addedNotes:Array<SongNoteData> = [];
   var addedEvents:Array<SongEventData> = [];
   var removedNotes:Array<SongNoteData> = [];
-
   var subBeatsBefore:Null<Array<Float>> = null;
   var isRedo:Bool = false;
   var currentClipboard:SongClipboardItems = {

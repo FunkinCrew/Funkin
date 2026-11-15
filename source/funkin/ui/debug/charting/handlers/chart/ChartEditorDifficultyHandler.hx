@@ -7,6 +7,7 @@ import funkin.data.song.SongData.SongNoteData;
 import funkin.ui.debug.charting.commands.song.DifficultyChangeCommand;
 import funkin.ui.debug.charting.commands.song.SwitchDifficultyCommand;
 import funkin.util.Constants;
+
 using Lambda;
 
 @:access(funkin.ui.debug.charting.ChartEditorState)
@@ -51,7 +52,12 @@ class ChartEditorDifficultyHandler
     state.notePreviewDirty = true;
   }
 
-  public static function cloneDifficulty(state:ChartEditorState, variation:String, difficulty:String, newVariation:String, newDifficulty:String, scrollSpeed:Float = 1.0):Void
+  public static function cloneDifficulty(state:ChartEditorState,
+    variation:String,
+    difficulty:String,
+    newVariation:String,
+    newDifficulty:String,
+    scrollSpeed:Float = 1.0):Void
   {
     var newVariationMetadata:Null<SongMetadata> = state.songMetadata.get(newVariation);
     if (newVariationMetadata == null) return;
@@ -151,7 +157,8 @@ class ChartEditorDifficultyHandler
   {
     if (!taken.contains(base)) return base;
     var index:Int = 2;
-    while (taken.contains('$base-$index')) index++;
+    while (taken.contains('$base-$index'))
+      index++;
     return '$base-$index';
   }
 

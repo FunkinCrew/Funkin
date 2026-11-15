@@ -2,6 +2,7 @@ package funkin.ui.debug.charting.commands.song;
 
 #if FEATURE_CHART_EDITOR
 import funkin.ui.debug.charting.commands.ChartEditorCommand;
+
 /**
  * Represents a reversible action to set the Freeplay preview start and end times.
  */

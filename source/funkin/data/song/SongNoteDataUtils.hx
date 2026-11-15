@@ -25,8 +25,7 @@ class SongNoteDataUtils
     var overlappedSet:haxe.ds.ObjectMap<SongNoteData, Bool> = new haxe.ds.ObjectMap();
     if (overlapped != null)
     {
-      for (note in overlapped)
-        overlappedSet.set(note, true);
+      for (note in overlapped) overlappedSet.set(note, true);
     }
 
     var sorted:Array<SongNoteData> = [for (note in notes) if (note != null) note];

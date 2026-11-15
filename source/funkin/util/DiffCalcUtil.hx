@@ -137,6 +137,7 @@ class DiffCalcUtil
    * How long before, in milliseconds, the opponent's notes can count as showing the player's.
    */
   static final PREVIEW_MIN_MS:Float = 400;
+
   static final PREVIEW_MAX_MS:Float = 20000;
 
   /**
@@ -155,7 +156,6 @@ class DiffCalcUtil
   static final SCROLL_SPEED_START:Float = 2.4;
 
   static final RATING_PER_SCROLL_SPEED:Float = 2.209;
-
   // The rating is a curve over the natural log of the strain, fitted to the base game's charts as rated by my own FUCKING HANDS.
   static final RATING_SQUARED:Float = 1.2299;
   static final RATING_LINEAR:Float = -8.1064;
@@ -210,8 +210,7 @@ class DiffCalcUtil
    * @param opponentShown Whether the opponent's notes are on screen. See `opponentShownFor`.
    * @return The stretches in time order, or `null` if there are fewer than two player notes.
    */
-  public static function sectionStrains(notes:Array<SongNoteData>, ?stretchOf:Float->Int, ?stretchStart:Int->Float,
-      opponentShown:Bool = true):Null<Array<DiffCalcSection>>
+  public static function sectionStrains(notes:Array<SongNoteData>, ?stretchOf:Float->Int, ?stretchStart:Int->Float, opponentShown:Bool = true):Null<Array<DiffCalcSection>>
   {
     if (stretchOf == null || stretchStart == null)
     {
@@ -314,7 +313,18 @@ class DiffCalcUtil
       var section:Null<DiffCalcSection> = sections.get(index);
       if (section == null)
       {
-        section = {time: stretchStart(index), end: stretchStart(index + 1), strain: 0, causes: [0, 0, 0, 0, 0]};
+        section = {
+          time: stretchStart(index),
+          end: stretchStart(index + 1),
+          strain: 0,
+          causes: [
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        };
         sections.set(index, section);
         order.push(index);
       }
@@ -324,7 +334,7 @@ class DiffCalcUtil
       for (lane in 0...4) if (lanes & (1 << lane) != 0) lastInLane[lane] = time;
     }
 
-    return [for (index in order) sections.get(index)];
+    return[for (index in order) sections.get(index)];
   }
 
   /**
@@ -470,11 +480,16 @@ class DiffCalcUtil
     }
     return switch (best)
     {
-      case 1: PatternBreaks;
-      case 2: RhythmChanges;
-      case 3: Chords;
-      case 4: Jacks;
-      default: Speed;
+      case 1:
+        PatternBreaks;
+      case 2:
+        RhythmChanges;
+      case 3:
+        Chords;
+      case 4:
+        Jacks;
+      default:
+        Speed;
     }
   }
 }

@@ -16,6 +16,7 @@ import funkin.ui.debug.charting.components.notes.ChartEditorHoldNoteSprite;
 import funkin.ui.debug.charting.components.notes.ChartEditorNoteSprite;
 import funkin.ui.debug.charting.components.grid.ChartEditorSelectionSquareSprite;
 import haxe.ui.tooltips.ToolTipManager;
+
 using Lambda;
 
 @:access(haxe.ui.tooltips.ToolTipManager)
@@ -44,7 +45,10 @@ class ChartEditorNoteDisplayHandler
 
       // Calculate the top and bottom of the view area.
       var viewAreaTopPixels:Float = ChartEditorState.MENU_BAR_HEIGHT;
-      var visibleGridHeightPixels:Float = FlxG.height - ChartEditorState.MENU_BAR_HEIGHT - ChartEditorState.PLAYBAR_HEIGHT; // The area underneath the menu bar and playbar is not visible.
+      var visibleGridHeightPixels:Float =
+        FlxG.height
+        - ChartEditorState.MENU_BAR_HEIGHT
+        - ChartEditorState.PLAYBAR_HEIGHT; // The area underneath the menu bar and playbar is not visible.
       var viewAreaBottomPixels:Float = viewAreaTopPixels + visibleGridHeightPixels;
 
       var viewAreaTopMs:Float = ChartEditorTimeScale.pixelsToMs(state.scrollPositionInPixels - visibleGridHeightPixels);
@@ -91,11 +95,9 @@ class ChartEditorNoteDisplayHandler
         if (eventData != null && eventData.time >= viewAreaTopMs && eventData.time <= viewAreaBottomMs) state.windowEventSet.set(eventData, true);
       }
       state.selectedNoteSet.clear();
-      for (noteData in state.currentNoteSelection)
-        state.selectedNoteSet.set(noteData, true);
+      for (noteData in state.currentNoteSelection) state.selectedNoteSet.set(noteData, true);
       state.selectedEventSet.clear();
-      for (eventData in state.currentEventSelection)
-        state.selectedEventSet.set(eventData, true);
+      for (eventData in state.currentEventSelection) state.selectedEventSet.set(eventData, true);
 
       // Remove notes that are no longer visible and list the ones that are.
       state.displayedNoteSet.clear();
@@ -143,7 +145,11 @@ class ChartEditorNoteDisplayHandler
         {
           state.displayedHoldNotes.set(holdNoteSprite.noteData, holdNoteSprite);
           // Update the hold note sprite's height and position.
-          var holdNoteHeight = ChartEditorTimeScale.lengthToPixels(holdNoteSprite.noteData.time, holdNoteSprite.noteData.length, holdNoteSprite.noteData.getStepLength());
+          var holdNoteHeight = ChartEditorTimeScale.lengthToPixels(
+            holdNoteSprite.noteData.time,
+            holdNoteSprite.noteData.length,
+            holdNoteSprite.noteData.getStepLength()
+          );
           holdNoteSprite.setHeightDirectly(holdNoteHeight);
           holdNoteSprite.updateHoldNotePosition(state.renderedHoldNotes);
         }
@@ -160,8 +166,13 @@ class ChartEditorNoteDisplayHandler
         var isSelectedAndDragged = state.isDragPreviewing() && state.selectedEventSet.exists(eventSprite.eventData);
 
         var isChainFollower:Bool = state.eventChainFollowers.exists(eventSprite.eventData);
-        if (!isChainFollower
-          && ((state.windowEventSet.exists(eventSprite.eventData) && eventSprite.isEventVisible(viewAreaBottomPixels, viewAreaTopPixels)) || isSelectedAndDragged))
+        if (
+          !isChainFollower
+          &&
+          ((state.windowEventSet.exists(eventSprite.eventData) && eventSprite.isEventVisible(viewAreaBottomPixels, viewAreaTopPixels))
+            || isSelectedAndDragged
+          )
+        )
         {
           // Event is already displayed and should remain displayed.
           state.displayedEventSet.set(eventSprite.eventData, true);
@@ -223,7 +234,11 @@ class ChartEditorNoteDisplayHandler
           state.displayedHoldNotes.set(noteSprite.noteData, holdNoteSprite);
           // trace('Creating new HoldNote... (${renderedHoldNotes.members.length})');
 
-          var noteLengthPixels:Float = ChartEditorTimeScale.lengthToPixels(noteSprite.noteData.time, noteSprite.noteData.length, noteSprite.noteData.getStepLength());
+          var noteLengthPixels:Float = ChartEditorTimeScale.lengthToPixels(
+            noteSprite.noteData.time,
+            noteSprite.noteData.length,
+            noteSprite.noteData.getStepLength()
+          );
 
           holdNoteSprite.noteData = noteSprite.noteData;
           holdNoteSprite.overrideStepTime = null;
@@ -320,18 +335,21 @@ class ChartEditorNoteDisplayHandler
       // Gather stacked notes to render later
       // No need to update it every time we scroll
       // Only when the chart actually changed, it is slow on big charts.
-      if (Math.abs(state.currentScrollEase - state.scrollPositionInPixels) < .0001
-        && (state.stackedNotesRevision != state.chartRevision
+      if (
+        Math.abs(state.currentScrollEase - state.scrollPositionInPixels) < .0001
+        && (
+          state.stackedNotesRevision != state.chartRevision
           || state.stackedNotesSource != state.currentSongChartNoteData
-          || state.stackedNotesThreshold != ChartEditorState.stackedNoteThreshold))
+          || state.stackedNotesThreshold != ChartEditorState.stackedNoteThreshold
+        )
+      )
       {
         state.stackedNotesRevision = state.chartRevision;
         state.stackedNotesSource = state.currentSongChartNoteData;
         state.stackedNotesThreshold = ChartEditorState.stackedNoteThreshold;
         state.currentOverlappingNotes = SongNoteDataUtils.listStackedNotes(state.currentSongChartNoteData, ChartEditorState.stackedNoteThreshold);
         state.stackedNoteSet.clear();
-        for (noteData in state.currentOverlappingNotes)
-          state.stackedNoteSet.set(noteData, true);
+        for (noteData in state.currentOverlappingNotes) state.stackedNoteSet.set(noteData, true);
       }
 
       // Readd selection squares for selected notes.
@@ -429,7 +447,10 @@ class ChartEditorNoteDisplayHandler
 
           var stepLength = noteSprite.noteData.getStepLength();
 
-          selectionSquare.height = (stepLength <= 0) ? ChartEditorState.GRID_SIZE : (ChartEditorTimeScale.lengthToPixels(noteSprite.noteData.time, noteSprite.noteData.length, stepLength) + ChartEditorState.GRID_SIZE / 2);
+          selectionSquare.height = (stepLength <= 0) ? ChartEditorState.GRID_SIZE : (
+            ChartEditorTimeScale.lengthToPixels(noteSprite.noteData.time, noteSprite.noteData.length, stepLength)
+            + ChartEditorState.GRID_SIZE / 2
+          );
         }
         else if (state.stackedNoteSet.exists(noteSprite.noteData))
         {
@@ -787,7 +808,9 @@ class ChartEditorNoteDisplayHandler
       var playheadPosMs:Float = state.scrollPositionInMs + state.playheadPositionInMs;
 
       var startPos:Float = ChartEditorTimeScale.pixelsToMs(state.scrollPositionInPixels - (ChartEditorState.GRID_TOP_PAD + state.commentPanels[0].height));
-      var endPos:Float = ChartEditorTimeScale.pixelsToMs(state.scrollPositionInPixels + (FlxG.height - ChartEditorState.PLAYBAR_HEIGHT - ChartEditorState.GRID_INITIAL_Y_POS));
+      var endPos:Float = ChartEditorTimeScale.pixelsToMs(
+        state.scrollPositionInPixels + (FlxG.height - ChartEditorState.PLAYBAR_HEIGHT - ChartEditorState.GRID_INITIAL_Y_POS)
+      );
 
       var nearbyCommentData:Array<CommentData> = state.currentSongChartCommentData.filter((comment) ->
       {

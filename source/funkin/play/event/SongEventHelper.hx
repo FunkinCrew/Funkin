@@ -228,8 +228,7 @@ class SongEventHelper
         }
       }
       if (valid) return easeDotCache.get(key);
-      for (spr in easeDotCache.get(key))
-        spr.destroy();
+      for (spr in easeDotCache.get(key)) spr.destroy();
       easeDotCache.remove(key);
     }
     if (graphKey(key) == null) return null;

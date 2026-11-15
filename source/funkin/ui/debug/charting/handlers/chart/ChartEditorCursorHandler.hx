@@ -31,6 +31,7 @@ import funkin.ui.debug.charting.components.notes.ChartEditorNoteSprite;
 import funkin.ui.debug.charting.components.grid.ChartEditorSelectionSquareSprite;
 import haxe.ui.core.Screen;
 import haxe.ui.dragdrop.DragManager;
+
 using Lambda;
 
 @:access(haxe.ui.tooltips.ToolTipManager)
@@ -225,7 +226,12 @@ class ChartEditorCursorHandler
     }
 
     // An odd way to fix this since measureTicks contains more than just the gray sidebar now.
-    var gridPlayheadScrollArea:FlxRect = FlxRect.weak(state.measureTicks?.x ?? -100, ChartEditorState.GRID_INITIAL_Y_POS, ChartEditorState.GRID_SIZE, FlxG.height - ChartEditorState.PLAYBAR_HEIGHT - ChartEditorState.GRID_INITIAL_Y_POS);
+    var gridPlayheadScrollArea:FlxRect = FlxRect.weak(
+      state.measureTicks?.x ?? -100,
+      ChartEditorState.GRID_INITIAL_Y_POS,
+      ChartEditorState.GRID_SIZE,
+      FlxG.height - ChartEditorState.PLAYBAR_HEIGHT - ChartEditorState.GRID_INITIAL_Y_POS
+    );
 
     if (FlxG.mouse.justPressed)
     {
@@ -331,7 +337,9 @@ class ChartEditorCursorHandler
       var cursorXStart:Float = state.selectionBoxStartPos.x - state.gridTiledSprite.x;
       var cursorYStart:Float = state.selectionBoxStartPos.y - state.gridTiledSprite.y;
 
-      var hasDraggedMouse:Bool = Math.abs(cursorX - cursorXStart) > ChartEditorState.DRAG_THRESHOLD || Math.abs(cursorY - cursorYStart) > ChartEditorState.DRAG_THRESHOLD;
+      var hasDraggedMouse:Bool =
+        Math.abs(cursorX - cursorXStart) > ChartEditorState.DRAG_THRESHOLD
+        || Math.abs(cursorY - cursorYStart) > ChartEditorState.DRAG_THRESHOLD;
 
       // Determine if we dragged the mouse at all.
       if (hasDraggedMouse)
@@ -612,11 +620,15 @@ class ChartEditorCursorHandler
         var dragDistanceMs:Float = 0;
         if (state.dragTargetNote != null && state.dragTargetNote.noteData != null)
         {
-          dragDistanceMs = Conductor.instance.getStepTimeInMs(state.dragTargetNote.noteData.getStepTime() + dragDistanceSteps) - state.dragTargetNote.noteData.time;
+          dragDistanceMs =
+            Conductor.instance.getStepTimeInMs(state.dragTargetNote.noteData.getStepTime() + dragDistanceSteps)
+            - state.dragTargetNote.noteData.time;
         }
         else if (state.dragTargetEvent != null && state.dragTargetEvent.eventData != null)
         {
-          dragDistanceMs = Conductor.instance.getStepTimeInMs(state.dragTargetEvent.eventData.getStepTime() + dragDistanceSteps) - state.dragTargetEvent.eventData.time;
+          dragDistanceMs =
+            Conductor.instance.getStepTimeInMs(state.dragTargetEvent.eventData.getStepTime() + dragDistanceSteps)
+            - state.dragTargetEvent.eventData.time;
         }
         var dragDistanceColumns:Int = state.dragTargetCurrentColumn;
 
@@ -633,8 +645,9 @@ class ChartEditorCursorHandler
           var noteTimes:Array<Float> = [for (note in state.currentNoteSelection) alignedTime(note.getStepTime())];
           var eventTimes:Array<Float> = [for (event in state.currentEventSelection) alignedTime(event.getStepTime())];
           for (time in newSubBeats) state.rememberSubBeatSnap(time, state.noteSnapQuant);
-          state.performCommand(new AlignItemsToSubBeatsCommand(state.currentNoteSelection, state.currentEventSelection, noteTimes, eventTimes,
-            dragDistanceColumns, newSubBeats));
+          state.performCommand(
+            new AlignItemsToSubBeatsCommand(state.currentNoteSelection, state.currentEventSelection, noteTimes, eventTimes, dragDistanceColumns, newSubBeats)
+          );
 
           state.dragTargetNote = null;
           state.dragTargetEvent = null;
@@ -697,9 +710,7 @@ class ChartEditorCursorHandler
         state.scrollMouseToGrid();
 
         // calculate distance between the position dragged to and the original position.
-        var dragDistanceSteps:Float =
-          Conductor.instance.getTimeInSteps(cursorSnappedMs).clamp(0, state.lastSnappedGridStep)
-          - state.dragStartCursorStep;
+        var dragDistanceSteps:Float = Conductor.instance.getTimeInSteps(cursorSnappedMs).clamp(0, state.lastSnappedGridStep) - state.dragStartCursorStep;
 
         // Alt drags freely, off the snap.
         if (FlxG.keys.pressed.ALT)
@@ -738,9 +749,11 @@ class ChartEditorCursorHandler
         // Holding Alt places freely, and a sub-beat is made under each item that lands off the snap.
         var alignToSubBeats:Bool = FlxG.keys.pressed.ALT;
 
-        if ((state.dragTargetCurrentColumn != dragDistanceColumns && overlapsGrid)
-          || state.dragTargetCurrentStep != dragDistanceSteps
-          || state.dragAlignToSubBeats != alignToSubBeats)
+        if
+          ((state.dragTargetCurrentColumn != dragDistanceColumns && overlapsGrid)
+            || state.dragTargetCurrentStep != dragDistanceSteps
+            || state.dragAlignToSubBeats != alignToSubBeats
+          )
         {
           // Play a sound as we drag.
           state.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/note-place').toString());
@@ -761,7 +774,11 @@ class ChartEditorCursorHandler
       var dragLengthSteps:Float = Conductor.instance.getTimeInSteps(cursorSnappedMs) - stepTime;
 
       var dragLengthMs:Float = cursorSnappedMs - state.currentPlaceNoteData.time;
-      var dragLengthPixels:Float = ChartEditorTimeScale.lengthToPixels(state.currentPlaceNoteData.time, cursorSnappedMs - state.currentPlaceNoteData.time, dragLengthSteps);
+      var dragLengthPixels:Float = ChartEditorTimeScale.lengthToPixels(
+        state.currentPlaceNoteData.time,
+        cursorSnappedMs - state.currentPlaceNoteData.time,
+        dragLengthSteps
+      );
 
       if (state.gridGhostHoldNote != null)
       {
@@ -780,7 +797,10 @@ class ChartEditorCursorHandler
           state.gridGhostHoldNote.noteData = state.currentPlaceNoteData;
           state.gridGhostHoldNote.noteDirection = state.currentPlaceNoteData.getDirection();
           state.gridGhostHoldNote.setHeightDirectly(dragLengthPixels, sameHold);
-          state.gridGhostHoldNote.noteStyle = NoteKindManager.getNoteStyleId(state.currentPlaceNoteData.kind, state.currentSongNoteStyle) ?? state.currentSongNoteStyle;
+          state.gridGhostHoldNote.noteStyle = NoteKindManager.getNoteStyleId(
+            state.currentPlaceNoteData.kind,
+            state.currentSongNoteStyle
+          ) ?? state.currentSongNoteStyle;
           state.gridGhostHoldNote.updateHoldNotePosition(state.renderedHoldNotes);
           state.gridGhostHoldNote.updateHoldNoteGraphic();
         }
@@ -1071,7 +1091,11 @@ class ChartEditorCursorHandler
         {
           if (state.gridGhostEvent == null) throw 'ERROR: Tried to handle cursor, but gridGhostEvent is null! Check ChartEditorState.buildGrid()';
 
-          var eventData:SongEventData = state.gridGhostEvent.eventData != null ? state.gridGhostEvent.eventData : new SongEventData(cursorMs, state.eventKindToPlace, null);
+          var eventData:SongEventData = state.gridGhostEvent.eventData != null ? state.gridGhostEvent.eventData : new SongEventData(
+            cursorMs,
+            state.eventKindToPlace,
+            null
+          );
 
           if (state.eventKindToPlace != eventData.eventKind)
           {
@@ -1118,8 +1142,10 @@ class ChartEditorCursorHandler
 
     if (targetCursorMode == null)
     {
-      if (state.activeToolboxes.get(ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT)?.hitTest(FlxG.mouse.viewX, FlxG.mouse.viewY) == true
-        || state.activeToolboxes.get(ChartEditorState.CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT)?.hitTest(FlxG.mouse.viewX, FlxG.mouse.viewY) == true)
+      if (
+        state.activeToolboxes.get(ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT)?.hitTest(FlxG.mouse.viewX, FlxG.mouse.viewY) == true
+        || state.activeToolboxes.get(ChartEditorState.CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT)?.hitTest(FlxG.mouse.viewX, FlxG.mouse.viewY) == true
+      )
       {
         targetCursorMode = Pointer;
       }

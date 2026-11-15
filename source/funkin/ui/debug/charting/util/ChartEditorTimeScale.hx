@@ -110,7 +110,11 @@ class ChartEditorTimeScale
   /**
    * The scroll speed over the song, from the chart's Scroll Speed events, as points sorted by time.
    */
-  static var scrollSpeedPoints:Array<ScrollSpeedPoint> = [{time: 0, distance: 0, speed: 1}];
+  static var scrollSpeedPoints:Array<ScrollSpeedPoint> = [{
+    time: 0,
+    distance: 0,
+    speed: 1
+  }];
 
   /**
    * How many flat pieces an eased scroll speed change is split into.
@@ -132,7 +136,11 @@ class ChartEditorTimeScale
     opponentVelocity = new funkin.play.notes.ScrollVelocityTimeline(events, 'opponent');
 
     var baseSpeed:Float = (chartScrollSpeed > 0) ? chartScrollSpeed : 1;
-    var points:Array<ScrollSpeedPoint> = [{time: 0, distance: 0, speed: baseSpeed}];
+    var points:Array<ScrollSpeedPoint> = [{
+      time: 0,
+      distance: 0,
+      speed: baseSpeed
+    }];
 
     function addPoint(time:Float, speed:Float):Void
     {
@@ -143,7 +151,11 @@ class ChartEditorTimeScale
         last.speed = speed;
         return;
       }
-      points.push({time: time, distance: last.distance + (time - last.time) * last.speed, speed: speed});
+      points.push({
+        time: time,
+        distance: last.distance + (time - last.time) * last.speed,
+        speed: speed
+      });
     }
 
     var speedEvents:Array<SongEventData> = [for (event in events) if (event.eventKind == 'ScrollSpeed') event];
@@ -222,7 +234,6 @@ class ChartEditorTimeScale
     return false;
   }
 
-
   static var velocity:Null<funkin.play.notes.ScrollVelocityTimeline> = null;
   static var opponentVelocity:Null<funkin.play.notes.ScrollVelocityTimeline> = null;
 
@@ -265,7 +276,8 @@ class ChartEditorTimeScale
    */
   static var gameSpeedBase:Float = 1;
 
-  static var gameSpeedChanges:Array<{time:Float, duration:Float, from:Float, to:Float, ease:Null<Float->Float>}> = [];
+  static var gameSpeedChanges:Array<
+    {time:Float, duration:Float, from:Float, to:Float, ease:Null<Float->Float>}> = [];
 
   /**
    * The scroll speed at a song time, from the chart's Scroll Speed events, as the game plays them.
@@ -296,7 +308,8 @@ class ChartEditorTimeScale
     var pixelsPerMs:Float = Constants.PIXELS_PER_MS * Math.max(gameScrollSpeedAt(ms), 0.0001);
     var size:Float = funkin.play.notes.Strumline.STRUMLINE_SIZE;
     var receptorOffset:Float = 0.275 * size;
-    var distance:Float = downscroll ? (GAME_HEIGHT - size - Constants.STRUMLINE_Y_OFFSET - strumlineOffsetY + receptorOffset) + size : GAME_HEIGHT
+    var distance:Float =
+      downscroll ? (GAME_HEIGHT - size - Constants.STRUMLINE_Y_OFFSET - strumlineOffsetY + receptorOffset) + size : GAME_HEIGHT
       - (Constants.STRUMLINE_Y_OFFSET + receptorOffset);
     return visualMs + distance / pixelsPerMs;
   }

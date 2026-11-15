@@ -395,7 +395,10 @@ class ChartEditorToolboxHandler
 
     var constantScrollSpeed:Null<Slider> = toolbox.findComponent('preferencesConstantScrollSpeed', Slider);
     var constantScrollSpeedLabel:Null<Label> = toolbox.findComponent('preferencesConstantScrollSpeedLabel', Label);
-    if (constantScrollSpeed == null || constantScrollSpeedLabel == null) throw 'ChartEditorToolboxHandler.buildToolboxPreferencesLayout() - Could not find preferencesConstantScrollSpeed components.';
+    if (
+      constantScrollSpeed == null
+      || constantScrollSpeedLabel == null
+    ) throw 'ChartEditorToolboxHandler.buildToolboxPreferencesLayout() - Could not find preferencesConstantScrollSpeed components.';
     constantScrollSpeed.onChange = _ ->
     {
       if (!state.preferencesListening) return;
@@ -406,7 +409,10 @@ class ChartEditorToolboxHandler
 
     var uiScale:Null<Slider> = toolbox.findComponent('preferencesUIScale', Slider);
     var uiScaleLabel:Null<Label> = toolbox.findComponent('preferencesUIScaleLabel', Label);
-    if (uiScale == null || uiScaleLabel == null) throw 'ChartEditorToolboxHandler.buildToolboxPreferencesLayout() - Could not find preferencesUIScale components.';
+    if (
+      uiScale == null
+      || uiScaleLabel == null
+    ) throw 'ChartEditorToolboxHandler.buildToolboxPreferencesLayout() - Could not find preferencesUIScale components.';
     uiScale.onChange = _ ->
     {
       if (!state.preferencesListening) return;
@@ -417,7 +423,10 @@ class ChartEditorToolboxHandler
 
     var backingOpacity:Null<Slider> = toolbox.findComponent('preferencesBackingOpacity', Slider);
     var backingOpacityLabel:Null<Label> = toolbox.findComponent('preferencesBackingOpacityLabel', Label);
-    if (backingOpacity == null || backingOpacityLabel == null) throw 'ChartEditorToolboxHandler.buildToolboxPreferencesLayout() - Could not find preferencesBackingOpacity components.';
+    if (
+      backingOpacity == null
+      || backingOpacityLabel == null
+    ) throw 'ChartEditorToolboxHandler.buildToolboxPreferencesLayout() - Could not find preferencesBackingOpacity components.';
     backingOpacity.onChange = _ ->
     {
       if (!state.preferencesListening) return;
@@ -439,14 +448,20 @@ class ChartEditorToolboxHandler
     if (waveformFilter == null) throw 'ChartEditorToolboxHandler.buildToolboxPreferencesLayout() - Could not find preferencesWaveformFilter component.';
     waveformFilter.onChange = _ -> if (state.preferencesListening) state.waveformFilter = switch (waveformFilter.selectedIndex)
     {
-      case 1: ChartEditorWaveformFilter.LowPass;
-      case 2: ChartEditorWaveformFilter.HighPass;
-      default: ChartEditorWaveformFilter.None;
+      case 1:
+        ChartEditorWaveformFilter.LowPass;
+      case 2:
+        ChartEditorWaveformFilter.HighPass;
+      default:
+        ChartEditorWaveformFilter.None;
     };
 
     var filterStrength:Null<Slider> = toolbox.findComponent('preferencesWaveformFilterStrength', Slider);
     var filterStrengthLabel:Null<Label> = toolbox.findComponent('preferencesWaveformFilterStrengthLabel', Label);
-    if (filterStrength == null || filterStrengthLabel == null) throw 'ChartEditorToolboxHandler.buildToolboxPreferencesLayout() - Could not find preferencesWaveformFilterStrength components.';
+    if (
+      filterStrength == null
+      || filterStrengthLabel == null
+    ) throw 'ChartEditorToolboxHandler.buildToolboxPreferencesLayout() - Could not find preferencesWaveformFilterStrength components.';
     filterStrength.onChange = _ ->
     {
       if (!state.preferencesListening) return;
@@ -459,9 +474,12 @@ class ChartEditorToolboxHandler
     if (liveInput == null) throw 'ChartEditorToolboxHandler.buildToolboxPreferencesLayout() - Could not find preferencesLiveInput component.';
     liveInput.onChange = _ -> if (state.preferencesListening) state.currentLiveInputStyle = switch (liveInput.selectedIndex)
     {
-      case 1: ChartEditorLiveInputStyle.NumberKeys;
-      case 2: ChartEditorLiveInputStyle.WASDKeys;
-      default: ChartEditorLiveInputStyle.None;
+      case 1:
+        ChartEditorLiveInputStyle.NumberKeys;
+      case 2:
+        ChartEditorLiveInputStyle.WASDKeys;
+      default:
+        ChartEditorLiveInputStyle.None;
     };
 
     var themeMusic:Null<CheckBox> = toolbox.findComponent('preferencesThemeMusic', CheckBox);
@@ -470,8 +488,9 @@ class ChartEditorToolboxHandler
 
     var stackThreshold:Null<DropDown> = toolbox.findComponent('preferencesStackThreshold', DropDown);
     if (stackThreshold == null) throw 'ChartEditorToolboxHandler.buildToolboxPreferencesLayout() - Could not find preferencesStackThreshold component.';
-    for (snap in STACK_THRESHOLD_SNAPS)
-      stackThreshold.dataSource.add({text: '1/$snap'});
+    for (snap in STACK_THRESHOLD_SNAPS) stackThreshold.dataSource.add({
+      text: '1/$snap'
+    });
     refreshStackThreshold(stackThreshold);
     stackThreshold.onChange = _ ->
     {
@@ -497,11 +516,12 @@ class ChartEditorToolboxHandler
   /**
    * The snaps offered by the note stack threshold dropdown, coarsest last.
    */
-  static final STACK_THRESHOLD_SNAPS:Array<Int> = {
-    var snaps:Array<Int> = ChartEditorState.SNAP_QUANTS.copy();
-    snaps.reverse();
-    snaps;
-  };
+  static final STACK_THRESHOLD_SNAPS:Array<Int> =
+    {
+      var snaps:Array<Int> = ChartEditorState.SNAP_QUANTS.copy();
+      snaps.reverse();
+      snaps;
+    };
 
   static function getPreferenceVolumeSliders(state:ChartEditorState):Array<Slider>
   {
@@ -517,7 +537,7 @@ class ChartEditorToolboxHandler
 
   static function capturePreferenceVolumes(state:ChartEditorState):Array<Float>
   {
-    return [for (slider in getPreferenceVolumeSliders(state)) slider.pos];
+    return[for (slider in getPreferenceVolumeSliders(state)) slider.pos];
   }
 
   /**
@@ -602,9 +622,12 @@ class ChartEditorToolboxHandler
     var waveformFilter:Null<DropDown> = toolbox.findComponent('preferencesWaveformFilter', DropDown);
     if (waveformFilter != null) waveformFilter.selectedIndex = switch (state.waveformFilter)
     {
-      case ChartEditorWaveformFilter.LowPass: 1;
-      case ChartEditorWaveformFilter.HighPass: 2;
-      default: 0;
+      case ChartEditorWaveformFilter.LowPass:
+        1;
+      case ChartEditorWaveformFilter.HighPass:
+        2;
+      default:
+        0;
     };
 
     var strengthPercent:Int = Std.int(Math.round(state.waveformFilterStrength * 100));
@@ -616,9 +639,12 @@ class ChartEditorToolboxHandler
     var liveInput:Null<DropDown> = toolbox.findComponent('preferencesLiveInput', DropDown);
     if (liveInput != null) liveInput.selectedIndex = switch (state.currentLiveInputStyle)
     {
-      case ChartEditorLiveInputStyle.NumberKeys: 1;
-      case ChartEditorLiveInputStyle.WASDKeys: 2;
-      default: 0;
+      case ChartEditorLiveInputStyle.NumberKeys:
+        1;
+      case ChartEditorLiveInputStyle.WASDKeys:
+        2;
+      default:
+        0;
     };
 
     var themeMusic:Null<CheckBox> = toolbox.findComponent('preferencesThemeMusic', CheckBox);

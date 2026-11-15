@@ -21,19 +21,16 @@ class TimelineBlockArea extends Box
    * Size of each rounded rect in the generated texture.
    */
   static inline var SLICE_SIZE:Int = 16;
-  static inline var SLICE_CORNER:Int = 6;
 
+  static inline var SLICE_CORNER:Int = 6;
   static inline var SLICE_MID:Int = 7;
   static inline var SLICE_MID_SIZE:Int = 2;
-
   static inline var FILL_X:Int = 0;
   static inline var RING_THIN_X:Int = SLICE_SIZE;
   static inline var RING_THICK_X:Int = SLICE_SIZE * 2;
-
   static final SUB_BEAT_COLOR:FlxColor = 0xFF4FC3F7;
   static inline var SUB_BEAT_ALPHA:Float = 0.35;
   static inline var SUB_BEAT_LINE_WIDTH:Int = 1;
-
   static var atlas:Null<FlxGraphic> = null;
   static var iconFrames:Map<String, FlxFrame> = [];
   static var requestedImages:Map<String, Bool> = [];
@@ -46,7 +43,6 @@ class TimelineBlockArea extends Box
   var scratchFrame:Null<FlxFrame> = null;
   var quadMatrix:FlxMatrix = new FlxMatrix();
   var quadTransform:ColorTransform = new ColorTransform();
-
   var clipLeft:Float = 0;
   var clipTop:Float = 0;
   var clipRight:Float = 0;
@@ -106,8 +102,16 @@ class TimelineBlockArea extends Box
           if (block.hidden || !block.instant) continue;
           var size:Float = iconSize(vp, block);
           var w:Float = block.blockWidth >= maxIconSize(vp) + iconPadding(vp) * 2 ? size / 2 : block.blockWidth;
-          drawImage(camera, triangle, originX + block.blockLeft * scaleX, originY + block.blockTop * scaleY, w * scaleX, blockHeight, bodyColor(vp, block),
-            TimelineEventBlock.TRIANGLE_OPACITY);
+          drawImage(
+            camera,
+            triangle,
+            originX + block.blockLeft * scaleX,
+            originY + block.blockTop * scaleY,
+            w * scaleX,
+            blockHeight,
+            bodyColor(vp, block),
+            TimelineEventBlock.TRIANGLE_OPACITY
+          );
         }
       }
 
@@ -121,8 +125,16 @@ class TimelineBlockArea extends Box
           var size:Float = iconSize(vp, block);
           var left:Float = block.blockWidth >= maxIconSize(vp) + iconPadding(vp) * 2 ? iconPadding(vp) : (block.blockWidth - size) / 2;
           var top:Float = (vp.blockHeight - size) / 2;
-          drawImage(camera, icon, originX + (block.blockLeft + left) * scaleX, originY + (block.blockTop + top) * scaleY, size * scaleX, size * scaleY,
-            FlxColor.WHITE, 1);
+          drawImage(
+            camera,
+            icon,
+            originX + (block.blockLeft + left) * scaleX,
+            originY + (block.blockTop + top) * scaleY,
+            size * scaleX,
+            size * scaleY,
+            FlxColor.WHITE,
+            1
+          );
         }
       }
 
@@ -135,8 +147,16 @@ class TimelineBlockArea extends Box
         var tagWidth:Float = size * tag.frame.width / tag.frame.height;
         var left:Float = block.blockWidth >= tagWidth + iconPadding(vp) * 2 ? iconPadding(vp) : (block.blockWidth - tagWidth) / 2;
         var top:Float = (vp.blockHeight - size) / 2;
-        drawImage(camera, tag, originX + (block.blockLeft + left) * scaleX, originY + (block.blockTop + top) * scaleY, tagWidth * scaleX, size * scaleY,
-          FlxColor.WHITE, 1);
+        drawImage(
+          camera,
+          tag,
+          originX + (block.blockLeft + left) * scaleX,
+          originY + (block.blockTop + top) * scaleY,
+          tagWidth * scaleX,
+          size * scaleY,
+          FlxColor.WHITE,
+          1
+        );
       }
     }
   }
@@ -166,8 +186,14 @@ class TimelineBlockArea extends Box
     if (cached != null) return cached;
 
     var text:flixel.text.FlxText = new flixel.text.FlxText(0, 0, 0, tag, 32);
-    text.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 32, FlxColor.WHITE, LEFT, flixel.text.FlxText.FlxTextBorderStyle.OUTLINE,
-      FlxColor.BLACK);
+    text.setFormat(
+      funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'),
+      32,
+      FlxColor.WHITE,
+      LEFT,
+      flixel.text.FlxText.FlxTextBorderStyle.OUTLINE,
+      FlxColor.BLACK
+    );
     text.borderSize = 2;
     text.drawFrame(true);
     var graphic:FlxGraphic = FlxGraphic.fromBitmapData(text.pixels.clone(), false, 'timeline-custom-event-tag-$tag', false);
@@ -296,8 +322,20 @@ class TimelineBlockArea extends Box
   /**
    * Draws part of a graphic stretched over a screen rect.
    */
-  function drawQuad(camera:FlxCamera, graphic:FlxGraphic, baseX:Float, baseY:Float, sx:Float, sy:Float, sw:Float, sh:Float, dx:Float, dy:Float, dw:Float,
-      dh:Float, color:FlxColor, alpha:Float):Void
+  function drawQuad(camera:FlxCamera,
+    graphic:FlxGraphic,
+    baseX:Float,
+    baseY:Float,
+    sx:Float,
+    sy:Float,
+    sw:Float,
+    sh:Float,
+    dx:Float,
+    dy:Float,
+    dw:Float,
+    dh:Float,
+    color:FlxColor,
+    alpha:Float):Void
   {
     if (dw <= 0 || dh <= 0 || sw <= 0 || sh <= 0 || alpha <= 0) return;
 
@@ -371,7 +409,6 @@ class TimelineBlockArea extends Box
       iconFrames.set(path, frame);
     }, !skipCache);
   }
-
 
   /**
    * Builds the texture with a filled rounded rect and two outlines.

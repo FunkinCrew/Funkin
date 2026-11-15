@@ -45,7 +45,8 @@ class ChartEditorSubBeatHandler
   /**
    * The snap a sub-beat was placed with, or `null` if it isn't known.
    */
-  public static function subBeatSnapOf(editorData:Null<SongChartEditorData>, time:Float):Null<Int>
+  public static function subBeatSnapOf(editorData:Null<SongChartEditorData>,
+    time:Float):Null<Int>
   {
     return editorData?.subBeatSnaps?.get(subBeatSnapKey(time));
   }
@@ -182,7 +183,7 @@ class ChartEditorSubBeatHandler
     var editorData:Null<SongChartEditorData> = state.currentSongChartData?.editorData;
     if (editorData?.subBeatSnaps == null) return;
     var live:Map<String, Bool> = [for (time in editorData.subBeats ?? []) subBeatSnapKey(time) => true];
-    for (key in [for (k in editorData.subBeatSnaps.keys()) k])
+    for (key in[for (k in editorData.subBeatSnaps.keys()) k])
     {
       if (!live.exists(key)) editorData.subBeatSnaps.remove(key);
     }

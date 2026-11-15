@@ -982,7 +982,7 @@ class PolymodHandler
     var content:String = FileUtil.readStringFromPath(ENABLED_MODS_PATH).trim();
     if (content.length == 0) return [];
 
-    return [for (line in content.split('\n')) line.trim()].filter(modId -> modId.length > 0);
+    return[for (line in content.split('\n')) line.trim()].filter(modId -> modId.length > 0);
     #else
     return Save.instance.enabledModIds.value;
     #end

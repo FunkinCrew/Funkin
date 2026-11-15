@@ -39,7 +39,10 @@ class AddNewTimeChangeCommand implements ChartEditorCommand
     else
     {
       // Clamp the target timestamp to a valid value.
-      targetTimeStamp = targetTimeStamp.clamp(timeChanges[timeChangeIndex].timeStamp + 1, (timeChanges[timeChangeIndex + 1]?.timeStamp ?? state.songLengthInMs) - 1);
+      targetTimeStamp = targetTimeStamp.clamp(
+        timeChanges[timeChangeIndex].timeStamp + 1,
+        (timeChanges[timeChangeIndex + 1]?.timeStamp ?? state.songLengthInMs) - 1
+      );
       timeChanges.insert(
         timeChangeIndex + 1,
         new SongTimeChange(

@@ -93,18 +93,17 @@ class ChartEditorWaveformSprite extends FlxSprite
   public var audioBuffer:Null<lime.media.AudioBuffer> = null;
 
   var chartEditorState:ChartEditorState;
-
   var chunkBitmap:Null<BitmapData> = null;
   var rowRect:Rectangle = new Rectangle();
-
   // The range of the current bitmap in grid-local pixels.
   var chunkTop:Float = 0;
   var chunkBottom:Float = -1;
-
   // The index of the current segment being processed.
   var segmentIndex:Int = 0;
 
-  public function new(chartEditorState:ChartEditorState, waveformData:WaveformData, iconId:CharacterType)
+  public function new(chartEditorState:ChartEditorState,
+    waveformData:WaveformData,
+    iconId:CharacterType)
   {
     super(0, 0);
     this.chartEditorState = chartEditorState;

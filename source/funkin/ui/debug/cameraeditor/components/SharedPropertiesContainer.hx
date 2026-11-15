@@ -86,18 +86,17 @@ class SharedPropertiesContainer extends BaseEventContainer
       if (!sharedByAll) continue;
       if (keys != null && !keys.keys().hasNext()) continue;
 
-      result.push(
-        {
-          name: candidate.name,
-          title: candidate.title,
-          type: candidate.type,
-          keys: keys,
-          min: candidate.min,
-          max: candidate.max,
-          step: candidate.step,
-          units: candidate.units,
-          defaultValue: candidate.defaultValue
-        });
+      result.push({
+        name: candidate.name,
+        title: candidate.title,
+        type: candidate.type,
+        keys: keys,
+        min: candidate.min,
+        max: candidate.max,
+        step: candidate.step,
+        units: candidate.units,
+        defaultValue: candidate.defaultValue
+      });
     }
     return result;
   }
@@ -190,7 +189,10 @@ class SharedPropertiesContainer extends BaseEventContainer
         var dropdown:DropDown = new DropDown();
         for (title in enumKeys(field))
         {
-          dropdown.dataSource.add({id: field.keys.get(title), text: title});
+          dropdown.dataSource.add({
+            id: field.keys.get(title),
+            text: title
+          });
         }
         dropdown.registerEvent(UIEvent.CHANGE, function(_:UIEvent):Void
         {

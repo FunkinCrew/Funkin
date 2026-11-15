@@ -5,6 +5,7 @@ import funkin.save.Save;
 import funkin.ui.debug.charting.handlers.ui.ChartEditorToolboxHandler;
 import haxe.ui.components.Label;
 import haxe.ui.components.Slider;
+
 using Lambda;
 
 @:access(funkin.ui.debug.charting.ChartEditorState)

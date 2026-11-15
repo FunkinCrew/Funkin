@@ -8,13 +8,13 @@ import funkin.util.WindowUtil;
 import funkin.util.logging.CrashHandler;
 import haxe.io.Path;
 import funkin.ui.debug.charting.handlers.chart.ChartEditorImportExportHandler;
+
 using Lambda;
 
 @:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorAutoSaveHandler
 {
   static var windowCloseListener:Null<Int->Void> = null;
-
   static var windowCrashListener:Null<String->Void> = null;
 
   /**

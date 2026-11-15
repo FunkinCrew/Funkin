@@ -45,8 +45,7 @@ class CopyItemsCommand implements ChartEditorCommand
   /**
    * Build a clipboard object from the given notes, events, and sub-beats.
    */
-  public static function buildClipboard(state:ChartEditorState, notes:Array<SongNoteData>, events:Array<SongEventData>,
-      subBeats:Array<Float>):SongClipboardItems
+  public static function buildClipboard(state:ChartEditorState, notes:Array<SongNoteData>, events:Array<SongEventData>, subBeats:Array<Float>):SongClipboardItems
   {
     var earliest:Float = Math.POSITIVE_INFINITY;
     for (note in notes) if (note.time < earliest) earliest = note.time;
@@ -61,10 +60,7 @@ class CopyItemsCommand implements ChartEditorCommand
       notes: SongDataUtils.buildNoteClipboard(notes, timeOffset),
       events: SongDataUtils.buildEventClipboard(events, timeOffset),
       subBeats: [for (time in sortedSubBeats) time - timeOffset],
-      subBeatSnaps: [
-        for (time in sortedSubBeats)
-          ChartEditorSubBeatHandler.subBeatSnapOf(state.currentSongChartData?.editorData, time) ?? 0
-      ]
+      subBeatSnaps: [for (time in sortedSubBeats) ChartEditorSubBeatHandler.subBeatSnapOf(state.currentSongChartData?.editorData, time) ?? 0]
     };
   }
 

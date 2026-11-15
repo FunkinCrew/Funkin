@@ -109,6 +109,7 @@ class TimelineUtil
     event.value = cast struct;
   }
 }
+
 typedef TimelineSchemaInfo =
 {
   hasSchema:Bool,

@@ -19,6 +19,7 @@ import haxe.ui.core.Screen;
 import haxe.ui.events.UIEvent;
 import haxe.ui.focus.FocusManager;
 import funkin.ui.debug.charting.handlers.chart.ChartEditorImportExportHandler;
+
 using Lambda;
 
 @:access(funkin.ui.debug.charting.ChartEditorState)
@@ -53,7 +54,7 @@ class ChartEditorPlaytestHandler
 
     if (!ChartEditorState.wasPlaytesting)
     {
-      }
+    }
 
     // Stop audio playback after note preview is stopped.
     // `false` to force the welcome theme to stop too.
@@ -94,7 +95,14 @@ class ChartEditorPlaytestHandler
     if (addedUnlisted) listedDifficulties.push(state.selectedDifficulty);
     try
     {
-      targetSong = Song.buildRaw(state.currentSongId, state.songMetadata.values(), state.selectedVariation, state.songChartData, state.playtestSongScripts, false);
+      targetSong = Song.buildRaw(
+        state.currentSongId,
+        state.songMetadata.values(),
+        state.selectedVariation,
+        state.songChartData,
+        state.playtestSongScripts,
+        false
+      );
     }
     catch (e)
     {
@@ -157,7 +165,8 @@ class ChartEditorPlaytestHandler
           playState.playerVocalsVolume = state.playerVocalsMuted ? 0.0 : ((state.preferencesVolumeVocalsPlayer.value / 100.0) ?? 1.0);
           playState.opponentVocalsVolume = state.opponentVocalsMuted ? 0.0 : ((state.preferencesVolumeVocalsOpponent.value / 100.0) ?? 1.0);
         }
-        else state.audioVocalTrackGroup.muted = false;
+        else
+          state.audioVocalTrackGroup.muted = false;
 
         playState.vocals = state.audioVocalTrackGroup;
       }

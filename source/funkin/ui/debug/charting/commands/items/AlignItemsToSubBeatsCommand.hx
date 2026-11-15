@@ -21,7 +21,6 @@ class AlignItemsToSubBeatsCommand implements ChartEditorCommand
   var eventTimes:Array<Float>;
   var columns:Int;
   var newSubBeats:Array<Float>;
-
   var subBeatsBefore:Null<Array<Float>> = null;
 
   /**
@@ -32,8 +31,12 @@ class AlignItemsToSubBeatsCommand implements ChartEditorCommand
    * @param columns How many columns the notes move by.
    * @param newSubBeats Sub-beats to add, in milliseconds.
    */
-  public function new(notes:Array<SongNoteData>, events:Array<SongEventData>, noteTimes:Array<Float>, eventTimes:Array<Float>, columns:Int,
-      ?newSubBeats:Array<Float>)
+  public function new(notes:Array<SongNoteData>,
+    events:Array<SongEventData>,
+    noteTimes:Array<Float>,
+    eventTimes:Array<Float>,
+    columns:Int,
+    ?newSubBeats:Array<Float>)
   {
     this.newSubBeats = newSubBeats?.copy() ?? [];
     this.notes = notes.copy();

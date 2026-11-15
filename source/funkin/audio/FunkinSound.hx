@@ -370,7 +370,12 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 
     function startPartialLoad(?preloadedBytes:haxe.io.Bytes):Void
     {
-      var soundRequest = preloadedBytes != null ? FlxPartialSound.partialLoadFromBytes(partialPath, preloadedBytes, start, end) : FlxPartialSound.partialLoadFromFile(partialPath, start, end);
+      var soundRequest = preloadedBytes != null ? FlxPartialSound.partialLoadFromBytes(
+        partialPath,
+        preloadedBytes,
+        start,
+        end
+      ) : FlxPartialSound.partialLoadFromFile(partialPath, start, end);
 
       if (soundRequest == null)
       {

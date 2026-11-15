@@ -176,7 +176,9 @@ class ChartEditorEventSprite extends FlxSprite
     this.x = (ChartEditorState.STRUMLINE_SIZE * 2 + 1 - 1) * ChartEditorState.GRID_SIZE;
 
     var overrideStep:Null<Float> = overrideStepTime;
-    var posY:Float = (overrideStep != null) ? ChartEditorTimeScale.stepToPixels(overrideStep) : ChartEditorTimeScale.timeToPixels(eventData.time, eventData.getStepTime());
+    var posY:Float = (overrideStep != null) ? ChartEditorTimeScale.stepToPixels(
+      overrideStep
+    ) : ChartEditorTimeScale.timeToPixels(eventData.time, eventData.getStepTime());
     this.y = posY - ChartEditorState.GRID_SIZE / 2;
 
     if (origin != null)

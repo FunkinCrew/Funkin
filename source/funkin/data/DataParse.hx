@@ -237,7 +237,6 @@ class DataParse
     return result;
   }
 
-
   /**
    * Parses the notes of a chart by hand.
    */

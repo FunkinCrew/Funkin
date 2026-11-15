@@ -45,7 +45,6 @@ class TimelineViewport extends Box
   public static inline var DURATION_PRECISION:Float = 1000;
   public static inline var PIXELS_PER_STEP_BASE:Float = 12.0;
   public static inline var MIN_ZOOM:Float = 0.02;
-
   public static inline var MIN_ZOOM_SONG_FRACTION:Float = 1.2;
   public static inline var MAX_ZOOM:Float = 10.0;
   public static inline var ZOOM_WHEEL_IN:Float = 1.25;
@@ -68,9 +67,7 @@ class TimelineViewport extends Box
   public var songPositionMs:Float;
   public var eventBlocks:Array<TimelineEventBlock> = [];
   public var layers:Array<TimelineLayerData> = [];
-
   public var subBeats:Array<Float> = [];
-
   public var showSubBeats:Bool = true;
   public var selectedLayerIndex:Int = 0;
   public var stepLengthMs:Float = 125.0;
@@ -991,8 +988,9 @@ private class TimelineViewportLayout extends DefaultLayout
       }
 
       block.instant = block.isInstant();
-      var blockWidthVal = block.instant ? Math.fround(instantWidth) : Math.max(TimelineViewport.MIN_BLOCK_WIDTH,
-        Math.fround(vp.msToPixelX(vp.eventEndMs(block.eventData))) - blockLeftPos);
+      var blockWidthVal = block.instant ? Math.fround(
+        instantWidth
+      ) : Math.max(TimelineViewport.MIN_BLOCK_WIDTH, Math.fround(vp.msToPixelX(vp.eventEndMs(block.eventData))) - blockLeftPos);
 
       if (blockLeftPos + blockWidthVal < 0)
       {
@@ -1259,8 +1257,7 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
     var endMs:Float = timeMs + durationSteps * _viewport.stepLengthAtMs(timeMs);
     var ghostLeft:Float = _viewport.msToPixelX(timeMs);
     var ghostTop:Float = _viewport.getBlockTopPositionFromLayerIndex(layerIndex);
-    var ghostWidth:Float = instant ? _viewport.instantBlockWidth() : Math.max(TimelineViewport.MIN_BLOCK_WIDTH,
-      _viewport.msToPixelX(endMs) - ghostLeft);
+    var ghostWidth:Float = instant ? _viewport.instantBlockWidth() : Math.max(TimelineViewport.MIN_BLOCK_WIDTH, _viewport.msToPixelX(endMs) - ghostLeft);
     ghost.left = ghostLeft;
     ghost.top = ghostTop;
     ghost.width = ghostWidth;
@@ -1944,6 +1941,7 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
   }
   #end
 }
+
 /**
  * The starting state of one event in a resize drag.
  */
@@ -1958,4 +1956,5 @@ typedef ResizeEntry =
   origEase:Null<String>,
   endMs:Float
 };
+
 #end

@@ -34,16 +34,14 @@ class ScrollVelocityTimeline
   public function new(events:Array<SongEventData>, strumline:String, ?conductor:Conductor)
   {
     var stepConductor:Conductor = conductor ?? Conductor.instance;
-    segments = [
-      {
-        time: 0,
-        from: 1,
-        to: 1,
-        duration: 0,
-        ease: null,
-        setStart: false
-      }
-    ];
+    segments = [{
+      time: 0,
+      from: 1,
+      to: 1,
+      duration: 0,
+      ease: null,
+      setStart: false
+    }];
 
     var velocityEvents:Array<SongEventData> = [for (event in events) if (event.eventKind == 'ScrollVelocity') event];
     haxe.ds.ArraySort.sort(velocityEvents, (a, b) -> (a.time < b.time) ? -1 : ((a.time > b.time) ? 1 : 0));
@@ -81,8 +79,7 @@ class ScrollVelocityTimeline
         to: velocity,
         duration: duration,
         ease: (duration > 0) ? easeFunction : null,
-        setStart: (event.getBool('useStart') ?? false) && duration > 0
-      });
+        setStart: (event.getBool('useStart') ?? false) && duration > 0});
     }
 
     rawStarts = [0];
@@ -183,8 +180,7 @@ class ScrollVelocityTimeline
     if (easeEnd > from)
     {
       var slice:Float = (easeEnd - from) / INTEGRATE_SLICES;
-      for (i in 0...INTEGRATE_SLICES)
-        total += velocityOf(segment, from + slice * (i + 0.5)) * slice;
+      for (i in 0...INTEGRATE_SLICES) total += velocityOf(segment, from + slice * (i + 0.5)) * slice;
     }
     if (to > easeEnd) total += segment.to * (to - Math.max(easeEnd, from));
     return total;
@@ -297,7 +293,6 @@ typedef ScrollVelocitySegment =
   var to:Float;
   var duration:Float;
   var ease:Null<Float->Float>;
-
   var setStart:Bool;
 }
 
@@ -307,10 +302,8 @@ typedef ScrollVelocitySegment =
 typedef VelocityStretch =
 {
   var start:Float;
-
   var returnStart:Float;
   var end:Float;
   var returnEase:Null<Float->Float>;
-
   var add:Float;
 }

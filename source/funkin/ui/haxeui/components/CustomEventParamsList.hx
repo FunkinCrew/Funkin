@@ -90,7 +90,10 @@ class CustomEventParamsList extends VBox
     add.addComponent(addText);
     add.onClick = _ ->
     {
-      params.push({name: '', value: ''});
+      params.push({
+        name: '',
+        value: ''
+      });
       rebuild();
       changed();
       var field:Null<TextField> = nameFields[nameFields.length - 1];

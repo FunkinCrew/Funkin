@@ -75,18 +75,17 @@ class DifficultyChangeCommand implements ChartEditorCommand
   @:nullSafety(Off)
   static function capture(state:ChartEditorState):DifficultyLayout
   {
-    var layout:DifficultyLayout =
-      {
-        metadata: state.songMetadata.copy(),
-        chartData: state.songChartData.copy(),
-        difficulties: new Map(),
-        variations: new Map(),
-        ratings: new Map(),
-        scrollSpeeds: new Map(),
-        notes: new Map(),
-        selectedVariation: state.selectedVariation,
-        selectedDifficulty: state.selectedDifficulty
-      };
+    var layout:DifficultyLayout = {
+      metadata: state.songMetadata.copy(),
+      chartData: state.songChartData.copy(),
+      difficulties: new Map(),
+      variations: new Map(),
+      ratings: new Map(),
+      scrollSpeeds: new Map(),
+      notes: new Map(),
+      selectedVariation: state.selectedVariation,
+      selectedDifficulty: state.selectedDifficulty
+    };
     for (variation => metadata in state.songMetadata)
     {
       var playData = metadata.playData;

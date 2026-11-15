@@ -56,7 +56,7 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
 
   function takeSnapshot():Array<Dynamic>
   {
-    return [for (event in editedEvents) Reflect.copy(event.valueAsStruct())];
+    return[for (event in editedEvents) Reflect.copy(event.valueAsStruct())];
   }
 
   /**
@@ -189,7 +189,8 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
       if (Std.isOfType(component, NumberStepper))
       {
         var stepper:NumberStepper = cast component;
-        quietly(stepper, () -> {});
+        quietly(stepper, () -> {
+        });
         var inner:Null<TextField> = stepper.findComponent('value', TextField);
         if (inner != null) quietly(inner, () -> inner.text = MIXED_TEXT);
       }
@@ -449,6 +450,7 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
     loadedChoices.set(field, value);
     return true;
   }
+
   var loadedEase:Dynamic = null;
   var loadedEaseDir:Dynamic = null;
 
@@ -534,7 +536,8 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
     {
       // Don't let the stepper read half-typed math as a number.
       if (NumberFormula.isFormula(inner.text)) event.cancel();
-      else formulaStart.set(stepper, inner.text);
+      else
+        formulaStart.set(stepper, inner.text);
       showFormula(inner);
     }, Priority.HIGHEST);
     stepper.registerEvent(FocusEvent.FOCUS_IN, function(_:FocusEvent):Void
@@ -561,7 +564,6 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
   var formulaFields:Array<Void->Void> = [];
 
   var formulaSteppers:Array<Component> = [];
-
   var listeningForEnter:Bool = false;
 
   function onFormulaKey(event:openfl.events.KeyboardEvent):Void
@@ -593,7 +595,8 @@ abstract class BaseEventContainer extends VBox implements EditorContainer
       if (stepper.min != null) value = Math.max(value, stepper.min);
       if (stepper.max != null) value = Math.min(value, stepper.max);
       if (isInt) event.set(fieldName, Math.round(value));
-      else event.set(fieldName, value);
+      else
+        event.set(fieldName, value);
     }
 
     updateCameraPreview();

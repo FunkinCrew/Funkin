@@ -30,7 +30,6 @@ class FlxTweenUtil
   public static function cancelPointTweens(sprite:flixel.FlxSprite):Void
   {
     if (sprite == null) return;
-
     @:privateAccess
     if (FlxTween.globalManager._tweens.length == 0) return;
 

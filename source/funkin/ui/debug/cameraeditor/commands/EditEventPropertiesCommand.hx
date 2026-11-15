@@ -64,7 +64,8 @@ class EditEventPropertiesCommand implements CameraEditorCommand
     state.saved = false;
   }
 
-  function canMerge(otherEvents:Array<SongEventData>, key:String):Bool
+  function canMerge(otherEvents:Array<SongEventData>,
+    key:String):Bool
   {
     if (key != fieldsKey) return false;
     if (haxe.Timer.stamp() - lastEditTime > MERGE_WINDOW_SEC) return false;

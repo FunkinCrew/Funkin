@@ -1165,9 +1165,8 @@ class CameraEditorState extends UIState implements ConsoleClass
     dispatchCustomEvent(event);
   }
 
-
-  var eventAnimations:Array<{sprite:FlxSprite, anim:flixel.animation.FlxAnimation, startMs:Float, finished:Bool}> = [];
-
+  var eventAnimations:Array<
+    {sprite:FlxSprite, anim:flixel.animation.FlxAnimation, startMs:Float, finished:Bool}> = [];
   var stageSpritesCache:Null<Array<FlxSprite>> = null;
 
   function stageSprites():Array<FlxSprite>
@@ -1216,7 +1215,12 @@ class CameraEditorState extends UIState implements ConsoleClass
 
       eventAnimations = eventAnimations.filter(entry -> entry.sprite != sprite);
       var startMs:Float = event.eventData.getActivationTime(conductorInUse);
-      var entry = {sprite: sprite, anim: anim, startMs: startMs, finished: false};
+      var entry = {
+        sprite: sprite,
+        anim: anim,
+        startMs: startMs,
+        finished: false
+      };
       eventAnimations.push(entry);
       if (event.isReplay) seekEventAnimation(entry, startMs + event.elapsedMs);
     }
@@ -1228,7 +1232,8 @@ class CameraEditorState extends UIState implements ConsoleClass
     for (entry in eventAnimations.copy()) seekEventAnimation(entry, position);
   }
 
-  function seekEventAnimation(entry:{sprite:FlxSprite, anim:flixel.animation.FlxAnimation, startMs:Float, finished:Bool}, position:Float):Void
+  function seekEventAnimation(entry:
+    {sprite:FlxSprite, anim:flixel.animation.FlxAnimation, startMs:Float, finished:Bool}, position:Float):Void
   {
     var anim:flixel.animation.FlxAnimation = entry.anim;
     if (anim.numFrames <= 0) return;
@@ -1248,6 +1253,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   }
 
   var pausedEventSprites:Array<FlxSprite> = [];
+
   function syncCustomEventPause(playing:Bool):Void
   {
     if (playing)
@@ -1262,7 +1268,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       return;
     }
 
-    for (sprite in [for (entry in eventAnimations) entry.sprite])
+    for (sprite in[for (entry in eventAnimations) entry.sprite])
     {
       var anim:Null<flixel.animation.FlxAnimation> = sprite.animation.curAnim;
       if (anim == null || anim.paused || anim.finished) continue;
@@ -2081,8 +2087,20 @@ class CameraEditorState extends UIState implements ConsoleClass
       var resized:Bool = false;
       for (d in e.moveDeltas)
       {
-        children.push(new MoveResizeEventCommand(d.event, d.oldTime, d.oldDuration, d.oldLayerName, d.newTime, d.newDuration, d.newLayerName,
-          d.easeChanged ?? false, d.oldEase, d.newEase));
+        children.push(
+          new MoveResizeEventCommand(
+            d.event,
+            d.oldTime,
+            d.oldDuration,
+            d.oldLayerName,
+            d.newTime,
+            d.newDuration,
+            d.newLayerName,
+            d.easeChanged ?? false,
+            d.oldEase,
+            d.newEase
+          )
+        );
         finalSelection.push(d.event);
         if (d.oldDuration != d.newDuration || d.easeChanged == true) resized = true;
       }
@@ -2990,7 +3008,11 @@ class CameraEditorState extends UIState implements ConsoleClass
     toastText.x = FlxG.width - toastText.width - 10;
     toastText.y = timeline.screenTop - toastText.height - 4;
     toastText.alpha = 1;
-    toastTween = FlxTween.tween(toastText, {alpha: 0}, 0.4, {startDelay: 1.2});
+    toastTween = FlxTween.tween(toastText, {
+      alpha: 0
+    }, 0.4, {
+      startDelay: 1.2
+    });
   }
 
   /**

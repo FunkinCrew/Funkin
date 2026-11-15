@@ -78,7 +78,6 @@ class ChartEditorThemeHandler
   static final GRID_BACKING_COLOR_LIGHT:FlxColor = 0xFFA9ABB4;
   static final GRID_BACKING_COLOR_DARK:FlxColor = 0xFF060608;
   public static final GRID_BACKING_ALPHA:Float = 0.92;
-
   // Faint vertical divider between the opponent, player and event columns.
   static final GRID_SIDE_DIVIDER_COLOR_LIGHT:FlxColor = 0xFF6E717C;
   static final GRID_SIDE_DIVIDER_COLOR_DARK:FlxColor = 0xFF3A3A48;
@@ -92,14 +91,12 @@ class ChartEditorThemeHandler
   // Thin horizontal lines on the grid.
   static final GRID_LINE_COLOR_LIGHT:FlxColor = 0xFF0E0E14;
   static final GRID_LINE_COLOR_DARK:FlxColor = 0xFFD0D0D8;
-
   public static final GRID_MEASURE_LINE_WIDTH:Int = 2;
   public static final GRID_MEASURE_LINE_ALPHA:Float = 1.0;
   public static final GRID_BEAT_LINE_WIDTH:Int = 1;
   static final GRID_BEAT_LINE_ALPHA_LIGHT:Float = 0.95;
   static final GRID_BEAT_LINE_ALPHA_DARK:Float = 0.88;
   public static final GRID_SNAP_LINE_WIDTH:Int = 1;
-
   // Faded snap lines.
   static final GRID_SNAP_LINE_ALPHA_MIN_LIGHT:Float = 0.42;
   static final GRID_SNAP_LINE_ALPHA_MAX_LIGHT:Float = 0.82;
@@ -138,7 +135,6 @@ class ChartEditorThemeHandler
   // Filtered waveform overlay color.
   static final WAVEFORM_FILTER_COLOR_LIGHT:FlxColor = 0xFF0A8FC4;
   static final WAVEFORM_FILTER_COLOR_DARK:FlxColor = 0xFF5CE1FF;
-
   // Waveform inner color.
   static final WAVEFORM_CORE_COLOR_LIGHT:FlxColor = 0xFF8DB3FF;
   static final WAVEFORM_CORE_COLOR_DARK:FlxColor = 0xFF8FB8FF;
