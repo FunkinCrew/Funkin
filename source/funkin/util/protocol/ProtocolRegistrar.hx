@@ -193,13 +193,16 @@ class ProtocolRegistrar
       return false;
     }
 
+    final executablePath:String = getExecutablePath();
+
     // A desktop entry that only advertises the scheme handler, so it does not show up as a second
     // copy of the game in the application launcher.
     final entry:String = [
       '[Desktop Entry]',
       'Type=Application',
       'Name=${SCHEME_DESCRIPTION}',
-      'Exec="${getExecutablePath()}" %u',
+      'Exec="${executablePath}" %u',
+      'Path="${Path.directory(executablePath)}"',
       'Terminal=false',
       'NoDisplay=true',
       'MimeType=x-scheme-handler/${Constants.ONE_CLICK_SCHEME};',
