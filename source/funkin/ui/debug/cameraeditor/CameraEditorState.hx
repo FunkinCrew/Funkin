@@ -1988,12 +1988,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       afterRows: afterRows
     };
 
-    var dialog:AutoSortLayersConfirmDialog = new AutoSortLayersConfirmDialog(
-      preview,
-      timeline.viewport.songLengthMs,
-      stepMs,
-      () -> performAutoSortLayersByType()
-    );
+    var dialog:AutoSortLayersConfirmDialog = new AutoSortLayersConfirmDialog(preview, timeline.songLength, stepMs, () -> performAutoSortLayersByType());
     dialog.showDialog(true);
     autoSortLayersDialog = dialog;
     dialog.onDialogClosed = (_) -> autoSortLayersDialog = null;
