@@ -131,7 +131,7 @@ class DebugBoundingState extends FlxState
     txtZoom = new FlxText(20, 20, 0, "", 20);
     txtZoom.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 26, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     txtZoom.cameras = [hudCam];
-    txtZoom.text = 'Zoom: ' + Math.round(FlxG.camera.zoom * 100) / 100;
+    txtZoom.text = 'Zoom: ' + Math.round(FlxG.camera.zoom * 100) / 100 + 'x';
     txtZoom.x = FlxG.width - txtZoom.width - 20;
     txtZoom.y = FlxG.height - 20 - txtOffsetShit.height;
     add(txtZoom);
@@ -392,7 +392,7 @@ class DebugBoundingState extends FlxState
 
   function updateZoomText()
   {
-    txtZoom.text = 'Zoom: ' + Math.round(FlxG.camera.zoom * 100) / 100;
+    txtZoom.text = 'Zoom: ' + Math.round(FlxG.camera.zoom * 100) / 100 + 'x';
     txtZoom.x = FlxG.width - txtZoom.width - 20;
   }
 
