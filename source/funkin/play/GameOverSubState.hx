@@ -271,7 +271,7 @@ class GameOverSubState extends MusicBeatSubState
 
     @:privateAccess
     {
-      var cameraOffsets:Array<Float> = boyfriend.getDeathCameraOffsets();
+      var cameraOffsets:Array<Float> = boyfriend.characterCameraOffsets;
       cameraFollowPoint.x -= Std.int(cameraOffsets[0]);
       cameraFollowPoint.y -= Std.int(cameraOffsets[1]);
 
