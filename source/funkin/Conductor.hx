@@ -621,7 +621,6 @@ class Conductor
     else
     {
       var resultMeasureTime:Float = 0;
-      ms = ms < 0 ? 0 : ms;
 
       var lastTimeChange:SongTimeChange = timeChanges[0];
       var i:Int = -1;
@@ -668,7 +667,6 @@ class Conductor
     else
     {
       var resultMs:Float = 0;
-      measureTime = measureTime < 0 ? 0 : measureTime;
 
       var lastTimeChange:SongTimeChange = timeChanges[0];
       var i:Int = -1;
@@ -716,7 +714,6 @@ class Conductor
     else
     {
       var resultStep:Float = 0;
-      ms = ms < 0 ? 0 : ms;
 
       var lastTimeChange:SongTimeChange = timeChanges[0];
       var i:Int = -1;
@@ -760,7 +757,6 @@ class Conductor
     else
     {
       var resultMs:Float = 0;
-      stepTime = stepTime < 0 ? 0 : stepTime;
 
       var lastTimeChange:SongTimeChange = timeChanges[0];
       var i:Int = -1;
@@ -838,7 +834,6 @@ class Conductor
       return new SongTimeChange(0, 100);
     }
     var i:Int = 0;
-    ms = ms < 0 ? 0 : ms;
     for (timeChange in timeChanges)
     {
       i++;

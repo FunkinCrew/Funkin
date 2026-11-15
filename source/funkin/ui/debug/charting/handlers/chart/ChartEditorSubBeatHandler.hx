@@ -81,7 +81,7 @@ class ChartEditorSubBeatHandler
       }
     }
 
-    var step:Float = Math.max(0, Math.min(ChartEditorTimeScale.pixelsToStep(mouseY), state.lastSnappedGridStep));
+    var step:Float = Math.max(-state.countdownLengthInSteps, Math.min(ChartEditorTimeScale.pixelsToStep(mouseY), state.lastSnappedGridStep));
     if (isOnSnap(state, step)) return;
     var time:Float = Conductor.instance.getStepTimeInMs(step);
     rememberSubBeatSnap(state, time, state.noteSnapQuant);
@@ -210,7 +210,7 @@ class ChartEditorSubBeatHandler
    */
   public static function dragPreviewStep(state:ChartEditorState, stepTime:Float):Float
   {
-    return (stepTime + state.dragTargetCurrentStep).clamp(0, state.lastSnappedGridStep);
+    return (stepTime + state.dragTargetCurrentStep).clamp(-state.countdownLengthInSteps, state.lastSnappedGridStep);
   }
 
   /**

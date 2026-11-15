@@ -187,7 +187,7 @@ class ChartEditorTimeScale
     {
       if ((event.getString('strumline') ?? 'both') == 'opponent') continue;
 
-      var time:Float = Math.max(0, event.time);
+      var time:Float = event.time;
       var speed:Float = event.getFloat('scroll') ?? 1;
       if (!(event.getBool('absolute') ?? false)) speed *= baseSpeed;
 

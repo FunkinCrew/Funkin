@@ -196,6 +196,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
       updateChainHover(null, null);
     });
 
+    toolboxEventsChainBeat.min = -Constants.COUNTDOWN_LENGTH_BEATS;
     toolboxEventsChainBeat.onChange = function(event:UIEvent)
     {
       if (refreshingBeat || event.value == null || movingGroup.length == 0) return;
@@ -276,7 +277,12 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
 
     if (newDropdownElement == null)
     {
-      trace(' WARNING '.bold().bg_yellow() + ' CHART EDITOR - Event kind "${chartEditorState.eventKindToPlace}" not found in dropdown lookup. Attempting to proceed...');
+      trace(
+        ' WARNING '
+          .bold()
+          .bg_yellow()
+        + ' CHART EDITOR - Event kind "${chartEditorState.eventKindToPlace}" not found in dropdown lookup. Attempting to proceed...'
+      );
       newDropdownElement = toolboxEventsEventKind.dataSource.get(0);
     }
     else if (toolboxEventsEventKind.value != newDropdownElement || lastEventKind != toolboxEventsEventKind.value.id)

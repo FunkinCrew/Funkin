@@ -79,23 +79,26 @@ class ChartEditorLayoutHandler
     var easeSongPixels:Null<Float> = (easeSongMs == null) ? null : ChartEditorTimeScale.msToPixels(easeSongMs);
     var newPlayhead:Float = state.playheadPositionInPixels;
     var newScroll:Float = playheadSongPixels - newPlayhead;
-    if (newScroll < 0)
+    if (newScroll < -state.countdownLengthInPixels)
     {
-      newScroll = 0;
-      newPlayhead = playheadSongPixels;
+      newScroll = -state.countdownLengthInPixels;
+      newPlayhead = playheadSongPixels + state.countdownLengthInPixels;
     }
 
     // The old values are in the old scale's pixels, so write them directly before the setters clamp against them.
     @:bypassAccessor state.playheadPositionInPixels = newPlayhead;
-    @:bypassAccessor state.scrollPositionInPixels = -1;
+    @:bypassAccessor state.scrollPositionInPixels = -state.countdownLengthInPixels - 1;
     state.scrollPositionInPixels = newScroll;
     state.playheadPositionInPixels = newPlayhead;
 
-    state.currentScrollEase = (easeSongPixels == null) ? state.scrollPositionInPixels : Math.max(0, easeSongPixels - newPlayhead);
+    state.currentScrollEase = (easeSongPixels == null) ? state.scrollPositionInPixels : Math.max(-state.countdownLengthInPixels, easeSongPixels - newPlayhead);
 
-    if (state.gridTiledSprite != null) state.gridTiledSprite.height = state.songLengthInPixels;
-    state.positionGridSprite();
-    state.measureTicks?.setHeight(state.songLengthInPixels);
+    if (state.gridTiledSprite != null)
+    {
+      state.gridTiledSprite.height = state.songLengthInPixels + state.countdownLengthInPixels;
+      state.positionGridSprite();
+      state.measureTicks.setHeight(state.gridTiledSprite.height);
+    }
 
     state.noteDisplayDirty = true;
     state.commentDisplayDirty = true;
@@ -513,7 +516,7 @@ class ChartEditorLayoutHandler
 
     if (state.gridTiledSprite != null)
     {
-      state.gridTiledSprite.height = state.songLengthInPixels;
+      state.gridTiledSprite.height = state.songLengthInPixels + state.countdownLengthInPixels;
       state.positionGridSprite();
       state.measureTicks.setHeight(state.gridTiledSprite.height);
     }
@@ -539,7 +542,7 @@ class ChartEditorLayoutHandler
       var songCutoffPointSteps:Float = state.gridLengthInSteps - 0.1;
       var songCutoffPointMs:Float = Conductor.instance.getStepTimeInMs(songCutoffPointSteps);
       state.currentSongChartNoteData = SongDataUtils.clampSongNoteData(state.currentSongChartNoteData, 0.0, songCutoffPointMs);
-      state.currentSongChartEventData = SongDataUtils.clampSongEventData(state.currentSongChartEventData, 0.0, songCutoffPointMs);
+      state.currentSongChartEventData = SongDataUtils.clampSongEventData(state.currentSongChartEventData, -state.countdownLengthInMs, songCutoffPointMs);
     }
     else
     {

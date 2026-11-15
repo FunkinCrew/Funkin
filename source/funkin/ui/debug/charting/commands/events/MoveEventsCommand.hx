@@ -51,11 +51,11 @@ class MoveEventsCommand implements ChartEditorCommand
       // If setting position, use the offset as the resulting time
       if (setPos)
       {
-        resultEvent.time = offset.clamp(0, Conductor.instance.getStepTimeInMs(state.lastSnappedGridStep));
+        resultEvent.time = offset.clamp(-state.countdownLengthInMs, Conductor.instance.getStepTimeInMs(state.lastSnappedGridStep));
       }
       else
       {
-        resultEvent.time = (resultEvent.time + offset).clamp(0, Conductor.instance.getStepTimeInMs(state.lastSnappedGridStep));
+        resultEvent.time = (resultEvent.time + offset).clamp(-state.countdownLengthInMs, Conductor.instance.getStepTimeInMs(state.lastSnappedGridStep));
       }
 
       movedEvents.pushUnique(resultEvent);

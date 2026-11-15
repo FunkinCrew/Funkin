@@ -252,7 +252,10 @@ class ChartEditorPlaybackHandler
     ghost.y = state.gridToScreenY(ChartEditorTimeScale.msToPixels(visualMs));
     if (text == null) return;
     text.x = ghost.x + textX;
-    var label:String = flixel.util.FlxStringUtil.formatTime(Math.max(0, visualMs - Conductor.instance.instrumentalOffset) / Constants.MS_PER_SEC, true);
+    var label:String = flixel.util.FlxStringUtil.formatTime(
+      Math.max(-state.countdownLengthInMs, visualMs - Conductor.instance.instrumentalOffset) / Constants.MS_PER_SEC,
+      true
+    );
     if (text.text != label) text.text = label;
   }
 
@@ -315,8 +318,9 @@ class ChartEditorPlaybackHandler
     sprite.visible = true;
     edge.visible = true;
 
-    var startPixels:Float = (Math.abs(visualMs - songMs) > 0.5) ? ChartEditorTimeScale.msToPixels(visualMs) : state.scrollPositionInPixels
-      + state.playheadPositionInPixels;
+    var startPixels:Float =
+      (Math.abs(visualMs - songMs) > 0.5) ? ChartEditorTimeScale.msToPixels(visualMs) : state.scrollPositionInPixels
+        + state.playheadPositionInPixels;
     var start:Float = state.gridToScreenY(startPixels);
     var cutoff:Float = state.gridToScreenY(ChartEditorTimeScale.msToPixels(Math.max(0, endMs)));
     var top:Float = Math.min(start, cutoff);
@@ -384,7 +388,7 @@ class ChartEditorPlaybackHandler
    */
   public static function easeSongToScrollPosition(state:ChartEditorState, targetScrollPosition:Float):Void
   {
-    state.currentScrollEase = Math.max(0, targetScrollPosition);
+    state.currentScrollEase = Math.max(-state.countdownLengthInPixels, targetScrollPosition);
     state.currentScrollEase = Math.min(state.currentScrollEase, state.songLengthInPixels);
     state.scrollPositionInPixels = MathUtil.snap(
       MathUtil.smoothLerpPrecision(state.scrollPositionInPixels, state.currentScrollEase, FlxG.elapsed, ChartEditorState.SCROLL_EASE_DURATION, 1 / 1000),
@@ -481,10 +485,10 @@ class ChartEditorPlaybackHandler
   static function handleMetronome(state:ChartEditorState, oldSongPosition:Float, newSongPosition:Float):Void
   {
     if (state.metronomeVolume <= 0.0 || state.metronomeMuted || state.isPlaytesting) return;
-    if (newSongPosition <= oldSongPosition || newSongPosition < 0) return;
-    var oldBeat:Int = Math.floor(Conductor.instance.getTimeInSteps(Math.max(0, oldSongPosition)) / Constants.STEPS_PER_BEAT);
+    if (newSongPosition <= oldSongPosition || newSongPosition < -state.countdownLengthInMs) return;
+    var oldBeat:Int = Math.floor(Conductor.instance.getTimeInSteps(Math.max(-state.countdownLengthInMs, oldSongPosition)) / Constants.STEPS_PER_BEAT);
     var newBeat:Int = Math.floor(Conductor.instance.getTimeInSteps(newSongPosition) / Constants.STEPS_PER_BEAT);
-    if (oldSongPosition >= 0 && newBeat <= oldBeat) return;
+    if (oldSongPosition >= -state.countdownLengthInMs && newBeat <= oldBeat) return;
     var measure:Float = Conductor.instance.getTimeInMeasures(Conductor.instance.getBeatTimeInMs(newBeat));
     state.playMetronomeTick(Math.abs(measure - Math.round(measure)) < 0.01);
   }
