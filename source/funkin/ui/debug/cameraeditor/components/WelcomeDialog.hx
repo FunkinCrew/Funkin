@@ -39,6 +39,8 @@ class WelcomeDialog extends Dialog
     this.destroyOnClose = true;
     this.onDialogClosed = event -> onClose(event);
 
+    this.draggable = false;
+
     // Add items to the Recent Charts list
     #if sys
     for (chartPath in cameraEditorState.previousWorkingFilePaths)

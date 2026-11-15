@@ -37,6 +37,8 @@ class BackupAvailableDialog extends Dialog
     this.cameraEditorState = state;
     this.welcomeDialog = welcomeDialog;
 
+    this.draggable = false;
+
     populateBackupTimeLabel();
 
     this.onDialogClosed = onBackupDialogClosed;
