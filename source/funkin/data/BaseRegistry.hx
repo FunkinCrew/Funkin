@@ -780,6 +780,8 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
     {
       DataError.printError(error);
     }
+
+    DataError.showErrors(errors, id);
   }
 }
 
