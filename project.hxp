@@ -1506,6 +1506,18 @@ class Project extends HXProject
   {
     // launchStoryboard = new LaunchStoryboard();
     // launchStoryboard.path = "./LaunchScreen.storyboard";
+
+    if (FEATURE_ONE_CLICK_INSTALL.isEnabled(this))
+    {
+      configureIOSURLScheme();
+    }
+  }
+
+  function configureIOSURLScheme()
+  {
+    setenv("FUNKIN_IOS_INFO_PLIST", Path.join([app.path ?? "", "ios", EXECUTABLE_NAME, '${EXECUTABLE_NAME}-Info.plist']));
+    setenv("FUNKIN_IOS_URL_SCHEME", "funkin");
+    setenv("FUNKIN_IOS_URL_NAME", '${PACKAGE_NAME}.oneclick');
   }
 
   function configurePolymod()

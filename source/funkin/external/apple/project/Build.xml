@@ -12,6 +12,7 @@
 		<file name="${this_dir}/src/FNFCExtern.mm" />
 		<file name="${this_dir}/src/KeyboardUtil.mm" />
 		<file name="${this_dir}/src/MemoryUtil.mm" />
+		<file name="${this_dir}/src/ModDownloadExtern.mm" />
 		<file name="${this_dir}/src/PathsUtil.mm" />
 		<file name="${this_dir}/src/ScreenUtil.mm" />
 		<file name="${this_dir}/src/URLSchemeExtern.mm" />
