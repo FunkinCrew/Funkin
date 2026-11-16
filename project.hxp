@@ -35,6 +35,12 @@ class Project extends HXProject
   static final VERSION:String = "0.8.7";
 
   /**
+   * The supported version of CPPIA scripts. This is used to determine if a script is compatible with the current build of the game.
+   * The version number here is what version of the game it was built with, and isn't necessarily the same as the game's version number.
+   */
+  static final SCRIPT_VERSION:String = "0.9.0";
+
+  /**
    * The build's number and version code.
    * Used when publishing the game to mobile app stores. Should increment with each patch.
    */

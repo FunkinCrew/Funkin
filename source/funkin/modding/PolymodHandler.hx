@@ -294,7 +294,19 @@ class PolymodHandler
     {success:Int, total:Int}>
   {
     #if FEATURE_CPPIA
-    polymod.hscript._internal.PolymodCppiaClassReference.expectedVersion = lime.app.Application.current.meta.get('version');
+    var scriptVersion:Null<String> = lime.app.Application.current.meta.get('script_version');
+    if (scriptVersion == null)
+    {
+      // man fuck you
+      scriptVersion = lime.app.Application.current.meta.get('version');
+      trace('Fallback: script version not found in application meta, using game version instead: ${scriptVersion}');
+      if (scriptVersion == null) {
+        throw 'Failed to get script version from application meta!
+          Please ensure the "script_version" key is set in the application meta.';
+      }
+    }
+    trace('Setting Polymod CPPIA script version to ${scriptVersion}...');
+    polymod.hscript._internal.PolymodCppiaClassReference.expectedVersion = scriptVersion;
     #end
 
     funkin.assets.FunkinAssetCache.instance.clearCoreAssetCache();
