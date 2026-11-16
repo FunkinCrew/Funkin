@@ -26,6 +26,9 @@ class ScrollingTextBox extends FunkinSpriteGroup
    */
   public var holdTime:Float = 1.4;
 
+  public var centered:Bool = false;
+  public var keepScrollOnChange:Bool = false;
+
   /**
    * The width of the visible window.
    */
@@ -132,6 +135,8 @@ class ScrollingTextBox extends FunkinSpriteGroup
 
   function rebuild():Void
   {
+    final hadText:Bool = line != null;
+
     clearLine();
 
     if (text == '') return;
@@ -144,7 +149,7 @@ class ScrollingTextBox extends FunkinSpriteGroup
     repeatClip = FlxRect.get(0, 0, boxWidth, boxHeight);
     lineRepeat.clipRect = repeatClip;
 
-    resetScroll();
+    if (!hadText || !keepScrollOnChange) resetScroll();
     layoutLine();
   }
 
@@ -223,7 +228,9 @@ class ScrollingTextBox extends FunkinSpriteGroup
   {
     if (line == null || lineClip == null) return;
 
-    layoutCopy(line, lineClip, -scrollOffset);
+    final start:Float = (centered && line.frameWidth <= boxWidth) ? (boxWidth - line.frameWidth) / 2 : 0;
+
+    layoutCopy(line, lineClip, start - scrollOffset);
 
     if (lineRepeat == null || repeatClip == null) return;
 

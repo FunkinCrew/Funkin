@@ -45,6 +45,9 @@ class ModMenuInstaller
    */
   static inline final DARKNESS_Z_INDEX:Int = 3000;
 
+  static inline final ESTIMATE_SAMPLE_TIME:Float = 1.0;
+  static inline final ESTIMATE_SMOOTHING:Float = 0.3;
+
   /**
    * Called when the install finishes
    */
@@ -485,7 +488,12 @@ class ModMenuInstaller
 
     final credit:String = 'by ${mod.author}  (${formatFilesize(mod.filesize)})';
 
-    popup.showProgress(mod.name, '${credit}\nDownloading...', 0);
+    var speed:Float = 0;
+    var sampleTime:Float = haxe.Timer.stamp();
+    var sampleBytes:Int = 0;
+    var estimate:String = formatEstimate(0, 0);
+
+    popup.showProgress(mod.name, '${credit}\nDownloading...', 0, estimate);
 
     ModInstaller.download(mod, function(bytesLoaded:Int, bytesTotal:Int):Void
     {
@@ -493,10 +501,25 @@ class ModMenuInstaller
 
       final ratio:Float = bytesLoaded / bytesTotal;
 
+      final now:Float = haxe.Timer.stamp();
+      final sampleLength:Float = now - sampleTime;
+
+      if (sampleLength >= ESTIMATE_SAMPLE_TIME)
+      {
+        final current:Float = (bytesLoaded - sampleBytes) / sampleLength;
+
+        speed = speed <= 0 ? current : FlxMath.lerp(speed, current, ESTIMATE_SMOOTHING);
+        sampleTime = now;
+        sampleBytes = bytesLoaded;
+
+        estimate = formatEstimate(bytesTotal - bytesLoaded, speed);
+      }
+
       popup.showProgress(
         mod.name,
         '${credit}\nDownloading... ${Math.round(ratio * 100)}%\n${formatFilesize(bytesLoaded + 1)} out of ${formatFilesize(bytesTotal)}',
-        ratio
+        ratio,
+        estimate
       );
     }, function(archivePath:String):Void
     {
@@ -549,6 +572,40 @@ class ModMenuInstaller
     }
 
     OneClickInstallHandler.enqueueNext(requests);
+  }
+
+  /**
+   * Describes how long a download has left.
+   * @param remaining How many bytes are still to come.
+   * @param speed How fast they're arriving, in bytes per second.
+   */
+  function formatEstimate(remaining:Int, speed:Float):String
+  {
+    if (speed < 1) return 'Estimating time left...';
+
+    final seconds:Int = Math.ceil(remaining / speed);
+
+    if (seconds < 60) return 'About ${pluralize(seconds, 'second')} left';
+
+    final minutes:Int = Math.floor(seconds / 60);
+
+    if (minutes < 10) return 'About ${joinUnits(minutes, 'minute', seconds % 60, 'second')} left';
+
+    if (minutes < 60) return 'About ${pluralize(minutes, 'minute')} left';
+
+    return 'About ${joinUnits(Math.floor(minutes / 60), 'hour', minutes % 60, 'minute')} left';
+  }
+
+  function pluralize(count:Int, unit:String):String
+  {
+    return count == 1 ? '1 ${unit}' : '${count} ${unit}s';
+  }
+
+  function joinUnits(major:Int, majorUnit:String, minor:Int, minorUnit:String):String
+  {
+    if (minor == 0) return pluralize(major, majorUnit);
+
+    return '${pluralize(major, majorUnit)} ${pluralize(minor, minorUnit)}';
   }
 
   /**

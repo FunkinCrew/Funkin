@@ -295,11 +295,13 @@ class ModInstaller
   static var downloadOnProgress:Null<Int->Int->Void> = null;
   static var downloadOnSuccess:Null<String->Void> = null;
   static var downloadOnError:Null<String->Void> = null;
+  static var lastReportedProgress:Float = -1;
+  static var lastReportedTime:Float = 0;
 
   /**
-   * The progress ratio last reported, so the callback only fires when it actually moves.
+   * The longest the progress callback goes without firing while a download runs, in seconds.
    */
-  static var lastReportedProgress:Float = -1;
+  static inline final PROGRESS_INTERVAL:Float = 1.0;
 
   /**
    * The install currently in flight, if any. Only one runs at a time.
@@ -384,9 +386,12 @@ class ModInstaller
 
       final ratio:Float = snapshot.bytesLoaded / snapshot.bytesTotal;
 
-      if (ratio - lastReportedProgress < 0.005) return;
+      final now:Float = haxe.Timer.stamp();
+
+      if (ratio - lastReportedProgress < 0.005 && now - lastReportedTime < PROGRESS_INTERVAL) return;
 
       lastReportedProgress = ratio;
+      lastReportedTime = now;
 
       if (downloadOnProgress != null) downloadOnProgress(snapshot.bytesLoaded, snapshot.bytesTotal);
 

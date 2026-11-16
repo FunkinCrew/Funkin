@@ -39,6 +39,8 @@ class ModMenuInstallPopup extends FunkinSpriteGroup
   var titleText:ScrollingTextBox;
   var detailText:FlxText;
   var promptText:FlxText;
+  var estimateText:ScrollingTextBox;
+  var iconClip:FlxRect;
   var barBackground:FunkinSprite;
   var barFill:FunkinSprite;
 
@@ -70,6 +72,8 @@ class ModMenuInstallPopup extends FunkinSpriteGroup
    * The prompt without the queue tally on it, so the tally can be swapped out on its own.
    */
   var lastPrompt:String = '';
+
+  var estimate:String = '';
 
   /**
    * How much of the remaining distance the fill closes per second.
@@ -103,16 +107,13 @@ class ModMenuInstallPopup extends FunkinSpriteGroup
     background.scrollFactor.set(0, 0);
     add(background);
 
+    iconClip = FlxRect.get();
+
     modIcon = new FunkinSprite(0, 0);
     modIcon.loadGraphic(funkin.Paths.image('ui/mods/fallback-icon'));
     modIcon.scrollFactor.set();
     modIcon.antialiasing = true;
-    modIcon.setGraphicSize(ICON_SIZE, ICON_SIZE);
-    modIcon.localScale.x = modIcon.scale.x;
-    modIcon.localScale.y = modIcon.scale.y;
-    modIcon.updateHitbox();
-    modIcon.localX = PADDING;
-    modIcon.localY = PADDING;
+    fitIcon();
     add(modIcon);
 
     titleText = new ScrollingTextBox(TEXT_WIDTH - 16, TITLE_HEIGHT, funkin.assets.Paths.font('ui/fonts/FunkinLingLong', 'otf'), 30, FlxColor.WHITE);
@@ -155,12 +156,27 @@ class ModMenuInstallPopup extends FunkinSpriteGroup
     promptText.scrollFactor.set(0, 0);
     add(promptText);
 
+    estimateText = new ScrollingTextBox(
+      CARD_WIDTH - (PADDING * 2),
+      PROMPT_HEIGHT,
+      funkin.assets.Paths.font('ui/fonts/FunkinLingLong', 'otf'),
+      20,
+      FlxColor.WHITE
+    );
+    estimateText.localX = PADDING;
+    estimateText.scrollFactor.set(0, 0);
+    estimateText.centered = true;
+    estimateText.keepScrollOnChange = true;
+    estimateText.scrolling = true;
+    add(estimateText);
+
     visible = false;
   }
 
   public function showBusy(title:String, detail:String):Void
   {
     state = Busy;
+    estimate = '';
 
     apply(title, detail, '', hasDownloaded, targetRatio);
   }
@@ -169,11 +185,13 @@ class ModMenuInstallPopup extends FunkinSpriteGroup
    * Shows download progress.
    *
    * @param ratio How much of the file has arrived, from 0 to 1.
+   * @param estimate How long is left, shown at the bottom of the card. Leave it out to show nothing there.
    */
-  public function showProgress(title:String, detail:String, ratio:Float):Void
+  public function showProgress(title:String, detail:String, ratio:Float, estimate:String = ''):Void
   {
     state = Downloading;
     hasDownloaded = true;
+    this.estimate = estimate;
 
     apply(title, detail, getCancelPrompt(), true, ratio);
   }
@@ -204,6 +222,7 @@ class ModMenuInstallPopup extends FunkinSpriteGroup
   {
     state = Result;
     resultTimer = RESULT_DURATION;
+    estimate = '';
 
     apply(title, detail, '', hasDownloaded, 1);
   }
@@ -267,6 +286,24 @@ class ModMenuInstallPopup extends FunkinSpriteGroup
     }
 
     modIcon.antialiasing = true;
+    fitIcon();
+  }
+
+  function fitIcon():Void
+  {
+    final side:Float = Math.min(modIcon.frameWidth, modIcon.frameHeight);
+    final scale:Float = ICON_SIZE / side;
+
+    iconClip.set((modIcon.frameWidth - side) / 2, (modIcon.frameHeight - side) / 2, side, side);
+    modIcon.clipRect = iconClip;
+
+    modIcon.scale.set(scale, scale);
+    modIcon.localScale.x = scale;
+    modIcon.localScale.y = scale;
+    modIcon.updateHitbox();
+
+    modIcon.localX = PADDING - (iconClip.x * scale);
+    modIcon.localY = PADDING - (iconClip.y * scale);
   }
 
   /**
@@ -293,19 +330,22 @@ class ModMenuInstallPopup extends FunkinSpriteGroup
     targetRatio = 0;
     displayRatio = 0;
     resultTimer = 0;
+    estimate = '';
     visible = false;
   }
 
   /**
-   * Adds the queue tally onto a prompt, on its own line so it doesn't crowd the keys.
+   * Adds the queue tally to the prompt.
    */
   function decoratePrompt(prompt:String):String
   {
-    if (queueCount <= 0) return prompt;
+    final lines:Array<String> = [];
 
-    final tally:String = queueCount == 1 ? '1 more mod queued' : '${queueCount} more mods queued';
+    if (prompt != '') lines.push(prompt);
 
-    return prompt == '' ? tally : '${prompt}\n${tally}';
+    if (queueCount > 0) lines.push(queueCount == 1 ? '1 more mod queued' : '${queueCount} more mods queued');
+
+    return lines.join('\n');
   }
 
   /**
@@ -313,7 +353,12 @@ class ModMenuInstallPopup extends FunkinSpriteGroup
    */
   function resizeCard():Void
   {
-    final lines:Int = promptText.text == '' ? 1 : promptText.text.split('\n').length;
+    final promptLines:Int = promptText.text == '' ? 0 : promptText.text.split('\n').length;
+
+    estimateText.text = estimate;
+    estimateText.localY = promptText.localY + (PROMPT_HEIGHT * promptLines);
+
+    final lines:Int = Std.int(Math.max(1, promptLines + (estimate == '' ? 0 : 1)));
     final height:Int = ICON_SIZE + (PROMPT_HEIGHT * lines) + (PADDING * 2);
 
     if (height == cardHeight) return;
