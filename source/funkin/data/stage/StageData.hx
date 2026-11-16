@@ -286,6 +286,9 @@ typedef TextureAtlasData =
   @:optional
   var filterQuality:Int;
 
+  @:optional
+  var uniqueInCache:Bool;
+
   /**
    * Whether to apply the stage matrix, if it was exported from a symbol instance.
    * Also positions the Texture Atlas as it displays in Animate.
