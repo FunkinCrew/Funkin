@@ -12,7 +12,7 @@
 4. Run `git submodule update --init --recursive` to download the game's assets.
     - NOTE: By performing this operation, you are downloading Content which is proprietary and protected by national and international copyright and trademark laws. See [the LICENSE.md file for the funkin.assets](https://github.com/FunkinCrew/funkin.assets/blob/main/LICENSE.md) repo for more information.
 5. Run `haxelib --global install hmm` and then `haxelib --global run hmm setup` to install hmm.json
-    - As an alternative, you can download hmm-rs from [crates.io](https://crates.io/crates/hmm-rs)
+    - As an alternative, you can download hmm-rs from [crates.io](https://crates.io/crates/hmm-rs) for faster library installation
 6. Run `hmm install` to install all haxelibs of the current branch.
     - if you installed hmm-rs, run `hmm-rs install` instead
     - If you have issues installing Lime, try utilizing Funkin's patched libraries for hmm and haxelib: `haxelib --global git haxelib https://github.com/FunkinCrew/haxelib.git` and `haxelib --global git hmm  https://github.com/FunkinCrew/hmm.git`
