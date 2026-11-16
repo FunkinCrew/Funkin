@@ -296,11 +296,42 @@ class ModMenuInstaller
    */
   function installZip(path:String):Void
   {
-    var ext = Path.extension(path);
-    var fileClean = StringTools.replace(path, '\\', '/');
-    var fileName = StringTools.replace(path.substring(fileClean.lastIndexOf('/') + 1), '.$ext', '');
-    var destPath = PolymodHandler.MOD_FOLDER + '/' + fileName + '.$ext';
+    final pathInfo:haxe.io.Path = new haxe.io.Path(path);
+    final name:String = pathInfo.file;
+    final extension:String = pathInfo.ext;
 
+    #if (FEATURE_ONE_CLICK_INSTALL && sys)
+    if (popup.isBlocking())
+    {
+      trace(' MOD MENU '.bold().bg_orange() + ' Ignoring a dropped archive, an install is already in progress.');
+      return;
+    }
+
+    installCancelled = false;
+
+    popup.showProgress(name, 'Installing...', 0);
+
+    ModInstaller.installArchive(path, name, false, function(ratio:Float):Void
+    {
+      if (installCancelled) return;
+
+      popup.showProgress(name, 'Installing... ${Math.round(ratio * 100)}%', ratio);
+    }, function(paths:Array<String>):Void
+    {
+      if (installCancelled) return;
+
+      onInstalled();
+      popup.showResult(name, 'Installed!');
+    }, function(reason:String):Void
+    {
+      if (installCancelled) return;
+
+      popup.showResult(name, 'Install failed.\n${reason}');
+    });
+    #else
+    final destPath:String = '${PolymodHandler.MOD_FOLDER}/${name}.${extension}';
+
+    #if sys
     try
     {
       FileUtil.moveFile(path, destPath);
@@ -311,8 +342,12 @@ class ModMenuInstaller
       openFailedPrompt();
       return;
     }
+    #else
+    throw "Failed to install mod archive from string path."
+    #end
 
     onInstalled();
+    #end
   }
 
   /**
