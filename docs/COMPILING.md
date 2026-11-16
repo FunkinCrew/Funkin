@@ -12,9 +12,11 @@
 4. Run `git submodule update --init --recursive` to download the game's assets.
     - NOTE: By performing this operation, you are downloading Content which is proprietary and protected by national and international copyright and trademark laws. See [the LICENSE.md file for the funkin.assets](https://github.com/FunkinCrew/funkin.assets/blob/main/LICENSE.md) repo for more information.
 5. Run `haxelib --global install hmm` and then `haxelib --global run hmm setup` to install hmm.json
+    - As an alternative, you can download hmm-rs from [crates.io](https://crates.io/crates/hmm-rs) for faster library installation
 6. Run `hmm install` to install all haxelibs of the current branch.
+    - if you installed hmm-rs, run `hmm-rs install` instead
     - If you have issues installing Lime, try utilizing Funkin's patched libraries for hmm and haxelib: `haxelib --global git haxelib https://github.com/FunkinCrew/haxelib.git` and `haxelib --global git hmm  https://github.com/FunkinCrew/hmm.git`
-7. Perform additional platform setup
+8. Perform additional platform setup
    - For Windows, download the [Visual Studio Build Tools](https://aka.ms/vs/17/release/vs_BuildTools.exe)
         - When prompted, select "Individual Components" and make sure to download the following:
         - MSVC v143 VS 2022 C++ x64/x86 build tools
@@ -24,7 +26,7 @@
         - One of Funkin's dependencies uses libVLC, which requires you to install some development packages to be able to compile.
           Command for Ubuntu/Debian-based systems: `sudo apt install libvlc-dev libvlccore-dev libvlccore9`, and for other distros, please refer to [hxvlc's documentation](https://github.com/MAJigsaw77/hxvlc?tab=readme-ov-file#dependencies).
     - HTML5: Compiles without any extra setup.
-8. Run `lime rebuild <PLATFORM>` to build the lime NDLLs required for compilation.
+9. Run `lime rebuild <PLATFORM>` to build the lime NDLLs required for compilation.
     - If you encounter any errors while building (ex. `No such file or directory`), lime's git submodules may be outdated. In that case, try the following steps below:
         1. Run `cd .haxelib/lime/git` to enter the local lime repository.
         2. Run the following commands to initialize lime's submodules:
@@ -34,8 +36,8 @@
             - `lime rebuild tools`
         3. Run `cd ../../..` to navigate back to the Funkin repository.
         4. Run `lime rebuild <PLATFORM> -clean` to build the lime NDLLs.
-9. Run `haxelib run lime setup` to set up Lime.
-10. `lime test <PLATFORM>` to build and launch the game for your platform (for example, `lime test windows`).
+10. Run `haxelib run lime setup` to set up Lime.
+11. `lime test <PLATFORM>` to build and launch the game for your platform (for example, `lime test windows`).
 
 ## Build Flags
 
