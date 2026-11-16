@@ -287,6 +287,12 @@ typedef TextureAtlasData =
   var filterQuality:Int;
 
   /**
+   * If true, the texture atlas will use a new slot in the cache.
+   */
+  @:optional
+  var uniqueInCache:Bool;
+
+  /**
    * Whether to apply the stage matrix, if it was exported from a symbol instance.
    * Also positions the Texture Atlas as it displays in Animate.
    * Turning this on is only recommended if you prepositioned the character in Animate.
