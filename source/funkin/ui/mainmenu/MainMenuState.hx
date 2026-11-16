@@ -324,7 +324,7 @@ class MainMenuState extends MusicBeatState
     camFollow.y = bg.getGraphicMidpoint().y;
 
     // TODO: This is absolutely disgusting but what the hell sure, fix it later -Zack
-    addBackButton(FlxG.width - 230, FlxG.height - 200, FlxColor.WHITE, goBack, 1.0);
+    addBackButton(FlxG.width - 230, FlxG.height - 200, FlxColor.WHITE, goBack.bind(false), 1.0);
 
     if (!ControlsHandler.usingExternalInputDevice)
     {
@@ -690,11 +690,11 @@ class MainMenuState extends MusicBeatState
     startExitState(() -> new funkin.ui.options.OptionsState(), funkin.ui.options.OptionsState.queryAssets);
   }
 
-  function goBack():Void
+  function goBack(playSound:Bool = true):Void
   {
     uiStateMachine.transition(Exiting);
     rememberedSelectedIndex = menuItems?.selectedIndex ?? 0;
-    FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu').toString());
+    if (playSound) FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu').toString());
 
     funkin.ui.transition.Transition.switchState(() -> new TitleState(), {
       assetQuery: TitleState.queryAssets,

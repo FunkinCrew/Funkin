@@ -124,7 +124,7 @@ class CreditsState extends MusicBeatState
     FlxG.sound.music.fadeIn(6, 0, 0.8);
 
     #if FEATURE_TOUCH_CONTROLS
-    addBackButton(FlxG.width - 230, FlxG.height - 200, FlxColor.WHITE, exit, 0.7);
+    addBackButton(FlxG.width - 230, FlxG.height - 200, FlxColor.WHITE, exit.bind(false), 0.7);
     #end
   }
 
@@ -279,14 +279,14 @@ class CreditsState extends MusicBeatState
     return creditsGroup.getFirstExisting() == null && entriesToBuild.length == 0;
   }
 
-  function exit():Void
+  function exit(playSound:Bool = true):Void
   {
     FlxG.keys.enabled = false;
     Transition.switchState(() -> new MainMenuState(), {
       assetQuery: MainMenuState.queryAssets,
       transition: BlackScreen(Fade(North), Fade(South))
     });
-    FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu').toFlxSoundAsset());
+    if (playSound) FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu').toFlxSoundAsset());
   }
 
   override public function destroy():Void
