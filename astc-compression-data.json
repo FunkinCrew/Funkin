@@ -6,6 +6,26 @@
   "colorprofile": "cl",
   "custom": [
     {
+      "asset": "assets/ui/mods/gfwire.png",
+      "blocksize": "4x4"
+    },
+    {
+      "asset": "assets/ui/mods/foreground-wires-top/spritemap1.png",
+      "blocksize": "4x4"
+    },
+    {
+      "asset": "assets/ui/mods/foreground-wires-bottom/spritemap1.png",
+      "blocksize": "4x4"
+    },
+    {
+      "asset": "assets/ui/mods/characters/gf/spritemap1.png",
+      "blocksize": "6x6"
+    },
+    {
+      "asset": "assets/ui/mods/characters/bf/spritemap1.png",
+      "blocksize": "6x6"
+    },
+    {
       "asset": "assets/gameplay/characters/nene-dark/nene-dark/spritemap1.png",
       "blocksize": "6x6"
     },
