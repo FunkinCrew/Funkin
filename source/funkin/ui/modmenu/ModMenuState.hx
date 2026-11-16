@@ -571,7 +571,7 @@ class ModMenuState extends MusicBeatState
     switch (installer.popup.state)
     {
       case Downloading:
-        if (controls.BACK_P) installer.cancelOneClick();
+        if (controls.BACK_P #if FEATURE_TOUCH_CONTROLS || installer.popup.wasTapped() #end) installer.cancelOneClick();
 
       case Result:
         // The card clears itself, this is only here for a player who doesn't want to wait on it.

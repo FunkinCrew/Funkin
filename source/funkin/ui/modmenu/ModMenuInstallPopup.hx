@@ -9,6 +9,10 @@ import funkin.graphics.FunkinSprite;
 import funkin.group.FunkinGroup.FunkinSpriteGroup;
 import funkin.ui.FullScreenScaleMode;
 import funkin.ui.ScrollingTextBox;
+#if FEATURE_TOUCH_CONTROLS
+import funkin.touch.input.ControlsHandler;
+import funkin.util.TouchUtil;
+#end
 
 /**
  * The card shown in the corner while a one-click install runs.
@@ -171,8 +175,27 @@ class ModMenuInstallPopup extends FunkinSpriteGroup
     state = Downloading;
     hasDownloaded = true;
 
-    apply(title, detail, 'ESC to cancel', true, ratio);
+    apply(title, detail, getCancelPrompt(), true, ratio);
   }
+
+  function getCancelPrompt():String
+  {
+    #if FEATURE_TOUCH_CONTROLS
+    if (!ControlsHandler.usingExternalInputDevice) return 'Tap to Cancel';
+    #end
+
+    return 'ESC to cancel';
+  }
+
+  #if FEATURE_TOUCH_CONTROLS
+  /**
+   * Whether the card was tapped this frame.
+   */
+  public function wasTapped():Bool
+  {
+    return visible && TouchUtil.pressAction(background, camera);
+  }
+  #end
 
   /**
    * Reports how an install went, then gets out of the way on its own so the queue can carry on.
