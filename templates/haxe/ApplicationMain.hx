@@ -25,10 +25,8 @@ class ApplicationMain
 
     funkin.util.logging.CrashHandler.installNativeHandler();
 
-    #if (FEATURE_ONE_CLICK_INSTALL && sys && !macos)
-    // A one-click mod link launches the game again with the URL as an argument. If a copy is
-    // already running, hand the URL over and get out before a second window is ever created.
-    // macOS is exempt, LaunchServices delivers the URL to the running instance itself.
+    #if (FEATURE_ONE_CLICK_INSTALL && (windows || linux) && !mobile)
+    // A one-click mod link launches the game again with the URL as an argument.
     final oneClickUrl:Null<String> = funkin.util.protocol.OneClickBridge.extractUrl(Sys.args());
 
     if (oneClickUrl != null && funkin.util.protocol.OneClickBridge.isInstanceLive())

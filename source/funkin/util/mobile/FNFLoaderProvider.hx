@@ -19,19 +19,25 @@ class FNFLoaderProvider
     #if ios
     FlxG.stage.window.onDropFile.add(function(file:lime.utils.DroppedFile, state:String, x:Float, y:Float):Void
     {
-      var path = file.path;
+      final path:Null<String> = file.path;
+
+      if (path != null && path.startsWith("funkin:"))
+      {
+        if (path == launchFNFMOD && !launchFNFMODEchoed)
+        {
+          launchFNFMODEchoed = true;
+          return;
+        }
+
+        onFNFMODOpen.dispatch(path);
+        return;
+      }
+
       final fileURL:Null<String> = lime.system.System.getHint('IOS_UIApplicationLaunchOptionsURLKey');
 
-      if (fileURL != null && fileURL.length > 0)
+      if (fileURL != null && fileURL.length > 0 && !fileURL.startsWith("funkin:"))
       {
-        if (fileURL.startsWith("funkin:"))
-        {
-          onFNFMODOpen.dispatch(fileURL);
-        }
-        else
-        {
-          getFNFCFromURL(fileURL);
-        }
+        getFNFCFromURL(fileURL);
       }
     });
     #elseif android
@@ -68,6 +74,7 @@ class FNFLoaderProvider
 
     if (fileURL != null && fileURL.length > 0 && fileURL.startsWith("funkin:"))
     {
+      launchFNFMOD = fileURL;
       return fileURL;
     }
     #elseif android
@@ -83,6 +90,10 @@ class FNFLoaderProvider
   }
 
   #if ios
+  @:noCompletion
+  private static var launchFNFMOD:Null<String> = null;
+  @:noCompletion
+  private static var launchFNFMODEchoed:Bool = false;
   @:noCompletion
   private static var _lastFNFC:Null<String> = null;
 

@@ -108,11 +108,6 @@ class Constants
   public static final ONE_CLICK_MAX_FILESIZE:Int = 2000 * 1024 * 1024;
 
   /**
-   * The largest hash size we will accept for a one-click install, in bytes.
-   */
-  public static final ONE_CLICK_MAX_HASH_SIZE:Int = 256 * 1024 * 1024;
-
-  /**
    * The User-Agent sent when resolving a one-click download.
    */
   public static final ONE_CLICK_USER_AGENT:String = 'FridayNightFunkin';

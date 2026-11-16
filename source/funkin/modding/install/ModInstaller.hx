@@ -14,6 +14,9 @@ import openfl.net.URLLoaderDataFormat;
 import openfl.net.URLRequest;
 import openfl.utils.ByteArray;
 import polymod.PolymodConfig;
+#if ios
+import funkin.external.apple.ModDownloadExtern;
+#end
 
 using StringTools;
 
@@ -260,14 +263,24 @@ class ModInstaller
 
     final job:DownloadJob = new DownloadJob(mod.downloadUrl, mod.md5, mod.filesize, getTempPath());
 
+    #if ios
+    if (!ModDownloadExtern.start(job.url, job.tempPath, Constants.ONE_CLICK_USER_AGENT, Constants.ONE_CLICK_ALLOWED_DOMAINS.join(','), DOWNLOAD_TIMEOUT))
+    {
+      onError('Could not start the download.');
+      return;
+    }
+    #end
+
     activeDownload = job;
     downloadOnProgress = onProgress;
     downloadOnSuccess = onSuccess;
     downloadOnError = onError;
 
-    sys.thread.Thread.create(function():Void {
+    sys.thread.Thread.create(function():Void
+    {
       runDownload(job);
     });
+    #end
     #else
     onError('Downloading mods is not supported on this platform.');
     #end
@@ -359,6 +372,10 @@ class ModInstaller
     final job:Null<DownloadJob> = activeDownload;
     if (job == null) return;
 
+    #if ios
+    syncNativeDownload(job);
+    #end
+
     final snapshot = job.read();
 
     if (!snapshot.finished)
@@ -402,6 +419,41 @@ class ModInstaller
 
     if (onSuccess != null) onSuccess(snapshot.result);
   }
+
+  #if ios
+  static function syncNativeDownload(job:DownloadJob):Void
+  {
+    if (job.read().finished) return;
+
+    final loaded:Int = Std.int(ModDownloadExtern.getBytesLoaded());
+    final total:Int = Std.int(ModDownloadExtern.getBytesTotal());
+
+    if (total > 0) job.setTotal(total);
+    job.setLoaded(loaded);
+
+    switch (ModDownloadExtern.getState())
+    {
+      case 2:
+        final problem:Null<String> = verify(job, loaded, ModDownloadExtern.getDigest().toString());
+
+        if (problem != null) job.fail(problem);
+        else
+          job.succeed(job.tempPath);
+
+      case 3:
+        final reason:String = ModDownloadExtern.getError().toString();
+
+        trace('Download error: ${reason}');
+        job.fail(reason);
+
+      case 0:
+        // Nothing running natively while the job thinks there is, so it was cancelled by the user or the OS.
+        job.fail('The download was stopped.');
+
+      default:
+    }
+  }
+  #end
   #end
 
   /**
@@ -418,7 +470,14 @@ class ModInstaller
     downloadOnError = null;
     lastReportedProgress = -1;
 
-    if (job != null) deleteTemp(job.tempPath);
+    if (job != null)
+    {
+      #if ios
+      ModDownloadExtern.cancel();
+      #end
+
+      deleteTemp(job.tempPath);
+    }
     #end
   }
 
@@ -463,15 +522,18 @@ class ModInstaller
         return;
       }
 
-      final http:haxe.Http = new haxe.Http(current);
+      final http:haxe.Http = new DownloadHttp(current);
 
       http.setHeader('User-Agent', Constants.ONE_CLICK_USER_AGENT);
+
+      http.cnxTimeout = DOWNLOAD_TIMEOUT;
 
       var status:Int = 0;
       http.onStatus = function(value:Int):Void {
         status = value;
       };
-      http.onError = function(message:String):Void {
+      http.onError = function(message:String):Void
+      {
         trace('Download error: ${message}');
       };
 
@@ -494,6 +556,13 @@ class ModInstaller
         return;
       }
 
+      if (failure != null)
+      {
+        trace('Download error: ${failure}');
+        job.fail('The download failed. ${failure}');
+        return;
+      }
+
       if (status >= 300 && status < 400)
       {
         final location:Null<String> = getResponseHeader(http, 'location');
@@ -510,13 +579,19 @@ class ModInstaller
         continue;
       }
 
+      if (status < 200 || status >= 300)
+      {
+        job.fail('GameBanana refused the download (HTTP ${status}).');
+        return;
+      }
+
       if (written == 0)
       {
         job.fail('The download came back empty.');
         return;
       }
 
-      final problem:Null<String> = verify(job, written);
+      final problem:Null<String> = verify(job, written, output.digest());
 
       if (problem != null)
       {
@@ -535,7 +610,7 @@ class ModInstaller
    * Checks a finished download against what GameBanana said it should be.
    * @return A human readable reason, or null if the file looks right.
    */
-  static function verify(job:DownloadJob, written:Int):Null<String>
+  static function verify(job:DownloadJob, written:Int, digest:Null<String>):Null<String>
   {
     if (job.expectedSize > 0 && written != job.expectedSize)
     {
@@ -543,19 +618,11 @@ class ModInstaller
       return 'The download was cut short.';
     }
 
-    if (job.md5 == null || job.md5 == '') return null;
+    if (job.md5 == null || job.md5 == '' || digest == null) return null;
 
-    if (written > Constants.ONE_CLICK_MAX_HASH_SIZE)
+    if (digest != job.md5.toLowerCase())
     {
-      trace('Skipping the checksum for a ${written} byte archive, the size matched instead.');
-      return null;
-    }
-
-    final actual:String = haxe.crypto.Md5.make(sys.io.File.getBytes(job.tempPath)).toHex();
-
-    if (actual.toLowerCase() != job.md5.toLowerCase())
-    {
-      trace('One-click checksum mismatch: expected ${job.md5}, got ${actual}');
+      trace('One-click checksum mismatch: expected ${job.md5}, got ${digest}');
       return 'The downloaded file is corrupt.';
     }
 
@@ -563,6 +630,7 @@ class ModInstaller
   }
 
   static inline final MAX_REDIRECTS:Int = 5;
+  static inline final DOWNLOAD_TIMEOUT:Float = 60;
   #end
 
   /**
@@ -654,15 +722,32 @@ class ModInstaller
     #if sys
     PolymodHandler.createModRoot();
 
-    final root:Null<String> = findNestedRoot(archivePath);
+    final roots:Null<Array<String>> = findModRoots(archivePath);
 
-    if (root != null)
+    if (roots != null && roots.length == 0) throw 'There is no mod in that archive, it has no ${PolymodConfig.modMetadataFile} anywhere.';
+
+    if (roots != null && !roots.contains(''))
     {
-      final folder:String = uniquePath(Path.join([getModFolder(), sanitizeName(root)]));
+      final targets:Array<ExtractTarget> = [];
 
-      extract(archivePath, root, folder, job);
+      for (root in roots)
+      {
+        final folder:String = uniquePath(Path.join([
+          getModFolder(),
+          sanitizeName(Path.withoutDirectory(root))
+        ]));
 
-      return [folder];
+        FileUtil.createDirIfNotExists(folder);
+
+        targets.push({
+          prefix: '${root}/',
+          destination: folder
+        });
+      }
+
+      extract(archivePath, targets, job);
+
+      return[for (target in targets) target.destination];
     }
 
     final destination:String = uniquePath(Path.join([getModFolder(), '${sanitizeName(mod.name)}.zip']));
@@ -744,10 +829,11 @@ class ModInstaller
   }
 
   /**
-   * Looks inside an archive to see if the mod is nested in a folder, and what that folder is.
-   * @return The folder the metadata sits in, or `null` if it is already at the top.
+   * Looks inside an archive for every mod in it, however deep it was packed.
+   * @return  The folders holding a mod's metadata, where `''` is the top of the archive.
+   *          Empty if there's no mod in there at all, null if the archive couldn't be read.
    */
-  static function findNestedRoot(archivePath:String):Null<String>
+  static function findModRoots(archivePath:String):Null<Array<String>>
   {
     var input:Null<sys.io.FileInput> = null;
 
@@ -756,7 +842,8 @@ class ModInstaller
       final handle:sys.io.FileInput = sys.io.File.read(archivePath, true);
       input = handle;
 
-      var nested:Null<String> = null;
+      final suffix:String = '/${PolymodConfig.modMetadataFile}';
+      final found:Array<String> = [];
 
       for (entry in readArchiveEntries(handle, FileUtil.getFileSize(archivePath)))
       {
@@ -764,20 +851,34 @@ class ModInstaller
 
         if (name == PolymodConfig.modMetadataFile)
         {
-          nested = null;
-          break;
+          handle.close();
+          return [''];
         }
 
-        final separator:Int = name.indexOf('/');
-        if (separator == -1) continue;
-        if (name.substr(separator + 1) != PolymodConfig.modMetadataFile) continue;
-
-        nested = name.substr(0, separator);
+        if (name.endsWith(suffix)) found.push(name.substr(0, name.length - suffix.length));
       }
 
       handle.close();
 
-      return nested;
+      final roots:Array<String> = [];
+
+      for (root in found)
+      {
+        var nested:Bool = false;
+
+        for (other in found)
+        {
+          if (other != root && root.startsWith('${other}/'))
+          {
+            nested = true;
+            break;
+          }
+        }
+
+        if (!nested && !roots.contains(root)) roots.push(root);
+      }
+
+      return roots;
     }
     catch (e:Dynamic)
     {
@@ -790,21 +891,19 @@ class ModInstaller
   }
 
   /**
-   * Unpacks one folder out of an archive and into the mods folder.
+   * Unpacks folders out of an archive and into the mods folder.
    */
-  static function extract(archivePath:String, root:String, destination:String, job:InstallJob):Void
+  static function extract(archivePath:String, targets:Array<ExtractTarget>, job:InstallJob):Void
   {
     final handle:sys.io.FileInput = sys.io.File.read(archivePath, true);
 
     try
     {
-      final prefix:String = '${root}/';
       final entries:Array<ArchiveEntry> = readArchiveEntries(handle, FileUtil.getFileSize(archivePath));
       final reader:haxe.zip.Reader = new haxe.zip.Reader(handle);
 
       var total:Float = 0;
-      for (entry in entries)
-        total += entry.size;
+      for (entry in entries) total += entry.size;
 
       FileUtil.createDirIfNotExists(destination);
 
@@ -814,11 +913,24 @@ class ModInstaller
       {
         final name:String = entry.name.replace('\\', '/');
 
-        if (name.endsWith('/') || !name.startsWith(prefix)) continue;
+        if (name.endsWith('/')) continue;
 
-        final target:Null<String> = resolveEntry(destination, name.substr(prefix.length));
+        var target:Null<ExtractTarget> = null;
 
-        if (target == null)
+        for (candidate in targets)
+        {
+          if (name.startsWith(candidate.prefix))
+          {
+            target = candidate;
+            break;
+          }
+        }
+
+        if (target == null) continue;
+
+        final path:Null<String> = resolveEntry(target.destination, name.substr(target.prefix.length));
+
+        if (path == null)
         {
           trace('Skipping "${name}", it points outside of where the mod is being written.');
           continue;
@@ -833,8 +945,8 @@ class ModInstaller
         header.fileSize = entry.size;
         header.data = handle.read(entry.packedSize);
 
-        FileUtil.createDirIfNotExists(Path.directory(target));
-        FileUtil.writeBytesToPath(target, haxe.zip.Reader.unzip(header), Force);
+        FileUtil.createDirIfNotExists(Path.directory(path));
+        FileUtil.writeBytesToPath(path, haxe.zip.Reader.unzip(header), Force);
 
         done += entry.size;
 
@@ -1418,6 +1530,13 @@ private class DownloadJob
     mutex.release();
   }
 
+  public function setLoaded(value:Int):Void
+  {
+    mutex.acquire();
+    bytesLoaded = value;
+    mutex.release();
+  }
+
   public function advance(amount:Int):Void
   {
     mutex.acquire();
@@ -1478,7 +1597,6 @@ private class DownloadOutput extends haxe.io.Output
   final file:sys.io.FileOutput;
   final job:DownloadJob;
   final buffer:haxe.io.Bytes;
-
   var buffered:Int = 0;
   var written:Int = 0;
   var closed:Bool = false;
@@ -1487,6 +1605,7 @@ private class DownloadOutput extends haxe.io.Output
   {
     this.job = job;
     this.buffer = haxe.io.Bytes.alloc(BUFFER_SIZE);
+    this.hash = (job.md5 == null || job.md5 == '') ? null : new funkin.util.Md5Stream();
 
     final directory:String = haxe.io.Path.directory(path);
     if (directory != '' && !sys.FileSystem.exists(directory)) sys.FileSystem.createDirectory(directory);
@@ -1515,6 +1634,11 @@ private class DownloadOutput extends haxe.io.Output
     }
 
     return written;
+  }
+
+  public function digest():Null<String>
+  {
+    return hash?.digest();
   }
 
   public override function prepare(nbytes:Int):Void
@@ -1560,6 +1684,8 @@ private class DownloadOutput extends haxe.io.Output
 
     file.writeFullBytes(buffer, 0, count);
 
+    if (hash != null) hash.update(buffer, 0, count);
+
     buffered = 0;
     written += count;
 
@@ -1589,6 +1715,15 @@ enum OneClickLink
    * The link is not, and this is what to tell the player.
    */
   Rejected(reason:String);
+}
+
+/**
+ * A folder inside an archive, and where in the mods folder it gets unpacked to.
+ */
+typedef ExtractTarget =
+{
+  var prefix:String;
+  var destination:String;
 }
 
 /**
