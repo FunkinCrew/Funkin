@@ -3,6 +3,7 @@
 0. Setup
     - Download Haxe from [Haxe.org](https://haxe.org)
     - Download Git from [git-scm.com](https://www.git-scm.com)
+    - Download hmm-rs from [crates.io](https://crates.io/crates/hmm-rs)
     - Do NOT download the repository using the Download ZIP button on GitHub or you may run into errors!
     - Instead, open a command prompt and do the following steps...
 1. Run `cd the\directory\you\want\the\source\code\in` to specify which folder the command prompt is working in.
@@ -11,10 +12,9 @@
 3. Run `cd funkin` to enter the cloned repository's directory.
 4. Run `git submodule update --init --recursive` to download the game's assets.
     - NOTE: By performing this operation, you are downloading Content which is proprietary and protected by national and international copyright and trademark laws. See [the LICENSE.md file for the funkin.assets](https://github.com/FunkinCrew/funkin.assets/blob/main/LICENSE.md) repo for more information.
-5. Run `haxelib --global install hmm` and then `haxelib --global run hmm setup` to install hmm.json
-6. Run `hmm install` to install all haxelibs of the current branch.
+5. Run `hmm-rs install` to install all haxelibs of the current branch.
     - If you have issues installing Lime, try utilizing Funkin's patched libraries for hmm and haxelib: `haxelib --global git haxelib https://github.com/FunkinCrew/haxelib.git` and `haxelib --global git hmm  https://github.com/FunkinCrew/hmm.git`
-7. Perform additional platform setup
+6. Perform additional platform setup
    - For Windows, download the [Visual Studio Build Tools](https://aka.ms/vs/17/release/vs_BuildTools.exe)
         - When prompted, select "Individual Components" and make sure to download the following:
         - MSVC v143 VS 2022 C++ x64/x86 build tools
@@ -24,7 +24,7 @@
         - One of Funkin's dependencies uses libVLC, which requires you to install some development packages to be able to compile.
           Command for Ubuntu/Debian-based systems: `sudo apt install libvlc-dev libvlccore-dev libvlccore9`, and for other distros, please refer to [hxvlc's documentation](https://github.com/MAJigsaw77/hxvlc?tab=readme-ov-file#dependencies).
     - HTML5: Compiles without any extra setup.
-8. Run `lime rebuild <PLATFORM>` to build the lime NDLLs required for compilation.
+7. Run `lime rebuild <PLATFORM>` to build the lime NDLLs required for compilation.
     - If you encounter any errors while building (ex. `No such file or directory`), lime's git submodules may be outdated. In that case, try the following steps below:
         1. Run `cd .haxelib/lime/git` to enter the local lime repository.
         2. Run the following commands to initialize lime's submodules:
@@ -34,8 +34,8 @@
             - `lime rebuild tools`
         3. Run `cd ../../..` to navigate back to the Funkin repository.
         4. Run `lime rebuild <PLATFORM> -clean` to build the lime NDLLs.
-9. Run `haxelib run lime setup` to set up Lime.
-10. `lime test <PLATFORM>` to build and launch the game for your platform (for example, `lime test windows`).
+8. Run `haxelib run lime setup` to set up Lime.
+9. `lime test <PLATFORM>` to build and launch the game for your platform (for example, `lime test windows`).
 
 ## Build Flags
 
