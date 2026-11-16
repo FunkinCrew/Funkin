@@ -343,7 +343,7 @@ class ModMenuInstaller
       return;
     }
     #else
-    throw "Failed to install mod archive from string path."
+    throw "Failed to install mod archive from string path.";
     #end
 
     onInstalled();
