@@ -95,7 +95,7 @@ class VideoCutscene
     #end
 
     // Trigger the cutscene. Don't play the song in the background.
-    PlayState.instance.isInCutscene = true;
+    PlayState.instance.gameplayState.enterCutscene();
     PlayState.instance.camHUD.visible = false;
 
     // Display a black screen to hide the game while the video is playing.

@@ -30,6 +30,33 @@ import funkin.assets.Paths.AssetPath;
 import funkin.assets.Paths.MusicAssetPathBuilder;
 import funkin.assets.ValidatedPaths as Paths;
 import funkin.assets.Paths.AssetPath;
+import funkin.util.stateMachine.StateMachine;
+
+/**
+ * Defines the current state of the song.
+ */
+enum abstract SongState(String) from String to String
+{
+  /**
+   * The song is idle.
+   */
+  public var Idle = 'Idle';
+
+  /**
+   * The song is starting.
+   */
+  public var Starting = 'Starting';
+
+  /**
+   * The song is playing.
+   */
+  public var Playing = 'Playing';
+
+  /**
+   * The song is ending.
+   */
+  public var Ending = 'Ending';
+}
 
 /**
  * This is a data structure managing information about the current song.
@@ -148,6 +175,11 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
   public var variation:Null<String> = null;
 
   /**
+   * A state machine for the song.
+   */
+  public var songState:StateMachine;
+
+  /**
    * Retrieve a list of all the asset paths required to load the song.
    *
    * If you have a scripted class which initializes sprites, or plays sounds or something,
@@ -186,6 +218,9 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
   {
     this.id = id;
     this.variation = params?.variation;
+
+    final states:Array<String> = [SongState.Idle, SongState.Starting, SongState.Playing, SongState.Ending];
+    this.songState = new StateMachine('Song', states, SongState.Idle);
 
     difficulties = new Map<String, Map<String, SongDifficulty>>();
 
@@ -701,6 +736,26 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     return false;
   }
 
+  public function onSongLoaded(event:SongLoadScriptEvent):Void
+  {
+    songState?.transition(SongState.Idle);
+  };
+
+  public function onSongStart(event:ScriptEvent):Void
+  {
+    songState?.transition(SongState.Playing);
+  };
+
+  public function onSongEnd(event:ScriptEvent):Void
+  {
+    songState?.transition(SongState.Ending);
+  };
+
+  public function onSongRetry(event:SongRetryEvent):Void
+  {
+    songState?.transition(SongState.Idle);
+  };
+
   public function onPause(event:PauseScriptEvent):Void
   {
   };
@@ -709,23 +764,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
   {
   };
 
-  public function onSongLoaded(event:SongLoadScriptEvent):Void
-  {
-  };
-
-  public function onSongStart(event:ScriptEvent):Void
-  {
-  };
-
-  public function onSongEnd(event:ScriptEvent):Void
-  {
-  };
-
   public function onGameOver(event:ScriptEvent):Void
-  {
-  };
-
-  public function onSongRetry(event:SongRetryEvent):Void
   {
   };
 

@@ -6,6 +6,7 @@ import flixel.math.FlxMath;
 import funkin.data.song.SongData.SongTimeChange;
 import funkin.data.song.SongDataUtils;
 import funkin.play.PlayState;
+import funkin.play.song.Song.SongState;
 import funkin.save.Save;
 import funkin.util.TimerUtil.SongSequence;
 import haxe.Timer;
@@ -120,7 +121,7 @@ class Conductor
 
     if (currentTimeChange == null) return Constants.DEFAULT_BPM;
     @:privateAccess
-    if (PlayState.instance != null && PlayState.instance.startingSong)
+    if (PlayState.instance != null && PlayState.instance.currentSong.songState.is(SongState.Starting))
     {
       for (i in 0...timeChanges.length)
       {

@@ -112,7 +112,7 @@ class StateMachine
   {
     if (currentState?.id == stateId)
     {
-      outputMessage('State transition ${currentState?.id} -> ${stateId} (no change)');
+      // outputMessage('State transition ${currentState?.id} -> ${stateId} (no change)');
       return true;
     }
 

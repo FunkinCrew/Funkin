@@ -57,7 +57,8 @@ class Countdown
     // Stop any existing countdown.
     stopCountdown();
 
-    PlayState.instance.isInCountdown = true;
+    PlayState.instance.gameplayState.enterCountdown();
+
     Conductor.instance.update(PlayState.instance.startTimestamp + Conductor.instance.beatLengthMs * -5);
     // Handle onBeatHit events manually
     // @:privateAccess
@@ -180,7 +181,6 @@ class Countdown
     stopCountdown();
     // This will trigger PlayState.startSong()
     Conductor.instance.update(0);
-    // PlayState.isInCountdown = false;
   }
 
   /**
