@@ -748,6 +748,7 @@ class FunkinPreloader extends FlxBasePreloader
 
           // Show popups for any registry errors or script errors we encountered during that.
           funkin.modding.PolymodErrorHandler.printQueuedErrors();
+          funkin.data.DataError.printQueuedErrors();
         }
 
         return 1.0;

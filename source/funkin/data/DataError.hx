@@ -3,10 +3,48 @@ package funkin.data;
 import json2object.Position;
 import json2object.Position.Line;
 import json2object.Error;
+#if FEATURE_MULTITHREADING
+import hx.concurrent.collection.SynchronizedArray;
+#end
 
 @:nullSafety
 class DataError
 {
+  #if FEATURE_MULTITHREADING
+  private static var queuedErrors:SynchronizedArray<{errors:Array<Error>, id:String}> = new SynchronizedArray();
+  #else
+  private static var queuedErrors:Array<{errors:Array<Error>, id:String}> = [];
+  #end
+
+  /**
+   * There's a possibility for JSON entries parsing to fail when loaded.
+   * If the registries are loaded asynchronously, error windows would overlay one another.
+   * For this reason, the errors should get added to an array and then emptied in the main thread,
+   * making the window popups appear one after another.
+   */
+  public static function printQueuedErrors():Void
+  {
+    for (queuedError in queuedErrors)
+    {
+      showErrors(queuedError.errors, queuedError.id);
+    }
+    queuedErrors.clear();
+  }
+
+  public static function showErrors(errors:Array<Error>, id:String):Void
+  {
+    if (!funkin.util.tasks.TaskHandler.isMainThread())
+    {
+      queuedErrors.push({errors: errors, id: id});
+      return;
+    }
+
+    var message:String = 'Failed to parse $id:\n' + json2object.ErrorUtils.convertError(errors[0]);
+    if (errors.length > 1) message += '\n(and ${errors.length - 1} more)';
+
+    funkin.util.WindowUtil.showError('Data Parsing Error', message);
+  }
+
   public static function printError(error:Error):Void
   {
     switch (error)
