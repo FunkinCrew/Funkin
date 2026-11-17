@@ -75,6 +75,8 @@ class CppiaManifestMacro
       });
 
     Compiler.keep(MANIFEST_NAME);
+
+    CppiaPruneMacro.register(classNames);
   }
   #end
 }
