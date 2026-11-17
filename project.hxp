@@ -35,10 +35,14 @@ class Project extends HXProject
   static final VERSION:String = "0.8.7";
 
   /**
-   * The supported version of CPPIA scripts. This is used to determine if a script is compatible with the current build of the game.
-   * The version number here is what version of the game it was built with, and isn't necessarily the same as the game's version number.
+   * The cppia script API version.
    */
   static final SCRIPT_VERSION:String = "0.9.0";
+
+  /**
+   * The oldest cppia script API version this build still loads.
+   */
+  static final SCRIPT_VERSION_MIN:String = "0.9.0";
 
   /**
    * The build's number and version code.
@@ -1182,6 +1186,10 @@ class Project extends HXProject
   {
     // Add Funkin's version as a compilation flag so Polymod scripts can use it.
     setHaxedef("funkin", VERSION);
+
+    // Cppia script API range. Mods are versioned with funkin_script, the game accepts funkin_script_min up to funkin_script.
+    setHaxedef("funkin_script", SCRIPT_VERSION);
+    setHaxedef("funkin_script_min", SCRIPT_VERSION_MIN);
 
     // Enable OpenFL's error handler. Required for the crash logger.
     setHaxedef("openfl-enable-handle-error");
