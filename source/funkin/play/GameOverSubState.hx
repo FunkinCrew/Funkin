@@ -683,7 +683,8 @@ class GameOverSubState extends MusicBeatSubState
     blueballed = false;
     if (parentPlayState != null) parentPlayState.deathCounter = 0;
     // PlayState.seenCutscene = false; // old thing...
-    if (gameOverMusic != null) gameOverMusic.stop();
+    // Fade the music when exiting the menu.
+    if (gameOverMusic != null) gameOverMusic.fadeOut(0.8, 0);
 
     // Stop death quotes immediately.
     hasPlayedDeathQuote = true;
