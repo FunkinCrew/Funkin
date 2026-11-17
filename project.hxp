@@ -1545,6 +1545,25 @@ class Project extends HXProject
   // Prevents Polymod from loading all assets on load so we can let preloader do it
     setHaxedef("POLYMOD_DISABLE_WEB_PRELOAD");
 
+    if (FEATURE_POLYMOD_MODS.isEnabled(this))
+    {
+      // Enables Polymod's patching system which allows mods to modify the base game (funkin.*)
+      setHaxedef("POLYMOD_PATCH", "funkin");
+
+      // Except these packages:
+      var unpatchablePackages:Array<String> = [
+        'funkin.modding',
+        'funkin.api',
+        'funkin.save',
+        'funkin.external',
+        'funkin.native',
+        'funkin.memory',
+        'funkin.util.macro',
+        'funkin.util.mobile'
+      ];
+      setHaxedef("POLYMOD_PATCH_EXCLUDE", unpatchablePackages.join(','));
+    }
+
     if (isDebug())
     {
       // Turns on additional debug logging.

@@ -501,6 +501,10 @@ class PolymodHandler
 
     // Add blacklisting for prohibited classes and packages.
 
+    // `polymod.patch.Patches`
+    // Stop mods from being able to clear all patches, run arbitrary patches, or register their own declared patches.
+    Polymod.blacklistStaticFields(polymod.patch.Patches, ['clear', 'run', 'registerDeclared', 'setLoadOrder']);
+
     // `Sys`
     // Sys.command() can run malicious processes
     Polymod.blacklistImport('Sys');
