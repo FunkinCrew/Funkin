@@ -912,7 +912,6 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
     {
       if (dropDown.dataSource.get(i).value == text)
       {
-        if (dropDown.selectedIndex == i && dropDown.selectedItem?.value == text) return;
         if (dropDown.selectedIndex == i) dropDown.selectedIndex = -1;
         dropDown.selectedIndex = i;
         return;
@@ -922,6 +921,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
       text: text,
       value: text
     });
+    dropDown.selectedIndex = -1;
     dropDown.selectedIndex = dropDown.dataSource.size - 1;
   }
 
