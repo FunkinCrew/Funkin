@@ -112,6 +112,14 @@ class ApplicationMain
     });
     #end
 
+    #if (!html5 && !mobile)
+    // Log when the application exits.
+    lime.app.Application.current.onExit.add(function(_)
+    {
+      trace(funkin.util.AnsiUtil.bold(funkin.util.AnsiUtil.bg_red(' EXITING ')) + ' Resources are disposed. Closing game...');
+    });
+    #end
+
     #if FEATURE_HAXEUI
     // Initialize HaxeUI.
     initHaxeUI();
