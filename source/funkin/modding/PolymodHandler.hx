@@ -648,6 +648,8 @@ class PolymodHandler
       if (cls == polymod.Polymod.ModMetadata) continue;
 
       var className:String = Type.getClassName(cls);
+      // Defn do not blacklist PatchState, as it is used for modding and is safe to use.
+      if (className == 'polymod.patch.PatchState') continue;
       Polymod.blacklistImport(className);
     }
 
