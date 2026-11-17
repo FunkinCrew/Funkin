@@ -1,10 +1,12 @@
 package funkin.extensions;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.FileUtils;
 import android.os.Bundle;
+import android.provider.OpenableColumns;
 import android.util.Log;
 import android.util.Base64;
 
@@ -19,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.util.Locale;
 
 import org.haxe.extension.Extension;
 
@@ -26,6 +29,9 @@ public class FNFLoaderExtension extends Extension
 {
   public static String lastFNFC = null;
   public static String lastFNFMOD = null;
+  public static String lastModArchive = null;
+  public static String lastModArchiveName = null;
+  public static String lastModArchiveError = null;
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
@@ -55,6 +61,12 @@ public class FNFLoaderExtension extends Extension
 
       if (uri != null)
       {
+        lastFNFC = null;
+        lastFNFMOD = null;
+        lastModArchive = null;
+        lastModArchiveName = null;
+        lastModArchiveError = null;
+
         switch (uri.getScheme())
         {
           case "funkin":
@@ -66,18 +78,50 @@ public class FNFLoaderExtension extends Extension
             }
             break;
           default:
-            try
-            {
-              lastFNFC = copyFNFCToCache(uri);
+            String displayName = displayNameForUri(uri);
+            String extension = archiveExtension(displayName, mainContext.getContentResolver().getType(uri));
 
-              if (doCallback)
+            if ("fnfc".equals(extension))
+            {
+              try
               {
-                CallbackUtil.callMethod("onFNFCOpen", lastFNFC);
+                lastFNFC = copyFNFCToCache(uri);
+
+                if (lastFNFC != null && doCallback)
+                {
+                  CallbackUtil.callMethod("onFNFCOpen", lastFNFC);
+                }
+              }
+              catch (IOException e)
+              {
+                Log.e("trace", e.getMessage());
               }
             }
-            catch (IOException e)
+            else if (extension != null)
             {
-              Log.e("trace", e.getMessage());
+              try
+              {
+                lastModArchiveName = safeDisplayName(displayName, extension);
+                lastModArchive = copyModArchiveToCache(uri, lastModArchiveName);
+                lastModArchiveError = null;
+
+                if (doCallback)
+                {
+                  CallbackUtil.callMethod("onModArchiveOpen", lastModArchive, lastModArchiveName);
+                }
+              }
+              catch (IOException e)
+              {
+                lastModArchive = null;
+                lastModArchiveName = null;
+                lastModArchiveError = e.getMessage() == null ? "The mod archive could not be copied" : e.getMessage();
+                Log.e("trace", "Failed to copy mod archive from " + uri, e);
+
+                if (doCallback)
+                {
+                  CallbackUtil.callMethod("onModArchiveError", lastModArchiveError);
+                }
+              }
             }
             break;
         }
@@ -89,56 +133,140 @@ public class FNFLoaderExtension extends Extension
   {
     if (uri == null) return null;
 
-    File output = null;
+    try
+    {
+      return copyUriToCache(uri, "fnfc", fnfcCacheName(uri));
+    }
+    catch (Exception e)
+    {
+      Log.e("trace", "Failed to copy FNFC from " + uri.toString() + ". Error message: " + e.getMessage());
+      throw new IOException("Failed to copy FNFC: " + e.getMessage(), e);
+    }
+  }
+
+  private static String copyModArchiveToCache(Uri uri, String fileName) throws IOException
+  {
+    return copyUriToCache(uri, "mod-archives", modArchiveCacheName(uri, fileName));
+  }
+
+  private static String copyUriToCache(Uri uri, String cacheFolder, String fileName) throws IOException
+  {
+    File cacheDir = new File(mainContext.getCacheDir(), cacheFolder);
+    if (!cacheDir.exists() && !cacheDir.mkdirs())
+      throw new IOException("Failed to create cache directory at: " + cacheDir.getAbsolutePath());
+
+    File output = new File(cacheDir, fileName);
+
+    try (InputStream in = mainContext.getContentResolver().openInputStream(uri))
+    {
+      if (in == null)
+        throw new IOException("Failed to get input stream for Uri: " + uri.toString());
+
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+      {
+        try (OutputStream out = new FileOutputStream(output))
+        {
+          FileUtils.copy(in, out);
+          out.flush();
+        }
+      }
+      else
+      {
+        Files.copy(in, output.toPath(), StandardCopyOption.REPLACE_EXISTING);
+      }
+    }
+    catch (Exception e)
+    {
+      output.delete();
+      if (e instanceof IOException) throw (IOException)e;
+      throw new IOException("Failed to copy Uri file: " + e.getMessage(), e);
+    }
+
+    if (output.length() <= 0)
+    {
+      output.delete();
+      throw new IOException("The copied Uri file (" + uri.toString() + ") ended empty at: " + output.getAbsolutePath());
+    }
+
+    return output.getAbsolutePath();
+  }
+
+  private static String displayNameForUri(Uri uri)
+  {
+    Cursor cursor = null;
 
     try
     {
-      File cacheFNFC = new File(mainContext.getCacheDir(), "fnfc");
-      if (!cacheFNFC.exists() && !cacheFNFC.mkdirs())
-        throw new IOException("Failed to create FNFC cache dir at: " + cacheFNFC.getAbsolutePath());
-
-      output = new File(cacheFNFC, fnfcCacheName(uri));
-
-      InputStream in = null;
-      OutputStream out = null;
-
-      try
+      cursor = mainContext.getContentResolver().query(uri, new String[] {OpenableColumns.DISPLAY_NAME}, null, null, null);
+      if (cursor != null && cursor.moveToFirst())
       {
-        in = mainContext.getContentResolver().openInputStream(uri);
-        if (in == null)
-          throw new IOException("Failed to get input stream for Uri: " + uri.toString());
-
-        out = new FileOutputStream(output);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+        int columnIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+        if (columnIndex >= 0)
         {
-          FileUtils.copy(in, out);
+          String name = cursor.getString(columnIndex);
+          if (name != null && !name.isEmpty()) return name;
         }
-        else
-        {
-          Files.copy(in, output.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        }
-
-        out.flush();
       }
-      finally
-      {
-        if (in != null)
-          in.close();
-        if (out != null)
-          out.close();
-      }
-
-      if (output.length() <= 0)
-        throw new IOException("The copied Uri file (" + uri.toString() + ") ended empty at: " + output.getAbsolutePath());
-
-      return output.getAbsolutePath();
     }
-    catch (Throwable t)
+    catch (RuntimeException e)
     {
-      Log.e("trace", "Failed to copy FNFC from " + uri.toString() + ". Error message: " + t.getMessage());
-      if (output != null) output.delete();
-      return null;
+      Log.w("trace", "Could not read the display name for " + uri, e);
+    }
+    finally
+    {
+      if (cursor != null) cursor.close();
+    }
+
+    String lastPathSegment = uri.getLastPathSegment();
+    return lastPathSegment == null ? null : Uri.decode(lastPathSegment);
+  }
+
+  private static String archiveExtension(String displayName, String mimeType)
+  {
+    if (displayName != null)
+    {
+      String lowerName = displayName.toLowerCase(Locale.ROOT);
+      if (lowerName.endsWith(".fnfc")) return "fnfc";
+      if (lowerName.endsWith(".zip")) return "zip";
+    }
+
+    if (mimeType != null)
+    {
+      String lowerMimeType = mimeType.toLowerCase(Locale.ROOT);
+      if ("application/zip".equals(lowerMimeType) || "application/x-zip-compressed".equals(lowerMimeType))
+      {
+        return "zip";
+      }
+    }
+
+    return null;
+  }
+
+  private static String safeDisplayName(String displayName, String extension)
+  {
+    String name = displayName == null ? "mod" : displayName.replace('\\', '/');
+    name = name.substring(name.lastIndexOf('/') + 1);
+    name = name.replaceAll("[^A-Za-z0-9._-]", "_");
+
+    if (name.isEmpty()) name = "mod";
+    if (!name.toLowerCase(Locale.ROOT).endsWith("." + extension)) name += "." + extension;
+
+    return name;
+  }
+
+  private static String modArchiveCacheName(Uri uri, String fileName)
+  {
+    try
+    {
+      byte[] digest = MessageDigest.getInstance("SHA-256")
+          .digest((uri.toString() + System.nanoTime()).getBytes(StandardCharsets.UTF_8));
+      String uniqueName = Base64.encodeToString(digest,
+          Base64.URL_SAFE | Base64.NO_WRAP | Base64.NO_PADDING);
+      return uniqueName + "-" + fileName;
+    }
+    catch (Exception e)
+    {
+      return Integer.toHexString((uri.toString() + System.nanoTime()).hashCode()) + "-" + fileName;
     }
   }
 

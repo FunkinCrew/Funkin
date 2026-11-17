@@ -259,7 +259,7 @@ class ModMenuInstaller
     #if sys
     if (isArchiveModExtension(file.path))
     {
-      installZip(file.path);
+      installZip(file.path, file.path, false);
     }
     else if (Path.isAbsolute(file.path) && FileUtil.directoryExists(file.path))
     {
@@ -291,12 +291,28 @@ class ModMenuInstaller
   }
 
   /**
-   * Installs the zip dropped into the mod folder.
-   * @param path The path to the zip to install.
+   * Installs a mod archive copied into the app's cache from an external file provider
    */
-  function installZip(path:String):Void
+  public function installArchivePath(path:String, fileName:String, deleteArchive:Bool):Void
   {
-    final pathInfo:haxe.io.Path = new haxe.io.Path(path);
+    if (!isArchiveModExtension(fileName))
+    {
+      showInvalidPrompt();
+      return;
+    }
+
+    installZip(path, fileName, deleteArchive);
+  }
+
+  /**
+   * Installs a mod archive
+   * @param path The path to the zip to install.
+   * @param fileName The name of the archive shown in the install UI
+   * @param deleteArchive Whether to delete a temporary archive after installation
+   */
+  function installZip(path:String, fileName:String, deleteArchive:Bool):Void
+  {
+    final pathInfo:haxe.io.Path = new haxe.io.Path(fileName);
     final name:String = pathInfo.file;
     final extension:String = pathInfo.ext;
 
@@ -311,7 +327,7 @@ class ModMenuInstaller
 
     popup.showProgress(name, 'Installing...', 0);
 
-    ModInstaller.installArchive(path, name, false, function(ratio:Float):Void
+    ModInstaller.installArchive(path, name, deleteArchive, function(ratio:Float):Void
     {
       if (installCancelled) return;
 
