@@ -199,7 +199,7 @@ class ProtocolRegistrar
       '[Desktop Entry]',
       'Type=Application',
       'Name=${SCHEME_DESCRIPTION}',
-      'Exec=${getExecutablePath()} %u',
+      'Exec="${getExecutablePath()}" %u',
       'Terminal=false',
       'NoDisplay=true',
       'MimeType=x-scheme-handler/${Constants.ONE_CLICK_SCHEME};',
