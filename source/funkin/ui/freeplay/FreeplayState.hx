@@ -292,7 +292,7 @@ class FreeplayState extends MusicBeatSubState
   var forceSkipIntro:Bool = false;
 
   /**
-   * Return a list of all AssetPaths that this UI elemnet depends on to load.
+   * Return a list of all AssetPaths that this UI element depends on to load.
    * NOTE: You don't need to include assets which get fetched asynchronously.
    * @param type The type of AssetPath to return a list of paths for.
    * @param styleData The data for the Freeplay style being used.
