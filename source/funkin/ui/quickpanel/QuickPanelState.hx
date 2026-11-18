@@ -27,12 +27,15 @@ import funkin.data.quickpanel.PanelRegistry;
 import funkin.data.quickpanel.PanelData.PanelButtonAnim;
 import funkin.ui.quickpanel.QuickPanelTypes;
 import funkin.ui.transition.Transition;
+import funkin.util.DeviceUtil;
 import funkin.util.MathUtil;
 import funkin.util.PropertyAnimator;
 import funkin.util.StateUtil;
 #if FEATURE_TOUCH_CONTROLS
 import funkin.util.TouchUtil;
 #end
+import lime.app.Application;
+import lime.system.Orientation;
 
 /**
  * The quick panel side menu.
@@ -402,8 +405,37 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
 
     forEach(obj -> obj.cameras = [panelCam]);
 
+    #if mobile
+    if (DeviceUtil.hasNotch) repositionFromOrientation(Application.current.window.display.orientation);
+    else
+      repositionSide(left); // if there is no notch we must revert to original behavior
+    Application.current.onDisplayOrientationChange.add(handleOrientationEvent);
+    #else
     repositionSide(left);
+    #end
   }
+
+  #if mobile
+  public function handleOrientationEvent(_:Int, orientation:Orientation)
+  {
+    repositionFromOrientation(orientation);
+  }
+
+  public function repositionFromOrientation(orientation:Orientation)
+  {
+    if (!DeviceUtil.hasNotch) return;
+
+    switch (orientation)
+    {
+      case LANDSCAPE:
+        repositionSide(false);
+      case LANDSCAPE_FLIPPED:
+        repositionSide(true);
+      default:
+        // do nothing on other orientations
+    }
+  }
+  #end
 
   /**
    * Docks the panel to the left or right edge and snaps it to its current state.
@@ -1442,6 +1474,10 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
   {
     for (timer in transitionTimers) if (timer != null) timer.cancel();
     transitionTimers = [];
+
+    #if mobile
+    Application.current.onDisplayOrientationChange.remove(handleOrientationEvent);
+    #end
 
     cancelMoveTween();
 
