@@ -70,6 +70,9 @@ class HotReloadState extends MusicBeatState
 
     FlxG.plugins.get(funkin.util.plugins.EvacuateDebugPlugin).active = false;
     FlxG.plugins.get(funkin.util.plugins.ReloadAssetsDebugPlugin).active = false;
+    #if FEATURE_TOUCH_CONTROLS
+    FlxG.plugins.get(funkin.util.plugins.TouchPointerPlugin).active = false;
+    #end
   }
 
   override function createWatermarkText():Void
@@ -219,6 +222,9 @@ class HotReloadState extends MusicBeatState
 
     FlxG.plugins.get(funkin.util.plugins.EvacuateDebugPlugin).active = true;
     FlxG.plugins.get(funkin.util.plugins.ReloadAssetsDebugPlugin).active = true;
+    #if FEATURE_TOUCH_CONTROLS
+    FlxG.plugins.get(funkin.util.plugins.TouchPointerPlugin).active = true;
+    #end
     FlxG.keys.enabled = true;
     funkin.util.plugins.ReloadAssetsDebugPlugin.hotReloadInProgress = false;
     var postHotReloadCallback = () ->
