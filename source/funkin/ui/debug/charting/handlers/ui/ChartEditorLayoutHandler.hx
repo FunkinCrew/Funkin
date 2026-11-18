@@ -23,6 +23,7 @@ import funkin.ui.debug.charting.components.notes.ChartEditorNoteSprite;
 import funkin.util.MathUtil;
 import haxe.ui.containers.dialogs.Dialog;
 import haxe.ui.core.Screen;
+
 using Lambda;
 
 @:access(haxe.ui.tooltips.ToolTipManager)
@@ -45,7 +46,8 @@ class ChartEditorLayoutHandler
    * Recalculate how the grid maps to the song.
    * @param rebuildScrollSpeeds Also rebuild the constant scroll speed map from the events.
    */
-  public static function updateGridScale(state:ChartEditorState, rebuildScrollSpeeds:Bool = false):Void
+  public static function updateGridScale(state:ChartEditorState,
+    rebuildScrollSpeeds:Bool = false):Void
   {
     var hasGrid:Bool = state.gridTiledSprite != null;
     var playheadSongMs:Float = hasGrid ? ChartEditorTimeScale.pixelsToMs(state.scrollPositionInPixels + state.playheadPositionInPixels) : 0;
@@ -58,33 +60,43 @@ class ChartEditorLayoutHandler
     ChartEditorTimeScale.STEP_HEIGHT = ChartEditorState.GRID_SIZE * state.zoomCurrent;
     ChartEditorTimeScale.CONSTANT_SCROLL = state.constantScrollEnabled;
     ChartEditorTimeScale.PIXELS_PER_MS = ChartEditorTimeScale.STEP_HEIGHT * state.constantScrollSpeed / ChartEditorTimeScale.CONSTANT_SCROLL_REFERENCE_STEP_MS;
-    var speedsChanged:Bool = rebuildScrollSpeeds && ChartEditorTimeScale.buildScrollSpeedPoints(state.currentSongChartEventData, state.currentSongChartScrollSpeed);
+    var speedsChanged:Bool =
+      rebuildScrollSpeeds
+      && ChartEditorTimeScale.buildScrollSpeedPoints(state.currentSongChartEventData, state.currentSongChartScrollSpeed);
 
     if (!hasGrid) return;
     var layoutChanged:Bool = speedsChanged && !ChartEditorTimeScale.CONSTANT_SCROLL;
-    if (!layoutChanged && oldStepHeight == ChartEditorTimeScale.STEP_HEIGHT && oldConstantScroll == ChartEditorTimeScale.CONSTANT_SCROLL && oldPixelsPerMs == ChartEditorTimeScale.PIXELS_PER_MS) return;
+    if (
+      !layoutChanged
+      && oldStepHeight == ChartEditorTimeScale.STEP_HEIGHT
+      && oldConstantScroll == ChartEditorTimeScale.CONSTANT_SCROLL
+      && oldPixelsPerMs == ChartEditorTimeScale.PIXELS_PER_MS
+    ) return;
 
     // Then back to pixels with the new scale.
     var playheadSongPixels:Float = ChartEditorTimeScale.msToPixels(playheadSongMs);
     var easeSongPixels:Null<Float> = (easeSongMs == null) ? null : ChartEditorTimeScale.msToPixels(easeSongMs);
     var newPlayhead:Float = state.playheadPositionInPixels;
     var newScroll:Float = playheadSongPixels - newPlayhead;
-    if (newScroll < 0)
+    if (newScroll < -state.countdownLengthInPixels)
     {
-      newScroll = 0;
-      newPlayhead = playheadSongPixels;
+      newScroll = -state.countdownLengthInPixels;
+      newPlayhead = playheadSongPixels + state.countdownLengthInPixels;
     }
 
     // The old values are in the old scale's pixels, so write them directly before the setters clamp against them.
     @:bypassAccessor state.playheadPositionInPixels = newPlayhead;
-    @:bypassAccessor state.scrollPositionInPixels = -1;
+    @:bypassAccessor state.scrollPositionInPixels = -state.countdownLengthInPixels - 1;
     state.scrollPositionInPixels = newScroll;
     state.playheadPositionInPixels = newPlayhead;
 
-    state.currentScrollEase = (easeSongPixels == null) ? state.scrollPositionInPixels : Math.max(0, easeSongPixels - newPlayhead);
+    state.currentScrollEase = (easeSongPixels == null) ? state.scrollPositionInPixels : Math.max(-state.countdownLengthInPixels, easeSongPixels - newPlayhead);
 
-    if (state.gridTiledSprite != null) state.gridTiledSprite.height = state.songLengthInPixels;
-    state.measureTicks?.setHeight(state.songLengthInPixels);
+    if (state.gridTiledSprite != null)
+    {
+      state.gridTiledSprite.height = state.songLengthInPixels + state.countdownLengthInPixels;
+      state.measureTicks.setHeight(state.gridTiledSprite.height);
+    }
 
     state.noteDisplayDirty = true;
     state.commentDisplayDirty = true;
@@ -99,7 +111,9 @@ class ChartEditorLayoutHandler
    */
   public static function notePreviewXPos():Float
   {
-    return ChartEditorState.GRID_X_POS - (FlxG.initialWidth / 2 - ChartEditorState.GRID_SIZE * ChartEditorState.STRUMLINE_SIZE - ChartEditorState.NOTE_PREVIEW_X_POS);
+    return
+      ChartEditorState.GRID_X_POS
+      - (FlxG.initialWidth / 2 - ChartEditorState.GRID_SIZE * ChartEditorState.STRUMLINE_SIZE - ChartEditorState.NOTE_PREVIEW_X_POS);
   }
 
   /**
@@ -156,7 +170,7 @@ class ChartEditorLayoutHandler
     state.gridTiledSprite.height = 1000;
     state.gridTiledSprite.visible = false;
     state.gridTiledSprite.x = ChartEditorState.GRID_X_POS; // Center the grid.
-    state.gridTiledSprite.y = ChartEditorState.GRID_INITIAL_Y_POS; // Push down to account for the menu bar.
+    state.gridTiledSprite.y = ChartEditorState.GRID_INITIAL_Y_POS - state.countdownLengthInPixels; // Push down to account for the menu bar.
     state.add(state.gridTiledSprite);
     state.gridTiledSprite.zIndex = 10;
 
@@ -178,7 +192,8 @@ class ChartEditorLayoutHandler
     state.rangeSelectionSprite.zIndex = 18;
     state.add(state.rangeSelectionSprite);
 
-    state.gridCursorLine = new FunkinSprite().makeSolidColor(ChartEditorState.GRID_SIZE * ChartEditorThemeHandler.TOTAL_COLUMN_COUNT, 2, ChartEditorState.CURSOR_LINE_COLOR);
+    state.gridCursorLine = new FunkinSprite()
+      .makeSolidColor(ChartEditorState.GRID_SIZE * ChartEditorThemeHandler.TOTAL_COLUMN_COUNT, 2, ChartEditorState.CURSOR_LINE_COLOR);
     state.gridCursorLine.visible = false;
     state.gridCursorLine.zIndex = 17;
 
@@ -460,7 +475,9 @@ class ChartEditorLayoutHandler
   {
     if (state.notePreviewPlayhead == null) return;
 
-    state.notePreviewPlayhead.y = state.notePreview.y + (state.notePreview.height * ((state.scrollPositionInPixels + state.playheadPositionInPixels) / state.songLengthInPixels));
+    state.notePreviewPlayhead.y =
+      state.notePreview.y
+      + (state.notePreview.height * ((state.scrollPositionInPixels + state.playheadPositionInPixels) / state.songLengthInPixels));
   }
 
   public static function handleGridLines(state:ChartEditorState):Void
@@ -477,7 +494,7 @@ class ChartEditorLayoutHandler
 
     if (state.gridTiledSprite != null)
     {
-      state.gridTiledSprite.height = state.songLengthInPixels;
+      state.gridTiledSprite.height = state.songLengthInPixels + state.countdownLengthInPixels;
       state.measureTicks.setHeight(state.gridTiledSprite.height);
     }
     state.gridLinesDirty = true;
@@ -526,7 +543,8 @@ class ChartEditorLayoutHandler
   {
     // var currentMeasureTime = Conductor.instance.getMeasureTimeInMs(Math.floor(Conductor.instance.getTimeInMeasures(scrollPositionInMs)));
     // var currentMeasurePos = currentMeasureTime < 0 ? 0 : Conductor.instance.getTimeInSteps(currentMeasureTime) * GRID_SIZE;
-    state.measureTicks.y = state.gridTiledSprite?.y;
+    if (state.gridTiledSprite == null) return;
+    state.measureTicks.y = state.gridTiledSprite.y + state.countdownLengthInPixels;
   }
 
   public static function handleNotePreview(state:ChartEditorState):Void
@@ -549,10 +567,18 @@ class ChartEditorLayoutHandler
       if (state.difficultyHeatmapDirty)
       {
         state.difficultyHeatmapDirty = false;
-        state.difficultyHeatmap.setChart(state.currentSongChartNoteData, state.currentSongChartScrollSpeed,
-          funkin.util.DiffCalcUtil.opponentShownFor(state.currentSongId));
+        state.difficultyHeatmap.setChart(
+          state.currentSongChartNoteData,
+          state.currentSongChartScrollSpeed,
+          funkin.util.DiffCalcUtil.opponentShownFor(state.currentSongId)
+        );
       }
-      state.difficultyHeatmap.refresh(state.gridTiledSprite.x, state.gridTiledSprite.y, ChartEditorState.MENU_BAR_HEIGHT, FlxG.height - ChartEditorState.PLAYBAR_HEIGHT);
+      state.difficultyHeatmap.refresh(
+        state.gridTiledSprite.x,
+        state.gridTiledSprite.y + state.countdownLengthInPixels,
+        ChartEditorState.MENU_BAR_HEIGHT,
+        FlxG.height - ChartEditorState.PLAYBAR_HEIGHT
+      );
     }
 
     if (state.notePreviewViewportBoundsDirty)

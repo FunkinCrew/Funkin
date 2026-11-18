@@ -875,7 +875,7 @@ class ChartEditorKeybindHandler
     )
     {
       // Add a new comment at the grid playhead's position.
-      var playheadPosMs:Float = state.scrollPositionInMs + state.playheadPositionInMs;
+      var playheadPosMs:Float = (state.scrollPositionInMs + state.playheadPositionInMs).clamp(-state.countdownLengthInMs, state.songLengthInMs);
       state.performCommand(new AddCommentCommand({
         time: playheadPosMs,
         text: 'New Comment',
