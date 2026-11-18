@@ -573,11 +573,6 @@ class PolymodHandler
     **/
     Polymod.blacklistInstanceFields(lime.utils.AssetLibrary, ['classTypes']);
 
-    // `haxe.Unserializer`
-    // Just to be double-sure, lets blacklist some fields of the Unserializer to make it harder to use if you DO get one.
-    Polymod.blacklistStaticFields(haxe.Unserializer, ['run']);
-    Polymod.blacklistInstanceFields(haxe.Unserializer, ['unserialize']);
-
     // `haxe.ui`
     // `UIRTTITools.resolveEventClass` allows you to be able to resolve clases from fallback, `bindEvent` uses this.
     Polymod.blacklistImport("haxe.ui.backend.flixel.UIRTTITools");
