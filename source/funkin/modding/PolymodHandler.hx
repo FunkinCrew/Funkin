@@ -654,7 +654,7 @@ class PolymodHandler
       // ... So we just don't blacklist these classes altogether.
       // Please reconsider what you're doing if you are removing these line(s).
       // - Abnormal
-      if (className.endsWith('ModMetadata')) return;
+      if (className.endsWith('ModMetadata')) continue;
 
       Polymod.blacklistImport(className);
     }
