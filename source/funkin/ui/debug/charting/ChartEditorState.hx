@@ -486,40 +486,77 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     this.scrollPositionInPixels = value;
 
-    // Move the grid sprite to the correct position.
+    refreshGridPosition();
+    if (selectionBoxStartPos != null) selectionBoxStartPos.y -= diff * ChartEditorTimeScale.VIEW_DIRECTION;
+
+    return this.scrollPositionInPixels;
+  }
+
+  function refreshGridPosition():Void
+  {
     if (gridTiledSprite != null && measureTicks != null)
     {
-      gridTiledSprite.y = -scrollPositionInPixels + (GRID_INITIAL_Y_POS);
+      positionGridSprite();
 
       // The waveforms only rebuild when the view leaves the chunk they cover.
       for (member in audioWaveforms.members)
       {
-        if (member != null) member.refresh(gridTiledSprite.y);
+        if (member != null) member.refresh();
       }
     }
 
     // Move the rendered notes to the correct position.
-    renderedNotes.setPosition(gridTiledSprite?.x ?? 0.0, gridTiledSprite?.y ?? 0.0);
-    renderedHoldNotes.setPosition(gridTiledSprite?.x ?? 0.0, gridTiledSprite?.y ?? 0.0);
-    renderedEvents.setPosition(gridTiledSprite?.x ?? 0.0, gridTiledSprite?.y ?? 0.0);
-    renderedSelectionSquares.setPosition(gridTiledSprite?.x ?? 0.0, gridTiledSprite?.y ?? 0.0);
+    var originX:Float = gridTiledSprite?.x ?? 0.0;
+    var originY:Float = (gridTiledSprite == null) ? 0.0 : gridOriginY;
+    renderedNotes.setPosition(originX, originY);
+    renderedHoldNotes.setPosition(originX, originY);
+    renderedEvents.setPosition(originX, originY);
+    renderedSelectionSquares.setPosition(originX, originY);
     gridLines?.refresh(gridLinesDirty);
     gridLinesDirty = false;
-    // Offset the selection box start position, if we are dragging.
-    if (selectionBoxStartPos != null) selectionBoxStartPos.y -= diff;
 
     // Update the note preview.
     this.setNotePreviewViewportBounds(this.calculateNotePreviewViewportBounds());
     this.refreshNotePreviewPlayheadPosition();
 
     if (measureTicks != null) this.handleMeasureTickPosition();
-    return this.scrollPositionInPixels;
   }
 
-  /**
-   * The relative scroll position in the song, converted to steps.
-   * NOT dependent on BPM, because the size of a grid square does not change with BPM.
-   */
+  var gridPlayheadBaseY(get, never):Float;
+
+  function get_gridPlayheadBaseY():Float
+  {
+    return isViewDownscroll ? FlxG.height - PLAYBAR_HEIGHT - GRID_PLAYHEAD_MARGIN : GRID_INITIAL_Y_POS;
+  }
+
+  var gridOriginY(get, never):Float;
+
+  function get_gridOriginY():Float
+  {
+    return gridPlayheadBaseY - scrollPositionInPixels * ChartEditorTimeScale.VIEW_DIRECTION;
+  }
+
+  function gridToScreenY(pixels:Float):Float
+  {
+    return gridOriginY + pixels * ChartEditorTimeScale.VIEW_DIRECTION;
+  }
+
+  function screenToGridY(screenY:Float):Float
+  {
+    return (screenY - gridOriginY) * ChartEditorTimeScale.VIEW_DIRECTION;
+  }
+
+  function gridRangeScreenTop(startPixels:Float, endPixels:Float):Float
+  {
+    return Math.min(gridToScreenY(startPixels), gridToScreenY(endPixels));
+  }
+
+  function positionGridSprite():Void
+  {
+    if (gridTiledSprite == null) return;
+    gridTiledSprite.y = isViewDownscroll ? gridOriginY - gridTiledSprite.height : gridOriginY;
+  }
+
   var scrollPositionInSteps(get, set):Float;
 
   function get_scrollPositionInSteps():Float
@@ -569,7 +606,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     this.playheadPositionInPixels = value;
 
     // Move the playhead sprite to the correct position.
-    gridPlayhead.y = this.playheadPositionInPixels + GRID_INITIAL_Y_POS;
+    gridPlayhead.y = gridPlayheadBaseY + this.playheadPositionInPixels * ChartEditorTimeScale.VIEW_DIRECTION;
 
     this.updatePlayheadGhostHoldNotes();
     this.refreshNotePreviewPlayheadPosition();
@@ -802,13 +839,21 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function set_isViewDownscroll(value:Bool):Bool
   {
     isViewDownscroll = value;
+    ChartEditorTimeScale.VIEW_DIRECTION = value ? -1 : 1;
 
     // Make sure view is updated when we change view modes.
     noteDisplayDirty = true;
     notePreviewDirty = true;
     commentDisplayDirty = true;
     notePreviewViewportBoundsDirty = true;
-    this.scrollPositionInPixels = this.scrollPositionInPixels;
+    gridLinesDirty = true;
+    waveformsDirty = true;
+    if (gridTiledSprite != null)
+    {
+      refreshGridPosition();
+      playheadPositionInPixels = playheadPositionInPixels;
+      measureTicks?.setHeight(songLengthInPixels);
+    }
     // Characters have probably changed too.
     healthIconsDirty = true;
 
@@ -3471,6 +3516,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     noteDisplayDirty = true;
     commentDisplayDirty = true;
     waveformsDirty = true;
+
+    // bottom
+    if (isViewDownscroll)
+    {
+      refreshGridPosition();
+      playheadPositionInPixels = playheadPositionInPixels;
+    }
   }
 
   /**

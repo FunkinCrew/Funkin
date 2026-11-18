@@ -172,8 +172,10 @@ class ChartEditorGridInteractionHandler
     }
 
     var startStep:Float = event.getStepTime();
-    var top:Float = state.gridTiledSprite.y + ChartEditorTimeScale.stepToPixels(startStep);
-    var bottom:Float = state.gridTiledSprite.y + ChartEditorTimeScale.stepToPixels(startStep + steps);
+    var startY:Float = state.gridToScreenY(ChartEditorTimeScale.stepToPixels(startStep));
+    var endY:Float = state.gridToScreenY(ChartEditorTimeScale.stepToPixels(startStep + steps));
+    var top:Float = Math.min(startY, endY);
+    var bottom:Float = Math.max(startY, endY);
     var left:Float = state.gridTiledSprite.x + ChartEditorState.GRID_SIZE * ChartEditorThemeHandler.TOTAL_COLUMN_COUNT + EVENT_DURATION_GAP;
     bar.visible = true;
     bar.setPosition(left, top);

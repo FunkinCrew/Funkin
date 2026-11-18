@@ -108,7 +108,7 @@ class ChartEditorHoldNoteSprite extends SustainTrail
     graphicWidth = graphic.width / 8 * zoom; // amount of notes * 2
     graphicHeight = sustainLength * 0.45; // sustainHeight
 
-    flipY = false;
+    flipY = parentState != null && parentState.isViewDownscroll;
 
     alpha = 1.0;
 
@@ -223,7 +223,8 @@ class ChartEditorHoldNoteSprite extends SustainTrail
   {
     var noteHeight:Float = ChartEditorTimeScale.lengthToPixels(noteData.time, noteData.length, noteData.getStepLength());
     var stepTime:Float = inline noteData.getStepTime();
-    var notePosY:Float = ChartEditorTimeScale.timeToPixels(noteData.time, stepTime);
+    var notePosY:Float = ChartEditorTimeScale.timeToPixels(noteData.time, stepTime) * ChartEditorTimeScale.VIEW_DIRECTION;
+    if (ChartEditorTimeScale.VIEW_DIRECTION < 0) notePosY -= noteHeight;
     if (origin != null) notePosY += origin.y;
 
     // True if the note is above the view area.
@@ -238,6 +239,12 @@ class ChartEditorHoldNoteSprite extends SustainTrail
   public function updateHoldNotePosition(?origin:FlxObject):Void
   {
     if (this.noteData == null) return;
+
+    if (flipY != parentState.isViewDownscroll)
+    {
+      flipY = parentState.isViewDownscroll;
+      updateClipping();
+    }
 
     var cursorColumn:Int = (overrideData != null) ? overrideData : this.noteData.data;
 
@@ -269,6 +276,8 @@ class ChartEditorHoldNoteSprite extends SustainTrail
     if (stepTime >= 0)
     {
       this.y = (overrideStep != null) ? ChartEditorTimeScale.stepToPixels(overrideStep) : ChartEditorTimeScale.timeToPixels(this.noteData.time, stepTime);
+      this.y *= ChartEditorTimeScale.VIEW_DIRECTION;
+      if (parentState.isViewDownscroll) this.y -= this.graphicHeight;
     }
 
     this.x += ChartEditorState.GRID_SIZE / 2;

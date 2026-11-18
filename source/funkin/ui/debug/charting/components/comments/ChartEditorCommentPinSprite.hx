@@ -89,10 +89,13 @@ class ChartEditorCommentPinSprite extends FunkinSprite
   {
     if (commentData == null) return;
 
+    var previewTop:Float = ChartEditorState.NOTE_PREVIEW_Y_POS;
+    var previewBottom:Float = ChartEditorState.NOTE_PREVIEW_Y_POS + (chartEditorState.notePreview?.height ?? 0.0);
+    var downscroll:Bool = chartEditorState.isViewDownscroll;
     var position:Float = FlxMath.remapToRange( // Remap the comment timestamp...
       commentData.time, // ...from song time...
       0, chartEditorState.songLengthInMs, // ...to note preview position.
-      ChartEditorState.NOTE_PREVIEW_Y_POS, ChartEditorState.NOTE_PREVIEW_Y_POS + (chartEditorState.notePreview?.height ?? 0.0));
+      downscroll ? previewBottom : previewTop, downscroll ? previewTop : previewBottom);
 
     this.x = pinX();
     this.y = position - (this.height / 2);

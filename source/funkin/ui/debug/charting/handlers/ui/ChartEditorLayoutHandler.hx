@@ -84,6 +84,7 @@ class ChartEditorLayoutHandler
     state.currentScrollEase = (easeSongPixels == null) ? state.scrollPositionInPixels : Math.max(0, easeSongPixels - newPlayhead);
 
     if (state.gridTiledSprite != null) state.gridTiledSprite.height = state.songLengthInPixels;
+    state.positionGridSprite();
     state.measureTicks?.setHeight(state.songLengthInPixels);
 
     state.noteDisplayDirty = true;
@@ -156,7 +157,7 @@ class ChartEditorLayoutHandler
     state.gridTiledSprite.height = 1000;
     state.gridTiledSprite.visible = false;
     state.gridTiledSprite.x = ChartEditorState.GRID_X_POS; // Center the grid.
-    state.gridTiledSprite.y = ChartEditorState.GRID_INITIAL_Y_POS; // Push down to account for the menu bar.
+    state.positionGridSprite();
     state.add(state.gridTiledSprite);
     state.gridTiledSprite.zIndex = 10;
 
@@ -252,7 +253,7 @@ class ChartEditorLayoutHandler
     state.gridPlayhead.zIndex = 30;
 
     var playheadWidth:Int = ChartEditorState.GRID_SIZE * (ChartEditorState.STRUMLINE_SIZE * 2 + 1) + ChartEditorState.PLAYHEAD_SCROLL_AREA_WIDTH;
-    var playheadBaseYPos:Float = ChartEditorState.GRID_INITIAL_Y_POS;
+    var playheadBaseYPos:Float = state.gridPlayheadBaseY;
     state.gridPlayhead.setPosition(ChartEditorState.GRID_X_POS, playheadBaseYPos);
     var playheadSprite:FunkinSprite = new FunkinSprite().makeSolidColor(playheadWidth, ChartEditorState.PLAYHEAD_HEIGHT, ChartEditorState.PLAYHEAD_COLOR);
     playheadSprite.x = -ChartEditorState.PLAYHEAD_SCROLL_AREA_WIDTH;
@@ -403,8 +404,9 @@ class ChartEditorLayoutHandler
     bounds.x = state.notePreview.x;
     bounds.width = state.notePreview.width;
 
-    var viewTopPixels:Float = state.scrollPositionInPixels - ChartEditorState.GRID_TOP_PAD;
     var viewHeightPixels:Float = FlxG.height - ChartEditorState.MENU_BAR_HEIGHT - ChartEditorState.PLAYBAR_HEIGHT;
+    var viewTopPixels:Float = state.isViewDownscroll ? state.screenToGridY(FlxG.height - ChartEditorState.PLAYBAR_HEIGHT) : state.scrollPositionInPixels
+      - ChartEditorState.GRID_TOP_PAD;
     bounds.y = state.notePreview.y + (state.notePreview.height * (viewTopPixels / state.songLengthInPixels));
     bounds.height = state.notePreview.height * (viewHeightPixels / state.songLengthInPixels);
 
@@ -426,6 +428,8 @@ class ChartEditorLayoutHandler
       bounds.height -= (bounds.y + bounds.height) - (state.notePreview.y + state.notePreview.height);
     }
     if (bounds.height < 1) bounds.height = 1;
+
+    if (state.isViewDownscroll) bounds.y = state.notePreview.y * 2 + state.notePreview.height - bounds.y - bounds.height;
 
     // trace('Note preview viewport bounds: ' + bounds.toString());
 
@@ -460,7 +464,9 @@ class ChartEditorLayoutHandler
   {
     if (state.notePreviewPlayhead == null) return;
 
-    state.notePreviewPlayhead.y = state.notePreview.y + (state.notePreview.height * ((state.scrollPositionInPixels + state.playheadPositionInPixels) / state.songLengthInPixels));
+    var progress:Float = (state.scrollPositionInPixels + state.playheadPositionInPixels) / state.songLengthInPixels;
+    if (state.isViewDownscroll) progress = 1 - progress;
+    state.notePreviewPlayhead.y = state.notePreview.y + state.notePreview.height * progress;
   }
 
   public static function handleGridLines(state:ChartEditorState):Void
@@ -478,6 +484,7 @@ class ChartEditorLayoutHandler
     if (state.gridTiledSprite != null)
     {
       state.gridTiledSprite.height = state.songLengthInPixels;
+      state.positionGridSprite();
       state.measureTicks.setHeight(state.gridTiledSprite.height);
     }
     state.gridLinesDirty = true;
@@ -526,7 +533,7 @@ class ChartEditorLayoutHandler
   {
     // var currentMeasureTime = Conductor.instance.getMeasureTimeInMs(Math.floor(Conductor.instance.getTimeInMeasures(scrollPositionInMs)));
     // var currentMeasurePos = currentMeasureTime < 0 ? 0 : Conductor.instance.getTimeInSteps(currentMeasureTime) * GRID_SIZE;
-    state.measureTicks.y = state.gridTiledSprite?.y;
+    state.measureTicks.y = state.gridOriginY;
   }
 
   public static function handleNotePreview(state:ChartEditorState):Void
@@ -537,6 +544,7 @@ class ChartEditorLayoutHandler
       state.difficultyHeatmapDirty = true;
 
       // TODO: Only update the notes that have changed.
+      state.notePreview.flipY = state.isViewDownscroll;
       state.notePreview.erase();
       state.notePreview.addNotes(state.currentSongChartNoteData, state.songLengthInPixels);
       state.notePreview.addOverlappingNotes(state.currentOverlappingNotes, state.songLengthInPixels);
@@ -552,7 +560,11 @@ class ChartEditorLayoutHandler
         state.difficultyHeatmap.setChart(state.currentSongChartNoteData, state.currentSongChartScrollSpeed,
           funkin.util.DiffCalcUtil.opponentShownFor(state.currentSongId));
       }
-      state.difficultyHeatmap.refresh(state.gridTiledSprite.x, state.gridTiledSprite.y, ChartEditorState.MENU_BAR_HEIGHT, FlxG.height - ChartEditorState.PLAYBAR_HEIGHT);
+      state.difficultyHeatmap.refreshMap(
+        state.gridTiledSprite.x,
+        ChartEditorState.MENU_BAR_HEIGHT,
+        FlxG.height - ChartEditorState.PLAYBAR_HEIGHT
+      );
     }
 
     if (state.notePreviewViewportBoundsDirty)

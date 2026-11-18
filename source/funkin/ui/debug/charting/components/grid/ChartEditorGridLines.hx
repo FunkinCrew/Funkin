@@ -151,12 +151,15 @@ class ChartEditorGridLines
       divider.setPosition(grid.x + ChartEditorState.GRID_SIZE * ChartEditorState.STRUMLINE_SIZE * (i + 1) - dividerWidth / 2, viewTopScreen);
     }
 
-    lines.setPosition(grid.x, grid.y);
-    subBeats.setPosition(grid.x, grid.y);
-    markers.setPosition(grid.x, grid.y);
+    var originY:Float = chartEditorState.gridOriginY;
+    lines.setPosition(grid.x, originY);
+    subBeats.setPosition(grid.x, originY);
+    markers.setPosition(grid.x, originY);
 
-    var viewTop:Float = viewTopScreen - grid.y;
-    var viewBottom:Float = viewBottomScreen - grid.y;
+    var edgeA:Float = chartEditorState.screenToGridY(viewTopScreen);
+    var edgeB:Float = chartEditorState.screenToGridY(viewBottomScreen);
+    var viewTop:Float = Math.min(edgeA, edgeB);
+    var viewBottom:Float = Math.max(edgeA, edgeB);
     if (force || viewTop < builtTop || viewBottom > builtBottom)
     {
       var margin:Float = FlxG.height * 0.5;
@@ -303,7 +306,7 @@ class ChartEditorGridLines
     var previous = (index > 0) ? timeChanges[index - 1] : null;
 
     var right:Float = markers.x - ChartEditorState.GRID_SIZE - MARKER_GAP;
-    var lineY:Float = markers.y + ChartEditorTimeScale.stepToPixels(step);
+    var lineY:Float = markers.y + ChartEditorTimeScale.stepToPixels(step) * ChartEditorTimeScale.VIEW_DIRECTION;
 
     // Stacked instead of side by side, so the tags stay narrow enough to fit between the note preview and the grid.
     var top:Null<Float> = null;
@@ -479,7 +482,7 @@ class ChartEditorGridLines
     line.updateHitbox();
     line.color = lineColor;
     line.alpha = alpha;
-    line.setPosition(lines.x, Math.round(lines.y + ChartEditorTimeScale.stepToPixels(step)) - Std.int(thickness / 2));
+    line.setPosition(lines.x, Math.round(lines.y + ChartEditorTimeScale.stepToPixels(step) * ChartEditorTimeScale.VIEW_DIRECTION) - Std.int(thickness / 2));
   }
 
   function buildSubBeats(topStep:Float, bottomStep:Float):Void
@@ -493,7 +496,7 @@ class ChartEditorGridLines
       if (step < topStep || step > bottomStep) continue;
 
       var color:FlxColor = chartEditorState.subBeatItems.contains(i) ? FlxColor.WHITE : SUB_BEAT_COLOR;
-      var y:Float = Math.round(subBeats.y + ChartEditorTimeScale.stepToPixels(step));
+      var y:Float = Math.round(subBeats.y + ChartEditorTimeScale.stepToPixels(step) * ChartEditorTimeScale.VIEW_DIRECTION);
 
       var line:FlxSprite = subBeats.recycle(makeLine);
       line.setGraphicSize(gridWidth, SUB_BEAT_LINE_WIDTH);

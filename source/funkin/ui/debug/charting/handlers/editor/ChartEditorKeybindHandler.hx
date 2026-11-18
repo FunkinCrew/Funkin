@@ -54,6 +54,7 @@ class ChartEditorKeybindHandler
     var shouldPause:Bool = false; // Whether to pause the song when scrolling.
     var shouldEase:Bool = false; // Whether to ease the scroll.
     var shouldSnap:Bool = false; // Whether the move is a fixed number of grid steps, so the playhead should land on the grid.
+    var screenDirection:Float = ChartEditorTimeScale.VIEW_DIRECTION;
 
     // Handle scroll anchor
     if (state.scrollAnchorScreenPos != null)
@@ -66,7 +67,7 @@ class ChartEditorKeybindHandler
       // How much scrolling should be done based on the distance of the cursor from the anchor.
       final ANCHOR_SCROLL_SPEED = 12;
 
-      scrollAmount = ANCHOR_SCROLL_SPEED * verticalDistance * FlxG.elapsed;
+      scrollAmount = ANCHOR_SCROLL_SPEED * verticalDistance * FlxG.elapsed * screenDirection;
       shouldPause = true;
     }
 
@@ -78,7 +79,7 @@ class ChartEditorKeybindHandler
     // Mouse Wheel = Scroll
     else if (FlxG.mouse.deltaWheel.y != 0)
     {
-      scrollAmount = -ChartEditorTimeScale.currentStepPixels() * FlxG.mouse.deltaWheel.y;
+      scrollAmount = -ChartEditorTimeScale.currentStepPixels() * FlxG.mouse.deltaWheel.y * screenDirection;
       shouldPause = true;
       shouldSnap = true;
     }
@@ -86,14 +87,14 @@ class ChartEditorKeybindHandler
     // Up Arrow = Scroll Up
     if (state.upKeyHandler.activated && state.currentLiveInputStyle != WASDKeys)
     {
-      scrollAmount = -ChartEditorTimeScale.currentStepPixels() * 4;
+      scrollAmount = -ChartEditorTimeScale.currentStepPixels() * 4 * screenDirection;
       shouldPause = true;
       shouldSnap = true;
     }
     // Down Arrow = Scroll Down
     if (state.downKeyHandler.activated && state.currentLiveInputStyle != WASDKeys)
     {
-      scrollAmount = ChartEditorTimeScale.currentStepPixels() * 4;
+      scrollAmount = ChartEditorTimeScale.currentStepPixels() * 4 * screenDirection;
       shouldPause = true;
       shouldSnap = true;
     }
@@ -101,14 +102,14 @@ class ChartEditorKeybindHandler
     // W = Scroll Up (doesn't work with Ctrl+Scroll)
     if (state.wKeyHandler.activated && state.currentLiveInputStyle != WASDKeys && !state.pressingControl())
     {
-      scrollAmount = -ChartEditorTimeScale.currentStepPixels() * 4;
+      scrollAmount = -ChartEditorTimeScale.currentStepPixels() * 4 * screenDirection;
       shouldPause = true;
       shouldSnap = true;
     }
     // S = Scroll Down (doesn't work with Ctrl+Scroll)
     if (state.sKeyHandler.activated && state.currentLiveInputStyle != WASDKeys && !state.pressingControl())
     {
-      scrollAmount = ChartEditorTimeScale.currentStepPixels() * 4;
+      scrollAmount = ChartEditorTimeScale.currentStepPixels() * 4 * screenDirection;
       shouldPause = true;
       shouldSnap = true;
     }
@@ -116,14 +117,14 @@ class ChartEditorKeybindHandler
     // GAMEPAD LEFT STICK UP = Scroll Up by 1 note snap
     if (state.leftStickUpGamepadHandler.activated)
     {
-      scrollAmount = -ChartEditorTimeScale.currentStepPixels() * state.noteSnapRatio;
+      scrollAmount = -ChartEditorTimeScale.currentStepPixels() * state.noteSnapRatio * screenDirection;
       shouldPause = true;
       shouldSnap = true;
     }
     // GAMEPAD LEFT STICK DOWN = Scroll Down by 1 note snap
     if (state.leftStickDownGamepadHandler.activated)
     {
-      scrollAmount = ChartEditorTimeScale.currentStepPixels() * state.noteSnapRatio;
+      scrollAmount = ChartEditorTimeScale.currentStepPixels() * state.noteSnapRatio * screenDirection;
       shouldPause = true;
       shouldSnap = true;
     }
@@ -131,14 +132,14 @@ class ChartEditorKeybindHandler
     // GAMEPAD RIGHT STICK UP = Scroll Up by 1 note snap (playhead only)
     if (state.rightStickUpGamepadHandler.activated)
     {
-      playheadAmount = -ChartEditorTimeScale.currentStepPixels() * state.noteSnapRatio;
+      playheadAmount = -ChartEditorTimeScale.currentStepPixels() * state.noteSnapRatio * screenDirection;
       shouldPause = true;
       shouldSnap = true;
     }
     // GAMEPAD RIGHT STICK DOWN = Scroll Down by 1 note snap (playhead only)
     if (state.rightStickDownGamepadHandler.activated)
     {
-      playheadAmount = ChartEditorTimeScale.currentStepPixels() * state.noteSnapRatio;
+      playheadAmount = ChartEditorTimeScale.currentStepPixels() * state.noteSnapRatio * screenDirection;
       shouldPause = true;
       shouldSnap = true;
     }

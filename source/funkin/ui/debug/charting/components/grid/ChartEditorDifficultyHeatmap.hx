@@ -98,11 +98,10 @@ class ChartEditorDifficultyHeatmap extends FlxTypedGroup<FlxSprite>
   /**
    * Place the bands and labels for the part of the grid on screen, and the readout for the spot under the mouse.
    * @param gridX The left edge of the grid.
-   * @param gridY Where the top of the song is on screen.
    * @param viewTop The top of the visible grid area on screen.
    * @param viewBottom The bottom of the visible grid area on screen.
    */
-  public function refresh(gridX:Float, gridY:Float, viewTop:Float, viewBottom:Float):Void
+  public function refreshMap(gridX:Float, viewTop:Float, viewBottom:Float):Void
   {
     var size:Int = ChartEditorState.GRID_SIZE;
     var strumline:Int = ChartEditorState.STRUMLINE_SIZE;
@@ -115,8 +114,10 @@ class ChartEditorDifficultyHeatmap extends FlxTypedGroup<FlxSprite>
     var used:Int = 0;
     for (i in 0...sections.length)
     {
-      var top:Float = gridY + ChartEditorTimeScale.msToPixels(sections[i].time);
-      var bottom:Float = gridY + ChartEditorTimeScale.msToPixels(sections[i].end);
+      var startY:Float = chartEditorState.gridToScreenY(ChartEditorTimeScale.msToPixels(sections[i].time));
+      var endY:Float = chartEditorState.gridToScreenY(ChartEditorTimeScale.msToPixels(sections[i].end));
+      var top:Float = Math.min(startY, endY);
+      var bottom:Float = Math.max(startY, endY);
       if (bottom < viewTop || top > viewBottom) continue;
 
       var band:FlxSprite = getBand(used++);
@@ -133,7 +134,7 @@ class ChartEditorDifficultyHeatmap extends FlxTypedGroup<FlxSprite>
     var shown:Int = 0;
     for (i in hotSpots)
     {
-      var y:Float = gridY + ChartEditorTimeScale.msToPixels((sections[i].time + sections[i].end) / 2);
+      var y:Float = chartEditorState.gridToScreenY(ChartEditorTimeScale.msToPixels((sections[i].time + sections[i].end) / 2));
       if (y < viewTop || y > viewBottom) continue;
       var label:FlxText = getLabel(shown++);
       label.text = '${format(ratings[i])} ${causeName(DiffCalcUtil.mainCause(sections[i]))}';
@@ -144,10 +145,10 @@ class ChartEditorDifficultyHeatmap extends FlxTypedGroup<FlxSprite>
     }
     for (i in shown...labels.length) labels[i].visible = false;
 
-    refreshHover(bandX, bandWidth, gridY, labelX, viewTop, viewBottom);
+    refreshHover(bandX, bandWidth, labelX, viewTop, viewBottom);
   }
 
-  function refreshHover(bandX:Float, bandWidth:Float, gridY:Float, labelX:Float, viewTop:Float, viewBottom:Float):Void
+  function refreshHover(bandX:Float, bandWidth:Float, labelX:Float, viewTop:Float, viewBottom:Float):Void
   {
     hoverText.visible = false;
     var mouseX:Float = FlxG.mouse.viewX;
@@ -155,7 +156,7 @@ class ChartEditorDifficultyHeatmap extends FlxTypedGroup<FlxSprite>
     if (mouseX < bandX || mouseX > bandX + bandWidth || mouseY < viewTop || mouseY > viewBottom) return;
     if (chartEditorState.isCursorOverHaxeUI) return;
 
-    var ms:Float = ChartEditorTimeScale.pixelsToMs(mouseY - gridY);
+    var ms:Float = ChartEditorTimeScale.pixelsToMs(chartEditorState.screenToGridY(mouseY));
     var index:Int = sectionAt(ms);
     if (index < 0) return;
 

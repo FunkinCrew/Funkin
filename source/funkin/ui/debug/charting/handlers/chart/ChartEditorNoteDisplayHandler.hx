@@ -40,9 +40,6 @@ class ChartEditorNoteDisplayHandler
 
       // Some optimization to cull notes -
 
-      // Update for whether downscroll is enabled.
-      state.renderedNotes.flipX = (state.isViewDownscroll);
-
       // Calculate the top and bottom of the view area.
       var viewAreaTopPixels:Float = ChartEditorState.MENU_BAR_HEIGHT;
       var visibleGridHeightPixels:Float =
@@ -451,6 +448,7 @@ class ChartEditorNoteDisplayHandler
             ChartEditorTimeScale.lengthToPixels(noteSprite.noteData.time, noteSprite.noteData.length, stepLength)
             + ChartEditorState.GRID_SIZE / 2
           );
+          if (state.isViewDownscroll) selectionSquare.y = noteSprite.y + ChartEditorState.GRID_SIZE - selectionSquare.height;
         }
         else if (state.stackedNoteSet.exists(noteSprite.noteData))
         {
@@ -587,19 +585,19 @@ class ChartEditorNoteDisplayHandler
   {
     if (state.gridTiledSprite == null) throw 'ERROR: Tried to build note groups, but gridTiledSprite is null! Check ChartEditorState.buildGrid().';
 
-    state.renderedHoldNotes.setPosition(state.gridTiledSprite.x, state.gridTiledSprite.y);
+    state.renderedHoldNotes.setPosition(state.gridTiledSprite.x, state.gridOriginY);
     state.add(state.renderedHoldNotes);
     state.renderedHoldNotes.zIndex = 24;
 
-    state.renderedNotes.setPosition(state.gridTiledSprite.x, state.gridTiledSprite.y);
+    state.renderedNotes.setPosition(state.gridTiledSprite.x, state.gridOriginY);
     state.add(state.renderedNotes);
     state.renderedNotes.zIndex = 25;
 
-    state.renderedEvents.setPosition(state.gridTiledSprite.x, state.gridTiledSprite.y);
+    state.renderedEvents.setPosition(state.gridTiledSprite.x, state.gridOriginY);
     state.add(state.renderedEvents);
     state.renderedEvents.zIndex = 25;
 
-    state.renderedSelectionSquares.setPosition(state.gridTiledSprite.x, state.gridTiledSprite.y);
+    state.renderedSelectionSquares.setPosition(state.gridTiledSprite.x, state.gridOriginY);
     state.add(state.renderedSelectionSquares);
     state.renderedSelectionSquares.zIndex = 26;
   }
@@ -807,10 +805,11 @@ class ChartEditorNoteDisplayHandler
 
       var playheadPosMs:Float = state.scrollPositionInMs + state.playheadPositionInMs;
 
-      var startPos:Float = ChartEditorTimeScale.pixelsToMs(state.scrollPositionInPixels - (ChartEditorState.GRID_TOP_PAD + state.commentPanels[0].height));
-      var endPos:Float = ChartEditorTimeScale.pixelsToMs(
-        state.scrollPositionInPixels + (FlxG.height - ChartEditorState.PLAYBAR_HEIGHT - ChartEditorState.GRID_INITIAL_Y_POS)
-      );
+      // A panel hangs below its comment's time, so it can still show when the comment itself is above the view.
+      var viewTopPixels:Float = state.screenToGridY(ChartEditorState.MENU_BAR_HEIGHT - state.commentPanels[0].height);
+      var viewBottomPixels:Float = state.screenToGridY(FlxG.height - ChartEditorState.PLAYBAR_HEIGHT);
+      var startPos:Float = ChartEditorTimeScale.pixelsToMs(Math.min(viewTopPixels, viewBottomPixels));
+      var endPos:Float = ChartEditorTimeScale.pixelsToMs(Math.max(viewTopPixels, viewBottomPixels));
 
       var nearbyCommentData:Array<CommentData> = state.currentSongChartCommentData.filter((comment) ->
       {
@@ -932,12 +931,13 @@ class ChartEditorNoteDisplayHandler
     sprite.visible = start != null;
     if (start == null) return;
 
-    var top:Float = state.gridTiledSprite.y + ChartEditorTimeScale.msToPixels(start);
+    var top:Float = state.gridToScreenY(ChartEditorTimeScale.msToPixels(start));
     var end:Null<Float> = state.rangeSelectionEndMs;
     var height:Float = ChartEditorState.RANGE_SELECTION_MARKER_HEIGHT;
     if (end != null)
     {
       height = Math.max(ChartEditorState.RANGE_SELECTION_MARKER_HEIGHT, ChartEditorTimeScale.msToPixels(end) - ChartEditorTimeScale.msToPixels(start));
+      if (state.isViewDownscroll) top -= height;
       sprite.alpha = ChartEditorState.RANGE_SELECTION_ALPHA;
     }
     else

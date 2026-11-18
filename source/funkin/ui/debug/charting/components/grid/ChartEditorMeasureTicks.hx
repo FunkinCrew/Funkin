@@ -71,8 +71,13 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
     ticksHeight = height;
     measureTicksSprite.setGraphicSize(ChartEditorState.GRID_SIZE, Math.max(1, height) + FlxG.height * 2);
     measureTicksSprite.updateHitbox();
-    measureTicksSprite.y = this.y - FlxG.height;
+    placeBacking();
     updateMeasureNumbers(true);
+  }
+
+  function placeBacking():Void
+  {
+    measureTicksSprite.y = chartEditorState.isViewDownscroll ? this.y - Math.max(1, ticksHeight) - FlxG.height : this.y - FlxG.height;
   }
 
   public function updateTheme():Void
@@ -95,7 +100,7 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
     measureTicksSprite.makeSolidColor(2, 2, backingColor);
     measureTicksSprite.setGraphicSize(ChartEditorState.GRID_SIZE, Math.max(1, ticksHeight) + FlxG.height * 2);
     measureTicksSprite.updateHitbox();
-    measureTicksSprite.y = this.y - FlxG.height;
+    placeBacking();
 
     // Destroy these so they get rebuilt with the right theme later.
     measureNumbers.forEach(function(measureNumber:FlxText)
@@ -146,12 +151,12 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
       final MIN_MEASURE_HEIGHT:Float = 24; // The minimum height of a measure, in pixels, in order for a measure number to display.
       var shouldDisplayMeasureNumber:Bool = measureTimeInPixels + MIN_MEASURE_HEIGHT <= chartEditorState.songLengthInPixels;
 
-      var relativeMeasureTimeInPixels:Float = measureTimeInPixels + this.y;
+      var relativeMeasureTimeInPixels:Float = this.y + measureTimeInPixels * ChartEditorTimeScale.VIEW_DIRECTION;
 
       final SCREEN_PADDING:Float = FlxG.height;
 
-      // Far below the visible area, quit it.
-      if (relativeMeasureTimeInPixels > FlxG.height + SCREEN_PADDING)
+      // Far past the visible area, quit it.
+      if (relativeMeasureTimeInPixels > FlxG.height + SCREEN_PADDING || relativeMeasureTimeInPixels < -SCREEN_PADDING)
       {
         break;
       }
@@ -167,7 +172,7 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
         // Measures are base ZERO gah!
         final OFFSET = 2;
         measureNumber.text = '${targetMeasure + 1}';
-        measureNumber.y = relativeMeasureTimeInPixels + OFFSET;
+        measureNumber.y = chartEditorState.isViewDownscroll ? relativeMeasureTimeInPixels - OFFSET - measureNumber.height : relativeMeasureTimeInPixels + OFFSET;
         measureNumber.x = this.x;
       }
     }

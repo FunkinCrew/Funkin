@@ -534,7 +534,7 @@ class ChartEditorUIHandler
 
     state.menubarItemUserGuide.onClick = _ -> state.openUserGuideDialog();
 
-    state.menubarItemDownscroll.onClick = event -> state.isViewDownscroll = event.value;
+    state.menubarItemDownscroll.onClick = event -> state.isViewDownscroll = state.menubarItemDownscroll.selected;
     state.menubarItemDownscroll.selected = state.isViewDownscroll;
 
     state.menubarItemZoomIn.onClick = _ -> state.zoomLevelIndex++;

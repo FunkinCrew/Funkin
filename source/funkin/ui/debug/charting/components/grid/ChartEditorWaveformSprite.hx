@@ -129,14 +129,15 @@ class ChartEditorWaveformSprite extends FlxSprite
 
   /**
    * Follow the grid, and redraw the bitmap if the view left the built chunk.
-   * @param gridY The current screen position of the top of the grid.
    */
-  public function refresh(gridY:Float):Void
+  public function refresh():Void
   {
     if (!visible) return;
 
-    var viewTop:Float = ChartEditorState.MENU_BAR_HEIGHT - gridY;
-    var viewBottom:Float = FlxG.height - ChartEditorState.PLAYBAR_HEIGHT - gridY;
+    var edgeA:Float = chartEditorState.screenToGridY(ChartEditorState.MENU_BAR_HEIGHT);
+    var edgeB:Float = chartEditorState.screenToGridY(FlxG.height - ChartEditorState.PLAYBAR_HEIGHT);
+    var viewTop:Float = Math.min(edgeA, edgeB);
+    var viewBottom:Float = Math.max(edgeA, edgeB);
     if (viewTop < chunkTop || viewBottom > chunkBottom)
     {
       // Half a view of margin on each side keeps the vertex count down while scrolling still rarely rebuilds.
@@ -144,7 +145,9 @@ class ChartEditorWaveformSprite extends FlxSprite
       buildChunk(Math.ffloor(viewTop - margin), Math.fceil(viewBottom + margin));
     }
 
-    this.y = gridY + chunkTop;
+    // reversed on downscroll so the top of the chunk is always at the top of the screen.
+    flipY = chartEditorState.isViewDownscroll;
+    this.y = chartEditorState.gridRangeScreenTop(chunkTop, chunkTop + frameHeight);
   }
 
   function buildChunk(top:Float, bottom:Float):Void
