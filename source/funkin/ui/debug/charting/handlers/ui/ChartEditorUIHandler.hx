@@ -536,19 +536,19 @@ class ChartEditorUIHandler
 
     state.menubarItemUserGuide.onClick = _ -> state.openUserGuideDialog();
 
-    state.menubarItemDownscroll.onClick = event -> state.isViewDownscroll = state.menubarItemDownscroll.selected;
+    state.menubarItemDownscroll.onChange = event -> state.isViewDownscroll = state.menubarItemDownscroll.selected;
     state.menubarItemDownscroll.selected = state.isViewDownscroll;
 
     state.menubarItemZoomIn.onClick = _ -> state.zoomLevelIndex++;
     state.menubarItemZoomOut.onClick = _ -> state.zoomLevelIndex--;
     state.menubarItemZoomReset.onClick = _ -> state.zoomLevelIndex = ChartEditorState.BASE_ZOOM_INDEX;
 
-    state.menubarItemViewWaveforms.onClick = event -> state.audioWaveforms.visible = state.menubarItemViewWaveforms.selected;
-    state.menubarItemViewDifficultyHeatmap.onClick = event -> state.showDifficultyHeatmap = state.menubarItemViewDifficultyHeatmap.selected;
+    state.menubarItemViewWaveforms.onChange = event -> state.audioWaveforms.visible = state.menubarItemViewWaveforms.selected;
+    state.menubarItemViewDifficultyHeatmap.onChange = event -> state.showDifficultyHeatmap = state.menubarItemViewDifficultyHeatmap.selected;
     state.menubarItemViewDifficultyHeatmap.selected = state.showDifficultyHeatmap;
-    state.menubarItemViewPreviewReflections.onClick = event -> state.showPreviewReflections = state.menubarItemViewPreviewReflections.selected;
+    state.menubarItemViewPreviewReflections.onChange = event -> state.showPreviewReflections = state.menubarItemViewPreviewReflections.selected;
     state.menubarItemViewPreviewReflections.selected = state.showPreviewReflections;
-    state.menubarItemViewPlayerView.onClick = event -> state.showPlayerView = state.menubarItemViewPlayerView.selected;
+    state.menubarItemViewPlayerView.onChange = event -> state.showPlayerView = state.menubarItemViewPlayerView.selected;
     state.menubarItemViewPlayerView.selected = state.showPlayerView;
     state.menubarItemViewWaveforms.selected = state.audioWaveforms.visible;
 
