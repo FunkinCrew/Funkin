@@ -300,7 +300,8 @@ class PolymodHandler
       // man fuck you
       scriptVersion = lime.app.Application.current.meta.get('version');
       trace('Fallback: script version not found in application meta, using game version instead: ${scriptVersion}');
-      if (scriptVersion == null) {
+      if (scriptVersion == null)
+      {
         throw 'Failed to get script version from application meta!
           Please ensure the "script_version" key is set in the application meta.';
       }
@@ -592,16 +593,16 @@ class PolymodHandler
 
     // `haxe.ui`
     // `UIRTTITools.resolveEventClass` allows you to be able to resolve clases from fallback, `bindEvent` uses this.
-    Polymod.blacklistImport("haxe.ui.backend.flixel.UIRTTITools");
+    Polymod.blacklistImport('haxe.ui.backend.flixel.UIRTTITools');
 
     // `FileSettingsPersister` can be used to load JSON files from outside of the game.
-    Polymod.blacklistImport("haxe.ui.core.FileSettingsPersister");
+    Polymod.blacklistImport('haxe.ui.core.FileSettingsPersister');
 
     // `SettingsManager` can be used to access the serializer & unseralizer, both of which are blacklisted.
-    Polymod.blacklistImport("haxe.ui.core.SettingsManager");
+    Polymod.blacklistImport('haxe.ui.core.SettingsManager');
 
     // `FileResourceResolver` allows you to access the content of outside game files.
-    Polymod.blacklistImport("haxe.ui.parsers.ui.resolvers.FileResourceResolver");
+    Polymod.blacklistImport('haxe.ui.parsers.ui.resolvers.FileResourceResolver');
 
     // `funkin.save.Save`
     // Direct access to save data is important for scripts (like checking unlocks),
@@ -645,6 +646,16 @@ class PolymodHandler
     {
       if (cls == null) continue;
       var className:String = Type.getClassName(cls);
+
+      // Blacklisting now also blacklists ALL of the instance/static fields for the class.
+      // However, some mods genuinely use some of these classes in non-harmful ways.
+      // In the case of `ModMetadata`, `getMetadataByModId` and `getMetadataByModDir` exist in this class.
+      // However, literally zero mods can use them because, again, blacklisting blacklists the individual fields.
+      // ... So we just don't blacklist these classes altogether.
+      // Please reconsider what you're doing if you are removing these line(s).
+      // - Abnormal
+      if (className.endsWith('ModMetadata')) return;
+
       Polymod.blacklistImport(className);
     }
 
@@ -773,6 +784,44 @@ class PolymodHandler
   }
 
   /**
+   * Gets a specific mod's metadata by its ID.
+   * @param id The ID to use.
+   * @return The retrieved metadata.
+   */
+  public static function getMetadataByModId(id:String):Null<ModMetadata>
+  {
+    var allMods:Array<ModMetadata> = getAllMods();
+    for (mod in allMods)
+    {
+      if (mod.id == id)
+      {
+        return mod;
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Gets a specific mod's metadata by its directory name.
+   * @param dir The directory name to use.
+   * @return The retrieved metadata.
+   */
+  public static function getMetadataByModDir(dir:String):Null<ModMetadata>
+  {
+    var allMods:Array<ModMetadata> = getAllMods();
+    for (mod in allMods)
+    {
+      if (mod.dirName == dir)
+      {
+        return mod;
+      }
+    }
+
+    return null;
+  }
+
+  /**
    * Scan the mods folder. Optionally include incompatible mods.
    *
    * @param includeIncompatible Whether to return mods that don't satisfy `API_VERSION_RULE`.
@@ -865,6 +914,9 @@ class PolymodHandler
     }
   }
 
+  /**
+   * Disables every mod.
+   */
   public static function disableAllMods():Void
   {
     PolymodHandler.enabledModIds = [];
@@ -917,6 +969,7 @@ class PolymodHandler
   /**
    * Get all disabled mods including incompatible ones.
    * Incompatible mods sort to the bottom.
+   * @param force Whether to force it.
    * @return An array of mod metadata, in alphabetical order by mod title.
    */
   public static function getDisabledModsIncludingIncompatible(force:Bool = false):Array<ModMetadata>
