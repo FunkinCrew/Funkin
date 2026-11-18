@@ -517,6 +517,10 @@ class PolymodHandler
     // Lib.load() can load malicious DLLs
     Polymod.blacklistImport('cpp.Lib');
 
+    // `sys.Http`
+    // Grants access to the network, don't want untrusted mods stealing yo data.
+    Polymod.blacklistImport('sys.Http');
+
     // `haxe.Http`
     // An alias for `sys.Http`, which is also a blacklisted package.
     Polymod.blacklistImport('haxe.Http');
@@ -636,6 +640,9 @@ class PolymodHandler
     for (cls in ClassMacro.listClassesInPackage('polymod'))
     {
       if (cls == null) continue;
+      // Exclude certain allowed classes that mods should have access to.
+      if (cls == polymod.Polymod.ModMetadata) continue;
+
       var className:String = Type.getClassName(cls);
       Polymod.blacklistImport(className);
     }
