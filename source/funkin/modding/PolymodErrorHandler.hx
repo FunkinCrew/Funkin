@@ -226,6 +226,17 @@ class PolymodErrorHandler
         // Notify the user via popup.
         funkin.util.WindowUtil.showError('Script Blacklist Violation', error.message);
 
+      case SCRIPT_PATCH:
+        // A mod's patch couldn't be applied, or it threw and got disabled.
+        switch (error.severity)
+        {
+          case ERROR:
+            trace(' ERROR '.error() + ' ' + error.message);
+            funkin.util.WindowUtil.showError('Mod Patch Error', error.message);
+          default:
+            trace(' WARNING '.warning() + ' ' + error.message);
+        }
+
       //
       // Other Errors
       //
