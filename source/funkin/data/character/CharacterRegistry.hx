@@ -441,6 +441,7 @@ class CharacterRegistry extends BaseRegistry<BaseCharacter, CharacterData, Chara
     var scriptedEntryClassNames:Array<String> = [];
     #end
     var entryCount:Int = 0;
+    var completedScriptCount:Int = 0;
 
     // Used to track the state we're in while loading the characters. This can either be us loading all character data, or loading each scripted character types.
     // For example, `data means we're loading all of the character data currently
@@ -469,7 +470,7 @@ class CharacterRegistry extends BaseRegistry<BaseCharacter, CharacterData, Chara
       else
       {
         // We're checking the progress on what characters are scripted.
-        var current:Int = characterScriptedClass.size() + entryScriptErrors.length;
+        var current:Int = completedScriptCount;
         if (current == entryCount)
         {
           // We've finished loading the scripted entries for a character type, use a basic state machine switching to the next one.
@@ -526,6 +527,7 @@ class CharacterRegistry extends BaseRegistry<BaseCharacter, CharacterData, Chara
             entryId: entryId,
             error: state.error
           });
+          completedScriptCount++;
         }
 
         // Log based on the current state.
@@ -561,9 +563,15 @@ class CharacterRegistry extends BaseRegistry<BaseCharacter, CharacterData, Chara
       {entry:BaseCharacter, entryCls:String}) -> Void = (_, state) ->
       {
         var entryId:String = state.entry.characterId;
+        if (characterScriptedClass.exists(entryId))
+        {
+          log(' WARNING '.warning()
+            + ' Character "${state.entryCls}" uses an ID that is already in use! ("$entryId") The existing character script will be replaced.');
+        }
         characterScriptedClass.set(entryId, state.entryCls);
 
         log('  Loaded scripted entry: ${entryId} (${state.entryCls}) (${characterScriptedClass.size()}+${entryScriptErrors.length} / ${entryCount})');
+        completedScriptCount++;
         checkAsyncProgress();
       };
 
