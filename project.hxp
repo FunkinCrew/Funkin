@@ -1267,7 +1267,12 @@ class Project extends HXProject
     if (FEATURE_MULTITHREADING.isEnabled(this))
     {
       setHaxedef("lime_threads");
-		}
+
+      if (!isWeb())
+      {
+        setHaxedef("lime_threads_deque");
+      }
+    }
 
     if (isWeb())
     {
