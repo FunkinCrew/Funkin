@@ -15,6 +15,9 @@ import haxe.Constraints.NotVoid;
  * @see https://player03.com/openfl/threads-guide/
  */
 @:access(lime.app.Future.FutureWork)
+#if cpp
+@:cppInclude('thread')
+#end
 class TaskHandler
 {
   /**
@@ -23,12 +26,24 @@ class TaskHandler
   public static function initialize():Void
   {
     trace('[TASK] Starting async task thread pool...');
-    var minThreads = 1;
-    // TODO: Determine a better value for this.
-    var maxThreads = 16;
 
-    FutureWork.minThreads = 1;
-    FutureWork.maxThreads = 16;
+    #if (cpp || js)
+    #if cpp
+    final concurrentThreads:Int = untyped __cpp__('std::thread::hardware_concurrency()');
+    #elseif js
+    final concurrentThreads:Int = js.Browser.navigator.hardwareConcurrency;
+    #end
+
+    #if mobile
+    final maxThreads:Int = Std.int(Math.max(1, Math.ceil(concurrentThreads / 4)));
+    #else
+    final maxThreads:Int = Std.int(Math.max(1, concurrentThreads / 2));
+    #end
+
+    FutureWork.maxThreads = maxThreads;
+
+    trace('[TASK] Maximum threads set to: $maxThreads');
+    #end
 
     trace('[TASK] Thread pool configured...');
   }
