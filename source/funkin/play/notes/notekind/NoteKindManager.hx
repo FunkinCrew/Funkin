@@ -139,6 +139,7 @@ class NoteKindManager
     var promise:lime.app.Promise<LoadEntriesResult> = new lime.app.Promise<LoadEntriesResult>();
     var scriptedNoteKindClasses:Array<String> = NoteKind.listScriptClasses();
     var entryCount:Int = 0;
+    var completedCount:Int = 0;
     var loadedBaseNoteKinds:Bool = false;
 
     var loadBaseNoteKindsAsync:Void->Void = () -> {};
@@ -146,18 +147,17 @@ class NoteKindManager
 
     var checkAsyncProgress = () ->
     {
-      var current:Int = noteKinds.size() + entryErrors.length;
-      if (current == entryCount)
+      if (completedCount == entryCount)
       {
         if (!loadedBaseNoteKinds)
         {
           loadedBaseNoteKinds = true;
           loadScriptedNoteKindsAsync();
-          trace('Finished loading built-in note kinds (1/2) ($current / $entryCount)');
+          trace('Finished loading built-in note kinds (1/2) ($completedCount / $entryCount)');
         }
         else
         {
-          trace('Finished loading scripted note kinds (2/2) ($current / $entryCount)');
+          trace('Finished loading scripted note kinds (2/2) ($completedCount / $entryCount)');
           promise.complete({
             entriesLoaded: noteKinds.size(),
             entriesFailed: entryErrors.length
@@ -175,6 +175,7 @@ class NoteKindManager
           error: state.error
         });
         trace('  Failed to load note kind (${entryId}): ${state.error}');
+        completedCount++;
         checkAsyncProgress();
       };
 
@@ -245,6 +246,7 @@ class NoteKindManager
         noteKinds.set(state.kind.noteKind, state.kind);
         dispatchList = null;
         trace(' Loaded built-in note kind: ${state.kind.noteKind} ($entryId)');
+        completedCount++;
         checkAsyncProgress();
       };
 
@@ -252,9 +254,15 @@ class NoteKindManager
       {kind:NoteKind, entryCls:String}) -> Void = (_, state) ->
       {
         var entryId:String = state.kind.noteKind;
+        if (noteKinds.exists(entryId))
+        {
+          trace(' WARNING '.warning()
+            + ' Note kind "${state.entryCls}" uses an ID that is already in use! ("$entryId") The existing note kind will be replaced.');
+        }
         noteKinds.set(entryId, state.kind);
         dispatchList = null;
-        trace('  Loaded scripted note kind: ${entryId} (${state.entryCls}) (${noteKinds.size()}+${entryErrors.length} / ${entryCount})');
+        trace('  Loaded scripted note kind: ${entryId} (${state.entryCls}) (${completedCount + 1} / ${entryCount})');
+        completedCount++;
         checkAsyncProgress();
       };
 
@@ -288,7 +296,7 @@ class NoteKindManager
 
     loadScriptedNoteKindsAsync = () ->
     {
-      entryCount = noteKinds.size() + scriptedNoteKindClasses.length;
+      entryCount = completedCount + scriptedNoteKindClasses.length;
       trace('Instantiating ${scriptedNoteKindClasses.length} scripted note kind(s)...');
 
       if (scriptedNoteKindClasses.length == 0)

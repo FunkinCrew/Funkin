@@ -238,6 +238,7 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
     var doneScriptedEntries:Bool = false;
 
     var entryCount:Int = 0;
+    var completedCount:Int = 0;
     var scriptedEntryClassNames:Array<String> = [];
     var unscriptedEntryIds:Array<String> = [];
 
@@ -265,7 +266,6 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
     // When the last task completes, we can complete the promise.
     var checkComplete:Void->Void = () ->
     {
-      var completedCount = countEntries() + entryErrors.length;
       if (completedCount == entryCount)
       {
         if (!doneScriptedEntries)
@@ -319,9 +319,16 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
     // Callback when one task completes with success
     var onScriptedEntryLoadedAsync:({entryId:String, entry:T, entryCls:String}) -> Void = (state) ->
     {
+      var previousCount:Int = countEntries();
       onScriptedEntryLoaded(state.entryCls, state.entry);
+      if (countEntries() == previousCount)
+      {
+        log(' WARNING '.warning()
+          + ' Entry "${state.entryCls}" uses an ID that is already in use! ("${state.entry.id}") The existing entry will be replaced.');
+      }
 
       log('  Loaded scripted entry: ${state.entry.id} (${state.entryCls}) (${countEntries()}+${entryErrors.length}/${entryCount})');
+      completedCount++;
       checkComplete();
     };
 
@@ -331,6 +338,7 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
       {
         onUnscriptedEntryLoaded(state.entry);
         log('  Loaded unscripted entry: ${state.entryId} (${countEntries()}+${entryErrors.length}/${entryCount})');
+        completedCount++;
         checkComplete();
       };
 
@@ -439,7 +447,11 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
             }, new lime.app.Promise<
               {entryId:String, entry:T}>());
 
-            unscriptedEntryFuture.onError(onError);
+            unscriptedEntryFuture.onError((state) ->
+            {
+              completedCount++;
+              onError(state);
+            });
             unscriptedEntryFuture.onComplete(onUnscriptedEntryLoadedAsync);
           }
         }
@@ -497,7 +509,11 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
             }, new lime.app.Promise<
               {entryId:String, entry:T, entryCls:String}>());
 
-            scriptedEntryFuture.onError(onError);
+            scriptedEntryFuture.onError((state) ->
+            {
+              completedCount++;
+              onError(state);
+            });
             scriptedEntryFuture.onComplete(onScriptedEntryLoadedAsync);
           }
         }

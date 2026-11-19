@@ -107,6 +107,7 @@ class SongEventRegistry
     var promise:lime.app.Promise<LoadEntriesResult> = new lime.app.Promise<LoadEntriesResult>();
 
     var entryCount:Int = 0;
+    var completedCount:Int = 0;
     var loadedBaseEvents:Bool = false;
 
     var loadBaseEventsAsync:Void->Void = () -> {};
@@ -114,19 +115,18 @@ class SongEventRegistry
 
     var checkAsyncProgress:Void->Void = () ->
     {
-      var current:Int = EVENT_CACHE.size() + entryErrors.length;
-      if (current == entryCount)
+      if (completedCount == entryCount)
       {
         if (!loadedBaseEvents)
         {
           // Start loading scripted events now.
           loadedBaseEvents = true;
           loadScriptedEventsAsync();
-          trace('Finished loading built-in song events (1/2) ($current / $entryCount)');
+          trace('Finished loading built-in song events (1/2) ($completedCount / $entryCount)');
         }
         else
         {
-          trace('Finished loading scripted song events (2/2) ($current / $entryCount)');
+          trace('Finished loading scripted song events (2/2) ($completedCount / $entryCount)');
           promise.complete({
             entriesLoaded: EVENT_CACHE.size(),
             entriesFailed: entryErrors.length
@@ -145,6 +145,7 @@ class SongEventRegistry
           error: state.error
         });
         trace('  Failed to load song event (${eventId}): ${state.error}');
+        completedCount++;
         checkAsyncProgress();
       };
 
@@ -214,6 +215,7 @@ class SongEventRegistry
       {
         EVENT_CACHE.set(state.event.id, state.event);
         trace(' Loaded song event: ${state.event.id}');
+        completedCount++;
         checkAsyncProgress();
       };
 
@@ -221,9 +223,15 @@ class SongEventRegistry
       {event:SongEvent, eventCls:String}) -> Void = (_, state) ->
       {
         var eventId:String = state.event.id;
+        if (EVENT_CACHE.exists(eventId))
+        {
+          trace(' WARNING '.warning()
+            + ' Song event "${state.eventCls}" uses an ID that is already in use! ("$eventId") The existing song event will be replaced.');
+        }
         EVENT_CACHE.set(eventId, state.event);
 
-        trace('  Loaded scripted song event: ${eventId} (${state.eventCls}) (${EVENT_CACHE.size()} + ${entryErrors.length} / ${entryCount})');
+        trace('  Loaded scripted song event: ${eventId} (${state.eventCls}) (${completedCount + 1} / ${entryCount})');
+        completedCount++;
         checkAsyncProgress();
       };
 
@@ -234,7 +242,7 @@ class SongEventRegistry
       #else
       scriptedEventClassNames = SongEvent.listScriptClasses();
       #end
-      entryCount = EVENT_CACHE.size() + scriptedEventClassNames.length;
+      entryCount = completedCount + scriptedEventClassNames.length;
 
       trace('Instantiating ${scriptedEventClassNames.length} scripted song events...');
 
