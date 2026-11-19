@@ -22,6 +22,7 @@ class TaskHandler
 {
   /**
    * TaskHandler has been refactored to share the same ThreadPool used by Lime to handle Futures.
+   * We determine the thread limit proportional to the current hardware.
    */
   public static function initialize():Void
   {
@@ -34,18 +35,21 @@ class TaskHandler
     final concurrentThreads:Int = js.Browser.navigator.hardwareConcurrency;
     #end
 
+    // Don't use ALL the threads, this prevents issues with audio playback.
     #if mobile
     final maxThreads:Int = Std.int(Math.max(1, Math.ceil(concurrentThreads / 4)));
     #else
     final maxThreads:Int = Std.int(Math.max(1, concurrentThreads / 2));
     #end
 
+    // Don't permanently maintain an active thread.
+    FutureWork.minThreads = 0;
+    // Limit the number of active threads based on hardware.
     FutureWork.maxThreads = maxThreads;
 
     trace('[TASK] Maximum threads set to: $maxThreads');
-    #end
-
     trace('[TASK] Thread pool configured...');
+    #end
   }
 
   /**
