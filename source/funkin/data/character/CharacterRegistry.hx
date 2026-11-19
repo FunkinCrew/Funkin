@@ -894,7 +894,7 @@ class CharacterRegistry extends BaseRegistry<BaseCharacter, CharacterData, Chara
   public function parseEntryData(id:String):Null<CharacterData>
   {
     var parser = new json2object.JsonParser<CharacterData>({
-      ignoreUnknownVariables: false
+      ignoreUnknownVariables: true
     });
 
     @:privateAccess
