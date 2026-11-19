@@ -239,55 +239,76 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
   function rebuildRows(kinds:Array<String>):Void
   {
     builtKinds = kinds.join('\n');
-    toolboxNotesKindRows.removeAllComponents();
-    rowViews = [];
-    hoveredRow = null;
-
-    for (kind in kinds.concat([CUSTOM_ROW]))
+    while (kindRowViews.length > kinds.length)
     {
-      var row:HBox = new HBox();
-      row.percentWidth = 100;
-      row.styleString = ROW_STYLE;
-
-      var tag:Label = new Label();
-      tag.width = 26;
-      var name:Label = new Label();
-      name.percentWidth = 100;
-      var count:Label = new Label();
-      count.styleString = DIM_STYLE;
-
-      if (kind == CUSTOM_ROW)
-      {
-        tag.text = '+';
-        name.text = 'Custom kind...';
-        name.styleString = DIM_STYLE;
-      }
-      else
-      {
-        // The same tag and color the notes of this kind show on the grid.
-        tag.text = kind.length == 0 ? '' : ChartEditorNoteUtil.noteKindTag(kind);
-        tag.styleString = 'font-bold: true; color: ${ChartEditorNoteUtil.noteKindColor(kind).toWebString()};';
-        name.text = ChartEditorNoteUtil.noteKindName(kind);
-        if (kind.length > 0 && NoteKindManager.getNoteKind(kind) == null) name.tooltip = 'Not a registered note kind: $kind';
-        else if (kind.length > 0) name.tooltip = kind;
-      }
-      row.addComponent(tag);
-      row.addComponent(name);
-      row.addComponent(count);
-
-      row.onClick = _ -> clickRow(kind);
-      row.onDblClick = _ -> if (kind != CUSTOM_ROW) selectNotesOfKind(kind);
-      row.onRightClick = _ -> if (kind != CUSTOM_ROW) openRowMenu(kind);
-
-      toolboxNotesKindRows.addComponent(row);
-      rowViews.push({
-        kind: kind,
-        row: row,
-        tag: tag,
-        name: name,
-        count: count
-      });
+      var view = kindRowViews.pop();
+      if (hoveredRow == view.row) hoveredRow = null;
+      toolboxNotesKindRows.removeComponent(view.row);
     }
+    while (kindRowViews.length < kinds.length)
+    {
+      kindRowViews.push(createRowView());
+    }
+
+    for (i in 0...kinds.length)
+    {
+      var view = kindRowViews[i];
+      var kind:String = kinds[i];
+      if (view.kind == kind) continue;
+      view.kind = kind;
+      setText(view.tag, kind.length == 0 ? '' : ChartEditorNoteUtil.noteKindTag(kind));
+      view.tag.styleString = 'font-bold: true; color: ${ChartEditorNoteUtil.noteKindColor(kind).toWebString()};';
+      setText(view.name, ChartEditorNoteUtil.noteKindName(kind));
+      if (kind.length > 0 && NoteKindManager.getNoteKind(kind) == null) view.name.tooltip = 'Not a registered note kind: $kind';
+      else if (kind.length > 0) view.name.tooltip = kind;
+      else view.name.tooltip = null;
+    }
+
+    if (customRowView == null)
+    {
+      customRowView = createRowView();
+      customRowView.kind = CUSTOM_ROW;
+      customRowView.tag.text = '+';
+      customRowView.name.text = 'Custom kind...';
+      customRowView.name.styleString = DIM_STYLE;
+    }
+    toolboxNotesKindRows.setComponentIndex(customRowView.row, toolboxNotesKindRows.numComponents - 1);
+
+    rowViews = kindRowViews.concat([customRowView]);
+  }
+
+  var kindRowViews:Array<{kind:String, row:HBox, tag:Label, name:Label, count:Label}> = [];
+  var customRowView:Null<{kind:String, row:HBox, tag:Label, name:Label, count:Label}> = null;
+
+  function createRowView():{kind:String, row:HBox, tag:Label, name:Label, count:Label}
+  {
+    var row:HBox = new HBox();
+    row.percentWidth = 100;
+    row.styleString = ROW_STYLE;
+
+    var tag:Label = new Label();
+    tag.width = 26;
+    var name:Label = new Label();
+    name.percentWidth = 100;
+    var count:Label = new Label();
+    count.styleString = DIM_STYLE;
+    row.addComponent(tag);
+    row.addComponent(name);
+    row.addComponent(count);
+
+    var view = {
+      kind: '~',
+      row: row,
+      tag: tag,
+      name: name,
+      count: count
+    };
+    row.onClick = _ -> clickRow(view.kind);
+    row.onDblClick = _ -> if (view.kind != CUSTOM_ROW) selectNotesOfKind(view.kind);
+    row.onRightClick = _ -> if (view.kind != CUSTOM_ROW) openRowMenu(view.kind);
+
+    toolboxNotesKindRows.addComponent(row);
+    return view;
   }
 
   function clickRow(kind:String):Void

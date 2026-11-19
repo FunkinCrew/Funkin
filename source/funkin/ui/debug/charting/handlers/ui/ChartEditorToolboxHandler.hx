@@ -290,6 +290,11 @@ class ChartEditorToolboxHandler
 
     // Make sure we can reuse the toolbox later.
     toolbox.destroyOnClose = false;
+
+    if (id != ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT && id != ChartEditorState.CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT)
+    {
+      toolbox.renderCache = new funkin.ui.haxeui.ComponentRenderCache();
+    }
     toolbox.resizable = true;
     state.activeToolboxes.set(id, toolbox);
 
