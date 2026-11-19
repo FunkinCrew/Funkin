@@ -173,8 +173,16 @@ class OneClickInstallHandler
 
   #if (FEATURE_ONE_CLICK_INSTALL && sys)
   static var activeInstaller:Null<funkin.ui.modmenu.ModMenuInstaller> = null;
+  static var activeInstallProgress:Null<{
+    title:String,
+    detail:String,
+    ratio:Null<Float>,
+    estimate:String,
+    icon:Null<openfl.utils.ByteArray>
+  }> = null;
+  static var attachedInstallPopup:Null<ModMenuInstallPopup> = null;
   static var installNotifications:Array<
-    {name:String, icon:Null<openfl.utils.ByteArray>}> = [];
+    {name:String, detail:String, icon:Null<openfl.utils.ByteArray>}> = [];
   static var activeNotification:Null<ModMenuInstallPopup> = null;
   static var activeNotificationState:Null<FlxState> = null;
 
@@ -188,13 +196,116 @@ class OneClickInstallHandler
     if (activeInstaller == installer && queue.length == 0 && !installer.isInstalling()) activeInstaller = null;
   }
 
-  public static function notifyInstalled(name:String,
-    icon:Null<openfl.utils.ByteArray>):Void
+  public static function isInstallerBusy():Bool
   {
-    installNotifications.push({
-      name: name,
+    final installer:Null<funkin.ui.modmenu.ModMenuInstaller> = activeInstaller;
+    return installer != null && installer.isInstalling();
+  }
+
+  public static function cancelActiveInstall():Void
+  {
+    final installer:Null<funkin.ui.modmenu.ModMenuInstaller> = activeInstaller;
+    if (installer != null) installer.cancelOneClick();
+  }
+
+  public static function attachInstallPopup(popup:ModMenuInstallPopup):Void
+  {
+    attachedInstallPopup = popup;
+    popup.setQueueCount(queue.length);
+
+    final progress = activeInstallProgress;
+    if (progress != null) showProgressOnPopup(popup, progress);
+  }
+
+  public static function detachInstallPopup(popup:ModMenuInstallPopup):Void
+  {
+    if (attachedInstallPopup == popup) attachedInstallPopup = null;
+  }
+
+  public static function updateInstallProgress(title:String, detail:String, ratio:Null<Float>, estimate:String = ''):Void
+  {
+    final previous = activeInstallProgress;
+    final icon:Null<openfl.utils.ByteArray> = previous == null ? null : previous.icon;
+    final progress = {
+      title: title,
+      detail: detail,
+      ratio: ratio,
+      estimate: estimate,
       icon: icon
-    });
+    };
+    activeInstallProgress = progress;
+
+    final popup:Null<ModMenuInstallPopup> = attachedInstallPopup;
+    if (popup != null) showProgressOnPopup(popup, progress);
+  }
+
+  public static function updateInstallIcon(icon:openfl.utils.ByteArray):Void
+  {
+    final progress = activeInstallProgress;
+    if (progress == null) return;
+
+    progress.icon = icon;
+
+    final popup:Null<ModMenuInstallPopup> = attachedInstallPopup;
+    if (popup != null) popup.setIcon(icon);
+  }
+
+  public static function reportInstallResult(name:String, detail:String, icon:Null<openfl.utils.ByteArray>):Void
+  {
+    final progress = activeInstallProgress;
+    final resultIcon:Null<openfl.utils.ByteArray> = icon != null ? icon : (progress == null ? null : progress.icon);
+    activeInstallProgress = null;
+
+    final popup:Null<ModMenuInstallPopup> = attachedInstallPopup;
+    if (popup != null)
+    {
+      if (resultIcon != null) popup.setIcon(resultIcon);
+      popup.showResult(name, detail);
+    }
+    else
+    {
+      installNotifications.push({
+        name: name,
+        detail: detail,
+        icon: resultIcon
+      });
+    }
+  }
+
+  public static function clearInstallProgress():Void
+  {
+    activeInstallProgress = null;
+
+    final popup:Null<ModMenuInstallPopup> = attachedInstallPopup;
+    if (popup != null) popup.hide();
+  }
+
+  public static function setInstallQueueCount(count:Int):Void
+  {
+    final popup:Null<ModMenuInstallPopup> = attachedInstallPopup;
+    if (popup != null) popup.setQueueCount(count);
+  }
+
+  static function showProgressOnPopup(popup:ModMenuInstallPopup,
+    progress:{
+      title:String,
+      detail:String,
+      ratio:Null<Float>,
+      estimate:String,
+      icon:Null<openfl.utils.ByteArray>
+    }):Void
+  {
+    if (progress.ratio == null)
+    {
+      popup.showBusy(progress.title, progress.detail);
+    }
+    else
+    {
+      popup.showProgress(progress.title, progress.detail, progress.ratio, progress.estimate);
+    }
+
+    final icon:Null<openfl.utils.ByteArray> = progress.icon;
+    if (icon != null) popup.setIcon(icon);
   }
 
   static function onEnterFrame(_:openfl.events.Event):Void
@@ -244,8 +355,7 @@ class OneClickInstallHandler
     final popup = new ModMenuInstallPopup();
     popup.zIndex = 1_000_000;
     popup.setCamera(cameras[cameras.length - 1]);
-    popup.showProgress(result.name, '', 1);
-    popup.showResult(result.name, 'Installed!');
+    popup.showResult(result.name, result.detail);
     final icon:Null<openfl.utils.ByteArray> = result.icon;
     if (icon != null) popup.setIcon(icon);
     state.add(popup);

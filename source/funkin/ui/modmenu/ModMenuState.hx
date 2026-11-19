@@ -495,7 +495,7 @@ class ModMenuState extends MusicBeatState
   {
     super.destroy();
 
-    // Stops in-flight downloads, and drops the queue.
+    // Detaches the menu UI while in-flight installs continue in the background.
     installer?.destroy();
 
     FlxG.autoPause = Preferences.autoPause;

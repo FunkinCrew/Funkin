@@ -120,18 +120,7 @@ class ModMenuInstaller
    */
   var installActive:Bool = false;
 
-  /**
-   * Preview art cached so the global completion card can use the same icon
-   */
-  var installIconBytes:Null<openfl.utils.ByteArray> = null;
-
-  /**
-   * Archives dropped while another install is using the single installer worker
-   */
-  var pendingArchives:Array<String> = [];
-
   var archiveInstallActive:Bool = false;
-  var archiveInstallErrors:Array<String> = [];
   #end
 
   /**
@@ -160,8 +149,49 @@ class ModMenuInstaller
     popup.zIndex = topZIndex + 1;
     popup.setCamera(camera);
     ModMenuState.instance.add(popup);
+    #if sys
+    OneClickInstallHandler.attachInstallPopup(popup);
+    #end
     #end
   }
+
+  #if FEATURE_ONE_CLICK_INSTALL
+  function showInstallBusy(title:String, detail:String):Void
+  {
+    #if sys
+    OneClickInstallHandler.updateInstallProgress(title, detail, null);
+    #else
+    if (uiAttached) popup.showBusy(title, detail);
+    #end
+  }
+
+  function showInstallProgress(title:String, detail:String, ratio:Float, estimate:String = ''):Void
+  {
+    #if sys
+    OneClickInstallHandler.updateInstallProgress(title, detail, ratio, estimate);
+    #else
+    if (uiAttached) popup.showProgress(title, detail, ratio, estimate);
+    #end
+  }
+
+  function showInstallResult(title:String, detail:String, icon:Null<openfl.utils.ByteArray> = null):Void
+  {
+    #if sys
+    OneClickInstallHandler.reportInstallResult(title, detail, icon);
+    #else
+    if (uiAttached) popup.showResult(title, detail);
+    #end
+  }
+
+  function setInstallIcon(bytes:openfl.utils.ByteArray):Void
+  {
+    #if sys
+    OneClickInstallHandler.updateInstallIcon(bytes);
+    #else
+    if (uiAttached) popup.setIcon(bytes);
+    #end
+  }
+  #end
 
   /**
    * Updates the installer, duh
@@ -325,10 +355,9 @@ class ModMenuInstaller
     final extension:String = pathInfo.ext;
 
     #if (FEATURE_ONE_CLICK_INSTALL && sys)
-    if (isInstalling() || (popup.isBlocking() && popup.state != Result))
+    if (OneClickInstallHandler.isInstallerBusy() || (popup.isBlocking() && popup.state != Result))
     {
-      pendingArchives.push(path);
-      trace(' MOD MENU '.bold().bg_orange() + ' Queued dropped archive: ${name}.${extension}');
+      trace(' MOD MENU '.bold().bg_orange() + ' Ignoring a dropped archive, an install is already in progress.');
       return;
     }
 
@@ -361,11 +390,11 @@ class ModMenuInstaller
     archiveInstallActive = true;
     OneClickInstallHandler.setActiveInstaller(this);
 
-    if (uiAttached) popup.showProgress(name, 'Installing...', 0);
+    showInstallProgress(name, 'Installing...', 0);
 
     ModInstaller.installArchive(path, name, false, function(ratio:Float):Void
     {
-      if (uiAttached) popup.showProgress(name, 'Installing... ${Math.round(ratio * 100)}%', ratio);
+      showInstallProgress(name, 'Installing... ${Math.round(ratio * 100)}%', ratio);
     }, function(paths:Array<String>):Void
     {
       onInstalled();
@@ -380,39 +409,10 @@ class ModMenuInstaller
   function finishDroppedArchive(name:String, error:Null<String>):Void
   {
     archiveInstallActive = false;
-    if (error != null) archiveInstallErrors.push('${name}: ${error}');
-    else if (error == null && !isMenuVisible()) OneClickInstallHandler.notifyInstalled(name, null);
+    if (error == null) showInstallResult(name, 'Installed!');
+    else showInstallResult('Mod Install Failed', '${name}: ${error}');
 
-    if (pendingArchives.length > 0)
-    {
-      startNextDroppedArchive();
-      return;
-    }
-
-    if (isMenuVisible())
-    {
-      if (archiveInstallErrors.length > 0)
-      {
-        popup.showResult('Mod Install', archiveInstallErrors.join('\n'));
-      }
-      else
-      {
-        popup.showResult(name, 'Installed!');
-      }
-    }
-    archiveInstallErrors = [];
     OneClickInstallHandler.onInstallerIdle(this);
-  }
-
-  function startNextDroppedArchive():Void
-  {
-    if (isInstalling() || pendingArchives.length == 0) return;
-
-    final path:Null<String> = pendingArchives.shift();
-    if (path == null) return;
-
-    final pathInfo:Path = new Path(path);
-    startDroppedArchive(path, pathInfo.file);
   }
   #end
 
@@ -498,12 +498,11 @@ class ModMenuInstaller
     pendingInstall = null;
     installCancelled = false;
     installActive = true;
-    installIconBytes = null;
     #if sys
     OneClickInstallHandler.setActiveInstaller(this);
     #end
 
-    if (uiAttached) popup.showBusy('Mod Install', 'Looking this one up on GameBanana...');
+    showInstallBusy('Mod Install', 'Looking this one up on GameBanana...');
 
     ModInstaller.fetchMetadata(request, function(mod:OneClickMod):Void
     {
@@ -512,10 +511,7 @@ class ModMenuInstaller
       if (ModInstaller.isAlreadyInstalled(mod))
       {
         installActive = false;
-        if (uiAttached) popup.showResult(mod.name, 'Already installed.');
-        #if sys
-        startNextDroppedArchive();
-        #end
+        showInstallResult(mod.name, 'Already installed.');
         #if sys
         OneClickInstallHandler.onInstallerIdle(this);
         #end
@@ -530,8 +526,7 @@ class ModMenuInstaller
       {
         if (installCancelled) return;
 
-        installIconBytes = bytes;
-        if (uiAttached) popup.setIcon(bytes);
+        setInstallIcon(bytes);
       });
     }, function(reason:String):Void
     {
@@ -539,10 +534,7 @@ class ModMenuInstaller
 
       pendingInstall = null;
       installActive = false;
-      if (uiAttached) popup.showResult('Mod Install Failed', reason);
-      #if sys
-      startNextDroppedArchive();
-      #end
+      showInstallResult('Mod Install Failed', reason);
       #if sys
       OneClickInstallHandler.onInstallerIdle(this);
       #end
@@ -564,7 +556,11 @@ class ModMenuInstaller
    */
   public function setQueueCount(count:Int):Void
   {
+    #if sys
+    OneClickInstallHandler.setInstallQueueCount(count);
+    #else
     if (uiAttached) popup.setQueueCount(count);
+    #end
   }
 
   /**
@@ -572,14 +568,18 @@ class ModMenuInstaller
    */
   public function cancelOneClick():Void
   {
-    if (!installActive) return;
+    if (!installActive && !archiveInstallActive)
+    {
+      #if sys
+      OneClickInstallHandler.cancelActiveInstall();
+      #end
+      return;
+    }
 
     stop();
     if (uiAttached) popup.hide();
     #if sys
-    startNextDroppedArchive();
-    #end
-    #if sys
+    OneClickInstallHandler.clearInstallProgress();
     OneClickInstallHandler.onInstallerIdle(this);
     #end
   }
@@ -591,6 +591,7 @@ class ModMenuInstaller
   {
     installCancelled = true;
     installActive = false;
+    archiveInstallActive = false;
     pendingInstall = null;
     ModInstaller.cancelDownload();
     ModInstaller.cancelInstall();
@@ -613,7 +614,7 @@ class ModMenuInstaller
     var sampleBytes:Int = 0;
     var estimate:String = formatEstimate(0, 0);
 
-    if (uiAttached) popup.showProgress(mod.name, '${credit}\nDownloading...', 0, estimate);
+    showInstallProgress(mod.name, '${credit}\nDownloading...', 0, estimate);
 
     ModInstaller.download(mod, function(bytesLoaded:Int, bytesTotal:Int):Void
     {
@@ -635,26 +636,23 @@ class ModMenuInstaller
         estimate = formatEstimate(bytesTotal - bytesLoaded, speed);
       }
 
-      if (uiAttached)
-      {
-        popup.showProgress(
-          mod.name,
-          '${credit}\nDownloading... ${Math.round(ratio * 100)}%\n${formatFilesize(bytesLoaded + 1)} out of ${formatFilesize(bytesTotal)}',
-          ratio,
-          estimate
-        );
-      }
+      showInstallProgress(
+        mod.name,
+        '${credit}\nDownloading... ${Math.round(ratio * 100)}%\n${formatFilesize(bytesLoaded + 1)} out of ${formatFilesize(bytesTotal)}',
+        ratio,
+        estimate
+      );
     }, function(archivePath:String):Void
     {
       if (installCancelled) return;
 
-      if (uiAttached) popup.showProgress(mod.name, '${credit}\nInstalling...', 0);
+      showInstallProgress(mod.name, '${credit}\nInstalling...', 0);
 
       ModInstaller.install(mod, archivePath, function(ratio:Float):Void
       {
         if (installCancelled) return;
 
-        if (uiAttached) popup.showProgress(mod.name, '${credit}\nInstalling... ${Math.round(ratio * 100)}%', ratio);
+        showInstallProgress(mod.name, '${credit}\nInstalling... ${Math.round(ratio * 100)}%', ratio);
       }, function(paths:Array<String>):Void
       {
         if (installCancelled) return;
@@ -663,16 +661,7 @@ class ModMenuInstaller
 
         onInstalled();
         installActive = false;
-        if (isMenuVisible()) popup.showResult(mod.name, 'Installed!');
-        else
-        {
-          #if sys
-          OneClickInstallHandler.notifyInstalled(mod.name, installIconBytes);
-          #end
-        }
-        #if sys
-        startNextDroppedArchive();
-        #end
+        showInstallResult(mod.name, 'Installed!', null);
         #if sys
         OneClickInstallHandler.onInstallerIdle(this);
         #end
@@ -681,10 +670,7 @@ class ModMenuInstaller
         if (installCancelled) return;
 
         installActive = false;
-        if (uiAttached) popup.showResult(mod.name, 'Install failed.\n${reason}');
-        #if sys
-        startNextDroppedArchive();
-        #end
+        showInstallResult(mod.name, 'Install failed.\n${reason}');
         #if sys
         OneClickInstallHandler.onInstallerIdle(this);
         #end
@@ -694,10 +680,7 @@ class ModMenuInstaller
       if (installCancelled) return;
 
       installActive = false;
-      if (uiAttached) popup.showResult(mod.name, reason);
-      #if sys
-      startNextDroppedArchive();
-      #end
+      showInstallResult(mod.name, reason);
       #if sys
       OneClickInstallHandler.onInstallerIdle(this);
       #end
@@ -772,10 +755,6 @@ class ModMenuInstaller
     return '${Math.round(bytes / (1024 * 1024))} MB';
   }
 
-  function isMenuVisible():Bool
-  {
-    return uiAttached && ModMenuState.instance != null && FlxG.state == ModMenuState.instance;
-  }
   #end
 
   /**
@@ -786,6 +765,9 @@ class ModMenuInstaller
   {
     #if FEATURE_ONE_CLICK_INSTALL
     uiAttached = false;
+    #if sys
+    OneClickInstallHandler.detachInstallPopup(popup);
+    #end
     #end
   }
 
