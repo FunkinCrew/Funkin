@@ -841,6 +841,26 @@ class ChartEditorUIHandler
     }
   }
 
+  /**
+   * The character scale a preview window starts at.
+   */
+  static final PREVIEW_CHARACTER_SCALE:Float = 0.5;
+
+  static function fitCharacterPreview(toolbox:CollapsibleDialog, charPlayer:CharacterPlayer):Void
+  {
+    var fitWidth:Null<Float> = toolbox.userData;
+    if (fitWidth == null)
+    {
+      if (charPlayer.width <= 0) return;
+      toolbox.width = charPlayer.width + 2;
+      toolbox.height = charPlayer.height + toolbox.dialogTitle.height + 2;
+      toolbox.userData = toolbox.width;
+      return;
+    }
+    var scale:Float = PREVIEW_CHARACTER_SCALE * toolbox.width / fitWidth;
+    if (Math.abs(charPlayer.targetScale - scale) > 0.001) charPlayer.targetScale = scale;
+  }
+
   public static function handlePlayerPreviewToolbox(state:ChartEditorState):Void
   {
     // Manage the Select Difficulty tree view.
@@ -867,17 +887,12 @@ class ChartEditorUIHandler
         charPlayer.loadCharacter(state.currentSongMetadata.playData.characters.player);
         charPlayer.characterType = CharacterType.BF;
         charPlayer.flip = true;
-        charPlayer.targetScale = 0.5;
 
         charPreviewToolbox.invalidateComponentLayout();
       }
     }
 
-    if (charPreviewToolbox != null && !charPreviewToolbox.minimized)
-    {
-      charPreviewToolbox.width = charPlayer.width + 2;
-      charPreviewToolbox.height = charPlayer.height + charPreviewToolbox.dialogTitle.height + 2;
-    }
+    if (charPreviewToolbox != null && !charPreviewToolbox.minimized) fitCharacterPreview(charPreviewToolbox, charPlayer);
     state.currentPlayerCharacterPlayer = charPlayer;
   }
 
@@ -909,17 +924,12 @@ class ChartEditorUIHandler
         charPlayer.loadCharacter(state.currentSongMetadata.playData.characters.opponent);
         charPlayer.characterType = CharacterType.DAD;
         charPlayer.flip = false;
-        charPlayer.targetScale = 0.5;
 
         charPreviewToolbox.invalidateComponentLayout();
       }
     }
 
-    if (charPreviewToolbox != null && !charPreviewToolbox.minimized)
-    {
-      charPreviewToolbox.width = charPlayer.width + 2;
-      charPreviewToolbox.height = charPlayer.height + charPreviewToolbox.dialogTitle.height + 2;
-    }
+    if (charPreviewToolbox != null && !charPreviewToolbox.minimized) fitCharacterPreview(charPreviewToolbox, charPlayer);
     state.currentOpponentCharacterPlayer = charPlayer;
   }
 

@@ -288,6 +288,7 @@ class ChartEditorToolboxHandler
 
     // Make sure we can reuse the toolbox later.
     toolbox.destroyOnClose = false;
+    toolbox.resizable = true;
     state.activeToolboxes.set(id, toolbox);
 
     // Set the component above everything else when dragging.
@@ -712,6 +713,9 @@ class ChartEditorToolboxHandler
     toolbox.x = 700;
     toolbox.y = 150;
     toolbox.dialogContent.padding = 0;
+    toolbox.minResizeWidth = 160;
+    toolbox.minResizeHeight = 160;
+    toolbox.keepAspectRatio = true;
 
     toolbox.onDialogClosed = function(event:DialogEvent)
     {
@@ -749,6 +753,9 @@ class ChartEditorToolboxHandler
     toolbox.x = 200;
     toolbox.y = 150;
     toolbox.dialogContent.padding = 0;
+    toolbox.minResizeWidth = 160;
+    toolbox.minResizeHeight = 160;
+    toolbox.keepAspectRatio = true;
 
     toolbox.onDialogClosed = (event:DialogEvent) ->
     {

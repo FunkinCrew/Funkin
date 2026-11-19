@@ -193,9 +193,11 @@ class CharacterPlayer extends Box
     invalidateComponentLayout();
   }
 
+  @:access(funkin.play.stage.Bopper)
+  @:access(flixel.FlxSprite)
   function measureCurrentFrame():Void
   {
-    var frameBounds:FlxRect = character.getCurrentFrameBounds(FlxRect.get(), character.camera);
+    var frameBounds:FlxRect = character.isAnimate ? character.getCurrentFrameBounds(FlxRect.get(), character.camera) : getSpriteFrameBounds(FlxRect.get());
 
     if (!frameBounds.isEmpty)
     {
@@ -204,6 +206,27 @@ class CharacterPlayer extends Box
     }
 
     frameBounds.put();
+  }
+
+  @:access(flixel.FlxSprite)
+  function getSpriteFrameBounds(rect:FlxRect):FlxRect
+  {
+    var frame = character.frame;
+    if (frame == null) return rect.set(0, 0, 0, 0);
+
+    var trimmedWidth:Float = (frame.angle == 0) ? frame.frame.width : frame.frame.height;
+    var trimmedHeight:Float = (frame.angle == 0) ? frame.frame.height : frame.frame.width;
+    var trimX:Float = character.checkFlipX() ? frame.sourceSize.x - frame.offset.x - trimmedWidth : frame.offset.x;
+    var trimY:Float = character.checkFlipY() ? frame.sourceSize.y - frame.offset.y - trimmedHeight : frame.offset.y;
+
+    // from FlxSprite
+    var screenPos = character.getScreenPosition(null, character.camera);
+    var scaleX:Float = Math.abs(character.scale.x);
+    var scaleY:Float = Math.abs(character.scale.y);
+    rect.set(screenPos.x - character.offset.x + character.origin.x - character.origin.x * scaleX + trimX * scaleX,
+      screenPos.y - character.offset.y + character.origin.y - character.origin.y * scaleY + trimY * scaleY, trimmedWidth * scaleX, trimmedHeight * scaleY);
+    screenPos.put();
+    return rect;
   }
 
   function onFrame(name:String, frameNumber:Int, frameIndex:Int):Void
