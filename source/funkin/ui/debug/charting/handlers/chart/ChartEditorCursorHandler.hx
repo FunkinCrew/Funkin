@@ -1142,10 +1142,8 @@ class ChartEditorCursorHandler
 
     if (targetCursorMode == null)
     {
-      if (
-        state.activeToolboxes.get(ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT)?.hitTest(FlxG.mouse.viewX, FlxG.mouse.viewY) == true
-        || state.activeToolboxes.get(ChartEditorState.CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT)?.hitTest(FlxG.mouse.viewX, FlxG.mouse.viewY) == true
-      )
+      if (isOverGrabbablePreview(state, ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT)
+        || isOverGrabbablePreview(state, ChartEditorState.CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT))
       {
         targetCursorMode = Pointer;
       }
@@ -1198,6 +1196,12 @@ class ChartEditorCursorHandler
 
     // Actually set the cursor mode to the one we specified earlier.
     Cursor.cursorMode = targetCursorMode ?? Default;
+  }
+
+  static function isOverGrabbablePreview(state:ChartEditorState, id:String):Bool
+  {
+    var toolbox = state.activeToolboxes.get(id);
+    return toolbox != null && toolbox.draggable && toolbox.hitTest(FlxG.mouse.viewX, FlxG.mouse.viewY);
   }
 }
 #end

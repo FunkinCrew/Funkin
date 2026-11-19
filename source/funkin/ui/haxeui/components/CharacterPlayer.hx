@@ -263,6 +263,26 @@ class CharacterPlayer extends Box
     return rect;
   }
 
+  /**
+   * Whether a point in HaxeUI screen coordinates is over the character's current frame.
+   */
+  @:access(funkin.play.stage.Bopper)
+  public function isPointOverCharacter(screenX:Float, screenY:Float):Bool
+  {
+    if (character == null || !character.visible || hidden) return false;
+    var frameBounds:FlxRect = character.isAnimate ? character.getCurrentFrameBounds(FlxRect.get(), character.camera) : getSpriteFrameBounds(FlxRect.get());
+    var px:Float = screenX * haxe.ui.Toolkit.scale;
+    var py:Float = screenY * haxe.ui.Toolkit.scale;
+    var result:Bool = !frameBounds.isEmpty && px >= frameBounds.left && px < frameBounds.right && py >= frameBounds.top && py < frameBounds.bottom;
+    frameBounds.put();
+    return result;
+  }
+
+  /**
+   * Set once the mouse reaches the character, and kept while it stays inside the preview window.
+   */
+  public var previewHoverActive:Bool = false;
+
   function onFrame(name:String, frameNumber:Int, frameIndex:Int):Void
   {
     dispatch(new AnimationEvent(AnimationEvent.FRAME));

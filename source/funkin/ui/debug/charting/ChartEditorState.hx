@@ -139,6 +139,7 @@ import haxe.ui.containers.menus.Menu;
 import haxe.ui.containers.menus.MenuBar;
 import haxe.ui.containers.menus.MenuCheckBox;
 import haxe.ui.containers.menus.MenuItem;
+import haxe.ui.core.Component;
 import haxe.ui.core.Screen;
 import haxe.ui.dragdrop.DragManager;
 import haxe.ui.events.DragEvent;
@@ -1120,8 +1121,27 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function get_isCursorOverHaxeUI():Bool
   {
-    return Screen.instance.hasSolidComponentUnderPoint(FlxG.mouse.viewX, FlxG.mouse.viewY);
+    return solidComponentsUnderCursor().length > 0;
   }
+
+  function solidComponentsUnderCursor():Array<Component>
+  {
+    var mouseX:Float = FlxG.mouse.viewX;
+    var mouseY:Float = FlxG.mouse.viewY;
+    if (!solidUnderCursorValid || solidUnderCursorX != mouseX || solidUnderCursorY != mouseY)
+    {
+      solidUnderCursorCache = Screen.instance.findSolidComponentUnderPoint(mouseX, mouseY);
+      solidUnderCursorX = mouseX;
+      solidUnderCursorY = mouseY;
+      solidUnderCursorValid = true;
+    }
+    return solidUnderCursorCache;
+  }
+
+  var solidUnderCursorValid:Bool = false;
+  var solidUnderCursorX:Float = 0;
+  var solidUnderCursorY:Float = 0;
+  var solidUnderCursorCache:Array<Component> = [];
 
   /**
    * Whether the user's mouse cursor is hovering over a comment, and not any other component of the HaxeUI.
@@ -1131,7 +1151,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function get_canScrollComment():Bool
   {
-    for (component in Screen.instance.findSolidComponentUnderPoint(FlxG.mouse.viewX, FlxG.mouse.viewY))
+    for (component in solidComponentsUnderCursor())
     {
       if (!Std.isOfType(component, ChartEditorCommentPanel) && component.findAncestor(null, ChartEditorCommentPanel) == null) return false;
       if (Std.isOfType(component, TextArea) && component.findComponent(VerticalScroll, false) != null) return false;
@@ -3575,6 +3595,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     super.update(elapsed);
 
     haxeUIFocusedValid = false;
+    solidUnderCursorValid = false;
 
     if (criticalFailure) return;
 

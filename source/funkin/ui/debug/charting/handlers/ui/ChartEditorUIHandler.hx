@@ -851,7 +851,12 @@ class ChartEditorUIHandler
   static function updatePreviewTransparency(state:ChartEditorState, toolbox:CollapsibleDialog, charPlayer:CharacterPlayer):Void
   {
     var transparent:Bool = toolbox.hasClass(ChartEditorToolboxHandler.PREVIEW_TRANSPARENT_CLASS);
-    var hovered:Bool = toolbox.hitTest(MouseHelper.currentWorldX, MouseHelper.currentWorldY) || toolbox.hasClass('dragging') || toolbox.isResizing;
+    var mouseX:Float = MouseHelper.currentWorldX;
+    var mouseY:Float = MouseHelper.currentWorldY;
+    var overWindow:Bool = toolbox.hitTest(mouseX, mouseY);
+
+    charPlayer.previewHoverActive = (charPlayer.previewHoverActive && overWindow) || (overWindow && charPlayer.isPointOverCharacter(mouseX, mouseY));
+    var hovered:Bool = charPlayer.previewHoverActive || toolbox.hasClass('dragging') || toolbox.isResizing;
     var hidePanel:Bool = transparent && !hovered && !toolbox.minimized;
 
     // fadeeee
@@ -865,6 +870,24 @@ class ChartEditorUIHandler
       toolbox.customStyle.backgroundOpacity = next;
       toolbox.customStyle.borderOpacity = next;
       toolbox.invalidateComponentStyle();
+    }
+
+    // Panels are interactive if they are opaque, or minimized.
+    var interactive:Bool = !transparent || toolbox.minimized || toolbox.dialogTitle.opacity >= 1;
+    if (interactive != toolbox.resizable)
+    {
+      if (interactive)
+      {
+        @:privateAccess toolbox.disableInteractivity(false);
+        toolbox.draggable = true;
+        toolbox.resizable = true;
+      }
+      else
+      {
+        toolbox.resizable = false;
+        toolbox.draggable = false;
+        @:privateAccess toolbox.disableInteractivity(true);
+      }
     }
 
     charPlayer.showReflection = transparent && state.showPreviewReflections && !toolbox.minimized;
