@@ -856,6 +856,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
     // Characters have probably changed too.
     healthIconsDirty = true;
+    this.positionSubtitles();
 
     return isViewDownscroll;
   }

@@ -13,6 +13,7 @@ import funkin.data.song.SongDataUtils;
 import funkin.graphics.FunkinSprite;
 import funkin.play.components.HealthIcon;
 import funkin.play.components.Subtitles;
+import funkin.play.components.Subtitles.SubtitlesAlignment;
 import funkin.ui.debug.charting.components.notes.ChartEditorEventSprite;
 import funkin.ui.debug.charting.components.notes.ChartEditorHoldNoteSprite;
 import funkin.ui.debug.charting.components.grid.ChartEditorGridLines;
@@ -328,6 +329,23 @@ class ChartEditorLayoutHandler
     state.subtitles.zIndex = 100;
     state.subtitles.cameras = [state.uiCamera];
     state.add(state.subtitles);
+    positionSubtitles(state);
+  }
+
+  public static function positionSubtitles(state:ChartEditorState):Void
+  {
+    if (state.subtitles == null) return;
+    final SUBTITLES_MARGIN:Int = 30;
+    if (state.isViewDownscroll)
+    {
+      state.subtitles.offsets = [0, ChartEditorState.MENU_BAR_HEIGHT + SUBTITLES_MARGIN];
+      state.subtitles.alignment = SUBTITLES_TOP;
+    }
+    else
+    {
+      state.subtitles.offsets = [0, ChartEditorState.PLAYBAR_HEIGHT + SUBTITLES_MARGIN];
+      state.subtitles.alignment = SUBTITLES_BOTTOM;
+    }
   }
 
   public static function buildMeasureTicks(state:ChartEditorState):Void
