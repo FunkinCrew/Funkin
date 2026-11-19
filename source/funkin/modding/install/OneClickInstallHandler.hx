@@ -1,6 +1,8 @@
 package funkin.modding.install;
 
 import flixel.FlxG;
+import flixel.FlxState;
+import funkin.ui.modmenu.ModMenuInstallPopup;
 import funkin.ui.transition.Transition;
 import funkin.modding.install.ModInstaller.OneClickRequest;
 import funkin.util.protocol.OneClickBridge;
@@ -111,7 +113,7 @@ class OneClickInstallHandler
   }
 
   /**
-   * Puts a link on the queue, to be installed as soon as the mod menu is open and free.
+   * Puts a link on the queue, to be installed as soon as an installer is free.
    * @param link The full `funkin:` URL.
    */
   public static function handleLink(link:String):Void
@@ -170,10 +172,36 @@ class OneClickInstallHandler
   }
 
   #if (FEATURE_ONE_CLICK_INSTALL && sys)
+  static var activeInstaller:Null<funkin.ui.modmenu.ModMenuInstaller> = null;
+  static var installNotifications:Array<
+    {name:String, icon:Null<openfl.utils.ByteArray>}> = [];
+  static var activeNotification:Null<ModMenuInstallPopup> = null;
+  static var activeNotificationState:Null<FlxState> = null;
+
+  public static function setActiveInstaller(installer:funkin.ui.modmenu.ModMenuInstaller):Void
+  {
+    activeInstaller = installer;
+  }
+
+  public static function onInstallerIdle(installer:funkin.ui.modmenu.ModMenuInstaller):Void
+  {
+    if (activeInstaller == installer && queue.length == 0 && !installer.isInstalling()) activeInstaller = null;
+  }
+
+  public static function notifyInstalled(name:String,
+    icon:Null<openfl.utils.ByteArray>):Void
+  {
+    installNotifications.push({
+      name: name,
+      icon: icon
+    });
+  }
+
   static function onEnterFrame(_:openfl.events.Event):Void
   {
     // Moves a running download's progress and result off its thread and onto this one.
     ModInstaller.pump();
+    pumpInstallNotifications();
 
     #if ((windows || linux) && !mobile)
     for (link in OneClickBridge.update()) handleLink(link);
@@ -182,17 +210,81 @@ class OneClickInstallHandler
     pumpQueue();
   }
 
-  /**
-   * Pumps the queue, opening the mod menu if necessary and starting the next install if possible.
-   */
+  static function pumpInstallNotifications():Void
+  {
+    final state:Null<FlxState> = getNotificationState();
+    final notification:Null<ModMenuInstallPopup> = activeNotification;
+    final owner:Null<FlxState> = activeNotificationState;
+
+    if (notification != null && owner != state)
+    {
+      activeNotification = null;
+      activeNotificationState = null;
+    }
+    else if (notification != null && !notification.visible)
+    {
+      if (owner != null)
+      {
+        owner.remove(notification, true);
+        notification.destroy();
+      }
+
+      activeNotification = null;
+      activeNotificationState = null;
+    }
+
+    if (activeNotification != null || installNotifications.length == 0 || state == null) return;
+
+    final cameras = FlxG.cameras.list;
+    if (cameras.length == 0) return;
+
+    final result = installNotifications.shift();
+    if (result == null) return;
+
+    final popup = new ModMenuInstallPopup();
+    popup.zIndex = 1_000_000;
+    popup.setCamera(cameras[cameras.length - 1]);
+    popup.showProgress(result.name, '', 1);
+    popup.showResult(result.name, 'Installed!');
+    final icon:Null<openfl.utils.ByteArray> = result.icon;
+    if (icon != null) popup.setIcon(icon);
+    state.add(popup);
+
+    activeNotification = popup;
+    activeNotificationState = state;
+  }
+
+  static function getNotificationState():Null<FlxState>
+  {
+    final state:Null<FlxState> = FlxG.state;
+    if (state == null) return null;
+
+    return state.subState == null ? state : state.subState;
+  }
+
   static function pumpQueue():Void
   {
     if (queue.length == 0) return;
 
     final menu:Null<funkin.ui.modmenu.ModMenuState> = funkin.ui.modmenu.ModMenuState.instance;
+    final installer:Null<funkin.ui.modmenu.ModMenuInstaller> = activeInstaller;
+
+    if (installer != null && installer.isInstalling())
+    {
+      installer.setQueueCount(queue.length);
+      return;
+    }
 
     if (menu == null)
     {
+      if (installer != null)
+      {
+        final request:Null<OneClickRequest> = queue.shift();
+        if (request != null) installer.beginOneClick(request);
+        installer.setQueueCount(queue.length);
+        return;
+      }
+
       // No trace here, this runs every frame and the player may sit on a queued link for a while.
       if (awaitingMenu || !canInterrupt()) return;
 
@@ -208,6 +300,7 @@ class OneClickInstallHandler
 
     if (!menu.installer.isInstalling())
     {
+      activeInstaller = menu.installer;
       final request:Null<OneClickRequest> = queue.shift();
       if (request != null) menu.beginOneClickInstall(request);
     }
