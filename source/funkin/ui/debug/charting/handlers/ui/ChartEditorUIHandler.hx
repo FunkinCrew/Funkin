@@ -36,6 +36,8 @@ import haxe.ui.containers.dialogs.CollapsibleDialog;
 import haxe.ui.containers.menus.Menu;
 import haxe.ui.containers.menus.MenuItem;
 import haxe.ui.core.Screen;
+import haxe.ui.geom.Size;
+import haxe.ui.backend.flixel.MouseHelper;
 import haxe.ui.events.DragEvent;
 import haxe.ui.events.UIEvent;
 
@@ -544,6 +546,8 @@ class ChartEditorUIHandler
     state.menubarItemViewWaveforms.onClick = event -> state.audioWaveforms.visible = state.menubarItemViewWaveforms.selected;
     state.menubarItemViewDifficultyHeatmap.onClick = event -> state.showDifficultyHeatmap = state.menubarItemViewDifficultyHeatmap.selected;
     state.menubarItemViewDifficultyHeatmap.selected = state.showDifficultyHeatmap;
+    state.menubarItemViewPreviewReflections.onClick = event -> state.showPreviewReflections = state.menubarItemViewPreviewReflections.selected;
+    state.menubarItemViewPreviewReflections.selected = state.showPreviewReflections;
     state.menubarItemViewPlayerView.onClick = event -> state.showPlayerView = state.menubarItemViewPlayerView.selected;
     state.menubarItemViewPlayerView.selected = state.showPlayerView;
     state.menubarItemViewWaveforms.selected = state.audioWaveforms.visible;
@@ -842,22 +846,48 @@ class ChartEditorUIHandler
   }
 
   /**
-   * The character scale a preview window starts at.
+   * In transparent mode, hide the panel unless the mouse is over it, and show a reflection under the character.
    */
-  static final PREVIEW_CHARACTER_SCALE:Float = 0.5;
+  static function updatePreviewTransparency(state:ChartEditorState, toolbox:CollapsibleDialog, charPlayer:CharacterPlayer):Void
+  {
+    var transparent:Bool = toolbox.hasClass(ChartEditorToolboxHandler.PREVIEW_TRANSPARENT_CLASS);
+    var hovered:Bool = toolbox.hitTest(MouseHelper.currentWorldX, MouseHelper.currentWorldY) || toolbox.hasClass('dragging') || toolbox.isResizing;
+    var hidePanel:Bool = transparent && !hovered && !toolbox.minimized;
+
+    // fadeeee
+    var current:Float = toolbox.dialogTitle.opacity;
+    var target:Float = hidePanel ? 0 : 1;
+    if (current != target)
+    {
+      var next:Float = current + (target - current) * Math.min(1, FlxG.elapsed * PREVIEW_PANEL_FADE_SPEED);
+      if (Math.abs(target - next) < 0.01) next = target;
+      toolbox.dialogTitle.opacity = next;
+      toolbox.customStyle.backgroundOpacity = next;
+      toolbox.customStyle.borderOpacity = next;
+      toolbox.invalidateComponentStyle();
+    }
+
+    charPlayer.showReflection = transparent && state.showPreviewReflections && !toolbox.minimized;
+  }
+
+  /**
+   * How fast a transparent preview's panel fades, higher is faster.
+   */
+  static final PREVIEW_PANEL_FADE_SPEED:Float = 12;
 
   static function fitCharacterPreview(toolbox:CollapsibleDialog, charPlayer:CharacterPlayer):Void
   {
-    var fitWidth:Null<Float> = toolbox.userData;
-    if (fitWidth == null)
+    var fit:Null<PreviewFit> = toolbox.userData;
+    if (fit == null || fit.charId != charPlayer.charId)
     {
-      if (charPlayer.width <= 0) return;
-      toolbox.width = charPlayer.width + 2;
-      toolbox.height = charPlayer.height + toolbox.dialogTitle.height + 2;
-      toolbox.userData = toolbox.width;
+      var size:Null<Size> = charPlayer.getFitSize();
+      if (size == null) return;
+      toolbox.width = size.width + 2;
+      toolbox.height = size.height + toolbox.dialogTitle.height + 2;
+      toolbox.userData = ({charId: charPlayer.charId, width: toolbox.width, scale: charPlayer.targetScale} : PreviewFit);
       return;
     }
-    var scale:Float = PREVIEW_CHARACTER_SCALE * toolbox.width / fitWidth;
+    var scale:Float = fit.scale * toolbox.width / fit.width;
     if (Math.abs(charPlayer.targetScale - scale) > 0.001) charPlayer.targetScale = scale;
   }
 
@@ -893,6 +923,7 @@ class ChartEditorUIHandler
     }
 
     if (charPreviewToolbox != null && !charPreviewToolbox.minimized) fitCharacterPreview(charPreviewToolbox, charPlayer);
+    if (charPreviewToolbox != null) updatePreviewTransparency(state, charPreviewToolbox, charPlayer);
     state.currentPlayerCharacterPlayer = charPlayer;
   }
 
@@ -930,6 +961,7 @@ class ChartEditorUIHandler
     }
 
     if (charPreviewToolbox != null && !charPreviewToolbox.minimized) fitCharacterPreview(charPreviewToolbox, charPlayer);
+    if (charPreviewToolbox != null) updatePreviewTransparency(state, charPreviewToolbox, charPlayer);
     state.currentOpponentCharacterPlayer = charPlayer;
   }
 
@@ -1157,4 +1189,14 @@ class ChartEditorUIHandler
     }
   }
 }
+
+/**
+ * Typedef for Character fit results
+ **/
+typedef PreviewFit =
+{
+  charId:String,
+  width:Float,
+  scale:Float
+};
 #end

@@ -882,6 +882,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var difficultyHeatmap:Null<ChartEditorDifficultyHeatmap> = null;
 
   /**
+   * Whether transparent character previews show a reflection under the character.
+   */
+  var showPreviewReflections:Bool = true;
+
+  /**
    * Set when the notes or scroll speed change, so the heatmap is redrawn the next time it shows.
    */
   var difficultyHeatmapDirty:Bool = true;
@@ -2705,6 +2710,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var menubarItemViewWaveforms:MenuCheckBox;
 
   var menubarItemViewDifficultyHeatmap:MenuCheckBox;
+  var menubarItemViewPreviewReflections:MenuCheckBox;
   var menubarItemViewPlayerView:MenuCheckBox;
 
   /**

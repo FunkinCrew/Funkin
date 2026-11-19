@@ -39,6 +39,7 @@ class ChartEditorPreferencesHandler
     state.isViewDownscroll = save.chartEditorDownscroll.value;
     state.showNoteKindIndicators = save.chartEditorShowNoteKinds.value;
     state.showDifficultyHeatmap = save.chartEditorShowDifficultyHeatmap.value;
+    state.showPreviewReflections = save.chartEditorShowPreviewReflections.value;
     state.showBeatLines = save.chartEditorShowBeatLines.value;
     state.showSnapLines = save.chartEditorShowSnapLines.value;
     state.showCursorLine = save.chartEditorShowCursorLine.value;
@@ -95,6 +96,7 @@ class ChartEditorPreferencesHandler
     save.chartEditorDownscroll.value = state.isViewDownscroll;
     save.chartEditorShowNoteKinds.value = state.showNoteKindIndicators;
     save.chartEditorShowDifficultyHeatmap.value = state.showDifficultyHeatmap;
+    save.chartEditorShowPreviewReflections.value = state.showPreviewReflections;
     save.chartEditorShowBeatLines.value = state.showBeatLines;
     save.chartEditorShowSnapLines.value = state.showSnapLines;
     save.chartEditorShowCursorLine.value = state.showCursorLine;

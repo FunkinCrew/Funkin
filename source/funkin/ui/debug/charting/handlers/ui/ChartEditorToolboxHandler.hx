@@ -26,6 +26,8 @@ import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialog.DialogEvent;
 import haxe.ui.core.Component;
 import haxe.ui.core.Screen;
+import haxe.ui.components.Image;
+import haxe.ui.events.MouseEvent;
 import haxe.ui.events.DragEvent;
 import haxe.ui.focus.FocusManager;
 
@@ -716,6 +718,7 @@ class ChartEditorToolboxHandler
     toolbox.minResizeWidth = 160;
     toolbox.minResizeHeight = 160;
     toolbox.keepAspectRatio = true;
+    addPreviewTransparencyToggle(toolbox);
 
     toolbox.onDialogClosed = function(event:DialogEvent)
     {
@@ -731,6 +734,37 @@ class ChartEditorToolboxHandler
     charPlayer.targetScale = 0.5;
 
     return toolbox;
+  }
+
+  /**
+   * The class name added to a preview toolbox when the user toggles the transparent background button.
+   * Used to style the transparent stuff with CSS.
+   */
+  public static final PREVIEW_TRANSPARENT_CLASS:String = 'preview-transparent-mode';
+
+  static function addPreviewTransparencyToggle(toolbox:CollapsibleDialog):Void
+  {
+    var toggle:Image = new Image();
+    toggle.id = 'previewTransparencyToggle';
+    toggle.styleNames = 'dialog-transparency-button';
+    toggle.tooltip = 'Transparent background';
+
+    toggle.registerEvent(MouseEvent.MOUSE_DOWN, event -> event.cancel());
+    toggle.registerEvent(MouseEvent.DBL_CLICK, event -> event.cancel());
+    toggle.onClick = function(_) {
+      var transparent:Bool = !toolbox.hasClass(PREVIEW_TRANSPARENT_CLASS);
+      if (transparent)
+      {
+        toolbox.addClass(PREVIEW_TRANSPARENT_CLASS);
+        toggle.addClass('on');
+      }
+      else
+      {
+        toolbox.removeClass(PREVIEW_TRANSPARENT_CLASS);
+        toggle.removeClass('on');
+      }
+    };
+    toolbox.dialogTitle.addComponentAt(toggle, 1);
   }
 
   static function onShowToolboxPlayerPreview(state:ChartEditorState, toolbox:CollapsibleDialog):Void
@@ -756,6 +790,7 @@ class ChartEditorToolboxHandler
     toolbox.minResizeWidth = 160;
     toolbox.minResizeHeight = 160;
     toolbox.keepAspectRatio = true;
+    addPreviewTransparencyToggle(toolbox);
 
     toolbox.onDialogClosed = (event:DialogEvent) ->
     {

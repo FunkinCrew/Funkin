@@ -220,6 +220,7 @@ class Save implements ConsoleClass implements ISerializable
         downscroll: false,
         showNoteKinds: true,
         showDifficultyHeatmap: false,
+        showPreviewReflections: true,
         showBeatLines: true,
         showSnapLines: true,
         showCursorLine: true,
@@ -343,6 +344,8 @@ class Save implements ConsoleClass implements ISerializable
   public var chartEditorShowNoteKinds:SaveProperty<Bool>;
   @:saveProperty(data.optionsChartEditor.showDifficultyHeatmap, false)
   public var chartEditorShowDifficultyHeatmap:SaveProperty<Bool>;
+  @:saveProperty(data.optionsChartEditor.showPreviewReflections, true)
+  public var chartEditorShowPreviewReflections:SaveProperty<Bool>;
   @:saveProperty(data.optionsChartEditor.showBeatLines, true)
   public var chartEditorShowBeatLines:SaveProperty<Bool>;
   @:saveProperty(data.optionsChartEditor.showSnapLines, true)
@@ -1814,6 +1817,12 @@ typedef SaveDataChartEditorOptions =
    * @default `false`
    */
   var ?showDifficultyHeatmap:Bool;
+
+  /**
+   * Show a reflection under the characters in transparent preview windows in the Chart Editor.
+   * @default `true`
+   */
+  var ?showPreviewReflections:Bool;
 
   /**
    * Show a line on every beat in the Chart Editor.
