@@ -348,7 +348,6 @@ class FunkinPreloader extends FlxBasePreloader
 
           // Do some tasks that need to be done before we start caching assets.
           // These are quick enough to do synchronously.
-          funkin.util.tasks.TaskHandler.initialize(); // Initialize the thread pool.
           funkin.assets.Assets.initialize(); // Initialize the FunkinAssetCache.
 
           // Load mods to override assets BEFORE we cache them.

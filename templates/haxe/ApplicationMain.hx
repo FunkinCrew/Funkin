@@ -73,6 +73,9 @@ class ApplicationMain
     // Print color pixel art of BF in ANSI format.
     funkin.util.logging.AnsiTrace.traceBF();
 
+    // Initialize the thread pool.
+    funkin.util.tasks.TaskHandler.initialize();
+
     // Load the game's save data from disk.
     funkin.save.Save.load();
 
