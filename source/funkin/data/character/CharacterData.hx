@@ -39,6 +39,23 @@ class CharacterData
   public var scale:Null<Float>;
 
   /**
+   * Declares that this character is a variation of another character.
+   *
+   * This is the canonical format. Keep the relationship on the variation
+   * itself so there is a single source of truth and no duplicated parent-side
+   * map that can become stale:
+   *
+   * ```json
+   * "variation": {
+   *   "parent": "bf",
+   *   "name": "Dark"
+   * }
+   * ```
+   */
+  @:optional
+  public var variation:Null<CharacterVariationData>;
+
+  /**
    * Optional data about the health icon for the character.
    */
   @:optional
@@ -409,6 +426,22 @@ enum abstract CharacterRenderType(String) from String to String
    * Renders the character using a custom method.
    */
   public var Custom = 'custom';
+}
+
+/**
+ * Canonical relationship metadata stored on a variation character.
+ */
+typedef CharacterVariationData =
+{
+  /** 
+   * ID of the base character this variation belongs to.
+   */
+  var parent:String;
+
+  /** 
+   * Optional label shown in editor variation selectors. 
+   */
+  @:optional var ?name:Null<String>;
 }
 
 /**
