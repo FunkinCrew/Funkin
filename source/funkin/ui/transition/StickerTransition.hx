@@ -109,11 +109,11 @@ class StickerTransition extends FlxTransition
   {
     super(new TransitionData(CUSTOM));
 
-    this.stickerPackId = params.stickerPack ?? Constants.DEFAULT_STICKER_PACK;
+    var targetStickerPack:Null<StickerPack> = StickerRegistry.instance.fetchEntry(params.stickerPack ?? Constants.DEFAULT_STICKER_PACK);
 
-    var targetStickerPack:Null<StickerPack> = StickerRegistry.instance.fetchEntry(this.stickerPackId);
+    this.stickerPack = (targetStickerPack != null && targetStickerPack.isValid()) ? targetStickerPack : StickerRegistry.instance.fetchDefault();
 
-    this.stickerPack = targetStickerPack ?? StickerRegistry.instance.fetchDefault();
+    this.stickerPackId = this.stickerPack.id;
 
     this.grpStickers = params.stickerSpriteGroup;
 
