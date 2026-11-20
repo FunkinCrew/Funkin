@@ -1,9 +1,9 @@
 package funkin.play.character;
 
 import flixel.graphics.frames.FlxAtlasFrames;
-import flixel.graphics.frames.FlxFramesCollection;
 import animate.FlxAnimateFrames;
-import funkin.graphics.FunkinSprite;
+import funkin.data.animation.AnimationData;
+import funkin.data.character.CharacterData.CharacterRenderType;
 import funkin.modding.events.ScriptEvent;
 import funkin.util.assets.FlxAnimationUtil;
 import funkin.data.character.CharacterData.CharacterRenderType;
@@ -117,26 +117,29 @@ class MultiSparrowCharacter extends BaseCharacter
   {
     log('Loading assets for Multi-Sparrow character "${characterId}"');
 
+    var dataAssetPath:String = getAssetPath();
+    var dataAnimations:Array<AnimationData> = getCharacterAnimations();
+
     var textureList:Array<FlxAtlasFrames> = [];
     var addedAssetPaths:Array<String> = [];
 
-    var assetPath:String = funkin.assets.Paths.formatRelative(_data.assetPath, 'gameplay/characters/$characterId', Constants.EXT_IMAGE);
+    var assetPath:String = funkin.assets.Paths.formatRelative(dataAssetPath, 'gameplay/characters/$characterId', Constants.EXT_IMAGE);
     var mainTexture:FlxAtlasFrames = Paths.getSparrowAtlas(assetPath);
     if (mainTexture == null)
     {
-      log('Multi-Sparrow atlas could not load PRIMARY texture: ${_data.assetPath}');
-      FlxG.log.error('Multi-Sparrow atlas could not load PRIMARY texture: ${_data.assetPath}');
+      log('Multi-Sparrow atlas could not load PRIMARY texture: ${dataAssetPath}');
+      FlxG.log.error('Multi-Sparrow atlas could not load PRIMARY texture: ${dataAssetPath}');
       return;
     }
     else
     {
-      log('Creating multi-sparrow atlas: ${_data.assetPath}');
+      log('Creating multi-sparrow atlas: ${dataAssetPath}');
       mainTexture.parent.destroyOnNoUse = false;
     }
 
     var hasTextureAtlas:Bool = false;
 
-    for (anim in _data.animations)
+    for (anim in dataAnimations)
     {
       if (anim.renderType == "animateatlas")
       {
@@ -145,7 +148,7 @@ class MultiSparrowCharacter extends BaseCharacter
       }
     }
 
-    for (animation in _data.animations)
+    for (animation in dataAnimations)
     {
       if (animation.assetPath == null) continue;
       if (addedAssetPaths.contains(animation.assetPath)) continue;
@@ -208,10 +211,12 @@ class MultiSparrowCharacter extends BaseCharacter
 
   function buildAnimations():Void
   {
-    log('[MULTISPARROWCHAR] Loading ${_data.animations.length} animations for ${characterId}');
+    var dataAnimations:Array<AnimationData> = getCharacterAnimations();
+
+    log('[MULTISPARROWCHAR] Loading ${dataAnimations.length} animations for ${characterId}');
 
     // We need to swap to the proper frame collection before adding the animations, I think?
-    for (anim in _data.animations)
+    for (anim in dataAnimations)
     {
       switch (anim.renderType)
       {

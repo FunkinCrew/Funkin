@@ -1,8 +1,9 @@
 package funkin.play.character;
 
 import flixel.graphics.frames.FlxFramesCollection;
-import funkin.modding.events.ScriptEvent;
+import funkin.data.animation.AnimationData;
 import funkin.data.character.CharacterData.CharacterRenderType;
+import funkin.modding.events.ScriptEvent;
 import funkin.util.assets.FlxAnimationUtil;
 import funkin.data.character.CharacterData;
 import funkin.data.character.CharacterRegistry;
@@ -76,12 +77,13 @@ class PackerCharacter extends BaseCharacter
   {
     trace('Loading assets for Packer character "${characterId}"');
 
-    var assetPath:String = funkin.assets.Paths.formatRelative(_data.assetPath, 'gameplay/characters/$characterId', Constants.EXT_IMAGE);
+    var dataAssetPath:String = getAssetPath();
+    var assetPath:String = funkin.assets.Paths.formatRelative(dataAssetPath, 'gameplay/characters/$characterId', Constants.EXT_IMAGE);
 
     var tex:FlxFramesCollection = Paths.getPackerAtlas(assetPath);
     if (tex == null)
     {
-      trace('Could not load Packer sprite: ${_data.assetPath}');
+      trace('Could not load Packer sprite: ${dataAssetPath}');
       return;
     }
 
@@ -100,16 +102,18 @@ class PackerCharacter extends BaseCharacter
       this.antialiasing = true;
     }
 
-    this.setScale(_data.scale);
+    this.setScale(getBaseScale());
   }
 
   function loadAnimations():Void
   {
-    trace('[PACKERCHAR] Loading ${_data.animations.length} animations for ${characterId}');
+    var dataAnimations:Array<AnimationData> = getCharacterAnimations();
 
-    FlxAnimationUtil.addAtlasAnimations(this, _data.animations);
+    trace('[PACKERCHAR] Loading ${dataAnimations.length} animations for ${characterId}');
 
-    for (anim in _data.animations)
+    FlxAnimationUtil.addAtlasAnimations(this, dataAnimations);
+
+    for (anim in dataAnimations)
     {
       if (anim.offsets == null)
       {
