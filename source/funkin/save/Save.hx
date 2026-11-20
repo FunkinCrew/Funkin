@@ -187,7 +187,7 @@ class Save implements ConsoleClass implements ISerializable
         // Reasonable defaults.
         screenTimeout: false,
         noAds: false,
-        renderScale: 3
+        renderScale: null
       },
       #end
       mods: {
@@ -1629,9 +1629,10 @@ typedef SaveDataMobileOptions =
 
   /**
    * The maximum pixels per point to render at on mobile, capped at the screen's native scale.
-   * @default `3`
+   * Null means the user has not picked one, so it is detected from the device specs.
+   * @default `null`
    */
-  var renderScale:Float;
+  var renderScale:Null<Float>;
 }
 #end
 

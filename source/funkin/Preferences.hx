@@ -645,13 +645,28 @@ class Preferences
 
   /**
    * How many pixels per point (iOS) or dp (Android) the game renders at.
-   * @default `3`
+   * Falls back to `detectedRenderScale` if the user has not picked one.
    */
   public static var renderScale(get, set):Float;
 
   static function get_renderScale():Float
   {
-    return Save?.instance?.mobileOptions?.renderScale ?? RENDER_SCALE_NATIVE;
+    return Save?.instance?.mobileOptions?.renderScale ?? detectedRenderScale;
+  }
+
+  /**
+   * The default render scale based on the device's performance tier.
+   */
+  public static var detectedRenderScale(get, never):Float;
+
+  static function get_detectedRenderScale():Float
+  {
+    return switch (funkin.util.mobile.DeviceTierUtil.tier)
+    {
+      case LOW: RENDER_SCALE_BALANCED;
+      case MID: RENDER_SCALE_HIGH;
+      case HIGH: RENDER_SCALE_NATIVE;
+    }
   }
 
   static function set_renderScale(value:Float):Float

@@ -1,5 +1,7 @@
 #import "MemoryUtil.hpp"
 
+#import <Foundation/Foundation.h>
+
 #include <mach/mach.h>
 
 size_t Apple_MemoryUtil_GetCurrentProcessRss()
@@ -12,4 +14,9 @@ size_t Apple_MemoryUtil_GetCurrentProcessRss()
     return 0;
 
   return info.resident_size;
+}
+
+int Apple_MemoryUtil_GetPhysicalMemory()
+{
+  return (int)([NSProcessInfo processInfo].physicalMemory / (1024 * 1024));
 }
