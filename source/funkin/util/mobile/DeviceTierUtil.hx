@@ -63,13 +63,17 @@ class DeviceTierUtil
 
   static function getRenderer():String
   {
+    #if (lime_opengl || lime_opengles)
     if (GL.context == null) return '';
     return GL.getString(GL.RENDERER) ?? '';
+    #else
+    return '';
+    #end
   }
 
   static function capTier(tier:DeviceTier, cap:DeviceTier):DeviceTier
   {
-    return (tier:Int) < (cap:Int) ? tier : cap;
+    return (tier : Int) < (cap : Int) ? tier : cap;
   }
 
   static function ramTier(memoryMB:Int, midFrom:Int, highFrom:Int):DeviceTier
