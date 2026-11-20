@@ -645,11 +645,9 @@ class PolymodHandler
     {
       if (cls == null) continue;
       // Exclude certain allowed classes that mods should have access to.
-      if (cls == polymod.Polymod.ModMetadata) continue;
+      if (cls == polymod.Polymod.ModMetadata || cls == polymod.patch.PatchState) continue;
 
       var className:String = Type.getClassName(cls);
-      // Defn do not blacklist PatchState, as it is used for modding and is safe to use.
-      if (className == 'polymod.patch.PatchState') continue;
       Polymod.blacklistImport(className);
     }
 
@@ -710,6 +708,44 @@ class PolymodHandler
       'applySongRank',
       '_interp'
     ]);
+  }
+
+  /**
+   * Gets a specific mod's metadata by its ID.
+   * @param id The ID to use.
+   * @return The retrieved metadata.
+   */
+  public static function getMetadataByModId(id:String):Null<ModMetadata>
+  {
+    var allMods:Array<ModMetadata> = getAllMods();
+    for (mod in allMods)
+    {
+      if (mod.id == id)
+      {
+        return mod;
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Gets a specific mod's metadata by its directory name.
+   * @param dir The directory name to use.
+   * @return The retrieved metadata.
+   */
+  public static function getMetadataByModDir(dir:String):Null<ModMetadata>
+  {
+    var allMods:Array<ModMetadata> = getAllMods();
+    for (mod in allMods)
+    {
+      if (mod.dirName == dir)
+      {
+        return mod;
+      }
+    }
+
+    return null;
   }
 
   /**
