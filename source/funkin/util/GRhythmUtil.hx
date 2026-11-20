@@ -117,11 +117,12 @@ class GRhythmUtil
    * @param scrollSpeed The scroll speed of the strumline.
    * @param downscroll Whether the strumline is in downscroll mode.
    * @param conductorInUse The conductor to use for calculating the y-position.
+   * @param songPosition The song position to place the note at. Defaults to the conductor's song position.
    * @return The y-position of the note.
    */
-  public static function getNoteY(strumTime:Float, scrollSpeed:Float, downscroll:Bool = false, ?conductorInUse:Conductor):Float
+  public static function getNoteY(strumTime:Float, scrollSpeed:Float, downscroll:Bool = false, ?conductorInUse:Conductor, ?songPosition:Float):Float
   {
     if (conductorInUse == null) conductorInUse = Conductor.instance;
-    return Constants.PIXELS_PER_MS * (conductorInUse.songPosition - strumTime) * scrollSpeed * (downscroll ? 1 : -1);
+    return Constants.PIXELS_PER_MS * ((songPosition ?? conductorInUse.songPosition) - strumTime) * scrollSpeed * (downscroll ? 1 : -1);
   }
 }

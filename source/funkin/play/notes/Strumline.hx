@@ -623,7 +623,7 @@ class Strumline extends FlxSpriteGroup
   public function updateNotes():Void
   {
     var velocity:Null<ScrollVelocityTimeline> = scrollVelocity;
-    var songTime:Float = conductorInUse.songPosition;
+    var songTime:Float = conductorInUse.getPositionNow();
     if (velocity != null)
     {
       var stretchStart:Float = velocity.stretchStartAt(songTime);
@@ -803,13 +803,13 @@ class Strumline extends FlxSpriteGroup
         holdConfirm(holdNote.noteDirection);
         holdNote.visible = true;
 
-        holdNote.sustainLength = (holdNote.strumTime + holdNote.fullSustainLength) - visualSongPosition;
+        holdNote.sustainLength = (holdNote.strumTime + holdNote.fullSustainLength) - scaleSongTime(conductorInUse.songPosition);
+        updateClippedHoldNote(holdNote);
 
         if (holdNote.sustainLength <= 10)
         {
           holdNote.visible = false;
         }
-        updateClippedHoldNote(holdNote);
       }
       else
       {
@@ -1183,7 +1183,7 @@ class Strumline extends FlxSpriteGroup
 
       note.holdNoteSprite.sustainLength = Math.min(
         note.holdNoteSprite.fullSustainLength,
-        (note.holdNoteSprite.strumTime + note.holdNoteSprite.fullSustainLength) - visualSongPosition
+        (note.holdNoteSprite.strumTime + note.holdNoteSprite.fullSustainLength) - scaleSongTime(conductorInUse.songPosition)
       );
 
       // Re-position it so it's correct.
@@ -1223,6 +1223,15 @@ class Strumline extends FlxSpriteGroup
     }
   }
 
+  function scaleSongTime(time:Float):Float
+  {
+    var velocity:Null<ScrollVelocityTimeline> = scrollVelocity;
+    if (velocity == null) return time;
+    var lag:Float = time - velocity.visualTime(time);
+    if (lagStretchStart < 0) return time - lag;
+    return ScrollVelocityTimeline.lagToVisual(time, lagPixels, lag, scrollSpeed);
+  }
+
   function visualNoteY(strumTime:Float):Float
   {
     return Constants.PIXELS_PER_MS * (visualSongPosition - strumTime) * scrollSpeed * (isDownscroll ? 1 : -1);
@@ -1232,13 +1241,18 @@ class Strumline extends FlxSpriteGroup
   {
     if (!customPositionData)
     {
+      var visualEnd:Float = holdNote.strumTime + holdNote.fullSustainLength - visualSongPosition;
+      var clipMs:Float = holdNote.customVertexData ? 0 : Math.max(0, holdNote.sustainLength - visualEnd);
+      var clipHeight:Float = SustainTrail.sustainHeight(clipMs, scrollSpeed);
+      holdNote.updateClipping(holdNote.strumTime + clipMs);
+
       if (isDownscroll)
       {
-        holdNote.y = this.y - INITIAL_OFFSET - holdNote.height + STRUMLINE_SIZE / 2;
+        holdNote.y = this.y - INITIAL_OFFSET - holdNote.height + STRUMLINE_SIZE / 2 + clipHeight;
       }
       else
       {
-        holdNote.y = this.y - INITIAL_OFFSET + STRUMLINE_SIZE / 2;
+        holdNote.y = this.y - INITIAL_OFFSET + STRUMLINE_SIZE / 2 - clipHeight;
       }
     }
   }
