@@ -55,8 +55,13 @@ class ScriptGuard
     if (brokenCount == 0 || target == null) return false;
     if (brokenObjects.exists(target)) return true;
 
+    var scriptName:Null<String> = scriptClassNameOf(target);
+    if (scriptName != null && brokenClasses.exists(scriptName)) return true;
+
     var name:Null<String> = classNameOf(target);
-    return name != null && brokenClasses.exists(name);
+    if (name != null && brokenClasses.exists(name)) return true;
+
+    return false;
   }
 
   public static function run(target:Dynamic, context:String, body:Void->Void):Void
@@ -103,7 +108,9 @@ class ScriptGuard
     lastStack = describe(stack);
 
     var frame:Null<ScriptFrame> = findScriptFrame(stack);
-    var culprit:Null<String> = frame != null ? frame.cls : scriptNameOf(target) ?? classNameOf(target);
+
+    // Only a script can be a culprit.
+    var culprit:Null<String> = frame != null ? frame.cls : scriptNameOf(target) ?? scriptClassNameOf(target);
 
     if (target != null && !brokenObjects.exists(target))
     {
@@ -111,7 +118,17 @@ class ScriptGuard
       brokenCount++;
     }
 
-    if (culprit == null) return false;
+    if (culprit == null)
+    {
+      if (target == null) return false;
+
+      // If culprit is null, the exception was thrown by an engine class.
+      if (!brokenObjects.exists(target))
+      {
+        report('An instance of ${classNameOf(target)}', frame, context, error, stack, target);
+      }
+      return true;
+    }
 
     if (brokenClasses.exists(culprit)) return true;
 
@@ -119,7 +136,7 @@ class ScriptGuard
     brokenCount++;
 
     freezeInstances(culprit);
-    report(culprit, frame, context, error, stack, target);
+    report('Script "$culprit"', frame, context, error, stack, target);
 
     return true;
   }
@@ -187,10 +204,31 @@ class ScriptGuard
     return Std.isOfType(asc, polymod.hscript._internal.PolymodScriptClass) ? cast asc : null;
   }
 
+  /**
+   * If the object is a Polymod scripted class object,
+   * find the name of its associated scripted class.
+   * Otherwise, return null (to exclude non-scripted objects).
+   *
+   * @param target The object to identify.
+   * @return The object's script class, if applicable.
+   */
   static function scriptNameOf(target:Dynamic):Null<String>
   {
     var cls:Null<polymod.hscript._internal.PolymodScriptClass> = scriptedBy(target);
     return cls == null ? null : cls.fullyQualifiedName;
+  }
+
+  /**
+   * If the object is a CPPIA-scripted object, return its class name.
+   * Otherwise, return null (to exclude non-scripted objects).
+   *
+   * @param target The object to identify.
+   * @return The object's script class, if applicable.
+   */
+  static function scriptClassNameOf(target:Dynamic):Null<String>
+  {
+    var name:Null<String> = classNameOf(target);
+    return name != null && isScriptClass(name) ? name : null;
   }
 
   /**
@@ -291,7 +329,7 @@ class ScriptGuard
 
     if (frame != null)
     {
-      where = '$culprit.${frame.func ?? "?"}()';
+      where = '${frame.cls}.${frame.func ?? "?"}()';
       if (frame.where != null) where += ' (${frame.where})';
       where += ', during $context';
     }
@@ -310,7 +348,7 @@ class ScriptGuard
       }
     }
 
-    var message:String = 'Script "$culprit" threw at $where, so it has been stopped.\n\n${describeError(error)}\n$stackText';
+    var message:String = '$culprit threw at $where, so it has been stopped.\n\n${describeError(error)}\n$stackText';
 
     polymod.Polymod.error(SCRIPT_RUNTIME_EXCEPTION, message, SCRIPT_RUNTIME);
   }
