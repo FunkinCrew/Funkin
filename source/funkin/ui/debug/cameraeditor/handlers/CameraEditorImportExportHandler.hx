@@ -12,6 +12,7 @@ import funkin.util.file.FNFCUtil.FNFCData;
  * Handles saving, loading, importing, and exporting for the camera editor.
  */
 @:nullSafety
+@:noPatch
 class CameraEditorImportExportHandler
 {
   /**

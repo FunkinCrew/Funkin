@@ -1559,7 +1559,10 @@ class Project extends HXProject
         'funkin.native',
         'funkin.memory',
         'funkin.util.macro',
-        'funkin.util.mobile'
+        'funkin.util.mobile',
+        'funkin.util.protocol',
+        'funkin.util.logging',
+        'funkin.ui.modmenu'
       ];
       setHaxedef("POLYMOD_PATCH_EXCLUDE", unpatchablePackages.join(','));
     }

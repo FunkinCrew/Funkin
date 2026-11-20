@@ -6,6 +6,7 @@ import haxe.io.Path;
  * Utilties for interpreting command line arguments.
  */
 @:nullSafety
+@:noPatch
 class CLIUtil
 {
   /**

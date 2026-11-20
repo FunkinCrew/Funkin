@@ -1381,6 +1381,7 @@ class StageEditorState extends UIState
   public var loadUrlDialog:LoadFromUrlDialog;
   public var exitConfirmDialog:Dialog;
 
+  @:noPatch
   public function onMenuItemClick(item:String):Void
   {
     switch (item.toLowerCase())
@@ -1709,6 +1710,7 @@ class StageEditorState extends UIState
     }
   }
 
+  @:noPatch
   function saveBackup(isClose:Bool = false)
   {
     FileUtil.createDirIfNotExists(BACKUPS_PATH);

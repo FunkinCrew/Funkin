@@ -35,6 +35,7 @@ typedef ScreenshotPluginParams =
  * and visual feedback for taking screenshots.
  */
 @:nullSafety
+@:noPatch
 class ScreenshotPlugin extends FlxBasic
 {
   /**

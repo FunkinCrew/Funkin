@@ -12,6 +12,7 @@ package funkin.util;
  * @see cpp.vm.Gc
  */
 @:nullSafety
+@:noPatch
 class MemoryUtil
 {
   static final BYTES_PER_KB:Float = 1024.0;
