@@ -277,10 +277,7 @@ class StoryMenuState extends MusicBeatState
     #end
 
     #if FEATURE_TOUCH_CONTROLS
-    addBackButton(FlxG.width - 230, FlxG.height - 170, FlxColor.WHITE, goBack, 0.7);
-    #end
-
-    #if FEATURE_TOUCH_CONTROLS
+    addBackButton(FlxG.width - 230, FlxG.height - 170, FlxColor.WHITE, goBack.bind(false), 0.7);
     FlxG.touches.swipeThreshold.y = 100;
     #end
   }
@@ -804,7 +801,7 @@ class StoryMenuState extends MusicBeatState
     // levelScore.accuracy
   }
 
-  function goBack():Void
+  function goBack(playSound:Bool = true):Void
   {
     @:privateAccess
     if (exitingMenu || selectedLevel) return;
@@ -815,7 +812,7 @@ class StoryMenuState extends MusicBeatState
       assetQuery: MainMenuState.queryAssets,
       transition: BlackScreen(Fade(North), Fade(South)),
     });
-    FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu').toFlxSoundAsset());
+    if (playSound) FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu').toFlxSoundAsset());
   }
 
   /**
