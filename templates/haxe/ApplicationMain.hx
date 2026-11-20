@@ -76,6 +76,11 @@ class ApplicationMain
     // Load the game's save data from disk.
     funkin.save.Save.load();
 
+    #if mobile
+    // Apply the render scale on mobile before the window is created so it doesnt flicker.
+    funkin.Preferences.applyRenderScale(funkin.Preferences.renderScale);
+    #end
+
     // Creates primary OpenFL application window.
     bootstrap.OpenFLBootstrap.createWindow(app, config, funkin.Preferences.autoFullscreen);
 
