@@ -163,7 +163,8 @@ class CharacterUnlockState extends MusicBeatState
   {
     super.update(elapsed);
 
-    if (controls.ACCEPT_P || controls.BACK_P #if FEATURE_TOUCH_CONTROLS || TouchUtil.pressAction() #end && !busy)
+    var acceptPressed:Bool = controls.ACCEPT_P || controls.BACK_P #if FEATURE_TOUCH_CONTROLS || TouchUtil.pressAction() #end;
+    if (acceptPressed && !busy)
     {
       busy = true;
       startClose();
