@@ -15,3 +15,11 @@ typedef void (*FNFCCallback)(const char *event, const char *value);
  * @param callback A function to be called when the copy operation completes.
  */
 void Apple_FNFCExtern_CopyFNFCIntoCache(const char *url, FNFCCallback callback);
+
+/**
+ * Copies an externally opened mod archive into the app cache
+ *
+ * @param url The URL of the mod archive
+ * @param callback A function that is called when the copy operation completes
+ */
+void Apple_ModArchiveExtern_CopyModArchiveIntoCache(const char *url, FNFCCallback callback);

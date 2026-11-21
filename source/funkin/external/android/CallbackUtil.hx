@@ -30,6 +30,17 @@ class CallbackUtil #if (lime >= '8.0.0') implements JNISafety #end
   public static var onFNFCOpen:FlxTypedSignal<String->Void> = new FlxTypedSignal<String->Void>();
 
   /**
+   * Signal triggered when the user opens a mod archive with the game
+   * The arguments are the cached archive path and the original filename
+   */
+  public static var onModArchiveOpen:FlxTypedSignal<String->String->Void> = new FlxTypedSignal<String->String->Void>();
+
+  /**
+   * Signal triggered when the game cannot copy an externally opened mod archive
+   */
+  public static var onModArchiveError:FlxTypedSignal<String->Void> = new FlxTypedSignal<String->Void>();
+
+  /**
    * Signal triggered when the user opens a FNFMOD url with the game in runtime.
    *
    * First argument is the FNFMOD url.

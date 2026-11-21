@@ -49,6 +49,30 @@ class ModMenuState extends MusicBeatState
    */
   public static var instance:Null<ModMenuState> = null;
 
+  static var pendingExternalArchive:Null<
+    {path:String, fileName:String}> = null;
+
+  /**
+   * Opens the mod menu and starts installing an archive received from the operating system
+   */
+  public static function openExternalArchive(path:String, fileName:String):Void
+  {
+    if (instance != null)
+    {
+      instance.installer.installArchivePath(path, fileName, true);
+      return;
+    }
+
+    pendingExternalArchive = {
+      path: path,
+      fileName: fileName
+    };
+    Transition.switchState(() -> new ModMenuState(), {
+      assetQuery: queryAssets,
+      transition: BlackScreen(None, Fade(South))
+    });
+  }
+
   /**
    * The mod ID for base game.
    */
@@ -394,6 +418,13 @@ class ModMenuState extends MusicBeatState
       uiState.transition((enabled) ? Idle : Disabled);
     });
     installer.build(camHUD);
+
+    final pendingArchive = pendingExternalArchive;
+    pendingExternalArchive = null;
+    if (pendingArchive != null)
+    {
+      installer.installArchivePath(pendingArchive.path, pendingArchive.fileName, true);
+    }
 
     enabledModItems.repositionItems();
     disabledModItems.repositionItems();
