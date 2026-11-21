@@ -967,6 +967,10 @@ class CameraEditorState extends UIState implements ConsoleClass
       }
     }
 
+    #if FEATURE_DISCORD_RPC
+    updateDiscordRPC();
+    #end
+
     Toolkit.callLater(() ->
     {
       @:nullSafety(Off)
@@ -2814,6 +2818,16 @@ class CameraEditorState extends UIState implements ConsoleClass
     CameraEditorPropertiesPanelHandler.cleanup();
     CameraEditorState.instance = null;
   }
+
+  #if FEATURE_DISCORD_RPC
+  function updateDiscordRPC():Void
+  {
+    funkin.api.discord.DiscordClient.instance.setPresence({
+      state: null,
+      details: 'Camera Editor [Editing]'
+    });
+  }
+  #end
 
   function updateUndoRedoMenuItems():Void
   {

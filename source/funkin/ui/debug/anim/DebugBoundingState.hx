@@ -117,6 +117,13 @@ class DebugBoundingState extends FlxState
     Cursor.show();
 
     super.create();
+
+    #if FEATURE_DISCORD_RPC
+    funkin.api.discord.DiscordClient.instance.setPresence({
+      state: null,
+      details: 'Animation Editor [Editing]'
+    });
+    #end
   }
 
   var bf:FlxSprite;
