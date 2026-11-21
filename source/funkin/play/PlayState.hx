@@ -3944,548 +3944,514 @@ class PlayState extends MusicBeatSubState
         FlxG.sound.music?.stop();
         vocals?.stop();
 
-        // TODO: Softcode this cutscene.
-        if (currentSong.id == 'eggnog')
+        var targetSong:Song = SongRegistry.instance.fetchEntry(targetSongId, {
+          variation: currentVariation
+        }) ?? throw 'Could not find a song with ID $targetSongId';
+        var targetVariation:String = currentVariation;
+        if (!targetSong.hasDifficulty(PlayStatePlaylist.campaignDifficulty, currentVariation))
         {
-          var blackBG:FunkinSprite = new FunkinSprite(-FlxG.width * FlxG.camera.zoom, -FlxG.height * FlxG.camera.zoom);
-          blackBG.makeSolidColor(FlxG.width * 3, FlxG.height * 3, FlxColor.BLACK);
-          blackBG.scrollFactor.set();
-          add(blackBG);
-          camHUD.visible = false;
-          isInCutscene = true;
-
-          FunkinSound.playOnce(Paths.sound('gameplay/stages/mallEvil/sounds/lights-off').toFlxSoundAsset(), function()
-          {
-            // no camFollow so it centers on horror tree
-            var targetSong:Song = SongRegistry.instance.fetchEntry(targetSongId) ?? throw 'Could not find a song with the ID $targetSongId';
-            var targetVariation:String = currentVariation;
-            if (!targetSong.hasDifficulty(PlayStatePlaylist.campaignDifficulty, currentVariation))
-            {
-              targetVariation = targetSong.getFirstValidVariation(PlayStatePlaylist.campaignDifficulty) ?? Constants.DEFAULT_VARIATION;
-            }
-            if (currentStage != null) this.remove(currentStage);
-            funkin.ui.transition.Transition.openPlayState({
-              targetSong: targetSong,
-              targetDifficulty: PlayStatePlaylist.campaignDifficulty,
-              targetVariation: targetVariation,
-              practiceMode: isPracticeMode,
-              cameraFollowPoint: cameraFollowPoint.getPosition(),
-            }, {
-              transition: LoadingScreen(None, None),
-              shouldStopMusic: true,
-            });
-          });
+          targetVariation = targetSong.getFirstValidVariation(PlayStatePlaylist.campaignDifficulty) ?? Constants.DEFAULT_VARIATION;
         }
-        else
-        {
-          var targetSong:Song = SongRegistry.instance.fetchEntry(targetSongId, {
-            variation: currentVariation
-          }) ?? throw 'Could not find a song with ID $targetSongId';
-          var targetVariation:String = currentVariation;
-          if (!targetSong.hasDifficulty(PlayStatePlaylist.campaignDifficulty, currentVariation))
-          {
-            targetVariation = targetSong.getFirstValidVariation(PlayStatePlaylist.campaignDifficulty) ?? Constants.DEFAULT_VARIATION;
-          }
-          if (currentStage != null) this.remove(currentStage);
-          funkin.ui.transition.Transition.openPlayState({
-            targetSong: targetSong,
-            targetDifficulty: PlayStatePlaylist.campaignDifficulty,
-            targetVariation: targetVariation,
-            practiceMode: isPracticeMode,
-            cameraFollowPoint: cameraFollowPoint.getPosition(),
-          }, {
-            transition: LoadingScreen(None, None),
-            shouldStopMusic: true,
-          });
-        }
+        if (currentStage != null) this.remove(currentStage);
+        funkin.ui.transition.Transition.openPlayState({
+          targetSong: targetSong,
+          targetDifficulty: PlayStatePlaylist.campaignDifficulty,
+          targetVariation: targetVariation,
+          practiceMode: isPracticeMode,
+          cameraFollowPoint: cameraFollowPoint.getPosition(),
+        }, {
+          transition: LoadingScreen(None, None),
+          shouldStopMusic: true,
+        });
       }
+    }
+  }
+
+else
+{
+  if (isSubState)
+  {
+    if (isPlaytestResults && !isBotPlayMode)
+    {
+      moveToResultsScreen(false, prevScoreData);
     }
     else
     {
-      if (isSubState)
-      {
-        if (isPlaytestResults && !isBotPlayMode)
-        {
-          moveToResultsScreen(false, prevScoreData);
-        }
-        else
-        {
-          this.close();
-        }
-      }
-      else
-      {
-        if (rightGoddamnNow)
-        {
-          moveToResultsScreen(isNewHighscore, prevScoreData);
-        }
-        else
-        {
-          zoomIntoResultsScreen(isNewHighscore, prevScoreData);
-        }
-      }
+      this.close();
     }
-
-    event.finish();
   }
-
-  override public function close():Void
+  else
   {
-    criticalFailure = true; // Stop game updates.
-    performCleanup();
-    super.close();
-  }
-
-  /**
-   * Perform necessary cleanup before leaving the PlayState.
-   */
-  function performCleanup():Void
-  {
-    // If the camera is being tweened, stop it.
-    cancelAllCameraTweens();
-
-    // Dispatch the destroy event.
-    var event:ScriptEvent = ScriptEvent.get(DESTROY, false);
-    dispatchEvent(event);
-
-    if (currentConversation != null)
-    {
-      remove(currentConversation);
-      currentConversation.kill();
-    }
-
-    if (currentChart != null)
-    {
-      // TODO: Uncache the song.
-    }
-
-    // Prevent vwoosh timer from running outside PlayState (e.g Chart Editor)
-    vwooshTimer.cancel();
-
-    if (overrideMusic)
-    {
-      // Stop the music. Do NOT destroy it, something still references it!
-      if (FlxG.sound.music != null) FlxG.sound.music.pause();
-      if (vocals != null)
-      {
-        vocals.pause();
-        remove(vocals);
-      }
-    }
-    else
-    {
-      // Stop and destroy the music.
-      if (FlxG.sound.music != null) FlxG.sound.music.pause();
-      if (vocals != null)
-      {
-        vocals.destroy();
-        remove(vocals);
-      }
-    }
-
-    forEachPausedSound((s) -> s.destroy());
-
-    if (VideoCutscene.isPlaying()) VideoCutscene.destroyVideo();
-
-    FlxTween.globalManager.clear();
-    FlxTimer.globalManager.clear();
-
-    // Remove listeners.
-    PreciseInputManager.instance.onInputPressed.remove(onKeyPress);
-    PreciseInputManager.instance.onInputReleased.remove(onKeyRelease);
-
-    #if FEATURE_TOUCH_CONTROLS
-    VideoCutscene.onVideoEnded.remove(tweenPauseButtonIn);
-    VideoCutscene.onVideoResumed.remove(tweenPauseButtonIn);
-    VideoCutscene.onVideoRestarted.remove(tweenPauseButtonIn);
-    #end
-
-    // Remove reference to stage and remove sprites from it to save memory.
-    if (currentStage != null)
-    {
-      remove(currentStage);
-      currentStage.kill();
-      currentStage = null;
-    }
-
-    GameOverSubState.reset();
-    PauseSubState.reset();
-    Countdown.reset();
-
-    // Clear the static reference to this state.
-    instance = null;
-  }
-
-  /**
-   * Play the camera zoom animation and then move to the results screen once it's done.
-   */
-  function zoomIntoResultsScreen(isNewHighscore:Bool, ?prevScoreData:SaveScoreData):Void
-  {
-    trace('WENT TO RESULTS SCREEN!');
-
-    // Stop camera zooming on beat.
-    cameraZoomRate = 0;
-
-    // Cancel camera and scroll tweening if it's active.
-    cancelAllCameraTweens();
-    cancelScrollSpeedTweens();
-
-    // If the opponent is GF, zoom in on the opponent.
-    // Else, if there is no GF, zoom in on BF.
-    // Else, zoom in on GF.
-    var boyfriend:Null<BaseCharacter> = currentStage?.getBoyfriend();
-    var girlfriend:Null<BaseCharacter> = currentStage?.getGirlfriend();
-    var dad:Null<BaseCharacter> = currentStage?.getDad();
-
-    var targetDad:Bool = dad?.characterId == 'gf';
-    var targetBF:Bool = girlfriend == null && !targetDad;
-
-    if (targetBF && boyfriend != null)
-    {
-      FlxG.camera.follow(boyfriend, null, 0.05);
-    }
-    else if (targetDad && dad != null)
-    {
-      FlxG.camera.follow(dad, null, 0.05);
-    }
-    else if (girlfriend != null)
-    {
-      FlxG.camera.follow(girlfriend, null, 0.05);
-    }
-
-    // TODO: Make target offset configurable.
-    // In the meantime, we have to replace the zoom animation with a fade out.
-    FlxG.camera.targetOffset.y -= 350;
-    FlxG.camera.targetOffset.x += 20;
-
-    // Replace zoom animation with a fade out for now.
-    FlxTween.tween(camHUD, {
-      alpha: 0
-    }, 0.6);
-
-    camTransition.fade(FlxColor.BLACK, 0.6, false, function()
+    if (rightGoddamnNow)
     {
       moveToResultsScreen(isNewHighscore, prevScoreData);
-    });
-
-    // Zoom in on Girlfriend (or BF if no GF)
-    new FlxTimer().start(0.8, function(_)
-    {
-      if (targetBF)
-      {
-        boyfriend?.animation.play('hey');
-      }
-      else if (targetDad)
-      {
-        dad?.animation.play('cheer');
-      }
-      else
-      {
-        girlfriend?.animation.play('cheer');
-      }
-
-      // Zoom over to the Results screen.
-      // TODO: Re-enable this.
-      /*
-        FlxTween.tween(FlxG.camera, {zoom: 1200}, 1.1,
-          {
-            ease: FlxEase.expoIn,
-          });
-       */
-    });
-  }
-
-  /**
-   * Move to the results screen right goddamn now.
-   */
-  function moveToResultsScreen(isNewHighscore:Bool, ?prevScoreData:SaveScoreData):Void
-  {
-    var currentChart:SongDifficulty = currentChart ?? {
-      trace('ERROR: Cannot move to results screen with a null chart.');
-      return;
     }
+    else
+    {
+      zoomIntoResultsScreen(isNewHighscore, prevScoreData);
+    }
+  }
+}
+  event.finish();
+}
 
-    persistentUpdate = false;
-    vocals?.stop();
-    camHUD.alpha = 1;
+override public function close():Void
+{
+  criticalFailure = true; // Stop game updates.
+  performCleanup();
+  super.close();
+}
 
-    var talliesToUse:Tallies = PlayStatePlaylist.isStoryMode ? Highscore.talliesLevel : Highscore.tallies;
-    var params = {
-      storyMode: PlayStatePlaylist.isStoryMode,
-      songId: currentChart.song.id,
-      difficultyId: currentDifficulty,
-      variationId: currentVariation,
-      characterId: currentChart.characters.player,
-      title: PlayStatePlaylist.isStoryMode ? ('${PlayStatePlaylist.campaignTitle}') : ('${currentChart.songName} by ${currentChart.songArtist}'),
-      prevScoreData: prevScoreData,
-      scoreData: {
-        score: PlayStatePlaylist.isStoryMode ? PlayStatePlaylist.campaignScore : Std.int(songScore),
-        tallies: {
-          sick: talliesToUse.sick,
-          good: talliesToUse.good,
-          bad: talliesToUse.bad,
-          shit: talliesToUse.shit,
-          missed: talliesToUse.missed,
-          combo: talliesToUse.combo,
-          maxCombo: talliesToUse.maxCombo,
-          totalNotesHit: talliesToUse.totalNotesHit,
-          totalNotes: talliesToUse.totalNotes,
-        },
-      },
-      isNewHighscore: isNewHighscore,
-      isPracticeMode: isPracticeMode,
-      isBotPlayMode: isBotPlayMode,
-    };
-    this.persistentDraw = false;
-    Transition.openSubState(() -> new ResultState(params), {
-      transition: BlackScreen(None, None),
-      assetQuery: ResultState.queryAssets.bind(_, params)
-    });
+/**
+ * Perform necessary cleanup before leaving the PlayState.
+ */
+function performCleanup():Void
+{
+  // If the camera is being tweened, stop it.
+  cancelAllCameraTweens();
+
+  // Dispatch the destroy event.
+  var event:ScriptEvent = ScriptEvent.get(DESTROY, false);
+  dispatchEvent(event);
+
+  if (currentConversation != null)
+  {
+    remove(currentConversation);
+    currentConversation.kill();
   }
 
-  /**
-   * Pauses music and vocals easily.
-   */
-  public function pauseMusic():Void
+  if (currentChart != null)
   {
+    // TODO: Uncache the song.
+  }
+
+  // Prevent vwoosh timer from running outside PlayState (e.g Chart Editor)
+  vwooshTimer.cancel();
+
+  if (overrideMusic)
+  {
+    // Stop the music. Do NOT destroy it, something still references it!
     if (FlxG.sound.music != null) FlxG.sound.music.pause();
-    if (vocals != null) vocals.pause();
-  }
-
-  /**
-   * Resets the camera's zoom level and focus point.
-   */
-  public function resetCamera(resetZoom:Bool = true, cancelTweens:Bool = true, snap:Bool = true):Void
-  {
-    // Cancel camera tweens if any are active.
-    if (cancelTweens)
+    if (vocals != null)
     {
-      cancelAllCameraTweens();
+      vocals.pause();
+      remove(vocals);
     }
-
-    FlxG.camera.follow(cameraFollowPoint, LOCKON, Constants.DEFAULT_CAMERA_FOLLOW_RATE);
-    FlxG.camera.targetOffset.set();
-
-    if (shouldSubstatePause) FlxG.camera.followLerp = 0;
-
-    if (resetZoom)
+  }
+  else
+  {
+    // Stop and destroy the music.
+    if (FlxG.sound.music != null) FlxG.sound.music.pause();
+    if (vocals != null)
     {
-      resetCameraZoom();
+      vocals.destroy();
+      remove(vocals);
     }
-
-    // Snap the camera to the follow point immediately.
-    if (snap) FlxG.camera.focusOn(cameraFollowPoint.getPosition());
   }
 
-  /**
-   * Sets the camera follow point's position and tweens the camera there.
-   */
-  public function tweenCameraToPosition(x:Float = 0, y:Float = 0, duration:Float = 0, ?ease:Null<Float->Float>):Void
+  forEachPausedSound((s) -> s.destroy());
+
+  if (VideoCutscene.isPlaying()) VideoCutscene.destroyVideo();
+
+  FlxTween.globalManager.clear();
+  FlxTimer.globalManager.clear();
+
+  // Remove listeners.
+  PreciseInputManager.instance.onInputPressed.remove(onKeyPress);
+  PreciseInputManager.instance.onInputReleased.remove(onKeyRelease);
+
+  #if FEATURE_TOUCH_CONTROLS
+  VideoCutscene.onVideoEnded.remove(tweenPauseButtonIn);
+  VideoCutscene.onVideoResumed.remove(tweenPauseButtonIn);
+  VideoCutscene.onVideoRestarted.remove(tweenPauseButtonIn);
+  #end
+
+  // Remove reference to stage and remove sprites from it to save memory.
+  if (currentStage != null)
   {
-    cameraFollowPoint.setPosition(x, y);
-    tweenCameraToFollowPoint(duration, ease);
+    remove(currentStage);
+    currentStage.kill();
+    currentStage = null;
   }
 
-  /**
-   * Disables camera following and tweens the camera to the follow point manually.
-   */
-  public function tweenCameraToFollowPoint(duration:Float = 0, ?ease:Null<Float->Float>):Void
-  {
-    // Cancel the current tween if it's active.
-    cancelCameraFollowTween();
+  GameOverSubState.reset();
+  PauseSubState.reset();
+  Countdown.reset();
 
-    if (duration == 0)
+  // Clear the static reference to this state.
+  instance = null;
+}
+
+/**
+ * Play the camera zoom animation and then move to the results screen once it's done.
+ */
+function zoomIntoResultsScreen(isNewHighscore:Bool, ?prevScoreData:SaveScoreData):Void
+{
+  trace('WENT TO RESULTS SCREEN!');
+
+  // Stop camera zooming on beat.
+  cameraZoomRate = 0;
+
+  // Cancel camera and scroll tweening if it's active.
+  cancelAllCameraTweens();
+  cancelScrollSpeedTweens();
+
+  // If the opponent is GF, zoom in on the opponent.
+  // Else, if there is no GF, zoom in on BF.
+  // Else, zoom in on GF.
+  var boyfriend:Null<BaseCharacter> = currentStage?.getBoyfriend();
+  var girlfriend:Null<BaseCharacter> = currentStage?.getGirlfriend();
+  var dad:Null<BaseCharacter> = currentStage?.getDad();
+
+  var targetDad:Bool = dad?.characterId == 'gf';
+  var targetBF:Bool = girlfriend == null && !targetDad;
+
+  if (targetBF && boyfriend != null)
+  {
+    FlxG.camera.follow(boyfriend, null, 0.05);
+  }
+  else if (targetDad && dad != null)
+  {
+    FlxG.camera.follow(dad, null, 0.05);
+  }
+  else if (girlfriend != null)
+  {
+    FlxG.camera.follow(girlfriend, null, 0.05);
+  }
+
+  // TODO: Make target offset configurable.
+  // In the meantime, we have to replace the zoom animation with a fade out.
+  FlxG.camera.targetOffset.y -= 350;
+  FlxG.camera.targetOffset.x += 20;
+
+  // Replace zoom animation with a fade out for now.
+  FlxTween.tween(camHUD, {
+    alpha: 0
+  }, 0.6);
+
+  camTransition.fade(FlxColor.BLACK, 0.6, false, function()
+  {
+    moveToResultsScreen(isNewHighscore, prevScoreData);
+  });
+
+  // Zoom in on Girlfriend (or BF if no GF)
+  new FlxTimer().start(0.8, function(_)
+  {
+    if (targetBF)
     {
-      // Instant movement. Just reset the camera to force it to the follow point.
-      resetCamera(false, false);
+      boyfriend?.animation.play('hey');
+    }
+    else if (targetDad)
+    {
+      dad?.animation.play('cheer');
     }
     else
     {
-      // Disable camera following for the duration of the tween.
-      @:nullSafety(Off)
-      FlxG.camera.target = null;
+      girlfriend?.animation.play('cheer');
+    }
 
-      var adjustedDuration:Float = duration / playbackRate;
-
-      // Follow tween! Caching it so we can cancel/pause it later if needed.
-      var followPos:FlxPoint = cameraFollowPoint.getPosition() - FlxPoint.weak(FlxG.camera.width * 0.5, FlxG.camera.height * 0.5);
-      cameraFollowTween = FlxTween.tween(FlxG.camera.scroll, {
-        x: followPos.x,
-        y: followPos.y
-      }, adjustedDuration, {
-        ease: ease,
-        onComplete: function(_)
+    // Zoom over to the Results screen.
+    // TODO: Re-enable this.
+    /*
+      FlxTween.tween(FlxG.camera, {zoom: 1200}, 1.1,
         {
-          resetCamera(false, false); // Re-enable camera following when the tween is complete.
-        }
-      });
+          ease: FlxEase.expoIn,
+        });
+     */
+  });
+}
 
-      if (shouldSubstatePause)
+/**
+ * Move to the results screen right goddamn now.
+ */
+function moveToResultsScreen(isNewHighscore:Bool, ?prevScoreData:SaveScoreData):Void
+{
+  var currentChart:SongDifficulty = currentChart ?? {
+    trace('ERROR: Cannot move to results screen with a null chart.');
+    return;
+  }
+
+  persistentUpdate = false;
+  vocals?.stop();
+  camHUD.alpha = 1;
+
+  var talliesToUse:Tallies = PlayStatePlaylist.isStoryMode ? Highscore.talliesLevel : Highscore.tallies;
+  var params = {
+    storyMode: PlayStatePlaylist.isStoryMode,
+    songId: currentChart.song.id,
+    difficultyId: currentDifficulty,
+    variationId: currentVariation,
+    characterId: currentChart.characters.player,
+    title: PlayStatePlaylist.isStoryMode ? ('${PlayStatePlaylist.campaignTitle}') : ('${currentChart.songName} by ${currentChart.songArtist}'),
+    prevScoreData: prevScoreData,
+    scoreData: {
+      score: PlayStatePlaylist.isStoryMode ? PlayStatePlaylist.campaignScore : Std.int(songScore),
+      tallies: {
+        sick: talliesToUse.sick,
+        good: talliesToUse.good,
+        bad: talliesToUse.bad,
+        shit: talliesToUse.shit,
+        missed: talliesToUse.missed,
+        combo: talliesToUse.combo,
+        maxCombo: talliesToUse.maxCombo,
+        totalNotesHit: talliesToUse.totalNotesHit,
+        totalNotes: talliesToUse.totalNotes,
+      },
+    },
+    isNewHighscore: isNewHighscore,
+    isPracticeMode: isPracticeMode,
+    isBotPlayMode: isBotPlayMode,
+  };
+  this.persistentDraw = false;
+  Transition.openSubState(() -> new ResultState(params), {
+    transition: BlackScreen(None, None),
+    assetQuery: ResultState.queryAssets.bind(_, params)
+  });
+}
+
+/**
+ * Pauses music and vocals easily.
+ */
+public function pauseMusic():Void
+{
+  if (FlxG.sound.music != null) FlxG.sound.music.pause();
+  if (vocals != null) vocals.pause();
+}
+
+/**
+ * Resets the camera's zoom level and focus point.
+ */
+public function resetCamera(resetZoom:Bool = true, cancelTweens:Bool = true, snap:Bool = true):Void
+{
+  // Cancel camera tweens if any are active.
+  if (cancelTweens)
+  {
+    cancelAllCameraTweens();
+  }
+
+  FlxG.camera.follow(cameraFollowPoint, LOCKON, Constants.DEFAULT_CAMERA_FOLLOW_RATE);
+  FlxG.camera.targetOffset.set();
+
+  if (shouldSubstatePause) FlxG.camera.followLerp = 0;
+
+  if (resetZoom)
+  {
+    resetCameraZoom();
+  }
+
+  // Snap the camera to the follow point immediately.
+  if (snap) FlxG.camera.focusOn(cameraFollowPoint.getPosition());
+}
+
+/**
+ * Sets the camera follow point's position and tweens the camera there.
+ */
+public function tweenCameraToPosition(x:Float = 0, y:Float = 0, duration:Float = 0, ?ease:Null<Float->Float>):Void
+{
+  cameraFollowPoint.setPosition(x, y);
+  tweenCameraToFollowPoint(duration, ease);
+}
+
+/**
+ * Disables camera following and tweens the camera to the follow point manually.
+ */
+public function tweenCameraToFollowPoint(duration:Float = 0, ?ease:Null<Float->Float>):Void
+{
+  // Cancel the current tween if it's active.
+  cancelCameraFollowTween();
+
+  if (duration == 0)
+  {
+    // Instant movement. Just reset the camera to force it to the follow point.
+    resetCamera(false, false);
+  }
+  else
+  {
+    // Disable camera following for the duration of the tween.
+    @:nullSafety(Off)
+    FlxG.camera.target = null;
+
+    var adjustedDuration:Float = duration / playbackRate;
+
+    // Follow tween! Caching it so we can cancel/pause it later if needed.
+    var followPos:FlxPoint = cameraFollowPoint.getPosition() - FlxPoint.weak(FlxG.camera.width * 0.5, FlxG.camera.height * 0.5);
+    cameraFollowTween = FlxTween.tween(FlxG.camera.scroll, {
+      x: followPos.x,
+      y: followPos.y
+    }, adjustedDuration, {
+      ease: ease,
+      onComplete: function(_)
       {
-        cameraFollowTween.active = false;
-        cameraTweensPausedBySubState.add(cameraFollowTween);
+        resetCamera(false, false); // Re-enable camera following when the tween is complete.
       }
-    }
-  }
+    });
 
-  public function cancelCameraFollowTween()
-  {
-    if (cameraFollowTween != null)
+    if (shouldSubstatePause)
     {
-      cameraFollowTween.cancel();
+      cameraFollowTween.active = false;
+      cameraTweensPausedBySubState.add(cameraFollowTween);
     }
   }
+}
 
-  /**
-   * Tweens the camera zoom to the desired amount.
-   */
-  public function tweenCameraZoom(zoom:Float = 1, duration:Float = 0, direct:Bool = false, ?ease:Null<Float->Float>):Void
+public function cancelCameraFollowTween()
+{
+  if (cameraFollowTween != null)
   {
-    // Cancel the current tween if it's active.
-    cancelCameraZoomTween();
+    cameraFollowTween.cancel();
+  }
+}
 
-    // Direct mode: Set zoom directly.
-    // Stage mode: Set zoom as a multiplier of the current stage's default zoom.
-    var targetZoom = zoom * (direct ? FlxCamera.defaultZoom : stageZoom);
+/**
+ * Tweens the camera zoom to the desired amount.
+ */
+public function tweenCameraZoom(zoom:Float = 1, duration:Float = 0, direct:Bool = false, ?ease:Null<Float->Float>):Void
+{
+  // Cancel the current tween if it's active.
+  cancelCameraZoomTween();
+
+  // Direct mode: Set zoom directly.
+  // Stage mode: Set zoom as a multiplier of the current stage's default zoom.
+  var targetZoom = zoom * (direct ? FlxCamera.defaultZoom : stageZoom);
+
+  if (duration == 0)
+  {
+    // Instant zoom. No tween needed.
+    currentCameraZoom = targetZoom;
+  }
+  else
+  {
+    // Zoom tween! Caching it so we can cancel/pause it later if needed.
+    var adjustedDuration:Float = duration / playbackRate;
+    cameraZoomTween = FlxTween.tween(this, {
+      currentCameraZoom: targetZoom
+    }, adjustedDuration, {
+      ease: ease
+    });
+
+    if (shouldSubstatePause)
+    {
+      cameraZoomTween.active = false;
+      cameraTweensPausedBySubState.add(cameraZoomTween);
+    }
+  }
+}
+
+public function cancelCameraZoomTween():Void
+{
+  if (cameraZoomTween != null)
+  {
+    cameraZoomTween.cancel();
+  }
+}
+
+/**
+ * Cancel all active camera tweens simultaneously.
+ */
+public function cancelAllCameraTweens()
+{
+  cancelCameraFollowTween();
+  cancelCameraZoomTween();
+}
+
+var prevScrollTargets:Array<Dynamic> = []; // used to snap scroll speed when things go unruly
+
+/**
+ * The magical function that shall tween the scroll speed.
+ */
+/**
+ * Tween the scroll speed of some strumlines.
+ * @param startSpeed If set, the strumlines jump to this speed first and ease from it, instead of from their current speed.
+ */
+public function tweenScrollSpeed(?speed:Float, duration:Float = 0, ?ease:Null<Float->Float>, strumlines:Array<String>, ?startSpeed:Float):Void
+{
+  // Cancel the current tween if it's active.
+  cancelScrollSpeedTweens();
+
+  // Snap to previous event value to prevent the tween breaking when another event cancels the previous tween.
+  for (i in prevScrollTargets)
+  {
+    var value:Float = i[0];
+    var strum:Strumline = Reflect.getProperty(this, i[1]);
+    strum.scrollSpeed = value;
+  }
+
+  // for next event, clean array.
+  prevScrollTargets = [];
+
+  for (i in strumlines)
+  {
+    var value:Float = speed ?? 0;
+    var strum:Strumline = Reflect.getProperty(this, i);
 
     if (duration == 0)
     {
-      // Instant zoom. No tween needed.
-      currentCameraZoom = targetZoom;
-    }
-    else
-    {
-      // Zoom tween! Caching it so we can cancel/pause it later if needed.
-      var adjustedDuration:Float = duration / playbackRate;
-      cameraZoomTween = FlxTween.tween(this, {
-        currentCameraZoom: targetZoom
-      }, adjustedDuration, {
-        ease: ease
-      });
-
-      if (shouldSubstatePause)
-      {
-        cameraZoomTween.active = false;
-        cameraTweensPausedBySubState.add(cameraZoomTween);
-      }
-    }
-  }
-
-  public function cancelCameraZoomTween():Void
-  {
-    if (cameraZoomTween != null)
-    {
-      cameraZoomTween.cancel();
-    }
-  }
-
-  /**
-   * Cancel all active camera tweens simultaneously.
-   */
-  public function cancelAllCameraTweens()
-  {
-    cancelCameraFollowTween();
-    cancelCameraZoomTween();
-  }
-
-  var prevScrollTargets:Array<Dynamic> = []; // used to snap scroll speed when things go unruly
-
-  /**
-   * The magical function that shall tween the scroll speed.
-   */
-  /**
-   * Tween the scroll speed of some strumlines.
-   * @param startSpeed If set, the strumlines jump to this speed first and ease from it, instead of from their current speed.
-   */
-  public function tweenScrollSpeed(?speed:Float, duration:Float = 0, ?ease:Null<Float->Float>, strumlines:Array<String>, ?startSpeed:Float):Void
-  {
-    // Cancel the current tween if it's active.
-    cancelScrollSpeedTweens();
-
-    // Snap to previous event value to prevent the tween breaking when another event cancels the previous tween.
-    for (i in prevScrollTargets)
-    {
-      var value:Float = i[0];
-      var strum:Strumline = Reflect.getProperty(this, i[1]);
       strum.scrollSpeed = value;
     }
-
-    // for next event, clean array.
-    prevScrollTargets = [];
-
-    for (i in strumlines)
+    else
     {
-      var value:Float = speed ?? 0;
-      var strum:Strumline = Reflect.getProperty(this, i);
+      if (startSpeed != null) strum.scrollSpeed = startSpeed;
+      var adjustedDuration:Float = duration / playbackRate;
 
-      if (duration == 0)
-      {
-        strum.scrollSpeed = value;
-      }
-      else
-      {
-        if (startSpeed != null) strum.scrollSpeed = startSpeed;
-        var adjustedDuration:Float = duration / playbackRate;
-
-        scrollSpeedTweens.push(FlxTween.tween(strum, {
-          'scrollSpeed': value
-        }, adjustedDuration, {
-          ease: ease
-        }));
-      }
-      // make sure charts dont break if the charter is dumb and stupid
-      prevScrollTargets.push([value, i]);
+      scrollSpeedTweens.push(FlxTween.tween(strum, {
+        'scrollSpeed': value
+      }, adjustedDuration, {
+        ease: ease
+      }));
     }
+    // make sure charts dont break if the charter is dumb and stupid
+    prevScrollTargets.push([value, i]);
   }
+}
 
-  public function cancelScrollSpeedTweens()
+public function cancelScrollSpeedTweens()
+{
+  for (tween in scrollSpeedTweens)
   {
-    for (tween in scrollSpeedTweens)
+    if (tween != null)
     {
-      if (tween != null)
-      {
-        tween.cancel();
-      }
+      tween.cancel();
     }
-    scrollSpeedTweens = [];
   }
+  scrollSpeedTweens = [];
+}
 
-  function forEachPausedSound(f:FlxSound->Void):Void
+function forEachPausedSound(f:FlxSound->Void):Void
+{
+  for (sound in soundsPausedBySubState)
   {
-    for (sound in soundsPausedBySubState)
-    {
-      f(sound);
-    }
-    soundsPausedBySubState.clear();
+    f(sound);
   }
+  soundsPausedBySubState.clear();
+}
 
-  /**
-   * Jumps forward or backward a number of sections in the song.
-   * Accounts for BPM changes.
-   * @param sections The number of sections to jump, negative to go backwards.
-   * @param preventDeath Decides if time skip should prevent player from dying.
-   */
-  function changeSection(sections:Int, preventDeath:Bool = false):Void
+/**
+ * Jumps forward or backward a number of sections in the song.
+ * Accounts for BPM changes.
+ * @param sections The number of sections to jump, negative to go backwards.
+ * @param preventDeath Decides if time skip should prevent player from dying.
+ */
+function changeSection(sections:Int, preventDeath:Bool = false):Void
+{
+  // FlxG.sound.music.pause();
+
+  var targetTimeSteps:Float = Conductor.instance.currentStepTime + (Conductor.instance.stepsPerMeasure * sections);
+  var targetTimeMs:Float = Conductor.instance.getStepTimeInMs(targetTimeSteps);
+
+  // Don't go back in time to before the song started.
+  targetTimeMs = Math.max(0, targetTimeMs);
+
+  if (FlxG.sound.music != null)
   {
-    // FlxG.sound.music.pause();
-
-    var targetTimeSteps:Float = Conductor.instance.currentStepTime + (Conductor.instance.stepsPerMeasure * sections);
-    var targetTimeMs:Float = Conductor.instance.getStepTimeInMs(targetTimeSteps);
-
-    // Don't go back in time to before the song started.
-    targetTimeMs = Math.max(0, targetTimeMs);
-
-    if (FlxG.sound.music != null)
-    {
-      FlxG.sound.music.time = targetTimeMs;
-    }
-
-    handleSkippedNotes();
-    SongEventRegistry.handleSkippedEvents(songEvents, Conductor.instance.songPosition);
-    if (FlxG.sound.music != null && FlxG.sound.music.playing && preventDeath) regenNoteData(FlxG.sound.music.time);
-
-    Conductor.instance.update(FlxG.sound?.music?.time ?? 0.0);
-
-    resyncVocals();
+    FlxG.sound.music.time = targetTimeMs;
   }
+
+  handleSkippedNotes();
+  SongEventRegistry.handleSkippedEvents(songEvents, Conductor.instance.songPosition);
+  if (FlxG.sound.music != null && FlxG.sound.music.playing && preventDeath) regenNoteData(FlxG.sound.music.time);
+
+  Conductor.instance.update(FlxG.sound?.music?.time ?? 0.0);
+
+  resyncVocals();
+}
 }
