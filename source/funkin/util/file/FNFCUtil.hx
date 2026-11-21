@@ -464,15 +464,30 @@ class FNFCUtil
         }
       }
 
-      if (voicePath == null)
+      if (voicePath != null && Assets.exists(voicePath))
       {
-        var originalVoicePath:String = funkin.Paths.voices(songId, '-$originalVoiceId$trackKeySuffix');
-        throw 'Could not locate vocal track: $originalVoicePath';
+        var voiceBytes:Null<Bytes> = Assets.getBytes(voicePath);
+        if (voiceBytes != null)
+        {
+          vocals.set(trackKey, voiceBytes);
+        }
       }
+      else
+      {
+        trace('WARNING: Could not locate vocal track for "$originalVoiceId", skipping.');
+      }
+    }
 
-      var voiceBytes:Null<Bytes> = Assets.getBytes(voicePath);
-      if (voiceBytes == null) throw 'Could not load vocals: $voicePath';
-      vocals.set(trackKey, voiceBytes);
+    // Legacy fallback
+    var legacySuffix:String = (variation.isBlank() || variation == Constants.DEFAULT_VARIATION) ? '' : '-${variation}';
+    var legacyPath = funkin.assets.Paths.voices(songId, '$legacySuffix');
+    if (vocals.size() == 0 && legacyPath != null && funkin.assets.Assets.exists(legacyPath.toString()))
+    {
+      var legacyBytes:Null<Bytes> = Assets.getBytes(legacyPath.toString());
+      if (legacyBytes != null)
+      {
+        vocals.set(legacySuffix, legacyBytes);
+      }
     }
 
     return vocals;
