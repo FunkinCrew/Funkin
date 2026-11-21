@@ -4208,6 +4208,7 @@ class PlayState extends MusicBeatSubState
     persistentUpdate = false;
     vocals?.stop();
     camHUD.alpha = 1;
+    camGame.filters = [];
 
     var talliesToUse:Tallies = PlayStatePlaylist.isStoryMode ? Highscore.talliesLevel : Highscore.tallies;
     var params = {
