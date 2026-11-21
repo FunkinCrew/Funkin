@@ -104,6 +104,10 @@ class NoteKind implements INoteScriptedClass
   {
   }
 
+  public function onCustom(event:CustomScriptEvent):Void
+  {
+  }
+
   public function onNoteIncoming(event:NoteScriptEvent):Void
   {
   }
