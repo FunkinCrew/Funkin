@@ -148,17 +148,15 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
       touchBuddy.setPosition(TouchUtil.touch.x, TouchUtil.touch.y);
     }
 
-    if (newIndex != selectedIndex)
-    {
-      FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
-      selectItem(newIndex);
-    }
+    var touchedIndex:Int = -1;
 
     if (TouchUtil.pressed)
     {
       for (i in 0...members.length)
       {
         final item = members[i];
+        if (item == null || !item.available) continue;
+
         final menuCamera = FlxG.cameras.list[1];
 
         final itemOverlaps:Bool = !_isMainMenuState && TouchUtil.overlaps(item, menuCamera);
@@ -166,70 +164,52 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
 
         final isTouchingItem:Bool = itemOverlaps || itemPixelOverlap;
 
-        if (item.available && isTouchingItem && TouchUtil.justPressed)
+        if (isTouchingItem && TouchUtil.justPressed)
         {
-          var prevIndex:Int = selectedIndex;
-
-          if (!_isMainMenuState && selectedIndex != i)
-          {
-            newIndex = i;
-            break;
-          }
-          else
-          {
-            FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
-            selectItem(i);
-          }
-
-          if (_isMainMenuState)
-          {
-            if (prevIndex == i)
-            {
-              FlxTween.cancelTweensOf(item);
-              item.scale.set(1.1, 1.1);
-              FlxTween.tween(item.scale, {
-                x: 1,
-                y: 1
-              }, 0.3, {
-                ease: FlxEase.backOut
-              });
-
-              HapticUtil.vibrate(0, 0.05, 1);
-              accept();
-            }
-            else
-            {
-              FlxTween.cancelTweensOf(item);
-              item.scale.set(0.94, 0.94);
-              FlxTween.tween(item.scale, {
-                x: 1,
-                y: 1
-              }, 0.3, {
-                ease: FlxEase.backOut
-              });
-
-              HapticUtil.vibrate(0, 0.01, 0.5);
-            }
-          }
-          else
-          {
-            accept();
-          }
-
+          touchedIndex = i;
           break;
         }
       }
     }
 
-    if (newIndex != selectedIndex && !_isMainMenuState)
+    if (touchedIndex != -1)
     {
-      FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
+      final prevIndex:Int = selectedIndex;
+      selectItem(touchedIndex);
+
+      if (_isMainMenuState)
+      {
+        final item = members[selectedIndex];
+        if (item != null)
+        {
+          FlxTween.cancelTweensOf(item);
+          if (prevIndex == touchedIndex)
+          {
+            item.scale.set(1.1, 1.1);
+            FlxTween.tween(item.scale, {x: 1, y: 1}, 0.3, {ease: FlxEase.backOut});
+            HapticUtil.vibrate(0, 0.05, 1);
+            accept();
+          }
+          else
+          {
+            item.scale.set(0.94, 0.94);
+            FlxTween.tween(item.scale, {x: 1, y: 1}, 0.3, {ease: FlxEase.backOut});
+            HapticUtil.vibrate(0, 0.01, 0.5);
+          }
+        }
+      }
+      else if (!_isMainMenuState)
+      {
+        accept();
+      }
+    }
+    else if (newIndex != selectedIndex)
+    {
       selectItem(newIndex);
     }
     #else
     if (newIndex != selectedIndex)
     {
-      FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
       selectItem(newIndex);
     }
     #end
@@ -329,28 +309,31 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
    */
   public function selectItem(index:Int):Void
   {
-    members[selectedIndex].idle();
+    if (members == null || members.length == 0) return;
 
-    if (!members[index].available)
+    final len:Int = members.length;
+    var target:Int = ((index % len) + len) % len;
+
+    final wrappedForward:Bool = (selectedIndex == len - 1 && target == 0);
+    final wrappedBackward:Bool = (selectedIndex == 0 && target == len - 1);
+    final step:Int = (target > selectedIndex && !wrappedBackward) || wrappedForward ? 1 : -1;
+
+    var checked:Int = 0;
+    while (checked < len && (members[target] == null || !members[target].available))
     {
-      if (index < selectedIndex)
-      {
-        final newIndex:Int = (index - 1 < 0) ? index + 1 : index - 1;
-        selectItem(newIndex);
-        return;
-      }
-      else if (index > selectedIndex)
-      {
-        final newIndex:Int = (index + 1 > members.length) ? index - 1 : index + 1;
-        selectItem(newIndex);
-        return;
-      }
+      target = ((target + step) % len + len) % len;
+      checked++;
     }
 
-    selectedIndex = index;
+    if (members[target] == null || !members[target].available) return;
+    if (target == selectedIndex) return;
 
-    var selectedMenuItem:T = members[selectedIndex];
+    if (members[selectedIndex] != null) members[selectedIndex].idle();
+    selectedIndex = target;
+
+    final selectedMenuItem:T = members[selectedIndex];
     selectedMenuItem.select();
+    FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
     onChange.dispatch(selectedMenuItem);
   }
 
