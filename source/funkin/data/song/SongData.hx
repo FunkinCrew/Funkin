@@ -502,6 +502,7 @@ class SongPlayData implements ICloneable<SongPlayData>
     result.noteStyle = this.noteStyle;
     result.ratings = this.ratings.clone();
     result.album = this.album;
+    result.stickerPack = this.stickerPack;
     result.previewStart = this.previewStart;
     result.previewEnd = this.previewEnd;
 
