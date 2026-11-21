@@ -1305,6 +1305,8 @@ class PauseSubState extends MusicBeatSubState
   static function quitToMenu(state:PauseSubState):Void
   {
     state.allowInput = false;
+    // Fade the music when exiting the menu.
+    if (state.pauseMusic != null) state.pauseMusic.fadeOut(0.8, 0);
 
     PlayState.instance.deathCounter = 0;
     var wasStoryMode:Bool = PlayStatePlaylist.isStoryMode;
