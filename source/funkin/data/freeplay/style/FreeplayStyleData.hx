@@ -3,7 +3,7 @@ package funkin.data.freeplay.style;
 import funkin.data.animation.AnimationData;
 
 /**
- * A type definition for the data for an album of songs.
+ * A type definition for the data for a freeplay style.
  * It includes things like what graphics to display in Freeplay.
  * @see https://lib.haxe.org/p/json2object/
  */
@@ -39,6 +39,27 @@ typedef FreeplayStyleData =
    * the order of this array goes as follows: [DESELECTED, SELECTED]
    */
   public var capsuleTextColors:Array<String>;
+
+  @:optional
+  public var sounds:
+    {
+      @:optional
+      var freeplayRandomMusic:Null<String>;
+      @:optional
+      var favorite:Null<String>;
+      @:optional
+      var unfavorite:Null<String>;
+      @:optional
+      var menu:
+        {
+          @:optional
+          var scroll:Null<String>;
+          @:optional
+          var cancel:Null<String>;
+          @:optional
+          var confirm:Null<String>;
+        };
+    };
 
   /**
    * Delay time after confirming a song selection, before entering PlayState.
