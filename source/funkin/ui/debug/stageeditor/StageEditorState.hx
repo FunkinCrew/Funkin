@@ -505,7 +505,7 @@ class StageEditorState extends UIState
 
         for (file in files)
         {
-          filestats.push(sys.FileSystem.stat(haxe.io.Path.join([BACKUPS_PATH, file])));
+          filestats.push(FileUtil.getFileStat(haxe.io.Path.join([BACKUPS_PATH, file])));
         }
 
         var latestFileIndex:Int = 0;

@@ -50,7 +50,7 @@ class WelcomeDialog extends Dialog
       };
 
       #if sys
-      var stat = sys.FileSystem.stat(file);
+      var stat = FileUtil.getFileStat(file);
       var sizeInMB = (stat.size / 1000000).round(3);
 
       fileText.tooltip = "Full Name: " + file + "\nLast Modified: " + stat.mtime.toString() + "\nSize: " + sizeInMB + " MB";
