@@ -30,8 +30,11 @@ class SaveSystem
     // Archive the save data just in case.
     // Not reliable but better than nothing.
     var backupSlot:Int = Save.system.archiveBadSaveData(FlxG.save.data);
+    trace('[SAVE] Backed up save data from slot ${slot} to recovery slot ${backupSlot}.');
 
+    FlxG.save.flush();
     FlxG.save.erase();
+    FlxG.save.flush();
     return new Save();
   }
 
@@ -75,6 +78,7 @@ class SaveSystem
 
     trace('[SAVE] Writing data to slot ${slot}...');
     targetSaveData.mergeData(data, true);
+    targetSaveData.flush();
 
     trace('[SAVE] Data written to slot ${slot}!');
     return slot;
