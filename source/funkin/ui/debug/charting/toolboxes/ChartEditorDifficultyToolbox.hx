@@ -61,7 +61,8 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
   var difficultyLabelScrollSpeed:Label;
   var difficultyInputScrollSpeed:Slider;
   var difficultyInputRating:NumberStepper;
-  var difficultyEstimateRating:haxe.ui.components.Button;
+  var difficultyEstimateRating:Button;
+  var difficultyToggleUnlisted:Button;
 
   /**
    * Set while the detail inputs are being filled in, so that doesn't count as an edit.
@@ -128,6 +129,27 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
       if (refreshingDetails || event.target.value == null) return;
       setRating(Std.int(event.target.value));
     };
+    difficultyToggleUnlisted.onClick = function(_)
+    {
+      var variationData = chartEditorState.songMetadata.get(chartEditorState.selectedVariation);
+      var listedDifficulties:Array<String> = variationData?.playData.difficulties ?? [];
+      var currentDifficulty = chartEditorState.selectedDifficulty;
+
+      if (listedDifficulties.contains(currentDifficulty))
+      {
+        trace('Unlisted $currentDifficulty!');
+        listedDifficulties.remove(currentDifficulty);
+      }
+      else
+      {
+        trace('Listed $currentDifficulty!');
+        listedDifficulties.push(currentDifficulty);
+      }
+
+      variationData.playData.difficulties = listedDifficulties;
+
+      updateTree();
+    }
 
     updateTree();
   }
