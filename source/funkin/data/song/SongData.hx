@@ -109,7 +109,8 @@ class SongMetadata implements ICloneable<SongMetadata> implements ISerializable
    * or formatted with tabs (true)
    * @return The JSON string.
    */
-  public function serialize(pretty:Bool = true, ?params:json2object.JsonWriterParams):String
+  public function serialize(pretty:Bool = true,
+    ?params:json2object.JsonWriterParams):String
   {
     // Update generatedBy and version before writing.
     updateVersionToLatest();
@@ -171,6 +172,9 @@ class SongTimeChange implements ICloneable<SongTimeChange>
   @:alias("t")
   public var timeStamp:Float;
 
+  @:jignored
+  public var stepTime:Float;
+
   /**
    * Time in beats (int). The game will calculate further beat values based on this one,
    * so it can do it in a simple linear fashion.
@@ -178,24 +182,59 @@ class SongTimeChange implements ICloneable<SongTimeChange>
   @:optional @:alias("b")
   public var beatTime:Float;
 
+  @:jignored
+  public var measureTime:Float;
+
+  // These kinds of values are used a lot during Conductor calculation so we cache them.
+  @:jignored
+  var _stepLengthMs:Null<Float>;
+  @:jignored
+  var _beatLengthMs:Null<Float>;
+  @:jignored
+  var _measureLengthMs:Null<Float>;
+
   /**
    * Quarter notes per minute (float). Cannot be empty in the first element of the list,
    * but otherwise it's optional, and defaults to the value of the previous element.
    */
   @:alias("bpm")
-  public var bpm:Float;
+  public var bpm(default, set):Float;
+
+  function set_bpm(value:Float):Float
+  {
+    this.bpm = value;
+    reset();
+
+    return value;
+  }
 
   /**
    * Time signature numerator (int). Optional, defaults to 4.
    */
   @:default(4) @:optional @:alias("n")
-  public var timeSignatureNum:Int;
+  public var timeSignatureNum(default, set):Int;
+
+  function set_timeSignatureNum(value:Int):Int
+  {
+    this.timeSignatureNum = value;
+    reset();
+
+    return value;
+  }
 
   /**
    * Time signature denominator (int). Optional, defaults to 4. Should only ever be a power of two.
    */
   @:default(4) @:optional @:alias("d")
-  public var timeSignatureDen:Int;
+  public var timeSignatureDen(default, set):Int;
+
+  function set_timeSignatureDen(value:Int):Int
+  {
+    this.timeSignatureDen = value;
+    reset();
+
+    return value;
+  }
 
   /**
    * Beat tuplets (Array<int> or int). This defines how many steps each beat is divided into.
@@ -208,10 +247,16 @@ class SongTimeChange implements ICloneable<SongTimeChange>
   public function new(timeStamp:Float, bpm:Float, timeSignatureNum:Int = 4, timeSignatureDen:Int = 4, ?beatTime:Float, ?beatTuplets:Array<Int>)
   {
     this.timeStamp = timeStamp;
-    this.bpm = bpm;
 
-    this.timeSignatureNum = timeSignatureNum;
-    this.timeSignatureDen = timeSignatureDen;
+    // We don't want any of the accessor functions called while intiailizing.
+    @:bypassAccessor
+    {
+      this.bpm = bpm;
+
+      this.timeSignatureNum = timeSignatureNum;
+      this.timeSignatureDen = timeSignatureDen;
+    }
+    reset();
 
     this.beatTime = beatTime == null ? DEFAULT_BEAT_TIME : beatTime;
     this.beatTuplets = beatTuplets == null ? DEFAULT_BEAT_TUPLETS : beatTuplets;
@@ -228,6 +273,37 @@ class SongTimeChange implements ICloneable<SongTimeChange>
   public function toString():String
   {
     return 'SongTimeChange(${this.timeStamp}ms,${this.bpm}bpm)';
+  }
+
+  public function getStepLengthMs(?force:Bool = false):Float
+  {
+    if (_stepLengthMs != null && !force) return _stepLengthMs;
+
+    return _stepLengthMs = getBeatLengthMs() / Constants.STEPS_PER_BEAT;
+  }
+
+  public function getBeatLengthMs(?force:Bool = false):Float
+  {
+    if (_beatLengthMs != null && !force) return _beatLengthMs;
+
+    // Tied directly to BPM.
+    return _beatLengthMs = ((Constants.SECS_PER_MIN / bpm) * Constants.MS_PER_SEC) * (4 / timeSignatureDen);
+  }
+
+  public function getMeasureLengthMs(?force:Bool = false):Float
+  {
+    if (_measureLengthMs != null && !force) return _measureLengthMs;
+
+    return _measureLengthMs = getBeatLengthMs() * timeSignatureNum;
+  }
+
+  public function reset():Void
+  {
+    // Initalize first since all others dependent on this value.
+    getBeatLengthMs(true);
+
+    getStepLengthMs(true);
+    getMeasureLengthMs(true);
   }
 }
 
@@ -268,7 +344,10 @@ class SongOffsets implements ICloneable<SongOffsets>
   @:optional @:default([])
   public var altVocals:Map<String, Map<String, Float>>;
 
-  public function new(instrumental:Float = 0.0, ?altInstrumentals:Map<String, Float>, ?vocals:Map<String, Float>, ?altVocals:Map<String, Map<String, Float>>)
+  public function new(instrumental:Float = 0.0,
+    ?altInstrumentals:Map<String, Float>,
+    ?vocals:Map<String, Float>,
+    ?altVocals:Map<String, Map<String, Float>>)
   {
     this.instrumental = instrumental;
     this.altInstrumentals = altInstrumentals == null ? new Map<String, Float>() : altInstrumentals;
@@ -538,7 +617,13 @@ class SongCharacterData implements ICloneable<SongCharacterData>
   @:optional
   public var playerVocals:Null<Array<String>> = null;
 
-  public function new(player:String = '', girlfriend:String = '', opponent:String = '', instrumental:String = '', ?altInstrumentals:Array<String>, ?opponentVocals:Array<String>, ?playerVocals:Array<String>)
+  public function new(player:String = '',
+    girlfriend:String = '',
+    opponent:String = '',
+    instrumental:String = '',
+    ?altInstrumentals:Array<String>,
+    ?opponentVocals:Array<String>,
+    ?playerVocals:Array<String>)
   {
     this.player = player;
     this.girlfriend = girlfriend;
@@ -600,7 +685,9 @@ class SongChartData implements ICloneable<SongChartData> implements ISerializabl
   @:jignored
   public var variation:String;
 
-  public function new(scrollSpeed:Map<String, Float>, events:Array<SongEventData>, notes:Map<String, Array<SongNoteData>>)
+  public function new(scrollSpeed:Map<String, Float>,
+    events:Array<SongEventData>,
+    notes:Map<String, Array<SongNoteData>>)
   {
     this.version = SongRegistry.SONG_CHART_DATA_VERSION;
 
@@ -666,7 +753,8 @@ class SongChartData implements ICloneable<SongChartData> implements ISerializabl
   /**
    * Convert this SongChartData into a JSON string.
    */
-  public function serialize(pretty:Bool = true, ?params:json2object.JsonWriterParams):String
+  public function serialize(pretty:Bool = true,
+    ?params:json2object.JsonWriterParams):String
   {
     // Update generatedBy and version before writing.
     updateVersionToLatest();
