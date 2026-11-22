@@ -236,7 +236,8 @@ class Save implements ConsoleClass implements ISerializable
         playerVoiceVolume: 1.0,
         opponentVoiceVolume: 1.0,
         playbackSpeed: 0.5,
-        themeMusic: true
+        themeMusic: true,
+        autoSave: true
       },
       optionsStageEditor: {
         previousFiles: [],
@@ -393,6 +394,8 @@ class Save implements ConsoleClass implements ISerializable
   public var chartEditorOpponentVoiceVolume:SaveProperty<Float>;
   @:saveProperty(data.optionsChartEditor.themeMusic, true)
   public var chartEditorThemeMusic:SaveProperty<Bool>;
+  @:saveProperty(data.optionsChartEditor.autoSave, true)
+  public var chartEditorAutoSave:SaveProperty<Bool>;
   @:saveProperty(data.optionsChartEditor.playbackSpeed, 0.5)
   public var chartEditorPlaybackSpeed:SaveProperty<Float>;
 
@@ -1945,6 +1948,13 @@ typedef SaveDataChartEditorOptions =
    * @default `true`
    */
   var ?themeMusic:Bool;
+    
+  /**
+   * If true, chart will autosave after 5 minutes. 
+   * @default `true`
+   */
+  var ?autoSave:Bool;
+
 
   /**
    * Instrumental volume in the Chart Editor.

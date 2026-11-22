@@ -60,6 +60,7 @@ class ChartEditorPreferencesHandler
     state.hitsoundVolumePlayer = save.chartEditorHitsoundVolumePlayer.value;
     state.hitsoundVolumeOpponent = save.chartEditorHitsoundVolumeOpponent.value;
     state.shouldPlayWelcomeMusic = save.chartEditorThemeMusic.value;
+    state.autoSaveEnabled = save.chartEditorAutoSave.value;
 
     state.preferencesVolumeInstrumental.value = Std.int(save.chartEditorInstVolume.value * 100);
     state.preferencesVolumeVocalsPlayer.value = Std.int(save.chartEditorPlayerVoiceVolume.value * 100);
@@ -117,6 +118,7 @@ class ChartEditorPreferencesHandler
     save.chartEditorHitsoundVolumePlayer.value = state.hitsoundVolumePlayer;
     save.chartEditorHitsoundVolumeOpponent.value = state.hitsoundVolumeOpponent;
     save.chartEditorThemeMusic.value = state.shouldPlayWelcomeMusic;
+    save.chartEditorAutoSave.value = state.autoSaveEnabled;
 
     save.chartEditorInstVolume.value = state.preferencesVolumeInstrumental.value / 100.0;
     save.chartEditorPlayerVoiceVolume.value = state.preferencesVolumeVocalsPlayer.value / 100.0;

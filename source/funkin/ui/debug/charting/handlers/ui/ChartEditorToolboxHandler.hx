@@ -517,6 +517,7 @@ class ChartEditorToolboxHandler
     bindCheckbox(toolbox, 'playtestStartTimeCheckbox', value -> state.playtestStartTime = value);
     bindCheckbox(toolbox, 'playtestSongScriptsCheckbox', value -> state.playtestSongScripts = value);
     bindCheckbox(toolbox, 'playtestAudioSettingsCheckbox', value -> state.playtestAudioSettings = value);
+    bindCheckbox(toolbox, 'preferencesAutoSave', value -> state.autoSaveEnabled = value);
 
     return toolbox;
   }
@@ -668,6 +669,7 @@ class ChartEditorToolboxHandler
     setCheckbox(toolbox, 'playtestStartTimeCheckbox', state.playtestStartTime);
     setCheckbox(toolbox, 'playtestSongScriptsCheckbox', state.playtestSongScripts);
     setCheckbox(toolbox, 'playtestAudioSettingsCheckbox', state.playtestAudioSettings);
+    setCheckbox(toolbox, 'preferencesAutoSave', state.autoSaveEnabled);
   }
 
   static function refreshStackThreshold(stackThreshold:DropDown):Void
@@ -756,7 +758,8 @@ class ChartEditorToolboxHandler
 
     toggle.registerEvent(MouseEvent.MOUSE_DOWN, event -> event.cancel());
     toggle.registerEvent(MouseEvent.DBL_CLICK, event -> event.cancel());
-    toggle.onClick = function(_) {
+    toggle.onClick = function(_)
+    {
       var transparent:Bool = !toolbox.hasClass(PREVIEW_TRANSPARENT_CLASS);
       if (transparent)
       {

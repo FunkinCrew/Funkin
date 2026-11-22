@@ -790,6 +790,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var currentWaveformPos:ChartEditorWaveformPos = Adjacent;
 
   /**
+   * If true, the chart editor will automatically save the chart every time a change is made.
+   */
+  var autoSaveEnabled:Bool = true;
+
+  /**
    * If true, playtesting a chart will skip to the current playhead position.
    */
   var playtestStartTime:Bool = false;
