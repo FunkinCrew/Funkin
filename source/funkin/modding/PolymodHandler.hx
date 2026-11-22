@@ -651,6 +651,9 @@ class PolymodHandler
       Polymod.blacklistImport(className);
     }
 
+    // Abstract script class isn't included in `listClassesInPackage`, so blacklist it explicitly.
+    Polymod.blacklistImport('polymod.hscript._internal.PolymodAbstractScriptClass');
+
     // `hscript.*
     // Contains functions which may allow for interpreting unsanitized strings.
     for (cls in ClassMacro.listClassesInPackage('hscript'))
