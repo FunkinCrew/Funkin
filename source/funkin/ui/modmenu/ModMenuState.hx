@@ -389,10 +389,13 @@ class ModMenuState extends MusicBeatState
     openFolderAnimator = buttonOpenFolder.createPressAnimator(0.65, 0.72);
     doneButtonAnimator = buttonDone.createPressAnimator(0.65, 0.72);
 
-    installer = new ModMenuInstaller(highlightNewMod, (enabled) ->
+    installer = new ModMenuInstaller(() ->
     {
-      uiState.transition((enabled) ? Idle : Disabled);
-    });
+      if (ModMenuState.instance == this) highlightNewMod();
+    }, (enabled) ->
+      {
+        uiState.transition((enabled) ? Idle : Disabled);
+      });
     installer.build(camHUD);
 
     enabledModItems.repositionItems();
@@ -492,7 +495,7 @@ class ModMenuState extends MusicBeatState
   {
     super.destroy();
 
-    // Stops in-flight downloads, and drops the queue.
+    // Detaches the menu UI while in-flight installs continue in the background.
     installer?.destroy();
 
     FlxG.autoPause = Preferences.autoPause;
@@ -564,14 +567,18 @@ class ModMenuState extends MusicBeatState
   }
 
   /**
-   * Handles input while the install overlay is up, and swallows everything else.
+   * Handles cancel and dismiss input for the install popup.
    */
   function handleInstallPopupInput():Void
   {
     switch (installer.popup.state)
     {
       case Downloading:
-        if (controls.BACK_P #if FEATURE_TOUCH_CONTROLS || installer.popup.wasTapped() #end) installer.cancelOneClick();
+        {
+          #if FEATURE_TOUCH_CONTROLS
+          if (installer.popup.wasTapped()) installer.cancelOneClick();
+          #end
+        }
 
       case Result:
         // The card clears itself, this is only here for a player who doesn't want to wait on it.
@@ -642,11 +649,12 @@ class ModMenuState extends MusicBeatState
   function handleInput(elapsed:Float):Void
   {
     #if FEATURE_ONE_CLICK_INSTALL
-    // The install overlay is modal, so it gets first refusal on every input.
+    // Let the player keep using the menu while a download runs
     if (installer.popup != null && installer.popup.isBlocking())
     {
+      final popupState = installer.popup.state;
       handleInstallPopupInput();
-      return;
+      if (installer.popup.state == Hidden && (popupState == Result || popupState == Downloading)) return;
     }
     #end
 
