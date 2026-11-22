@@ -4,6 +4,7 @@ import flixel.FlxCamera;
 import flixel.addons.transition.Transition as FlxTransition;
 import flixel.addons.transition.TransitionData;
 import flixel.addons.transition.FlxTransitionSprite.TransitionStatus;
+import flixel.addons.transition.FlxTransitionableState;
 import funkin.ui.transition.Transition.FlxTransition;
 import flixel.FlxG;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
@@ -145,6 +146,11 @@ class StickerTransition extends FlxTransition
         regenStickers();
       case OUT:
         trace('Ending sticker transition!');
+        if (FlxTransitionableState.defaultTransIn?.transitionState == this)
+        {
+          @:nullSafety(Off)
+          FlxTransitionableState.defaultTransIn = null;
+        }
         degenStickers();
       default:
         // Nothing
