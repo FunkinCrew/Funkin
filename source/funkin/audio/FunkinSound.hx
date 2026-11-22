@@ -182,6 +182,13 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     // todo: refine this lmao.
     if (stream)
     {
+      if (funkin.assets.FunkinAssetCache.instance.hasSound(assetPath.toString()))
+      {
+        funkin.assets.FunkinAssetCache.instance.removeSound(assetPath.toString());
+        trace(
+          ' FUNKINSOUND STREAM '.bold().bg_note_right() + ' Sound asset: "${assetPath.toString()}" is cached and was queued up to streaming! Removing sound. '
+        );
+      }
       sound.loadStreamed(assetPath.toString(), looped, autoDestroy, params?.onComplete);
     }
     else
@@ -228,6 +235,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    * @param onLoad A function to call when the sound is loaded.
    * @return The constructed `FunkinSound` object, or `null` if the sound failed to be loaded.
    */
+  @:deprecated
   public static function load(embeddedSound:FlxSoundAsset,
     volume:Float = 1.0,
     looped:Bool = false,
@@ -273,11 +281,11 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     // We're basically just calling loadSound() with different default parameters.
     return loadSound(assetPath, {
       // Default to playing once then destroying when we're done.
+      stream: params?.stream ?? false,
       autoDestroy: params?.autoDestroy ?? true,
       autoPlay: params?.autoPlay ?? true,
       looped: params?.looped ?? false,
       persist: params?.persist ?? false,
-
       volume: params?.volume ?? MAX_VOLUME,
       onComplete: params?.onComplete,
       onLoad: params?.onLoad,
@@ -294,6 +302,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    * @param onLoad A function to call when the sound is finished loading.
    * @return The constructed `FunkinSound` object, or `null` if the sound failed to be loaded.
    */
+  @:deprecated
   public static function playOnce(assetKey:String, volume:Float = 1.0, ?onComplete:Void->Void, ?onLoad:Void->Void):Null<FunkinSound>
   {
     return FunkinSound.playSoundOnce(Paths.sound(assetKey), {
@@ -359,6 +368,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     // Play the new music.
     emptyPartialQueue();
     var music:Null<FunkinSound> = loadSound(musicAssetPath.audio(), {
+      stream: params?.stream ?? true,
       looped: params?.looped ?? true,
       persist: params?.persist ?? false,
 
@@ -389,6 +399,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    * @param params A set of parameters for playback.
    * @return Whether the sound successfully played.
    */
+  @:deprecated
   public static function playMusic(assetKey:String, ?params:FunkinMusicCompatParams):Bool
   {
     var usePartial:Bool = params?.partialParams?.loadPartial ?? false;
