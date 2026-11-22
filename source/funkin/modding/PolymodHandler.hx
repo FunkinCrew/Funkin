@@ -636,6 +636,7 @@ class PolymodHandler
       if (cls == null) continue;
       var className:String = Type.getClassName(cls);
       if (polymod.hscript._internal.PolymodScriptClass.importOverrides.exists(className)) continue;
+      if (polymod.hscript._internal.PolymodScriptClass.importOverrides.values().contains(cls)) continue;
       Polymod.blacklistImport(className);
     }
 
