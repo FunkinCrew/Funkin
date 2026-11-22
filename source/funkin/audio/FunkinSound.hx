@@ -335,7 +335,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     emptyPartialQueue();
     var music:Null<FunkinSound> = loadSound(musicAssetPath.audio(), {
       looped: params?.looped ?? true,
-      persist: params?.persist ?? true,
+      persist: params?.persist ?? false,
 
       autoDestroy: params?.autoDestroy ?? false,
       autoPlay: params?.autoPlay ?? true,
@@ -382,7 +382,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
         mapTimeChanges: params?.mapTimeChanges,
         onComplete: params?.onComplete,
         onLoad: (_) -> if (params != null && params.onLoad != null) params.onLoad(),
-        persist: params?.persist,
+        persist: params?.persist ?? false,
         volume: params?.startingVolume,
 
         autoPlay: true,
@@ -403,7 +403,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
         mapTimeChanges: params?.mapTimeChanges,
         onComplete: params?.onComplete,
         onLoad: (_) -> if (params != null && params.onLoad != null) params.onLoad(),
-        persist: params?.persist,
+        persist: params?.persist ?? false,
         volume: params?.startingVolume,
 
         autoPlay: true,
@@ -536,7 +536,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
       end: params?.end,
 
       looped: params?.looped ?? true,
-      persist: params?.persist ?? true,
+      persist: params?.persist ?? false,
 
       autoDestroy: params?.autoDestroy ?? false,
       autoPlay: params?.autoPlay ?? true,
