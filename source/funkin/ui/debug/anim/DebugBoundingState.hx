@@ -83,7 +83,7 @@ class DebugBoundingState extends FlxState
     // we are setting this as the default draw camera only temporarily, to trick haxeui
     FlxG.cameras.add(hudCam);
 
-    var str = Paths.xml('ui/editors/animation-editor/offset-editor-view');
+    var str = Paths.xml('exclude/ui/editors/animation-editor/offset-editor-view');
     offsetEditorDialog = cast RuntimeComponentBuilder.fromAsset(str);
 
     if (offsetEditorDialog == null) throw "Could not build editor UI, check the layout file.";
