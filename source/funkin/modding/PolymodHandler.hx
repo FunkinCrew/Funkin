@@ -532,6 +532,7 @@ class PolymodHandler
     // `haxe.Unserializer`
     // Unserializer.DEFAULT_RESOLVER.resolveClass() can access blacklisted packages
     Polymod.blacklistImport('haxe.Unserializer');
+    Polymod.blacklistImport('haxe._Unserializer.DefaultResolver');
 
     // Disable access to all Mobile Utils
     for (cls in ClassMacro.listClassesInPackage('funkin.util.mobile'))
