@@ -873,7 +873,7 @@ class FreeplayState extends MusicBeatSubState
     }
 
     // be careful not to "add()" things in here unless it's to a group that's already added to the state
-    // otherwise it won't be properly attatched to funnyCamera (relavent code should be at the bottom of create())
+    // otherwise it won't be properly attached to funnyCamera (relevant code should be at the bottom of create())
     var onDJIntroDone:Void->Void = () ->
     {
       if (!uiStateMachine.is(Interacting)) uiStateMachine.transition(Idle);
