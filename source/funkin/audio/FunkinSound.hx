@@ -117,6 +117,19 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     return sound;
   }
 
+  public var isStreaming(get, never):Bool;
+
+  function get_isStreaming():Bool
+  {
+    #if NO_FEATURE_STREAMED_AUDIO
+    return false;
+    #else
+    if (this == null) return false;
+    @:privateAccess
+    return this?._source?.buffer?.__srcMADecoder != null;
+    #end
+  }
+
   @:nullSafety(Off)
   override public function destroy():Void
   {
@@ -153,6 +166,11 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     var persist:Bool = params?.persist ?? false;
     var looped:Bool = params?.looped ?? false;
     var autoDestroy:Bool = params?.autoDestroy ?? true;
+    var stream:Bool = params?.stream ?? false;
+
+    #if NO_FEATURE_STREAMED_AUDIO
+    stream = false;
+    #end
 
     if (suppressOneShots && (params?.autoPlay ?? false) && !looped) return null;
 
@@ -160,7 +178,14 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 
     // Load the sound.
     // Sets `exists = true` as a side effect.
-    sound.loadEmbedded(funkin.assets.Assets.getSound(assetPath), looped, autoDestroy, params?.onComplete);
+
+    // todo: refine this lmao.
+    if (stream)
+    {
+      sound.loadStreamed(assetPath.toString(), looped, autoDestroy, params?.onComplete);
+    }
+    else
+      sound.loadEmbedded(funkin.assets.Assets.getSound(assetPath), looped, autoDestroy, params?.onComplete);
 
     sound._label = '${assetPath.toString()}';
 
@@ -657,6 +682,14 @@ typedef FunkinSoundParams =
    */
   @:optional
   var looped:Bool;
+
+  /**
+   * Whether to stream this audio on runtime asynchronously.
+   *
+   * @default `false` for `loadSound()`, `true` for `playMusicTrack()`.
+   */
+  @:optional
+  var stream:Bool;
 
   /**
    * Whether to automatically destroy the sound when it finishes playing,
