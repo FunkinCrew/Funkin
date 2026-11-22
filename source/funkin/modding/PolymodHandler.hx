@@ -623,7 +623,10 @@ class PolymodHandler
     // Returns `Unseralizer.run` if encoded in HXSF format, though it does have to be seralized correctly for the exploit to work.
     #if !html5 Polymod.blacklistInstanceFields(openfl.filesystem.FileStream, ['readObject']); #end
     Polymod.blacklistInstanceFields(openfl.net.Socket, ['readObject']);
+    Polymod.blacklistImport('openfl.utils.ByteArrayData');
     Polymod.blacklistInstanceFields(openfl.utils.ByteArray.ByteArrayData, ['readObject']);
+    Polymod.blacklistImport('openfl.filesystem.FileStream');
+    Polymod.blacklistImport('openfl.net.Socket');
 
     // `openfl.filesystem.File`
     // Can be used to delete files.
