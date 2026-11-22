@@ -617,7 +617,8 @@ class PolymodHandler
 
     // `funkin.Assets`
     // getLibrary() can use libraries to get blacklisted packages
-    Polymod.blacklistStaticFields(funkin.Assets, ['getLibrary']);
+    Polymod.blacklistStaticFields(funkin.Assets, ['getLibrary', 'loadLibrary']);
+    Polymod.blacklistStaticFields(funkin.assets.Assets, ['getLibrary', 'loadLibrary']);
 
     // `openfl.filesystem.FileStream`, `openfl.net.Socket`, `openfl.utils.ByteArray.ByteArrayData`
     // Returns `Unseralizer.run` if encoded in HXSF format, though it does have to be seralized correctly for the exploit to work.
@@ -701,6 +702,7 @@ class PolymodHandler
       'classTypes',
       'unserialize',
       'getLibrary',
+      'loadLibrary',
       'readObject',
       'clearData',
       'setLevelScore',
