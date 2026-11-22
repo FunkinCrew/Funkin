@@ -583,7 +583,11 @@ class PolymodHandler
      * Using the `AssetManifest` class can get you a `Future` that holds an `AssetLibrary`
      * that you can then use to resolve to blacklisted classes using the `classTypes` field.
     **/
-    Polymod.blacklistInstanceFields(lime.utils.AssetLibrary, ['classTypes']);
+    Polymod.blacklistInstanceFields(lime.utils.AssetLibrary, ['classTypes', '__fromManifest', '__fromBundle']);
+    Polymod.blacklistImport('lime.utils.AssetLibrary');
+    Polymod.blacklistImport('openfl.utils.AssetLibrary');
+    Polymod.blacklistImport('lime.utils.AssetManifest');
+    Polymod.blacklistImport('openfl.utils.AssetManifest');
 
     // `haxe.Unserializer`
     // Just to be double-sure, lets blacklist some fields of the Unserializer to make it harder to use if you DO get one.
@@ -699,6 +703,8 @@ class PolymodHandler
     Polymod.blacklistDynamicFieldNames([
       'resolveFlixelClasses',
       'classTypes',
+      '__fromManifest',
+      '__fromBundle',
       'unserialize',
       'getLibrary',
       'readObject',
