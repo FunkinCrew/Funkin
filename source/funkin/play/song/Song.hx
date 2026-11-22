@@ -997,7 +997,9 @@ class SongDifficulty
    */
   public function cacheInst(instrumental = ''):Void
   {
+    #if NO_FEATURE_STREAMED_AUDIO
     funkin.assets.Assets.cacheSound(getInstPath(instrumental));
+    #end
   }
 
   /**
@@ -1007,10 +1009,17 @@ class SongDifficulty
    */
   public function playInst(instId:String = ''):Void
   {
-    var path:String = getInstPath(instId).toString();
+    var path:AssetPath = getInstPath(instId);
     trace(' SONG '.bold().bg_note_down() + ' Playing instrumental track "$path" for song "${song.id}"');
 
-    var instSound:FunkinSound = FunkinSound.load(path, 1.0, false, false, true, false, null, null);
+    var instSound:FunkinSound = FunkinSound.loadSound(path, {
+      stream: true,
+      volume: 1.0,
+      looped: false,
+      autoDestroy: false,
+      autoPlay: true,
+      persist: false
+    });
 
     FunkinSound.setMusic(instSound);
   }
@@ -1022,8 +1031,10 @@ class SongDifficulty
   {
     for (voice in buildVoiceList())
     {
+      #if NO_FEATURE_STREAMED_AUDIO
       trace(' SONG '.bold().bg_note_down() + ' Caching vocal track "$voice" for song "${song.id}"');
       funkin.assets.Assets.cacheSound(voice);
+      #end
     }
   }
 
@@ -1175,14 +1186,20 @@ class SongDifficulty
     for (playerVoice in playerVoiceList)
     {
       if (!playerVoice.exists()) continue;
-      result.addPlayerVoice(FunkinSound.load(playerVoice.toFlxSoundAsset(), 1.0));
+      result.addPlayerVoice(FunkinSound.loadSound(playerVoice, {
+        volume: 1.0,
+        stream: true
+      }));
     }
 
     // Add opponent vocals.
     for (opponentVoice in opponentVoiceList)
     {
       if (!opponentVoice.exists()) continue;
-      result.addOpponentVoice(FunkinSound.load(opponentVoice.toFlxSoundAsset(), 1.0));
+      result.addOpponentVoice(FunkinSound.loadSound(opponentVoice, {
+        volume: 1.0,
+        stream: true
+      }));
     }
 
     if (result.members.length == 0)
@@ -1192,7 +1209,10 @@ class SongDifficulty
       var legacyPath = funkin.assets.Paths.voices(this.song.id, '$suffix', false);
       if (legacyPath.exists())
       {
-        result.addPlayerVoice(FunkinSound.load(legacyPath.toFlxSoundAsset(), 1.0));
+        result.addPlayerVoice(FunkinSound.loadSound(legacyPath, {
+          volume: 1.0,
+          stream: true
+        }));
       }
     }
 
