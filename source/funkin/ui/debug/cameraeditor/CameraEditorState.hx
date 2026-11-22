@@ -836,8 +836,8 @@ class CameraEditorState extends UIState implements ConsoleClass
     CrashHandler.criticalErrorSignal.add(autosavePerCrash);
 
     Cursor.show();
-    FunkinSound.playMusic('ui/editors/chart-editor/artistic-expression/artistic-expression', {
-      startingVolume: 0.0
+    FunkinSound.playMusicTrack(funkin.assets.Paths.music('ui/editors/chart-editor/artistic-expression/artistic-expression'), {
+      volume: 0.0
     });
     if (playThemeMusic) FlxG.sound.music.fadeIn(10, 0, 1);
 

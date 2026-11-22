@@ -115,11 +115,11 @@ class CreditsState extends MusicBeatState
     add(creditsGroup);
 
     // Music
-    FunkinSound.playMusic('ui/freeplay/freeplay-random/freeplay-random', {
-      startingVolume: 0.0,
+    FunkinSound.playMusicTrack(Paths.music('ui/freeplay/freeplay-random/freeplay-random'), {
+      volume: 0.0,
       overrideExisting: true,
-      restartTrack: true,
-      loop: true
+      forceRestart: true,
+      looped: true
     });
     FlxG.sound.music.fadeIn(6, 0, 0.8);
 

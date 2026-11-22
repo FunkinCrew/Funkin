@@ -485,10 +485,10 @@ class TitleState extends MusicBeatState
   {
     cheatActive = true;
 
-    FunkinSound.playMusic('ui/title/girlfriends-ringtone/girlfriends-ringtone', {
-      startingVolume: 0.0,
+    FunkinSound.playMusicTrack(Paths.music('ui/title/girlfriends-ringtone'), {
+      volume: 0.0,
       overrideExisting: true,
-      restartTrack: true
+      forceRestart: true
     });
 
     FlxG.sound.music.fadeIn(4.0, 0.0, 1.0);

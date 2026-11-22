@@ -871,11 +871,11 @@ class CharacterSelectState extends MusicBeatSubState
 
   function playMenuMusic():Void
   {
-    FunkinSound.playMusic('ui/character-select/stay-funky/stay-funky', {
-      startingVolume: 1,
+    FunkinSound.playMusicTrack(Paths.music('ui/character-select/stay-funky'), {
+      volume: 1,
       overrideExisting: true,
-      restartTrack: true,
-      onLoad: () ->
+      forceRestart: true,
+      onLoad: (_) ->
       {
         uiStateMachine.transition(Idle);
 
