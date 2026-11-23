@@ -519,20 +519,27 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
    */
   function fitScrollHeights():Void
   {
+    if (fitScrollHeightsPending) return;
+    fitScrollHeightsPending = true;
     haxe.ui.Toolkit.callLater(function()
     {
+      fitScrollHeightsPending = false;
       toolboxEventsChainScroll.height = Math.max(MIN_CHAIN_LIST_HEIGHT, Math.min(MAX_CHAIN_LIST_HEIGHT, toolboxEventsChainList.height + 4));
       if (this.autoHeight)
       {
         toolboxEventsDataScroll.height = Math.max(MIN_EVENT_DATA_HEIGHT, Math.min(MAX_EVENT_DATA_HEIGHT, toolboxEventsDataBox.height + 4));
         return;
       }
+      // Layout the toolbox to get the correct height of the scroll view, then size it to fill the rest of the toolbox.
+      toolboxEventsRoot.validateNow();
       var chrome:Float = this.height - dialogContent.height + (dialogContent.paddingTop ?? 0) + (dialogContent.paddingBottom ?? 0);
       var others:Float = toolboxEventsRoot.height - toolboxEventsDataScroll.height;
       var target:Float = Math.max(MIN_CHAIN_LIST_HEIGHT, this.height - chrome - others);
       if (Math.abs(toolboxEventsDataScroll.height - target) > 0.5) toolboxEventsDataScroll.height = target;
     });
   }
+
+  var fitScrollHeightsPending:Bool = false;
 
   var chainRows:Array<
     {row:HBox, event:Null<SongEventData>}> = [];
