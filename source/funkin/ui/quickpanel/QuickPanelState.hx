@@ -154,7 +154,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
   public var curState(get, never):UIState;
 
   /**
-   * Wether panel is open.
+   * Whether panel is open.
    */
   public var isOpen(get, never):Bool;
 
@@ -191,7 +191,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
   public var selectedIcon(default, null):FunkinSprite;
 
   /**
-   * The currently selected button;s splash.
+   * The currently selected button's splash.
    */
   public var selectedSplash(default, null):FunkinSprite;
 
@@ -985,7 +985,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
   }
 
   /**
-   * Startss the tab pressing and their variables
+   * Starts the tab pressing and their variables
    */
   function beginTabPress():Void
   {
