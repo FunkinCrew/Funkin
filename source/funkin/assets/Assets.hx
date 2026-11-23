@@ -1446,6 +1446,11 @@ enum abstract AssetType(String) from String to String from LimeAssetType
   public var SOUND = 'SOUND';
 
   /**
+   * Files in (*.ogg and *.mp3) you'd usually stream.
+   */
+  public var MUSIC = 'MUSIC';
+
+  /**
    * Files in (*.mp4 and *.webm) format.
    */
   public var VIDEO = 'VIDEO';
@@ -1530,7 +1535,7 @@ enum abstract AssetType(String) from String to String from LimeAssetType
       case LimeAssetType.MANIFEST:
         return TEXT;
       case LimeAssetType.MUSIC:
-        return SOUND;
+        return MUSIC;
       case LimeAssetType.SOUND:
         return SOUND;
       case LimeAssetType.TEMPLATE:
@@ -1562,7 +1567,7 @@ enum abstract AssetType(String) from String to String from LimeAssetType
       case OpenFLAssetType.MOVIE_CLIP:
         return MOVIE_CLIP;
       case OpenFLAssetType.MUSIC:
-        return SOUND;
+        return MUSIC;
       case OpenFLAssetType.SOUND:
         return SOUND;
       case OpenFLAssetType.TEXT:
