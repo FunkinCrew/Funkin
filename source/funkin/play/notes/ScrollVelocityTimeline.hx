@@ -24,14 +24,22 @@ class ScrollVelocityTimeline
   public var segments(default, null):Array<ScrollVelocitySegment> = [];
 
   var rawStarts:Array<Float> = [];
+  var easeAreas:Array<Float> = [];
   var stretches:Array<VelocityStretch> = [];
+
+  /**
+   * How many "render distances" ahead `reach` looks before giving up.
+   */
+  static final REACH_CAP:Float = 8;
 
   /**
    * @param events The chart's events.
    * @param strumline `player` or `opponent`.
    * @param conductor Used for the length of a step. Defaults to `Conductor.instance`.
+   * @param nonDestructive Whether to take the non-destructive events or the normal ones.
+   * @param column The column of the events to take, on top of the ones for every column.
    */
-  public function new(events:Array<SongEventData>, strumline:String, ?conductor:Conductor)
+  public function new(events:Array<SongEventData>, strumline:String, ?conductor:Conductor, nonDestructive:Bool = false, column:Int = -1)
   {
     var stepConductor:Conductor = conductor ?? Conductor.instance;
     segments = [{
@@ -50,6 +58,10 @@ class ScrollVelocityTimeline
     {
       var target:String = event.getString('strumline') ?? ScrollVelocityEvent.DEFAULT_STRUMLINE;
       if (target != 'both' && target != strumline) continue;
+      if ((event.getBool('nonDestructive') ?? ScrollVelocityEvent.DEFAULT_NON_DESTRUCTIVE) != nonDestructive) continue;
+
+      var eventColumn:Int = ScrollVelocityEvent.COLUMNS.indexOf(event.getString('column') ?? ScrollVelocityEvent.DEFAULT_COLUMN);
+      if (eventColumn != -1 && eventColumn != column) continue;
 
       var time:Float = Math.max(0, event.time);
 
@@ -88,6 +100,8 @@ class ScrollVelocityTimeline
       var previous:ScrollVelocitySegment = segments[i - 1];
       rawStarts.push(rawStarts[i - 1] + integrate(previous, previous.time, segments[i].time));
     }
+
+    easeAreas = [for (segment in segments) integrate(segment, segment.time, segment.time + segment.duration)];
 
     buildStretches();
   }
@@ -207,7 +221,46 @@ class ScrollVelocityTimeline
   {
     var index:Int = segmentIndexAt(time);
     var segment:ScrollVelocitySegment = segments[index];
+    var easeEnd:Float = segment.time + segment.duration;
+    if (time >= easeEnd) return rawStarts[index] + easeAreas[index] + segment.to * (time - easeEnd);
     return rawStarts[index] + integrate(segment, segment.time, time);
+  }
+
+  /**
+   * The song time the notes are drawn around at a real song time.
+   */
+  public function position(time:Float):Float
+  {
+    if (!hasEvents || time <= 0) return time;
+    return rawTime(time);
+  }
+
+  /**
+   * The song time the notes are drawn around at a real song time, with lag added.
+   */
+  public function reach(time:Float, distance:Float):Float
+  {
+    if (!hasEvents) return time + distance;
+    var limit:Float = time + distance * REACH_CAP;
+    var index:Int = segmentIndexAt(time);
+    var from:Float = time;
+    var left:Float = distance;
+    while (index < segments.length && from < limit)
+    {
+      var segment:ScrollVelocitySegment = segments[index];
+      var end:Float = (index + 1 < segments.length) ? Math.min(segments[index + 1].time, limit) : limit;
+      var settled:Float = Math.min(end, Math.max(from, segment.time + segment.duration));
+      var eased:Float = integrate(segment, from, settled);
+      if (eased >= left) return settled;
+      left -= eased;
+
+      var flat:Float = segment.to * (end - settled);
+      if (segment.to > 0 && flat >= left) return settled + left / segment.to;
+      left -= flat;
+      from = end;
+      index++;
+    }
+    return limit;
   }
 
   /**

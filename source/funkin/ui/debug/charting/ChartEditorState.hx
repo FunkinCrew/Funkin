@@ -1032,10 +1032,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var showCursorLine:Bool = true;
 
   var showPlayerView:Bool = false;
-  var gridPlayerView:Null<flixel.FlxSprite> = null;
-  var gridPlayerViewEdge:Null<flixel.FlxSprite> = null;
-  var gridOpponentView:Null<flixel.FlxSprite> = null;
-  var gridOpponentViewEdge:Null<flixel.FlxSprite> = null;
+
+  var gridColumnViews:Array<flixel.FlxSprite> = [];
+  var gridColumnViewEdges:Array<flixel.FlxSprite> = [];
 
   /**
    * How opaque the grid backing is, from 0 to 1.

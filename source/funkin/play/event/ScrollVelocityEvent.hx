@@ -32,6 +32,9 @@ class ScrollVelocityEvent extends SongEvent
   public static final DEFAULT_VELOCITY:Float = 1;
   public static final DEFAULT_DURATION:Float = 4.0;
   public static final DEFAULT_STRUMLINE:String = 'both';
+  public static final DEFAULT_COLUMN:String = 'all';
+  public static final DEFAULT_NON_DESTRUCTIVE:Bool = false;
+  public static final COLUMNS:Array<String> = ['left', 'down', 'up', 'right'];
 
   override public function handleEvent(data:SongEventData):Void
   {
@@ -51,6 +54,8 @@ class ScrollVelocityEvent extends SongEvent
    *   'ease': ENUM, // Easing function.
    *   'easeDir': ENUM, // Easing function direction (In, Out, InOut).
    *   'strumline': ENUM, // Which strumline to change.
+   *   'column': ENUM, // Which column to change, or all of them.
+   *   'nonDestructive': BOOL, // If true, notes still land on time.
    * }
    * ```
    *
@@ -141,6 +146,25 @@ class ScrollVelocityEvent extends SongEvent
               'Player' => 'player',
               'Opponent' => 'opponent'
             ]
+          },
+          {
+            name: 'column',
+            title: 'Target Column',
+            defaultValue: DEFAULT_COLUMN,
+            type: SongEventFieldType.ENUM,
+            keys: [
+              'All' => 'all',
+              'Left' => 'left',
+              'Down' => 'down',
+              'Up' => 'up',
+              'Right' => 'right'
+            ]
+          },
+          {
+            name: 'nonDestructive',
+            title: 'Non-destructive',
+            defaultValue: DEFAULT_NON_DESTRUCTIVE,
+            type: SongEventFieldType.BOOL,
           }
         ]
       }

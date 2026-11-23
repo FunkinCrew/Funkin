@@ -105,13 +105,20 @@ class Strumline extends FlxSpriteGroup
 
   // Used in-game to control the scroll speed within a song
   public var scrollSpeed:Float = 1.0;
-  public var scrollVelocity:Null<ScrollVelocityTimeline> = null;
-  public var visualSongPosition(default, null):Float = 0.0;
 
-  var lagStretchStart:Float = -1;
-  var lagPixels:Float = 0;
-  var lagPrevious:Float = 0;
-  var lagSongTime:Float = 0;
+  /**
+   * The lanes for each column of the strumline, which handle Scroll Velocity events.
+   */
+  public var velocityLanes:Array<ScrollVelocityLane> = [];
+
+  /**
+   * How far the notes are from the strumline, in pixels. This is used to calculate the Y position of a note.
+   */
+  public function noteDistance(direction:NoteDirection, strumTime:Float):Float
+  {
+    var lane:Null<ScrollVelocityLane> = velocityLanes[direction];
+    return (lane != null) ? lane.distance(strumTime) : strumTime - conductorInUse.songPosition;
+  }
 
   /**
    * Reset the scroll speed to the current chart's scroll speed.
@@ -613,28 +620,12 @@ class Strumline extends FlxSpriteGroup
    */
   public function updateNotes():Void
   {
-    var velocity:Null<ScrollVelocityTimeline> = scrollVelocity;
     var songTime:Float = conductorInUse.songPosition;
-    if (velocity != null)
+    var renderWindowStart:Float = songTime + renderDistanceMs;
+    for (lane in velocityLanes)
     {
-      var stretchStart:Float = velocity.stretchStartAt(songTime);
-      var lag:Float = songTime - velocity.visualTime(songTime);
-      if (stretchStart != lagStretchStart || songTime < lagSongTime)
-      {
-        lagStretchStart = stretchStart;
-        lagPixels = lag * scrollSpeed;
-      }
-      else
-      {
-        lagPixels = ScrollVelocityTimeline.stepLag(lagPixels, lagPrevious, lag, scrollSpeed);
-      }
-      lagPrevious = lag;
-      lagSongTime = songTime;
-      visualSongPosition = (stretchStart < 0) ? songTime - lag : ScrollVelocityTimeline.lagToVisual(songTime, lagPixels, lag, scrollSpeed);
-    }
-    else
-    {
-      visualSongPosition = songTime;
+      lane.update(songTime, scrollSpeed);
+      renderWindowStart = Math.max(renderWindowStart, lane.spawnTime(renderDistanceMs));
     }
 
     if (noteData.length == 0) return;
@@ -646,7 +637,6 @@ class Strumline extends FlxSpriteGroup
 
     var songStart:Float = PlayState.instance?.startTimestamp ?? 0.0;
     var hitWindowStart:Float = conductorInUse.songPosition - Constants.HIT_WINDOW_MS;
-    var renderWindowStart:Float = Math.max(conductorInUse.songPosition, visualSongPosition) + renderDistanceMs;
 
     for (noteIndex in nextNoteIndex...noteData.length)
     {
@@ -682,7 +672,7 @@ class Strumline extends FlxSpriteGroup
     {
       if (note == null || !note.alive) continue;
       // Set the note's position.
-      if (!customPositionData) note.y = Strumline.noteY(noteOriginY, note.strumTime - visualSongPosition, noteRate, note.yOffset);
+      if (!customPositionData) note.y = Strumline.noteY(noteOriginY, noteDistance(note.direction, note.strumTime), noteRate, note.yOffset);
 
       // If the note is miss
       var isOffscreen:Bool = isDownscroll ? note.y > FlxG.height : note.y < -note.height;
@@ -761,11 +751,11 @@ class Strumline extends FlxSpriteGroup
         {
           if (isDownscroll)
           {
-            holdNote.y = this.y - INITIAL_OFFSET + visualNoteY(holdNote.strumTime) - holdNote.height + STRUMLINE_SIZE / 2 + holdNote.yOffset;
+            holdNote.y = this.y - INITIAL_OFFSET + visualNoteY(holdNote.noteDirection, holdNote.strumTime) - holdNote.height + STRUMLINE_SIZE / 2 + holdNote.yOffset;
           }
           else
           {
-            holdNote.y = this.y - INITIAL_OFFSET + visualNoteY(holdNote.strumTime) + yOffset + STRUMLINE_SIZE / 2 + holdNote.yOffset;
+            holdNote.y = this.y - INITIAL_OFFSET + visualNoteY(holdNote.noteDirection, holdNote.strumTime) + yOffset + STRUMLINE_SIZE / 2 + holdNote.yOffset;
           }
         }
 
@@ -782,7 +772,8 @@ class Strumline extends FlxSpriteGroup
         holdConfirm(holdNote.noteDirection);
         holdNote.visible = true;
 
-        holdNote.sustainLength = (holdNote.strumTime + holdNote.fullSustainLength) - visualSongPosition;
+        holdNote.lengthScale = 1;
+        holdNote.sustainLength = noteDistance(holdNote.noteDirection, holdNote.strumTime + holdNote.fullSustainLength);
 
         if (holdNote.sustainLength <= 10)
         {
@@ -795,15 +786,18 @@ class Strumline extends FlxSpriteGroup
         // Hold note is new, render it normally.
         holdNote.visible = true;
 
+        var lane:Null<ScrollVelocityLane> = velocityLanes[holdNote.noteDirection];
+        if (lane != null) holdNote.lengthScale = lane.lengthScale(holdNote.strumTime, holdNote.fullSustainLength);
+
         if (!customPositionData)
         {
           if (isDownscroll)
           {
-            holdNote.y = this.y - INITIAL_OFFSET + visualNoteY(holdNote.strumTime) - holdNote.height + STRUMLINE_SIZE / 2 + holdNote.yOffset;
+            holdNote.y = this.y - INITIAL_OFFSET + visualNoteY(holdNote.noteDirection, holdNote.strumTime) - holdNote.height + STRUMLINE_SIZE / 2 + holdNote.yOffset;
           }
           else
           {
-            holdNote.y = this.y - INITIAL_OFFSET + visualNoteY(holdNote.strumTime) + STRUMLINE_SIZE / 2 + holdNote.yOffset;
+            holdNote.y = this.y - INITIAL_OFFSET + visualNoteY(holdNote.noteDirection, holdNote.strumTime) + STRUMLINE_SIZE / 2 + holdNote.yOffset;
           }
         }
       }
@@ -1149,10 +1143,11 @@ class Strumline extends FlxSpriteGroup
       note.holdNoteSprite.hitNote = true;
       note.holdNoteSprite.missedNote = false;
 
-      note.holdNoteSprite.sustainLength = Math.min(
-        note.holdNoteSprite.fullSustainLength,
-        (note.holdNoteSprite.strumTime + note.holdNoteSprite.fullSustainLength) - visualSongPosition
-      );
+      // From here the length is the distance left to the end, which is already scaled.
+      var holdEnd:Float = note.holdNoteSprite.strumTime + note.holdNoteSprite.fullSustainLength;
+      var holdLength:Float = note.holdNoteSprite.fullSustainLength * note.holdNoteSprite.lengthScale;
+      note.holdNoteSprite.lengthScale = 1;
+      note.holdNoteSprite.sustainLength = Math.min(holdLength, noteDistance(note.holdNoteSprite.noteDirection, holdEnd));
 
       // Re-position it so it's correct.
       updateClippedHoldNote(note.holdNoteSprite);
@@ -1191,9 +1186,9 @@ class Strumline extends FlxSpriteGroup
     }
   }
 
-  function visualNoteY(strumTime:Float):Float
+  function visualNoteY(direction:NoteDirection, strumTime:Float):Float
   {
-    return Constants.PIXELS_PER_MS * (visualSongPosition - strumTime) * scrollSpeed * (isDownscroll ? 1 : -1);
+    return Constants.PIXELS_PER_MS * -noteDistance(direction, strumTime) * scrollSpeed * (isDownscroll ? 1 : -1);
   }
 
   function updateClippedHoldNote(holdNote:SustainTrail):Void
@@ -1427,6 +1422,7 @@ class Strumline extends FlxSpriteGroup
       holdNoteSprite.strumTime = note.time;
       holdNoteSprite.noteDirection = note.getDirection();
       holdNoteSprite.fullSustainLength = note.length;
+      holdNoteSprite.lengthScale = 1;
       holdNoteSprite.sustainLength = note.length;
       holdNoteSprite.missedNote = false;
       holdNoteSprite.hitNote = false;

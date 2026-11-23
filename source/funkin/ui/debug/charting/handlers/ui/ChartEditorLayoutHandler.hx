@@ -196,30 +196,23 @@ class ChartEditorLayoutHandler
     state.gridCursorLine.visible = false;
     state.gridCursorLine.zIndex = 17;
 
-    var playerView:FlxSprite = new FlxSprite().makeGraphic(1, 1, 0x3033C6FF);
-    playerView.origin.set(0, 0);
-    playerView.visible = false;
-    playerView.zIndex = 17;
-    state.add(playerView);
-    state.gridPlayerView = playerView;
-    var playerViewEdge:FlxSprite = new FlxSprite().makeGraphic(1, 1, 0xC033C6FF);
-    playerViewEdge.origin.set(0, 0);
-    playerViewEdge.visible = false;
-    playerViewEdge.zIndex = 17;
-    state.add(playerViewEdge);
-    state.gridPlayerViewEdge = playerViewEdge;
-    var opponentView:FlxSprite = new FlxSprite().makeGraphic(1, 1, 0x3033C6FF);
-    opponentView.origin.set(0, 0);
-    opponentView.visible = false;
-    opponentView.zIndex = 17;
-    state.add(opponentView);
-    state.gridOpponentView = opponentView;
-    var opponentViewEdge:FlxSprite = new FlxSprite().makeGraphic(1, 1, 0xC033C6FF);
-    opponentViewEdge.origin.set(0, 0);
-    opponentViewEdge.visible = false;
-    opponentViewEdge.zIndex = 17;
-    state.add(opponentViewEdge);
-    state.gridOpponentViewEdge = opponentViewEdge;
+    state.gridColumnViews = [];
+    state.gridColumnViewEdges = [];
+    for (_ in 0...ChartEditorState.STRUMLINE_SIZE * 2)
+    {
+      var columnView:FlxSprite = new FlxSprite().makeGraphic(1, 1, 0x3033C6FF);
+      columnView.origin.set(0, 0);
+      columnView.visible = false;
+      columnView.zIndex = 17;
+      state.add(columnView);
+      state.gridColumnViews.push(columnView);
+      var columnViewEdge:FlxSprite = new FlxSprite().makeGraphic(1, 1, 0xC033C6FF);
+      columnViewEdge.origin.set(0, 0);
+      columnViewEdge.visible = false;
+      columnViewEdge.zIndex = 17;
+      state.add(columnViewEdge);
+      state.gridColumnViewEdges.push(columnViewEdge);
+    }
     var durationBar:FunkinSprite = new FunkinSprite().makeSolidColor(1, 1, ChartEditorGridInteractionHandler.EVENT_DURATION_COLOR);
     durationBar.origin.set(0, 0);
     durationBar.visible = false;

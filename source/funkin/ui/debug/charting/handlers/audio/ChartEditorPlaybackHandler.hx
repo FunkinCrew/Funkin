@@ -261,38 +261,45 @@ class ChartEditorPlaybackHandler
    */
   public static function handlePlayerView(state:ChartEditorState):Void
   {
+    if (!state.showPlayerView)
+    {
+      for (sprite in state.gridColumnViews) sprite.visible = false;
+      for (edge in state.gridColumnViewEdges) edge.visible = false;
+      return;
+    }
+
     var songMs:Float = playheadSongMs(state);
-    var width:Float = ChartEditorState.GRID_SIZE * ChartEditorState.STRUMLINE_SIZE;
+    var columnWidth:Float = ChartEditorState.GRID_SIZE;
     var gridX:Float = state.gridTiledSprite?.x ?? ChartEditorState.GRID_X_POS;
     var downscroll:Bool = Preferences.downscroll;
     var strumlineOffsetY:Float = 0;
-    if (state.showPlayerView && downscroll)
+    if (downscroll)
     {
       var style:Null<funkin.play.notes.notestyle.NoteStyle> = funkin.data.notestyle.NoteStyleRegistry.instance.fetchEntry(state.currentSongNoteStyle);
       strumlineOffsetY = style?.getStrumlineOffsets()[1] ?? 0;
     }
-    placeView(
-      state,
-      state.gridPlayerView,
-      state.gridPlayerViewEdge,
-      gridX + width,
-      width,
-      songMs,
-      ChartEditorTimeScale.visualTime(songMs),
-      downscroll,
-      strumlineOffsetY
-    );
-    placeView(
-      state,
-      state.gridOpponentView,
-      state.gridOpponentViewEdge,
-      gridX,
-      width,
-      songMs,
-      ChartEditorTimeScale.visualTime(songMs, true),
-      downscroll,
-      strumlineOffsetY
-    );
+
+    for (side in 0...2)
+    {
+      var opponent:Bool = side == 1;
+      var sideX:Float = opponent ? gridX : gridX + columnWidth * ChartEditorState.STRUMLINE_SIZE;
+      var sideMs:Float = ChartEditorTimeScale.visualTime(songMs, opponent);
+      for (column in 0...ChartEditorState.STRUMLINE_SIZE)
+      {
+        var index:Int = side * ChartEditorState.STRUMLINE_SIZE + column;
+        var visualMs:Float = ChartEditorTimeScale.columnIsShared(opponent, column) ? sideMs : ChartEditorTimeScale.visualTime(songMs, opponent, column);
+        placeView(
+          state,
+          state.gridColumnViews[index],
+          state.gridColumnViewEdges[index],
+          sideX + columnWidth * column,
+          columnWidth,
+          songMs,
+          visualMs,
+          ChartEditorTimeScale.columnViewEnd(visualMs, songMs, opponent, column, downscroll, strumlineOffsetY)
+        );
+      }
+    }
   }
 
   static function placeView(state:ChartEditorState,
@@ -302,18 +309,14 @@ class ChartEditorPlaybackHandler
     width:Float,
     songMs:Float,
     visualMs:Float,
-    downscroll:Bool,
-    strumlineOffsetY:Float):Void
+    endMs:Float):Void
   {
     if (sprite == null || edge == null) return;
-    sprite.visible = state.showPlayerView;
-    edge.visible = state.showPlayerView;
-    if (!sprite.visible) return;
+    sprite.visible = true;
+    edge.visible = true;
 
-    var endMs:Float = ChartEditorTimeScale.playerViewEnd(visualMs, songMs, downscroll, strumlineOffsetY);
-    var startPixels:Float =
-      (Math.abs(visualMs - songMs) > 0.5) ? ChartEditorTimeScale.msToPixels(visualMs) : state.scrollPositionInPixels
-        + state.playheadPositionInPixels;
+    var startPixels:Float = (Math.abs(visualMs - songMs) > 0.5) ? ChartEditorTimeScale.msToPixels(visualMs) : state.scrollPositionInPixels
+      + state.playheadPositionInPixels;
     var start:Float = state.gridToScreenY(startPixels);
     var cutoff:Float = state.gridToScreenY(ChartEditorTimeScale.msToPixels(Math.max(0, endMs)));
     var top:Float = Math.min(start, cutoff);

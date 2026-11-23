@@ -45,6 +45,19 @@ class SustainTrail extends funkin.graphics.FunkinSprite
   public var noteDirection:NoteDirection = 0;
   public var sustainLength(default, set):Float = 0; // millis
   public var fullSustainLength:Float = 0;
+
+  /**
+   * Allows for squishing or stretching the sustain note without changing the actual length of the note.
+   */
+  public var lengthScale(default, set):Float = 1;
+
+  function set_lengthScale(value:Float):Float
+  {
+    if (lengthScale == value) return value;
+    lengthScale = value;
+    triggerRedraw();
+    return value;
+  }
   public var parentStrumline:Strumline;
   public var cover:NoteHoldCover = null;
 
@@ -339,7 +352,7 @@ class SustainTrail extends funkin.graphics.FunkinSprite
       noteStyleOffsets = noteStyle.getHoldNoteOffsets();
     }
 
-    graphicHeight = sustainHeight(sustainLength, parentStrumline?.scrollSpeed ?? 1.0);
+    graphicHeight = sustainHeight(sustainLength * lengthScale, parentStrumline?.scrollSpeed ?? 1.0);
     // instead of scrollSpeed, PlayState.SONG.speed
 
     flipY = Preferences.downscroll
@@ -394,7 +407,7 @@ class SustainTrail extends funkin.graphics.FunkinSprite
 
   function triggerRedraw()
   {
-    graphicHeight = sustainHeight(sustainLength, parentStrumline?.scrollSpeed ?? 1.0);
+    graphicHeight = sustainHeight(sustainLength * lengthScale, parentStrumline?.scrollSpeed ?? 1.0);
 
     if (customVertexData)
     {

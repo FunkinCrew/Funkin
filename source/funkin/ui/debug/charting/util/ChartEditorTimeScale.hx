@@ -140,6 +140,20 @@ class ChartEditorTimeScale
     velocity = new funkin.play.notes.ScrollVelocityTimeline(events, 'player');
     opponentVelocity = new funkin.play.notes.ScrollVelocityTimeline(events, 'opponent');
 
+    columnVelocities = [];
+    columnTracks = [];
+    for (side in 0...2)
+    {
+      var name:String = (side == 0) ? 'player' : 'opponent';
+      var shared:funkin.play.notes.ScrollVelocityTimeline = (side == 0) ? velocity : opponentVelocity;
+      for (column in 0...funkin.play.notes.Strumline.KEY_COUNT)
+      {
+        var own:funkin.play.notes.ScrollVelocityTimeline = new funkin.play.notes.ScrollVelocityTimeline(events, name, null, false, column);
+        columnVelocities.push((own.segments.length == shared.segments.length) ? shared : own);
+        columnTracks.push(new funkin.play.notes.ScrollVelocityTimeline(events, name, null, true, column));
+      }
+    }
+
     var baseSpeed:Float = (chartScrollSpeed > 0) ? chartScrollSpeed : 1;
     var points:Array<ScrollSpeedPoint> = [{
       time: 0,
@@ -243,14 +257,52 @@ class ChartEditorTimeScale
   static var opponentVelocity:Null<funkin.play.notes.ScrollVelocityTimeline> = null;
 
   /**
+   * The Scroll Velocity events of each column, in the same order.
+   */
+  static var columnVelocities:Array<funkin.play.notes.ScrollVelocityTimeline> = [];
+
+  /**
+   * The non-destructive Scroll Velocity events of each column, in the same order.
+   */
+  static var columnTracks:Array<funkin.play.notes.ScrollVelocityTimeline> = [];
+
+  static inline function columnIndex(opponent:Bool, column:Int):Int
+  {
+    return (opponent ? funkin.play.notes.Strumline.KEY_COUNT : 0) + column;
+  }
+
+  /**
+   * Whether a column's Scroll Velocity events are the same as its strumline's, so it can share the timeline.
+   */
+  public static function columnIsShared(opponent:Bool, column:Int):Bool
+  {
+    return columnVelocities[columnIndex(opponent, column)] == (opponent ? opponentVelocity : velocity);
+  }
+
+  /**
+   * The song time of the notes at a column's receptors, after Scroll Velocity events.
+   * @param visualMs The column's `visualTime`.
+   * @param ms The real song time.
+   */
+  public static function columnViewEnd(visualMs:Float, ms:Float, opponent:Bool, column:Int, downscroll:Bool = false, strumlineOffsetY:Float = 0):Float
+  {
+    var end:Float = playerViewEnd(visualMs, ms, downscroll, strumlineOffsetY);
+    var track:Null<funkin.play.notes.ScrollVelocityTimeline> = columnTracks[columnIndex(opponent, column)];
+    if (track == null || !track.hasEvents || end <= ms) return end;
+    // The notes travel the same distance to the receptor, but cover a different length of the song doing it.
+    return track.reach(ms, end - ms);
+  }
+
+  /**
    * The song time of the notes at a strumline's receptors, after Scroll Velocity events.
    * @param opponent Whether to use the opponent's Scroll Velocity events instead of the player's.
+   * @param column The column to add the events of, or -1 for only the ones for every column.
    */
-  public static function visualTime(ms:Float, opponent:Bool = false):Float
+  public static function visualTime(ms:Float, opponent:Bool = false, column:Int = -1):Float
   {
     // Disabled to allow for constant scroll speed to show visual time
     // if (CONSTANT_SCROLL) return ms;
-    var line:Null<funkin.play.notes.ScrollVelocityTimeline> = opponent ? opponentVelocity : velocity;
+    var line:Null<funkin.play.notes.ScrollVelocityTimeline> = (column < 0) ? (opponent ? opponentVelocity : velocity) : columnVelocities[columnIndex(opponent, column)];
     if (line == null) return ms;
     var visual:Float = line.visualTime(ms);
     var start:Float = line.stretchStartAt(ms);
