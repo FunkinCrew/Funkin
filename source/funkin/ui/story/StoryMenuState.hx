@@ -396,10 +396,6 @@ class StoryMenuState extends MusicBeatState
     var commaSeparated:Bool = true;
     scoreText.text = 'LEVEL SCORE: ${FlxStringUtil.formatMoney(highScoreLerp, false, commaSeparated)}';
 
-    levelTitleText.text = currentLevel?.getTitle() ?? 'Unknown';
-
-    levelTitleText.x = FlxG.width - (levelTitleText.width + Math.max(10, FullScreenScaleMode.gameNotchSize.x)); // Right align.
-
     handleKeyPresses();
 
     if ((FlxG.sound.music?.volume ?? 1.0) < 0.8)
@@ -559,6 +555,10 @@ class StoryMenuState extends MusicBeatState
         item.alpha = 0.6;
       }
     }
+
+    levelTitleText.text = currentLevel?.getTitle() ?? 'Unknown';
+
+    levelTitleText.x = FlxG.width - (levelTitleText.width + Math.max(10, FullScreenScaleMode.gameNotchSize.x)); // Right align.
 
     if (currentIndex != prevIndex) FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu').toFlxSoundAsset(), 0.4);
 
