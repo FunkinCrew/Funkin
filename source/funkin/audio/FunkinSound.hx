@@ -225,7 +225,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    * @param onLoad A function to call when the sound is loaded.
    * @return The constructed `FunkinSound` object, or `null` if the sound failed to be loaded.
    */
-  @:deprecated
+  @:deprecated("Use `loadSound()` instead.")
   public static function load(embeddedSound:FlxSoundAsset,
     volume:Float = 1.0,
     looped:Bool = false,
@@ -252,7 +252,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
       // Backwards compatibility for `FunkinSound.load(openfl.media.Sound)`
       var sound:FunkinSound = new FunkinSound();
       FlxG.sound.list.add(sound);
-      sound.loadEmbedded(embeddedSound, looped, autoDestroy, onComplete);
+      sound.loadAudio(embeddedSound, false, looped, autoDestroy, onComplete);
 
       return sound;
     }
@@ -292,7 +292,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    * @param onLoad A function to call when the sound is finished loading.
    * @return The constructed `FunkinSound` object, or `null` if the sound failed to be loaded.
    */
-  @:deprecated
+  @:deprecated("Use `playSoundOnce()` instead.")
   public static function playOnce(assetKey:String, volume:Float = 1.0, ?onComplete:Void->Void, ?onLoad:Void->Void):Null<FunkinSound>
   {
     return FunkinSound.playSoundOnce(Paths.sound(assetKey), {
@@ -389,7 +389,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    * @param params A set of parameters for playback.
    * @return Whether the sound successfully played.
    */
-  @:deprecated
+  @:deprecated("Use `playMusicTrack()` instead.")
   public static function playMusic(assetKey:String, ?params:FunkinMusicCompatParams):Bool
   {
     var usePartial:Bool = params?.partialParams?.loadPartial ?? false;
@@ -470,7 +470,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 
       // Load the sound.
       // Sets `exists = true` as a side effect.
-      sound.loadEmbedded(partialSound, looped, autoDestroy, params?.onComplete);
+      sound.loadAudio(partialSound, false, looped, autoDestroy, params?.onComplete);
 
       sound._label = '${assetPath.toString()}';
 
