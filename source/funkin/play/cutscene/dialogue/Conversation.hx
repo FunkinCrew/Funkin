@@ -181,7 +181,13 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
 
     if (_data.music == null || (_data.music.asset ?? '') == '') return;
 
-    music = FunkinSound.load(Paths.music(_data.music.asset).audio().toFlxSoundAsset(), 0.0, _data.music.looped ?? false, true, true);
+    music = FunkinSound.loadSound(Paths.music(_data.music.asset).audio(), {
+      volume: 0.0,
+      looped: _data.music.looped ?? false,
+      autoDestroy: true,
+      autoPlay: true,
+      stream: true
+    });
     var fadeTime:Float = _data.music.fadeTime ?? 0.0;
 
     if (fadeTime > 0.0)

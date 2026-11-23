@@ -1560,9 +1560,10 @@ class ModMenuState extends MusicBeatState
           funkin.assets.Paths.xml('ui/mods/gfwire')
         ]);
 
+      case MUSIC:
+        results.push(Paths.music('ui/mods/mod-menu-ambience').audio());
       case SOUND:
-        results.appendUnique([funkin.assets.Paths.music('ui/mods/mod-menu-ambience').audio()]);
-        results.appendUnique(funkin.assets.Assets.listInPath('ui/mods/sounds/', SOUND));
+        results.append(funkin.assets.Assets.listInPath('ui/mods/sounds/', SOUND));
 
       case FONT:
         results.appendUnique([funkin.assets.Paths.file('ui/fonts/FunkinLingLong', 'otf')]);

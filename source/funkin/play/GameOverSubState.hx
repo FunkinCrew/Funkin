@@ -9,6 +9,9 @@ import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import flixel.util.typeLimit.NextState;
+import funkin.assets.Assets;
+import funkin.assets.Paths;
 import funkin.util.HapticUtil;
 import funkin.audio.FunkinSound;
 import funkin.assets.Assets;
@@ -416,12 +419,14 @@ class GameOverSubState extends MusicBeatSubState
     // Start music at lower volume
     startDeathMusic(0.2, false);
     boyfriend.playAnimation('deathLoop' + animationSuffix);
-    deathQuoteSound = FunkinSound.playOnce(deathQuote, () ->
-    {
-      // Once the quote ends, fade in the game over music.
-      if (!isEnding && gameOverMusic != null)
+    deathQuoteSound = FunkinSound.playSoundOnce(Paths.sound(deathQuote), {
+      onComplete: () ->
       {
-        gameOverMusic.fadeIn(4, 0.2, 1);
+        // Once the quote ends, fade in the game over music.
+        if (!isEnding && gameOverMusic != null)
+        {
+          gameOverMusic.fadeIn(4, 0.2, 1);
+        }
       }
     });
   }
@@ -569,7 +574,7 @@ class GameOverSubState extends MusicBeatSubState
    * Rather than hardcoding stuff, we look for the presence of a music file
    * with the given suffix, and strip it down until we find one that's valid.
    */
-  function resolveMusicPath(suffix:String, starting:Bool = false, ending:Bool = false):Null<String>
+  function resolveMusicPath(suffix:String, starting:Bool = false, ending:Bool = false):Null<AssetPath>
   {
     var soundName:String = 'game-over' + suffix;
     var basePath:String = getDeathAudioPath(soundName + '/' + soundName);
@@ -583,13 +588,15 @@ class GameOverSubState extends MusicBeatSubState
       basePath += '-start';
     }
 
-    var musicPath:String = Paths.music(basePath);
+    var musicAssetPath:AssetPath = Paths.music(basePath).audio();
+    var musicPath:String = musicAssetPath.toString();
     var musicSuffix:String = suffix;
     trace('Checking path: $musicPath');
     while (!Assets.exists(musicPath) && musicSuffix.length > 0)
     {
       musicSuffix = musicSuffix.split('-').slice(0, -1).join('-');
-      musicPath = Paths.music(basePath + musicSuffix);
+      musicAssetPath = Paths.music(basePath + musicSuffix).audio();
+      musicPath = musicAssetPath.toString();
       trace('Checking path: $musicPath');
     }
     if (!Assets.exists(musicPath))
@@ -602,12 +609,12 @@ class GameOverSubState extends MusicBeatSubState
       }
 
       FlxG.log.error(
-        '[GAMEOVER] Could not find game over music (expected path "${funkin.assets.Paths.music(basePath, null, false)}" based on suffix "$musicSuffix")!'
+        '[GAMEOVER] Could not find game over music (expected path "${funkin.assets.Paths.music(basePath, null, false).toString()}" based on suffix "$musicSuffix")!'
       );
       return null;
     }
     trace('Resolved music path: ' + musicPath);
-    return musicPath;
+    return musicAssetPath;
   }
 
   /**
@@ -617,7 +624,7 @@ class GameOverSubState extends MusicBeatSubState
    */
   public function startDeathMusic(startingVolume:Float = 1, force:Bool = false):Void
   {
-    var musicPath:Null<String> = resolveMusicPath(musicSuffix, isStarting, isEnding);
+    var musicPath:Null<AssetPath> = resolveMusicPath(musicSuffix, isStarting, isEnding);
     var onComplete:Void->Void = () -> {};
 
     if (gameOverSfx != null && isEnding) destroyGameOverSfx();
@@ -649,7 +656,9 @@ class GameOverSubState extends MusicBeatSubState
     {
       if (gameOverMusic != null) gameOverMusic.stop();
 
-      gameOverMusic = FunkinSound.load(musicPath);
+      gameOverMusic = FunkinSound.loadSound(musicPath, {
+        stream: true
+      });
       if (gameOverMusic == null) return;
 
       gameOverMusic.volume = startingVolume;
@@ -729,10 +738,10 @@ class GameOverSubState extends MusicBeatSubState
   {
     blueballed = true;
 
-    final soundPath:String = Paths.sound(getDeathAudioPath('loss-sfx' + blueBallSuffix));
-    if (Assets.exists(soundPath))
+    final soundPath:AssetPath = Paths.sound(getDeathAudioPath('loss-sfx' + blueBallSuffix));
+    if (Assets.exists(soundPath.toString()))
     {
-      gameOverSfx = FunkinSound.playOnce(soundPath);
+      gameOverSfx = FunkinSound.playSoundOnce(soundPath);
     }
     else
     {
@@ -745,7 +754,7 @@ class GameOverSubState extends MusicBeatSubState
     final playerID:String = PlayerRegistry.instance.getCharacterOwnerId(boyfriend?.characterId) ?? 'bf';
 
     final audioPath:String = 'gameplay/playable-characters/$playerID/game-over/$location';
-    return funkin.assets.Paths.formatRelative(audioPath, 'gameplay/playable-characters/$playerID/game-over', Constants.EXT_SOUND);
+    return Paths.formatRelative(audioPath, 'gameplay/playable-characters/$playerID/game-over', Constants.EXT_SOUND);
   }
 
   /**

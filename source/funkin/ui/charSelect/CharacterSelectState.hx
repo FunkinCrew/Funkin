@@ -424,12 +424,13 @@ class CharacterSelectState extends MusicBeatSubState
         results.push(Paths.sound('ui/character-select/sounds/select'));
         results.push(Paths.sound('ui/character-select/sounds/unlock'));
         results.push(Paths.sound('ui/character-select/sounds/locked'));
-        results.push(Paths.sound('ui/character-select/sounds/static'));
         results.push(Paths.sound('ui/character-select/sounds/lights'));
         results.push(Paths.sound('ui/character-select/sounds/confirm'));
         results.push(Paths.sound('ui/main-menu/cancel-menu'));
-        results.push(Paths.music('ui/character-select/stay-funky').audio());
 
+      case MUSIC:
+        results.push(Paths.music('ui/character-select/stay-funky').audio());
+        results.push(Paths.sound('ui/character-select/sounds/static'));
       case TEXT:
         results.push(Paths.txt('ui/character-select/interface/icon-bop/info'));
 
@@ -632,6 +633,9 @@ class CharacterSelectState extends MusicBeatSubState
     lockedSound.loadEmbedded(Paths.sound('ui/character-select/sounds/locked').toFlxSoundAsset());
     lockedSound.volume = 0.7;
     FlxG.sound.list.add(lockedSound);
+
+    // Pre-caching the menu music for later.
+    // FlxG.sound.cache(Paths.sound('ui/character-select/stay-funky/stay-funky').toFlxSoundAsset());
 
     icons.doIntroTween();
 
