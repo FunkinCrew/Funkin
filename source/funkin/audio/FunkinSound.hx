@@ -473,12 +473,45 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 
     var result:Promise<FunkinSound> = new Promise<FunkinSound>();
 
-    var partialSoundRequest:Promise<Sound> = FlxPartialSound.partialLoadFromFile(assetPath.toString(), params?.start, params?.end);
+    var partialSoundRequest:Promise<Null<Sound>>;
 
+    #if web
+    partialSoundRequest = new Promise<Null<Sound>>();
     partialQueue.push(partialSoundRequest);
 
-    partialSoundRequest.future.onComplete((partialSound:Sound) ->
+    funkin.assets.Assets.loadBytes(assetPath).onComplete((bytes:openfl.utils.ByteArray) ->
     {
+      if (!partialQueue.contains(partialSoundRequest)) return;
+
+      var partialLoadRequest = FlxPartialSound.partialLoadFromBytes(assetPath.path, bytes, params?.start, params?.end);
+      partialLoadRequest.future.onComplete((partialSound:Null<Sound>) ->
+      {
+        if (!partialQueue.contains(partialSoundRequest)) return;
+        partialSoundRequest.complete(partialSound);
+      });
+      partialLoadRequest.future.onError((error:Dynamic) ->
+      {
+        if (!partialQueue.contains(partialSoundRequest)) return;
+        partialSoundRequest.error(error);
+      });
+    }).onError((error:Dynamic) ->
+      {
+        if (!partialQueue.contains(partialSoundRequest)) return;
+        partialSoundRequest.error(error);
+      });
+    #else
+    partialSoundRequest = FlxPartialSound.partialLoadFromFile(assetPath.toString(), params?.start, params?.end);
+    partialQueue.push(partialSoundRequest);
+    #end
+
+    partialSoundRequest.future.onComplete((partialSound:Null<Sound>) ->
+    {
+      if (partialSound == null)
+      {
+        result.error('Partial sound loading returned no sound: ${assetPath.toString()}');
+        return;
+      }
+
       // Once the partial sound is loaded, create a FunkinSound that contains its sound data.
       var sound:FunkinSound = new FunkinSound();
 
