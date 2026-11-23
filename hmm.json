@@ -61,7 +61,7 @@
     {
       "name": "flixel",
       "type": "git",
-      "ref": "fd2a112cd12a86b9f8e4b704571b9d0330aa51fc",
+      "ref": "1c7036de6910f4bdb32ed5603d43fdd188a315d8",
       "url": "https://github.com/FunkinCrew/flixel"
     },
     {
@@ -124,7 +124,7 @@
     {
       "name": "hxcpp",
       "type": "git",
-      "ref": "2cf1724fb16db4beb3d20368458e5f9a7b026850",
+      "ref": "8be3d0fbc0303d85448bf7e7519489f0566125e2",
       "url": "https://github.com/FunkinCrew/hxcpp"
     },
     {
@@ -180,7 +180,7 @@
     {
       "name": "lime",
       "type": "git",
-      "ref": "bfd1187b3b214be8220e19d6bc054bcd2cdb83f5",
+      "ref": "de3105c59e6f9c54d5a2c241130c3d8e45141cf8",
       "url": "https://github.com/FunkinCrew/lime"
     },
     {
@@ -192,7 +192,7 @@
     {
       "name": "openfl",
       "type": "git",
-      "ref": "3e07f8b542fe1994a6f5dd4bd2d3aca04ce93951",
+      "ref": "a48adb5d6fe75ab8c9abbf2f4a9abcc6f535834e",
       "url": "https://github.com/FunkinCrew/openfl"
     },
     {
