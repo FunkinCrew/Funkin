@@ -110,10 +110,10 @@ class FunkinSoundscape implements IFlxDestroyable
    */
   public function initialize():Void
   {
-    FunkinSound.playMusic(params.baseAmbiencePath, {
-      startingVolume: 0.0,
+    FunkinSound.playMusicTrack(funkin.assets.Paths.music(params.baseAmbiencePath), {
+      volume: 0.0,
       overrideExisting: true,
-      restartTrack: true
+      forceRestart: true
     });
 
     FlxG.sound.music.fadeIn(4.0, 0.0, 1.0, onSoundFadeIn);
