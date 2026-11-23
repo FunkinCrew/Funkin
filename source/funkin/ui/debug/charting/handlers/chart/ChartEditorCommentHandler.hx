@@ -90,7 +90,7 @@ class ChartEditorCommentHandler
     var height:Float = Math.max(0, Math.min(panel.expanded ? COMMENT_PANEL_HEIGHT : collapsedHeight(panel), bottom - top));
 
     // Fading and shit
-    var y:Float = ChartEditorTimeScale.msToPixels(comment.time) + state.renderedNotes.y;
+    var y:Float = state.gridToScreenY(ChartEditorTimeScale.msToPixels(comment.time));
     var fadeTop:Float = (y - top) / COMMENT_PANEL_FADE;
     var fadeBottom:Float = (bottom - (y + height)) / COMMENT_PANEL_FADE;
     var opacity:Float = Math.max(0, Math.min(1, Math.min(fadeTop, fadeBottom)));

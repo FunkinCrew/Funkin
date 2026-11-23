@@ -1,5 +1,7 @@
 package funkin.data.song;
 
+import funkin.assets.Paths.AssetPath;
+import funkin.assets.Paths.MusicAssetPathBuilder;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.data.song.migrator.SongData_v2_0_0.SongMetadata_v2_0_0;
 import funkin.data.song.migrator.SongData_v2_1_0.SongMetadata_v2_1_0;
@@ -328,6 +330,37 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
     return parser.value.migrate();
   }
 
+  /**
+   * Parse `SongMusicData` from a Music Asset Path.
+   *
+   * @param assetPath The Music asset path. Call `Paths.music()` to get one.
+   * @return The song metadata for the music track.
+   */
+  public function parseMusicMetadata(assetPath:MusicAssetPathBuilder):Null<SongMusicData>
+  {
+    var parser = new json2object.JsonParser<SongMusicData>({
+      ignoreUnknownVariables: true
+    });
+
+    switch (loadMusicMetadataFile(assetPath))
+    {
+      case {
+        fileName: fileName,
+        contents: contents
+      }:
+        parser.fromJson(contents, fileName);
+      default:
+        return null;
+    }
+
+    if (parser.errors.length > 0)
+    {
+      printErrors(parser.errors, assetPath.toString());
+      return null;
+    }
+    return parser.value;
+  }
+
   public function parseMusicData(id:String, ?variation:String):Null<SongMusicData>
   {
     variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
@@ -492,13 +525,31 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
     }
   }
 
+  function loadMusicMetadataFile(assetPath:MusicAssetPathBuilder):Null<JsonFile>
+  {
+    var entryAssetPath:AssetPath = assetPath.metadata();
+    if (!entryAssetPath.exists())
+    {
+      trace('  WARNING '.bold().bg_yellow() + ' Could not locate file ${assetPath.toString()}');
+      return null;
+    }
+    @:privateAccess
+    var rawJson:String = funkin.assets.Assets.getText(entryAssetPath);
+    if (rawJson == null) return null;
+    rawJson = rawJson.trim();
+    return {
+      fileName: assetPath.toString(),
+      contents: rawJson
+    };
+  }
+
   function loadMusicDataFile(id:String, ?variation:String):Null<JsonFile>
   {
     variation ??= Constants.DEFAULT_VARIATION;
     var entryFilePath:String = Paths.musicMetadata('$id', variation == Constants.DEFAULT_VARIATION ? '' : '-$variation');
     if (!Assets.exists(entryFilePath))
     {
-      trace('  WARNING '.bold().bg_yellow() + ' Could not locate file $entryFilePath');
+      trace(' WARNING '.bold().bg_yellow() + ' Could not locate file $entryFilePath');
       return null;
     }
     @:privateAccess

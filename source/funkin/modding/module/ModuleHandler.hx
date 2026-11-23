@@ -87,11 +87,11 @@ class ModuleHandler
     }
 
     var moduleCount:Int = scriptedModuleClassNames.length;
+    var completedCount:Int = 0;
     var perf:funkin.util.logging.Perf = new funkin.util.logging.Perf('loadModuleCacheAsync()');
 
     var checkAsyncProgress:Void->Void = () ->
     {
-      var completedCount = getModuleCount() + entryErrors.length;
       if (completedCount == moduleCount)
       {
         // Finish the promise.
@@ -113,6 +113,7 @@ class ModuleHandler
           error: state.error
         });
         trace('  Failed to load module (${moduleId}): ${state.error}');
+        completedCount++;
         checkAsyncProgress();
       };
 
@@ -120,7 +121,13 @@ class ModuleHandler
     var onModuleLoadedAsync:(String,
       {module:Module, moduleCls:String}) -> Void = (_, state) ->
       {
+        if (moduleCache.exists(state.module.moduleId))
+        {
+          trace(' WARNING '.warning()
+            + ' Module "${state.moduleCls}" uses an ID that is already in use! ("${state.module.moduleId}") The existing module will be replaced.');
+        }
         onModuleLoaded(state.module, state.moduleCls);
+        completedCount++;
         checkAsyncProgress();
       };
 

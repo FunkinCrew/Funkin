@@ -50,8 +50,9 @@ class ChartEditorCommentPinSprite extends FunkinSprite
   function buildSprite():Void
   {
     loadTexture('ui/editors/chart-editor/comment-pin');
-    this.updateHitbox();
     this.angle = 270;
+    this.setSize(this.frameHeight, this.frameWidth);
+    this.centerOffsets();
   }
 
   /**
@@ -89,10 +90,13 @@ class ChartEditorCommentPinSprite extends FunkinSprite
   {
     if (commentData == null) return;
 
+    var previewTop:Float = ChartEditorState.NOTE_PREVIEW_Y_POS;
+    var previewBottom:Float = ChartEditorState.NOTE_PREVIEW_Y_POS + (chartEditorState.notePreview?.height ?? 0.0);
+    var downscroll:Bool = chartEditorState.isViewDownscroll;
     var position:Float = FlxMath.remapToRange( // Remap the comment timestamp...
       commentData.time, // ...from song time...
       0, chartEditorState.songLengthInMs, // ...to note preview position.
-      ChartEditorState.NOTE_PREVIEW_Y_POS, ChartEditorState.NOTE_PREVIEW_Y_POS + (chartEditorState.notePreview?.height ?? 0.0));
+      downscroll ? previewBottom : previewTop, downscroll ? previewTop : previewBottom);
 
     this.x = pinX();
     this.y = position - (this.height / 2);
@@ -103,7 +107,7 @@ class ChartEditorCommentPinSprite extends FunkinSprite
    */
   function pinX():Float
   {
-    return ChartEditorLayoutHandler.notePreviewXPos() - this.height + 6;
+    return ChartEditorLayoutHandler.notePreviewXPos() - this.width;
   }
 
   function updateColor():Void
@@ -164,8 +168,7 @@ class ChartEditorCommentPinSprite extends FunkinSprite
   function onMouseOver():Void
   {
     this.scale.set(1.2, 1.2);
-    this.x = pinX() - (this.height * 0.2);
-    updateTooltipPosition();
+    this.offset.x += this.width * 0.2;
   }
 
   /**
@@ -174,8 +177,7 @@ class ChartEditorCommentPinSprite extends FunkinSprite
   function onMouseOut():Void
   {
     this.scale.set(1.0, 1.0);
-    this.x = pinX();
-    updateTooltipPosition();
+    this.offset.x -= this.width * 0.2;
   }
 
   override public function kill()

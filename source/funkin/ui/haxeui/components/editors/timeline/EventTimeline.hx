@@ -590,8 +590,9 @@ private class EventTimelineEvents extends Events
     if (songLengthSteps > 0 && pxPerStep > 0)
     {
       var viewWidthSteps = _timeline.viewport.width / pxPerStep;
+      var virtualTotal = songLengthSteps + viewWidthSteps;
       _timeline.scrollbar.max = songLengthSteps;
-      _timeline.scrollbar.pageSize = viewWidthSteps;
+      _timeline.scrollbar.pageSize = (viewWidthSteps / virtualTotal) * songLengthSteps;
       _timeline.scrollbar.pos = _timeline.viewport.scrollOffsetSteps;
       _push(_pushedScroll, _timeline.scrollbar.pos);
     }

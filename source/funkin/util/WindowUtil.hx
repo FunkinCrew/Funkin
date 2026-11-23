@@ -8,6 +8,7 @@ using StringTools;
  * Utilities for operating on the current window, such as changing the title.
  */
 @:nullSafety
+@:noPatch
 class WindowUtil
 {
   /**

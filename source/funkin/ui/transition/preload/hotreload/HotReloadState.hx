@@ -95,6 +95,7 @@ class HotReloadState extends MusicBeatState
     if (isComplete)
     {
       funkin.modding.PolymodErrorHandler.printQueuedErrors();
+      funkin.data.DataError.printQueuedErrors();
 
       moveToTitleState();
     }

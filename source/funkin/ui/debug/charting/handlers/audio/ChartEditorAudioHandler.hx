@@ -551,7 +551,7 @@ class ChartEditorAudioHandler
         waveform.audioOffsetMs = 0;
         waveform.x = state.gridTiledSprite.x + ChartEditorState.GRID_SIZE * ChartEditorState.STRUMLINE_SIZE / 2;
         waveform.markDirty();
-        waveform.refresh(state.gridTiledSprite?.y ?? ChartEditorState.GRID_INITIAL_Y_POS);
+        waveform.refresh();
         continue;
       }
 
@@ -597,7 +597,7 @@ class ChartEditorAudioHandler
           waveform.x = 0;
       }
 
-      waveform.refresh(state.gridTiledSprite?.y ?? ChartEditorState.GRID_INITIAL_Y_POS);
+      waveform.refresh();
     }
 
     state.waveformsDirty = false;

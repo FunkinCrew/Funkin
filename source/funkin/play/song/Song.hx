@@ -1010,10 +1010,9 @@ class SongDifficulty
     var path:String = getInstPath(instId).toString();
     trace(' SONG '.bold().bg_note_down() + ' Playing instrumental track "$path" for song "${song.id}"');
 
-    FlxG.sound.music = FunkinSound.load(path, 1.0, false, false, true, false, null, null);
+    var instSound:FunkinSound = FunkinSound.load(path, 1.0, false, false, true, false, null, null);
 
-    // Workaround for a bug where FlxG.sound.music.update() was being called twice.
-    FlxG.sound.list.remove(FlxG.sound.music);
+    FunkinSound.setMusic(instSound);
   }
 
   /**

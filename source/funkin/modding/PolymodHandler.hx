@@ -294,7 +294,11 @@ class PolymodHandler
     {success:Int, total:Int}>
   {
     #if FEATURE_CPPIA
-    polymod.hscript._internal.PolymodCppiaClassReference.expectedVersion = lime.app.Application.current.meta.get('version');
+    var scriptVersion:String = haxe.macro.Compiler.getDefine('funkin_script');
+    var scriptVersionMin:String = haxe.macro.Compiler.getDefine('funkin_script_min');
+    var rule:String = '>=$scriptVersionMin <=$scriptVersion';
+    trace('Accepting cppia scripts stamped $rule');
+    polymod.hscript._internal.PolymodCppiaClassReference.acceptedVersions = rule;
     #end
 
     funkin.assets.FunkinAssetCache.instance.clearCoreAssetCache();
@@ -497,6 +501,10 @@ class PolymodHandler
 
     // Add blacklisting for prohibited classes and packages.
 
+    // `polymod.patch.Patches`
+    // Stop mods from being able to clear all patches, run arbitrary patches, or register their own declared patches.
+    Polymod.blacklistStaticFields(polymod.patch.Patches, ['clear', 'run', 'registerDeclared', 'setLoadOrder']);
+
     // `Sys`
     // Sys.command() can run malicious processes
     Polymod.blacklistImport('Sys');
@@ -512,6 +520,10 @@ class PolymodHandler
     // `cpp.Lib`
     // Lib.load() can load malicious DLLs
     Polymod.blacklistImport('cpp.Lib');
+
+    // `sys.Http`
+    // Grants access to the network, don't want untrusted mods stealing yo data.
+    Polymod.blacklistImport('sys.Http');
 
     // `haxe.Http`
     // An alias for `sys.Http`, which is also a blacklisted package.
@@ -632,6 +644,9 @@ class PolymodHandler
     for (cls in ClassMacro.listClassesInPackage('polymod'))
     {
       if (cls == null) continue;
+      // Exclude certain allowed classes that mods should have access to.
+      if (cls == polymod.Polymod.ModMetadata || cls == polymod.patch.PatchState || cls == polymod.hscript.PolymodScriptBridge) continue;
+
       var className:String = Type.getClassName(cls);
       Polymod.blacklistImport(className);
     }
@@ -693,6 +708,44 @@ class PolymodHandler
       'applySongRank',
       '_interp'
     ]);
+  }
+
+  /**
+   * Gets a specific mod's metadata by its ID.
+   * @param id The ID to use.
+   * @return The retrieved metadata.
+   */
+  public static function getMetadataByModId(id:String):Null<ModMetadata>
+  {
+    var allMods:Array<ModMetadata> = getAllMods();
+    for (mod in allMods)
+    {
+      if (mod.id == id)
+      {
+        return mod;
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Gets a specific mod's metadata by its directory name.
+   * @param dir The directory name to use.
+   * @return The retrieved metadata.
+   */
+  public static function getMetadataByModDir(dir:String):Null<ModMetadata>
+  {
+    var allMods:Array<ModMetadata> = getAllMods();
+    for (mod in allMods)
+    {
+      if (mod.dirName == dir)
+      {
+        return mod;
+      }
+    }
+
+    return null;
   }
 
   /**

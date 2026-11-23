@@ -186,7 +186,8 @@ class Save implements ConsoleClass implements ISerializable
       mobileOptions: {
         // Reasonable defaults.
         screenTimeout: false,
-        noAds: false
+        noAds: false,
+        renderScale: null
       },
       #end
       mods: {
@@ -220,6 +221,7 @@ class Save implements ConsoleClass implements ISerializable
         downscroll: false,
         showNoteKinds: true,
         showDifficultyHeatmap: false,
+        showPreviewReflections: true,
         showBeatLines: true,
         showSnapLines: true,
         showCursorLine: true,
@@ -343,6 +345,8 @@ class Save implements ConsoleClass implements ISerializable
   public var chartEditorShowNoteKinds:SaveProperty<Bool>;
   @:saveProperty(data.optionsChartEditor.showDifficultyHeatmap, false)
   public var chartEditorShowDifficultyHeatmap:SaveProperty<Bool>;
+  @:saveProperty(data.optionsChartEditor.showPreviewReflections, true)
+  public var chartEditorShowPreviewReflections:SaveProperty<Bool>;
   @:saveProperty(data.optionsChartEditor.showBeatLines, true)
   public var chartEditorShowBeatLines:SaveProperty<Bool>;
   @:saveProperty(data.optionsChartEditor.showSnapLines, true)
@@ -1622,6 +1626,13 @@ typedef SaveDataMobileOptions =
    * @default `false`
    */
   var noAds:Bool;
+
+  /**
+   * The maximum pixels per point to render at on mobile, capped at the screen's native scale.
+   * Null means the user has not picked one, so it is detected from the device specs.
+   * @default `null`
+   */
+  var renderScale:Null<Float>;
 }
 #end
 
@@ -1814,6 +1825,12 @@ typedef SaveDataChartEditorOptions =
    * @default `false`
    */
   var ?showDifficultyHeatmap:Bool;
+
+  /**
+   * Show a reflection under the characters in transparent preview windows in the Chart Editor.
+   * @default `true`
+   */
+  var ?showPreviewReflections:Bool;
 
   /**
    * Show a line on every beat in the Chart Editor.

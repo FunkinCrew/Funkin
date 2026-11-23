@@ -16,5 +16,13 @@ extern class MemoryUtil
    */
   @:native('Apple_MemoryUtil_GetCurrentProcessRss')
   static function getCurrentProcessRss():cpp.SizeT;
+
+  /**
+   * Retrieves the total physical memory of the device on Apple platforms.
+   *
+   * @return The physical memory in mb.
+   */
+  @:native('Apple_MemoryUtil_GetPhysicalMemory')
+  static function getPhysicalMemory():Int;
 }
 #end

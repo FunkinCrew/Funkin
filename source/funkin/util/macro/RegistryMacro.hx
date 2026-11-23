@@ -164,7 +164,7 @@ class RegistryMacro
     var createScriptedEntry:String = '${entryClsName}.scriptInit(clsName, "unknown")';
 
     var dataTypeClassName:String = '${dataType.module}.${dataType.name}';
-    var newJsonParser:String = 'new json2object.JsonParser<${dataTypeClassName}>({ignoreUnknownVariables: false})';
+    var newJsonParser:String = 'new json2object.JsonParser<${dataTypeClassName}>({ignoreUnknownVariables: true})';
     var dataFilePath:String = getRegistryDataFilePath(cls, fields);
 
     var paramsTypeClassName:String = '${paramsType.module}.${paramsType.name}';

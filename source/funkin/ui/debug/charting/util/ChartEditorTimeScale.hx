@@ -20,6 +20,11 @@ class ChartEditorTimeScale
   public static var CONSTANT_SCROLL(default, null):Bool = false;
 
   /**
+   * 1 for upscroll, -1 for downscroll.
+   */
+  public static var VIEW_DIRECTION(default, null):Float = 1;
+
+  /**
    * At a constant scroll speed of 1x, this many milliseconds take up one step's height.
    */
   public static final CONSTANT_SCROLL_REFERENCE_STEP_MS:Float = 125;

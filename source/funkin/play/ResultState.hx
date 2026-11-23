@@ -44,7 +44,6 @@ import funkin.ui.debug.charting.ChartEditorState;
 import funkin.ui.freeplay.FreeplayState;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.ui.story.StoryMenuState;
-import funkin.ui.transition.NextSubState;
 import funkin.ui.transition.Transition.TransitionType;
 import funkin.ui.transition.Transition;
 import funkin.util.DeviceUtil;
@@ -224,7 +223,7 @@ class ResultState extends MusicBeatSubState
         for (animData in playerAnimationDatas)
         {
           if (animData?.assetPath == null) continue;
-          
+
           switch (animData.renderType)
           {
             case 'animateatlas':
@@ -685,15 +684,17 @@ class ResultState extends MusicBeatSubState
       {
         if (!isChartingMode)
         {
-          FunkinSound.playMusic(musicPath.audio().toFlxSoundAsset(), {
-            startingVolume: 1.0,
-            overrideExisting: true,
-            restartTrack: true
+          FunkinSound.playMusicTrack(musicPath, {
+            volume: 1.0,
+            forceRestart: true
           });
         }
         else
         {
-          resultsMusic = FunkinSound.load(musicPath.audio().toFlxSoundAsset(), 1.0, true, false, true);
+          resultsMusic = FunkinSound.loadSound(musicPath.audio(), {
+            looped: true,
+            autoPlay: true
+          });
         }
       }
     });
@@ -1104,7 +1105,6 @@ class ResultState extends MusicBeatSubState
 
       // If shouldFade is false
       var transition:TransitionType = None;
-      var shouldUseSubstate = false;
 
       var stickerPackId:Null<String> = null;
 
@@ -1129,7 +1129,6 @@ class ResultState extends MusicBeatSubState
         targetState = () -> new StoryMenuState();
         assetQuery = StoryMenuState.queryAssets;
 
-        shouldUseSubstate = false;
         transition = Sticker(stickerPackId);
 
         if (PlayerRegistry.instance.hasNewCharacter())
@@ -1138,10 +1137,14 @@ class ResultState extends MusicBeatSubState
 
           for (charId in newCharacters)
           {
-            shouldUseSubstate = true;
             transition = BlackScreen(Fade(North), Fade(South));
+
+            // Use a local variable to prevent CharacterUnlockState from targeting itself...
+            var nextState = targetState;
+            var nextQuery = assetQuery;
+
             // This works recursively, ehe!
-            targetState = () -> new funkin.ui.charSelect.CharacterUnlockState(charId, targetState, assetQuery);
+            targetState = () -> new funkin.ui.charSelect.CharacterUnlockState(charId, nextState, nextQuery);
             assetQuery = funkin.ui.charSelect.CharacterUnlockState.queryAssets.bind(_, charId);
           }
         }
@@ -1201,44 +1204,19 @@ class ResultState extends MusicBeatSubState
       // Shows a interstital ad on mobile devices each week victory.
       if (PlayStatePlaylist.isStoryMode || (AdMobUtil.PLAYING_COUNTER >= AdMobUtil.MAX_BEFORE_AD))
       {
-        busy = true;
-
         AdMobUtil.loadInterstitial(function():Void
         {
           AdMobUtil.PLAYING_COUNTER = 0;
 
-          busy = false;
-
-          if (shouldUseSubstate)
-          {
-            transitionToSubState(targetState, assetQuery, transition, PlayStatePlaylist.isStoryMode ? null : playerCharacterId);
-          }
-          else
-          {
-            transitionToState(targetState, assetQuery, transition, PlayStatePlaylist.isStoryMode ? null : playerCharacterId);
-          }
-        });
-      }
-      else
-      {
-        if (shouldUseSubstate)
-        {
-          transitionToSubState(targetState, assetQuery, transition, PlayStatePlaylist.isStoryMode ? null : playerCharacterId);
-        }
-        else
-        {
           transitionToState(targetState, assetQuery, transition, PlayStatePlaylist.isStoryMode ? null : playerCharacterId);
-        }
-      }
-      #else
-      if (shouldUseSubstate)
-      {
-        transitionToSubState(targetState, assetQuery, transition, PlayStatePlaylist.isStoryMode ? null : playerCharacterId);
+        });
       }
       else
       {
         transitionToState(targetState, assetQuery, transition, PlayStatePlaylist.isStoryMode ? null : playerCharacterId);
       }
+      #else
+      transitionToState(targetState, assetQuery, transition);
       #end
     }
 

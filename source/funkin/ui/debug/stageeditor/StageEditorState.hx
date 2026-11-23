@@ -540,21 +540,24 @@ class StageEditorState extends UIState
   {
     if (!allowInput || welcomeDialog != null) return;
 
-    var data:Bytes = FileUtil.readBytesFromPath(file.path);
+    var path:String = file.path;
 
-    if (data != null)
+    file.readFile().onComplete(function(data:Bytes)
     {
+      if (data == null) return;
+
       objNameDialog = new NewObjDialog(this, data);
-      objNameDialog.bitmapName = new haxe.io.Path(file.path).file;
+      objNameDialog.bitmapName = new haxe.io.Path(path).file;
       objNameDialog.showDialog();
 
       objNameDialog.onDialogClosed = function(_)
       {
         objNameDialog = null;
       }
-
-      return;
-    }
+    }).onError(function(error:Dynamic)
+    {
+        notifyChange("Problem Loading the File", "The dropped file could not be loaded.\n\n$error", true);
+    });
   }
 
   var curTestChar:Int = 0;
@@ -1378,6 +1381,7 @@ class StageEditorState extends UIState
   public var loadUrlDialog:LoadFromUrlDialog;
   public var exitConfirmDialog:Dialog;
 
+  @:noPatch
   public function onMenuItemClick(item:String):Void
   {
     switch (item.toLowerCase())
@@ -1548,7 +1552,13 @@ class StageEditorState extends UIState
         }
 
       case 'find object':
-        findObjDialog.hideDialog(DialogButton.CANCEL);
+        if (findObjDialog != null)
+        {
+          findObjDialog.hideDialog(DialogButton.CANCEL);
+          findObjDialog.disposeComponent();
+          findObjDialog = null;
+        }
+
         findObjDialog = new FindObjDialog(this, selectedSprite == null ? '' : selectedSprite.name);
         findObjDialog.showDialog(false);
 
@@ -1700,6 +1710,7 @@ class StageEditorState extends UIState
     }
   }
 
+  @:noPatch
   function saveBackup(isClose:Bool = false)
   {
     FileUtil.createDirIfNotExists(BACKUPS_PATH);
@@ -1779,6 +1790,24 @@ class StageEditorState extends UIState
     }
 
     FlxG.stage.window.onDropFile.remove(onDropFile);
+    WindowUtil.windowExit.remove(windowClose);
+    CrashHandler.errorSignal.remove(autosavePerCrash);
+    CrashHandler.criticalErrorSignal.remove(autosavePerCrash);
+
+    // Destroy dialogs.
+    if (findObjDialog != null)
+    {
+      findObjDialog.disposeComponent();
+      findObjDialog = null;
+    }
+
+    // Force dispose existing dialogs.
+    for (dialog in dialogs)
+    {
+      if (dialog == null) continue;
+      dialog.disposeComponent();
+    }
+    dialogs.clear();
 
     // Reset the sounds used by some playables.
     funkin.play.GameOverSubState.reset();

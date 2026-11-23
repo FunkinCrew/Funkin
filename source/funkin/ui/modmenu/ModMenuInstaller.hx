@@ -109,6 +109,10 @@ class ModMenuInstaller
    * Whether the installation was cancelled or not.
    */
   var installCancelled:Bool = false;
+
+  var pendingArchives:Array<String> = [];
+  var archiveInstallActive:Bool = false;
+  var archiveInstallErrors:Array<String> = [];
   #end
 
   /**
@@ -317,33 +321,14 @@ class ModMenuInstaller
     final extension:String = pathInfo.ext;
 
     #if (FEATURE_ONE_CLICK_INSTALL && sys)
-    if (popup.isBlocking())
+    if (archiveInstallActive || (popup.isBlocking() && popup.state != Result))
     {
-      trace(' MOD MENU '.bold().bg_orange() + ' Ignoring a dropped archive, an install is already in progress.');
+      pendingArchives.push(path);
+      trace(' MOD MENU '.bold().bg_orange() + ' Queued dropped archive: ${name}.${extension}');
       return;
     }
 
-    installCancelled = false;
-
-    popup.showProgress(name, 'Installing...', 0);
-
-    ModInstaller.installArchive(path, name, deleteArchive, function(ratio:Float):Void
-    {
-      if (installCancelled) return;
-
-      popup.showProgress(name, 'Installing... ${Math.round(ratio * 100)}%', ratio);
-    }, function(paths:Array<String>):Void
-    {
-      if (installCancelled) return;
-
-      onInstalled();
-      popup.showResult(name, 'Installed!');
-    }, function(reason:String):Void
-    {
-      if (installCancelled) return;
-
-      popup.showResult(name, 'Install failed.\n${reason}');
-    });
+    startDroppedArchive(path, name);
     #else
     final destPath:String = '${PolymodHandler.MOD_FOLDER}/${name}.${extension}';
 
@@ -365,6 +350,69 @@ class ModMenuInstaller
     onInstalled();
     #end
   }
+
+  #if (FEATURE_ONE_CLICK_INSTALL && sys)
+  function startDroppedArchive(path:String, name:String):Void
+  {
+    archiveInstallActive = true;
+    installCancelled = false;
+
+    popup.showProgress(name, 'Installing...', 0);
+
+    ModInstaller.installArchive(path, name, deleteArchive, function(ratio:Float):Void
+    {
+      if (installCancelled) return;
+
+      popup.showProgress(name, 'Installing... ${Math.round(ratio * 100)}%', ratio);
+    }, function(paths:Array<String>):Void
+    {
+      if (installCancelled) return;
+
+      onInstalled();
+      finishDroppedArchive(name, null);
+    }, function(reason:String):Void
+    {
+      if (installCancelled) return;
+
+      trace(' MOD MENU '.bold().bg_orange() + ' Failed to install ${name}: ${reason}');
+      finishDroppedArchive(name, reason);
+    });
+  }
+
+  function finishDroppedArchive(name:String, error:Null<String>):Void
+  {
+    archiveInstallActive = false;
+    if (error != null) archiveInstallErrors.push('${name}: ${error}');
+
+    if (pendingArchives.length > 0)
+    {
+      startNextDroppedArchive();
+      return;
+    }
+
+    if (archiveInstallErrors.length > 0)
+    {
+      popup.showResult('Mod Install', archiveInstallErrors.join('\n'));
+    }
+    else
+    {
+      popup.showResult(name, 'Installed!');
+    }
+
+    archiveInstallErrors = [];
+  }
+
+  function startNextDroppedArchive():Void
+  {
+    if (archiveInstallActive || pendingArchives.length == 0) return;
+
+    final path:Null<String> = pendingArchives.shift();
+    if (path == null) return;
+
+    final pathInfo:Path = new Path(path);
+    startDroppedArchive(path, pathInfo.file);
+  }
+  #end
 
   /**
    * Installs the folder dropped into the mod folder
@@ -457,6 +505,9 @@ class ModMenuInstaller
       if (ModInstaller.isAlreadyInstalled(mod))
       {
         popup.showResult(mod.name, 'Already installed.');
+        #if sys
+        startNextDroppedArchive();
+        #end
         return;
       }
 
@@ -476,6 +527,9 @@ class ModMenuInstaller
 
       pendingInstall = null;
       popup.showResult('Mod Install Failed', reason);
+      #if sys
+      startNextDroppedArchive();
+      #end
     });
   }
 
@@ -504,6 +558,9 @@ class ModMenuInstaller
   {
     stop();
     popup.hide();
+    #if sys
+    startNextDroppedArchive();
+    #end
   }
 
   /**
@@ -514,6 +571,9 @@ class ModMenuInstaller
     stop();
 
     OneClickInstallHandler.clearQueue();
+    #if sys
+    pendingArchives = [];
+    #end
   }
 
   /**
@@ -591,17 +651,26 @@ class ModMenuInstaller
 
         onInstalled();
         popup.showResult(mod.name, 'Installed!');
+        #if sys
+        startNextDroppedArchive();
+        #end
       }, function(reason:String):Void
       {
         if (installCancelled) return;
 
         popup.showResult(mod.name, 'Install failed.\n${reason}');
+        #if sys
+        startNextDroppedArchive();
+        #end
       });
     }, function(reason:String):Void
     {
       if (installCancelled) return;
 
       popup.showResult(mod.name, reason);
+      #if sys
+      startNextDroppedArchive();
+      #end
     });
   }
 

@@ -1,6 +1,5 @@
 package funkin.ui.debug.charting;
 
-import funkin.ui.transition.Transition;
 #if FEATURE_CHART_EDITOR
 import flixel.FlxBasic;
 import flixel.FlxCamera;
@@ -59,59 +58,60 @@ import funkin.play.stage.Stage;
 import funkin.save.Save;
 import funkin.ui.debug.FunkinDebugDisplay.DebugDisplayMode;
 import funkin.ui.debug.cameraeditor.CameraEditorState;
+import funkin.ui.debug.charting.commands.ChartEditorCommand;
 import funkin.ui.debug.charting.commands.comments.AddCommentCommand;
 import funkin.ui.debug.charting.commands.events.AddEventsCommand;
-import funkin.ui.debug.charting.commands.timing.AddNewTimeChangeCommand;
-import funkin.ui.debug.charting.commands.notes.AddNotesCommand;
-import funkin.ui.debug.charting.commands.ChartEditorCommand;
-import funkin.ui.debug.charting.util.ChartEditorScaleMode;
+import funkin.ui.debug.charting.commands.events.MoveEventsCommand;
+import funkin.ui.debug.charting.commands.events.RemoveEventsCommand;
 import funkin.ui.debug.charting.commands.items.CopyItemsCommand;
 import funkin.ui.debug.charting.commands.items.CutItemsCommand;
+import funkin.ui.debug.charting.commands.items.MoveItemsCommand;
+import funkin.ui.debug.charting.commands.items.PasteItemsCommand;
+import funkin.ui.debug.charting.commands.items.RemoveItemsCommand;
+import funkin.ui.debug.charting.commands.notes.AddNotesCommand;
+import funkin.ui.debug.charting.commands.notes.ExtendNoteLengthCommand;
+import funkin.ui.debug.charting.commands.notes.FlipNotesCommand;
+import funkin.ui.debug.charting.commands.notes.MirrorNotesCommand;
+import funkin.ui.debug.charting.commands.notes.MoveNotesCommand;
+import funkin.ui.debug.charting.commands.notes.RemoveNotesCommand;
+import funkin.ui.debug.charting.commands.notes.RemoveStackedNotesCommand;
 import funkin.ui.debug.charting.commands.selection.DeselectAllItemsBetweenTimeCommand;
 import funkin.ui.debug.charting.commands.selection.DeselectAllItemsCommand;
 import funkin.ui.debug.charting.commands.selection.DeselectItemsCommand;
-import funkin.ui.debug.charting.commands.notes.ExtendNoteLengthCommand;
-import funkin.ui.debug.charting.commands.notes.FlipNotesCommand;
 import funkin.ui.debug.charting.commands.selection.InvertSelectedItemsCommand;
-import funkin.ui.debug.charting.commands.notes.MirrorNotesCommand;
-import funkin.ui.debug.charting.commands.events.MoveEventsCommand;
-import funkin.ui.debug.charting.commands.items.MoveItemsCommand;
-import funkin.ui.debug.charting.commands.notes.MoveNotesCommand;
-import funkin.ui.debug.charting.commands.items.PasteItemsCommand;
-import funkin.ui.debug.charting.commands.events.RemoveEventsCommand;
-import funkin.ui.debug.charting.commands.items.RemoveItemsCommand;
-import funkin.ui.debug.charting.commands.notes.RemoveNotesCommand;
-import funkin.ui.debug.charting.commands.notes.RemoveStackedNotesCommand;
 import funkin.ui.debug.charting.commands.selection.SelectAllItemsBetweenTimeCommand;
 import funkin.ui.debug.charting.commands.selection.SelectAllItemsCommand;
 import funkin.ui.debug.charting.commands.selection.SelectItemsCommand;
 import funkin.ui.debug.charting.commands.selection.SetItemSelectionCommand;
 import funkin.ui.debug.charting.commands.song.SwitchDifficultyCommand;
-import funkin.ui.debug.charting.components.palette.ChartEditorCommandPalette;
+import funkin.ui.debug.charting.commands.timing.AddNewTimeChangeCommand;
 import funkin.ui.debug.charting.components.comments.ChartEditorCommentPanel;
 import funkin.ui.debug.charting.components.comments.ChartEditorCommentPinSprite;
+import funkin.ui.debug.charting.components.grid.ChartEditorDifficultyHeatmap;
+import funkin.ui.debug.charting.components.grid.ChartEditorGridLines;
+import funkin.ui.debug.charting.components.grid.ChartEditorMeasureTicks;
+import funkin.ui.debug.charting.components.grid.ChartEditorSelectionSquareSprite;
+import funkin.ui.debug.charting.components.grid.ChartEditorWaveformSprite;
 import funkin.ui.debug.charting.components.notes.ChartEditorEventSprite;
 import funkin.ui.debug.charting.components.notes.ChartEditorHoldNoteSprite;
-import funkin.ui.debug.charting.components.grid.ChartEditorGridLines;
-import funkin.ui.debug.charting.components.grid.ChartEditorWaveformSprite;
-import funkin.ui.debug.charting.components.grid.ChartEditorMeasureTicks;
-import funkin.ui.debug.charting.components.grid.ChartEditorDifficultyHeatmap;
+import funkin.ui.debug.charting.components.notes.ChartEditorNoteSprite;
+import funkin.ui.debug.charting.components.palette.ChartEditorCommandPalette;
+import funkin.ui.debug.charting.components.playbar.ChartEditorNotePreview;
+import funkin.ui.debug.charting.components.playbar.ChartEditorPlaybarHead;
+import funkin.ui.debug.charting.handlers.ui.ChartEditorToolboxHandler;
 import funkin.ui.debug.charting.selection.ChartEditorCommentItems;
 import funkin.ui.debug.charting.selection.ChartEditorSelectable;
 import funkin.ui.debug.charting.selection.ChartEditorSelectableItems;
 import funkin.ui.debug.charting.selection.ChartEditorSubBeatItems;
 import funkin.ui.debug.charting.selection.ChartEditorTimeChangeItems;
-import funkin.ui.debug.charting.components.playbar.ChartEditorNotePreview;
-import funkin.ui.debug.charting.components.notes.ChartEditorNoteSprite;
-import funkin.ui.debug.charting.components.playbar.ChartEditorPlaybarHead;
-import funkin.ui.debug.charting.components.grid.ChartEditorSelectionSquareSprite;
-import funkin.ui.debug.charting.handlers.ui.ChartEditorToolboxHandler;
 import funkin.ui.debug.charting.toolboxes.ChartEditorDifficultyToolbox;
-import funkin.ui.debug.charting.toolboxes.ChartEditorListKeyTarget;
 import funkin.ui.debug.charting.toolboxes.ChartEditorEventDataToolbox;
+import funkin.ui.debug.charting.toolboxes.ChartEditorListKeyTarget;
 import funkin.ui.debug.charting.toolboxes.ChartEditorTimingToolbox;
+import funkin.ui.debug.charting.util.ChartEditorScaleMode;
 import funkin.ui.haxeui.components.CharacterPlayer;
 import funkin.ui.mainmenu.MainMenuState;
+import funkin.ui.transition.Transition;
 import funkin.ui.transition.preload.hotreload.HotReloadState.HotReloadStateParams;
 import funkin.util.Constants;
 import funkin.util.FileUtil;
@@ -139,6 +139,7 @@ import haxe.ui.containers.menus.Menu;
 import haxe.ui.containers.menus.MenuBar;
 import haxe.ui.containers.menus.MenuCheckBox;
 import haxe.ui.containers.menus.MenuItem;
+import haxe.ui.core.Component;
 import haxe.ui.core.Screen;
 import haxe.ui.dragdrop.DragManager;
 import haxe.ui.events.DragEvent;
@@ -486,40 +487,77 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     this.scrollPositionInPixels = value;
 
-    // Move the grid sprite to the correct position.
+    refreshGridPosition();
+    if (selectionBoxStartPos != null) selectionBoxStartPos.y -= diff * ChartEditorTimeScale.VIEW_DIRECTION;
+
+    return this.scrollPositionInPixels;
+  }
+
+  function refreshGridPosition():Void
+  {
     if (gridTiledSprite != null && measureTicks != null)
     {
-      gridTiledSprite.y = -scrollPositionInPixels + (GRID_INITIAL_Y_POS);
+      positionGridSprite();
 
       // The waveforms only rebuild when the view leaves the chunk they cover.
       for (member in audioWaveforms.members)
       {
-        if (member != null) member.refresh(gridTiledSprite.y);
+        if (member != null) member.refresh();
       }
     }
 
     // Move the rendered notes to the correct position.
-    renderedNotes.setPosition(gridTiledSprite?.x ?? 0.0, gridTiledSprite?.y ?? 0.0);
-    renderedHoldNotes.setPosition(gridTiledSprite?.x ?? 0.0, gridTiledSprite?.y ?? 0.0);
-    renderedEvents.setPosition(gridTiledSprite?.x ?? 0.0, gridTiledSprite?.y ?? 0.0);
-    renderedSelectionSquares.setPosition(gridTiledSprite?.x ?? 0.0, gridTiledSprite?.y ?? 0.0);
+    var originX:Float = gridTiledSprite?.x ?? 0.0;
+    var originY:Float = (gridTiledSprite == null) ? 0.0 : gridOriginY;
+    renderedNotes.setPosition(originX, originY);
+    renderedHoldNotes.setPosition(originX, originY);
+    renderedEvents.setPosition(originX, originY);
+    renderedSelectionSquares.setPosition(originX, originY);
     gridLines?.refresh(gridLinesDirty);
     gridLinesDirty = false;
-    // Offset the selection box start position, if we are dragging.
-    if (selectionBoxStartPos != null) selectionBoxStartPos.y -= diff;
 
     // Update the note preview.
     this.setNotePreviewViewportBounds(this.calculateNotePreviewViewportBounds());
     this.refreshNotePreviewPlayheadPosition();
 
     if (measureTicks != null) this.handleMeasureTickPosition();
-    return this.scrollPositionInPixels;
   }
 
-  /**
-   * The relative scroll position in the song, converted to steps.
-   * NOT dependent on BPM, because the size of a grid square does not change with BPM.
-   */
+  var gridPlayheadBaseY(get, never):Float;
+
+  function get_gridPlayheadBaseY():Float
+  {
+    return isViewDownscroll ? FlxG.height - PLAYBAR_HEIGHT - GRID_PLAYHEAD_MARGIN : GRID_INITIAL_Y_POS;
+  }
+
+  var gridOriginY(get, never):Float;
+
+  function get_gridOriginY():Float
+  {
+    return gridPlayheadBaseY - scrollPositionInPixels * ChartEditorTimeScale.VIEW_DIRECTION;
+  }
+
+  function gridToScreenY(pixels:Float):Float
+  {
+    return gridOriginY + pixels * ChartEditorTimeScale.VIEW_DIRECTION;
+  }
+
+  function screenToGridY(screenY:Float):Float
+  {
+    return (screenY - gridOriginY) * ChartEditorTimeScale.VIEW_DIRECTION;
+  }
+
+  function gridRangeScreenTop(startPixels:Float, endPixels:Float):Float
+  {
+    return Math.min(gridToScreenY(startPixels), gridToScreenY(endPixels));
+  }
+
+  function positionGridSprite():Void
+  {
+    if (gridTiledSprite == null) return;
+    gridTiledSprite.y = isViewDownscroll ? gridOriginY - gridTiledSprite.height : gridOriginY;
+  }
+
   var scrollPositionInSteps(get, set):Float;
 
   function get_scrollPositionInSteps():Float
@@ -569,7 +607,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     this.playheadPositionInPixels = value;
 
     // Move the playhead sprite to the correct position.
-    gridPlayhead.y = this.playheadPositionInPixels + GRID_INITIAL_Y_POS;
+    gridPlayhead.y = gridPlayheadBaseY + this.playheadPositionInPixels * ChartEditorTimeScale.VIEW_DIRECTION;
 
     this.updatePlayheadGhostHoldNotes();
     this.refreshNotePreviewPlayheadPosition();
@@ -802,15 +840,24 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function set_isViewDownscroll(value:Bool):Bool
   {
     isViewDownscroll = value;
+    ChartEditorTimeScale.VIEW_DIRECTION = value ? -1 : 1;
 
     // Make sure view is updated when we change view modes.
     noteDisplayDirty = true;
     notePreviewDirty = true;
     commentDisplayDirty = true;
     notePreviewViewportBoundsDirty = true;
-    this.scrollPositionInPixels = this.scrollPositionInPixels;
+    gridLinesDirty = true;
+    waveformsDirty = true;
+    if (gridTiledSprite != null)
+    {
+      refreshGridPosition();
+      playheadPositionInPixels = playheadPositionInPixels;
+      measureTicks?.setHeight(songLengthInPixels);
+    }
     // Characters have probably changed too.
     healthIconsDirty = true;
+    this.positionSubtitles();
 
     return isViewDownscroll;
   }
@@ -834,6 +881,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   }
 
   var difficultyHeatmap:Null<ChartEditorDifficultyHeatmap> = null;
+
+  /**
+   * Whether transparent character previews show a reflection under the character.
+   */
+  var showPreviewReflections:Bool = true;
 
   /**
    * Set when the notes or scroll speed change, so the heatmap is redrawn the next time it shows.
@@ -1069,8 +1121,27 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function get_isCursorOverHaxeUI():Bool
   {
-    return Screen.instance.hasSolidComponentUnderPoint(FlxG.mouse.viewX, FlxG.mouse.viewY);
+    return solidComponentsUnderCursor().length > 0;
   }
+
+  function solidComponentsUnderCursor():Array<Component>
+  {
+    var mouseX:Float = FlxG.mouse.viewX;
+    var mouseY:Float = FlxG.mouse.viewY;
+    if (!solidUnderCursorValid || solidUnderCursorX != mouseX || solidUnderCursorY != mouseY)
+    {
+      solidUnderCursorCache = Screen.instance.findSolidComponentUnderPoint(mouseX, mouseY);
+      solidUnderCursorX = mouseX;
+      solidUnderCursorY = mouseY;
+      solidUnderCursorValid = true;
+    }
+    return solidUnderCursorCache;
+  }
+
+  var solidUnderCursorValid:Bool = false;
+  var solidUnderCursorX:Float = 0;
+  var solidUnderCursorY:Float = 0;
+  var solidUnderCursorCache:Array<Component> = [];
 
   /**
    * Whether the user's mouse cursor is hovering over a comment, and not any other component of the HaxeUI.
@@ -1080,7 +1151,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function get_canScrollComment():Bool
   {
-    for (component in Screen.instance.findSolidComponentUnderPoint(FlxG.mouse.viewX, FlxG.mouse.viewY))
+    for (component in solidComponentsUnderCursor())
     {
       if (!Std.isOfType(component, ChartEditorCommentPanel) && component.findAncestor(null, ChartEditorCommentPanel) == null) return false;
       if (Std.isOfType(component, TextArea) && component.findComponent(VerticalScroll, false) != null) return false;
@@ -2659,6 +2730,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var menubarItemViewWaveforms:MenuCheckBox;
 
   var menubarItemViewDifficultyHeatmap:MenuCheckBox;
+  var menubarItemViewPreviewReflections:MenuCheckBox;
   var menubarItemViewPlayerView:MenuCheckBox;
 
   /**
@@ -3471,6 +3543,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     noteDisplayDirty = true;
     commentDisplayDirty = true;
     waveformsDirty = true;
+
+    // bottom
+    if (isViewDownscroll)
+    {
+      refreshGridPosition();
+      playheadPositionInPixels = playheadPositionInPixels;
+    }
   }
 
   /**
@@ -3516,6 +3595,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     super.update(elapsed);
 
     haxeUIFocusedValid = false;
+    solidUnderCursorValid = false;
 
     if (criticalFailure) return;
 
@@ -3767,16 +3847,59 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     @:privateAccess
     ChartEditorEventSprite.eventFrames = null;
 
-    for (toolbox in activeToolboxes)
-    {
-      if (toolbox == null) continue;
-      if (haxe.ui.core.Screen.instance.rootComponents.indexOf(toolbox) != -1) haxe.ui.core.Screen.instance.removeComponent(toolbox, true);
-      else
-        toolbox.disposeComponent();
-    }
+    ChartEditorPlaytestHandler.cleanup(this);
+    ChartEditorSelectableItems.lastCopied = null;
+
+    this.clearDropHandlers();
     activeToolboxes.clear();
 
     criticalFailure = true;
+  }
+
+  /**
+   * Called when the Chart Editor intercepts a crash, to save a backup of the chart.
+   * Registered in `ChartEditorAutoSaveHandler`.
+   *
+   * @param message The error message for the crash.
+   */
+  public function onWindowCrash(message:String):Void
+  {
+    // Callbacks MUST be placed in ChartEditorState, rather than a static extension,
+    // otherwise Haxe won't let you unregister them!
+
+    trace('Chart editor intercepted crash:');
+    trace('${message}');
+
+    trace('Should save chart? ${this.saveDataDirty}');
+
+    var needsAutoSave:Bool = this.saveDataDirty;
+
+    this.writePreferences(needsAutoSave);
+
+    if (needsAutoSave)
+    {
+      this.exportCurrentChartToFNFC(true, null);
+    }
+  }
+
+  /**
+   * Called when the window was closed, to save a backup of the chart.
+   *
+   * @param exitCode The exit code of the window. We use `-1` when calling the function due to a game crash.
+   */
+  public function onWindowClose(exitCode:Int):Void
+  {
+    trace('Window exited with exit code: $exitCode');
+    trace('Should save chart? ${this.saveDataDirty}');
+
+    var needsAutoSave:Bool = this.saveDataDirty;
+
+    this.writePreferences(needsAutoSave);
+
+    if (needsAutoSave)
+    {
+      this.exportCurrentChartToFNFC(true, null);
+    }
   }
 
   @:nullSafety(Off)

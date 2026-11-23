@@ -292,7 +292,7 @@ class FreeplayState extends MusicBeatSubState
   var forceSkipIntro:Bool = false;
 
   /**
-   * Return a list of all AssetPaths that this UI elemnet depends on to load.
+   * Return a list of all AssetPaths that this UI element depends on to load.
    * NOTE: You don't need to include assets which get fetched asynchronously.
    * @param type The type of AssetPath to return a list of paths for.
    * @param styleData The data for the Freeplay style being used.
@@ -873,7 +873,7 @@ class FreeplayState extends MusicBeatSubState
     }
 
     // be careful not to "add()" things in here unless it's to a group that's already added to the state
-    // otherwise it won't be properly attatched to funnyCamera (relavent code should be at the bottom of create())
+    // otherwise it won't be properly attached to funnyCamera (relevant code should be at the bottom of create())
     var onDJIntroDone:Void->Void = () ->
     {
       if (!uiStateMachine.is(Interacting)) uiStateMachine.transition(Idle);
@@ -1405,7 +1405,7 @@ class FreeplayState extends MusicBeatSubState
           soundPath = Paths.sound('ui/freeplay/ranks/in/perfect');
         default:
       }
-      FunkinSound.playOnce(soundPath.toFlxSoundAsset());
+      FunkinSound.playSoundOnce(soundPath);
       rankCamera.zoom = 1.3;
 
       FlxTween.tween(rankCamera, {
@@ -1489,7 +1489,7 @@ class FreeplayState extends MusicBeatSubState
       default:
     }
 
-    FunkinSound.playOnce(soundPath.toFlxSoundAsset());
+    FunkinSound.playSoundOnce(soundPath);
 
     FlxTween.tween(capsuleToRank.targetPos, {
       x: originalPos.x,
@@ -1762,13 +1762,13 @@ class FreeplayState extends MusicBeatSubState
     else
     {
       trace('Not enough characters unlocked to open character select!');
-      FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu').toFlxSoundAsset());
+      FunkinSound.playSoundOnce(Paths.sound('ui/main-menu/cancel-menu'));
       return;
     }
 
     uiStateMachine.transition(Exiting);
 
-    FunkinSound.playOnce(Paths.sound('ui/main-menu/confirm-menu').toFlxSoundAsset());
+    FunkinSound.playSoundOnce(Paths.sound('ui/main-menu/confirm-menu'));
 
     dj?.toCharSelect();
 
@@ -1823,7 +1823,12 @@ class FreeplayState extends MusicBeatSubState
     fadeShader.fade(1.0, 0.0, 0.8, {
       ease: FlxEase.quadIn
     });
+
+    // If there is music currently playing, fade it out.
     FlxG.sound.music?.fadeOut(0.9, 0);
+
+    // Cancel any song previews that are in the process of loading.
+    FunkinSound.emptyPartialQueue();
 
     // Passing the currrent Freeplay character to the CharSelect so we can start it with that character selected
     new FlxTimer().start(0.9, _ ->
@@ -2166,8 +2171,7 @@ class FreeplayState extends MusicBeatSubState
       generateSongList(currentFilter, true, false);
       if (!prepForNewRank && currentCapsule?.freeplayData?.data.id != previousSongId)
       {
-        FlxG.sound.music?.pause();
-        FlxTimer.wait(FADE_IN_DELAY, playCurSongPreview.bind(currentCapsule));
+        queueSongPreview();
       }
     }
     else if (rightPressed)
@@ -2178,8 +2182,7 @@ class FreeplayState extends MusicBeatSubState
       generateSongList(currentFilter, true, false);
       if (!prepForNewRank && currentCapsule?.freeplayData?.data.id != previousSongId)
       {
-        FlxG.sound.music?.pause();
-        FlxTimer.wait(FADE_IN_DELAY, playCurSongPreview.bind(currentCapsule));
+        queueSongPreview();
       }
     }
   }
@@ -2210,7 +2213,7 @@ class FreeplayState extends MusicBeatSubState
         {
           trace('No songs available!');
           uiStateMachine.transition(Idle);
-          FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu').toFlxSoundAsset());
+          FunkinSound.playSoundOnce(Paths.sound('ui/main-menu/cancel-menu'));
           return;
         }
 
@@ -2222,7 +2225,7 @@ class FreeplayState extends MusicBeatSubState
         targetSongID = currentCapsule?.freeplayData?.data.id ?? 'unknown';
       }
       // Play the confirm animation so the user knows they actually did something.
-      FunkinSound.playOnce(Paths.sound('ui/main-menu/confirm-menu').toFlxSoundAsset());
+      FunkinSound.playSoundOnce(Paths.sound('ui/main-menu/confirm-menu'));
       // if (dj != null) dj.confirm();
       dj?.onConfirm();
       new FlxTimer().start(styleData?.getStartDelay(), function(tmr:FlxTimer)
@@ -2263,7 +2266,7 @@ class FreeplayState extends MusicBeatSubState
         {
           trace('No songs available!');
           uiStateMachine.transition(Idle);
-          FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu').toFlxSoundAsset());
+          FunkinSound.playSoundOnce(Paths.sound('ui/main-menu/cancel-menu'));
           return;
         }
 
@@ -2275,7 +2278,7 @@ class FreeplayState extends MusicBeatSubState
         targetSongID = currentCapsule?.freeplayData?.data.id ?? 'unknown';
       }
       // Play the confirm animation so the user knows they actually did something.
-      FunkinSound.playOnce(Paths.sound('ui/main-menu/confirm-menu').toFlxSoundAsset());
+      FunkinSound.playSoundOnce(Paths.sound('ui/main-menu/confirm-menu'));
       // if (dj != null) dj.confirm();
       dj?.onConfirm();
       new FlxTimer().start(styleData?.getStartDelay(), function(tmr:FlxTimer)
@@ -2318,7 +2321,7 @@ class FreeplayState extends MusicBeatSubState
         {
           trace('No songs available!');
           uiStateMachine.transition(Idle);
-          FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu').toFlxSoundAsset());
+          FunkinSound.playSoundOnce(Paths.sound('ui/main-menu/cancel-menu'));
           return;
         }
 
@@ -2387,7 +2390,9 @@ class FreeplayState extends MusicBeatSubState
         {
           curSelected = i;
           changeSelection(0);
-          FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu').toFlxSoundAsset(), 0.4);
+          FunkinSound.playSoundOnce(Paths.sound('ui/main-menu/scroll-menu'), {
+            volume: 0.4
+          });
           HapticUtil.vibrate(0, 0.01, 0.5);
         }
         break;
@@ -2639,6 +2644,9 @@ class FreeplayState extends MusicBeatSubState
     }
     #end
     uiStateMachine.transition(Exiting);
+
+    FunkinSound.emptyPartialQueue();
+
     FlxTween.globalManager.clear();
     FlxTimer.globalManager.clear();
     dj?.onIntroDone.removeAll();
@@ -2646,7 +2654,7 @@ class FreeplayState extends MusicBeatSubState
     var event:FreeplayScriptEvent = FreeplayScriptEvent.get(FREEPLAY_OUTRO);
     dispatchEvent(event);
 
-    FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu').toFlxSoundAsset());
+    FunkinSound.playSoundOnce(Paths.sound('ui/main-menu/cancel-menu'));
 
     var longestTimer:Float = 0;
 
@@ -2713,9 +2721,9 @@ class FreeplayState extends MusicBeatSubState
       FlxTransitionableState.skipNextTransOut = true;
       if (Type.getClass(_parentState) == MainMenuState)
       {
-        FunkinSound.playMusic('ui/main-menu/freaky-menu/freaky-menu', {
+        FunkinSound.playMusicTrack(Paths.music('ui/main-menu/freaky-menu'), {
           overrideExisting: true,
-          restartTrack: false,
+          forceRestart: false,
           // Continue playing this music between states, until a different music track gets played.
           persist: true
         });
@@ -2822,7 +2830,9 @@ class FreeplayState extends MusicBeatSubState
     if (change != 0)
     {
       HapticUtil.vibrate(0, 0.01, 0.5, 0.1);
-      FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu').toFlxSoundAsset(), 0.4);
+      FunkinSound.playSoundOnce(Paths.sound('ui/main-menu/scroll-menu'), {
+        volume: 0.4
+      });
     }
 
     var previousVariation:String = currentVariation;
@@ -3012,7 +3022,7 @@ class FreeplayState extends MusicBeatSubState
       trace('No songs available!');
       uiStateMachine.transition(Idle);
 
-      FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu').toFlxSoundAsset());
+      FunkinSound.playSoundOnce(Paths.sound('ui/main-menu/cancel-menu'));
       return;
     }
 
@@ -3214,7 +3224,7 @@ class FreeplayState extends MusicBeatSubState
     }
 
     // Visual and audio effects.
-    FunkinSound.playOnce(Paths.sound('ui/main-menu/confirm-menu').toFlxSoundAsset());
+    FunkinSound.playSoundOnce(Paths.sound('ui/main-menu/confirm-menu'));
     dj?.onConfirm();
 
     currentCapsule.forcePosition();
@@ -3222,6 +3232,8 @@ class FreeplayState extends MusicBeatSubState
 
     backingCard.confirm();
     fadeDots(false);
+
+    FunkinSound.emptyPartialQueue();
 
     // Start vibration after half of second.
     if (HapticUtil.hapticsAvailable)
@@ -3247,8 +3259,6 @@ class FreeplayState extends MusicBeatSubState
 
     new FlxTimer().start(styleData?.getStartDelay(), (tmr:FlxTimer) ->
     {
-      FunkinSound.emptyPartialQueue();
-
       #if FEATURE_TOUCH_CONTROLS
       if (backButton != null)
       {
@@ -3343,7 +3353,9 @@ class FreeplayState extends MusicBeatSubState
 
     if (curSelected != prevSelected)
     {
-      FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu').toFlxSoundAsset(), 0.4);
+      FunkinSound.playSoundOnce(Paths.sound('ui/main-menu/scroll-menu'), {
+        volume: 0.4
+      });
       HapticUtil.vibrate(0, 0.01, 0.5);
       dj?.onPlayerAction(); // dj?.resetAFKTimer();
       _pressedOnSelected = false;
@@ -3379,7 +3391,9 @@ class FreeplayState extends MusicBeatSubState
     // Reset `prepForNewRank` flag on change to prevent song previews from not updating.
     if (change != 0 && prepForNewRank) prepForNewRank = false;
 
-    if (!prepForNewRank && curSelected != prevSelected) FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu').toFlxSoundAsset(), 0.4);
+    if (!prepForNewRank && curSelected != prevSelected) FunkinSound.playSoundOnce(Paths.sound('ui/main-menu/scroll-menu'), {
+      volume: 0.4
+    });
 
     var songScore:Null<SaveScoreData> = Save.instance.getSongScore(currentCapsule.freeplayData?.data.id ?? '', currentDifficulty, currentVariation);
     intendedScore = songScore?.score ?? 0;
@@ -3415,11 +3429,9 @@ class FreeplayState extends MusicBeatSubState
 
     if (grpCapsules.countLiving() > 0 && !prepForNewRank && uiStateMachine.canInteract())
     {
-      FlxG.sound.music?.pause();
-      FlxTimer.wait(FADE_IN_DELAY, playCurSongPreview.bind(currentCapsule));
       currentCapsule.selected = true;
-
-      // switchBackingImage(currentCapsule.freeplayData);
+      FlxG.sound.music?.pause();
+      if (Math.abs(_moveLength) <= 2.5) queueSongPreview();
     }
 
     // Small vibrations every selection change.
@@ -3429,9 +3441,19 @@ class FreeplayState extends MusicBeatSubState
     dispatchEvent(event);
   }
 
+  function queueSongPreview():Void
+  {
+    if (FlxG.sound.music != null) FlxG.sound.music.pause();
+    FunkinSound.emptyPartialQueue();
+    FlxTimer.wait(FADE_IN_DELAY, playCurSongPreview.bind(currentCapsule));
+  }
+
   public function playCurSongPreview(?daSongCapsule:SongMenuItem):Void
   {
     if (daSongCapsule == null) daSongCapsule = currentCapsule;
+
+    // Make sure the player is still hovering over the song we want to load preview for
+    if (!daSongCapsule.selected) return;
 
     var previewVolume:Float = 0.7;
     if (dj != null) previewVolume *= dj.getMusicPreviewMult();
@@ -3442,17 +3464,15 @@ class FreeplayState extends MusicBeatSubState
 
     if (curSelected == 0)
     {
-      FunkinSound.playMusic('ui/freeplay/freeplay-random/freeplay-random', {
-        startingVolume: 0.0,
-        overrideExisting: true,
-        restartTrack: false
+      FunkinSound.playMusicTrack(Paths.music('ui/freeplay/freeplay-random'), {
+        volume: 0.0,
+        forceRestart: false,
+        mapTimeChanges: true
       });
       if (FlxG.sound.music != null) FlxG.sound.music.fadeIn(2, 0, previewVolume);
     }
     else
     {
-      // Make sure the player is still hovering over the song we want to load preview for
-      if (!daSongCapsule.selected) return;
       var previewSong:Null<Song> = daSongCapsule?.freeplayData?.data;
       if (previewSong == null) return;
 
@@ -3472,46 +3492,49 @@ class FreeplayState extends MusicBeatSubState
       }
       #end
       instSuffix = (instSuffix != '') ? '-$instSuffix' : '';
-      // trace('Attempting to play partial preview: ${previewSong.id}:${instSuffix}');
 
-      FunkinSound.playMusic(previewSong.id, {
-        startingVolume: 0.0,
-        overrideExisting: true,
-        restartTrack: false,
-        mapTimeChanges: false, // The music metadata is not alongside the audio file so this won't work.
-        pathsFunction: INST,
-        suffix: instSuffix,
-        partialParams: {
-          loadPartial: true,
-          start: daSongCapsule?.freeplayData?.previewStartTime,
-          end: daSongCapsule?.freeplayData?.previewEndTime
-        },
-        onLoad: function()
+      var instAssetPath:AssetPath = funkin.assets.Paths.inst(previewSong.id, instSuffix);
+      FunkinSound.loadPartialSound(instAssetPath, {
+        looped: true,
+        persist: false,
+        autoPlay: true,
+        autoDestroy: false,
+        volume: 0.0, // Start at zero volume before fading in.
+
+        start: daSongCapsule?.freeplayData?.previewStartTime,
+        end: daSongCapsule?.freeplayData?.previewEndTime,
+
+        onLoad: (previewSound:FunkinSound) ->
         {
+          FunkinSound.setMusic(previewSound);
+
+          if (songDifficulty != null) Conductor.instance.mapTimeChanges(songDifficulty.timeChanges);
+
           FlxG.sound.music.fadeIn(2, 0, previewVolume);
 
           var fadeStart:Float = (FlxG.sound.music.length / Constants.MS_PER_SEC) - 2;
 
-          previewTimers.push(new FlxTimer().start(fadeStart, function(_)
+          previewTimers.push(new FlxTimer().start(fadeStart, (_) ->
           {
             FlxG.sound.music.fadeOut(2, 0);
           }));
 
-          previewTimers.push(new FlxTimer().start(FlxG.sound.music.length / Constants.MS_PER_SEC, function(_)
+          previewTimers.push(new FlxTimer().start(FlxG.sound.music.length / Constants.MS_PER_SEC, (_) ->
           {
             playCurSongPreview();
           }));
-        },
+        }
       });
-      if (songDifficulty != null)
-      {
-        Conductor.instance.mapTimeChanges(songDifficulty.timeChanges);
-      }
     }
   }
 
-  public function clearPreviews()
+  /**
+   * Clear all pending partial song previews.
+   */
+  public function clearPreviews():Void
   {
+    FunkinSound.emptyPartialQueue();
+
     for (timer in previewTimers)
     {
       if (timer != null) timer.cancel();
@@ -3573,7 +3596,9 @@ class FreeplayState extends MusicBeatSubState
         selectedCapsule.favIconBlurred.visible = true;
         selectedCapsule.favIcon.animation.play('fav');
         selectedCapsule.favIconBlurred.animation.play('fav');
-        FunkinSound.playOnce(Paths.sound('ui/freeplay/sounds/favorite').toFlxSoundAsset(), 1);
+        FunkinSound.playSoundOnce(Paths.sound('ui/freeplay/sounds/favorite'), {
+          volume: 1
+        });
         selectedCapsule.checkClip();
         selectedCapsule.selected = true; // set selected again, so it can run its getter function to initialize movement
         selectedCapsule.updateSelected();
@@ -3602,7 +3627,9 @@ class FreeplayState extends MusicBeatSubState
       {
         selectedCapsule.favIcon.animation.play('fav', true, true, 9);
         selectedCapsule.favIconBlurred.animation.play('fav', true, true, 9);
-        FunkinSound.playOnce(Paths.sound('ui/freeplay/sounds/unfavorite').toFlxSoundAsset(), 1);
+        FunkinSound.playSoundOnce(Paths.sound('ui/freeplay/sounds/unfavorite'), {
+          volume: 1
+        });
         new FlxTimer().start(0.2, _ ->
         {
           selectedCapsule.favIcon.visible = false;
@@ -3634,7 +3661,7 @@ class FreeplayState extends MusicBeatSubState
     }
   }
 
-  function updateFreeplayHintText()
+  function updateFreeplayHintText():Void
   {
     #if FEATURE_TOUCH_CONTROLS
     if (ControlsHandler.usingExternalInputDevice) charSelectHint.text = 'Press [ ${controls.getDialogueNameFromControl(FREEPLAY_CHAR_SELECT, true)} ] to change characters';

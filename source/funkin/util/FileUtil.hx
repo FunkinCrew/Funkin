@@ -16,6 +16,7 @@ using StringTools;
  * Utilities for reading and writing files on various platforms.
  */
 @:nullSafety
+@:noPatch
 class FileUtil
 {
   /**
@@ -1348,6 +1349,7 @@ class FileUtil
  * Utilities for reading and writing files on various platforms.
  * Wrapper for `FileUtil` that sanitizes paths for script safety.
  */ @:nullSafety
+@:noPatch
 class FileUtilSandboxed
 {
   /**

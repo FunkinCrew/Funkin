@@ -43,7 +43,7 @@ class FunkinAnimationDecoder
 
         if (localThreadPool == null)
         {
-          localThreadPool = new ThreadPool(0, 2);
+          localThreadPool = new ThreadPool(0, 1);
           localThreadPool.onProgress.add(localThreadPool_onProgress);
         }
 

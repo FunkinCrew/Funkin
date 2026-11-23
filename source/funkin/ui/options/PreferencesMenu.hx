@@ -147,6 +147,16 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
       Preferences.hapticsIntensityMultiplier = value;
     }, null, Preferences.hapticsIntensityMultiplier, 0.1, 5, 0.1, 1);
     #end
+    #if mobile
+    createPrefItemEnum('Resolution', 'Lower resolutions save performance and battery, Native gives the best visuals.', [
+      "Balanced" => Preferences.RENDER_SCALE_BALANCED,
+      "High" => Preferences.RENDER_SCALE_HIGH,
+      "Native" => Preferences.RENDER_SCALE_NATIVE,
+    ], function(key:String, value:Float):Void
+    {
+      Preferences.renderScale = value;
+    }, if (Preferences.renderScale <= Preferences.RENDER_SCALE_BALANCED) "Balanced" else if (Preferences.renderScale <= Preferences.RENDER_SCALE_HIGH) "High" else "Native");
+    #end
     createPrefItemCheckbox(
       'Flashing Lights',
       'When disabled, flashing effects are dampened. Useful for people with photosensitive epilepsy.',

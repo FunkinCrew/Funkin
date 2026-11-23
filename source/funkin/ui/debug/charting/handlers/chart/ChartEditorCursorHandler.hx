@@ -190,7 +190,7 @@ class ChartEditorCursorHandler
 
     // Cursor position relative to the grid.
     var cursorX:Float = FlxG.mouse.viewX - state.gridTiledSprite.x;
-    var cursorY:Float = FlxG.mouse.viewY - state.gridTiledSprite.y;
+    var cursorY:Float = state.screenToGridY(FlxG.mouse.viewY);
 
     var overlapsSelection:Bool = false;
 
@@ -298,7 +298,7 @@ class ChartEditorCursorHandler
     {
       // Clicked on the playhead scroll area.
       // Move the playhead to the cursor position.
-      state.playheadPositionInPixels = FlxG.mouse.viewY - (ChartEditorState.GRID_INITIAL_Y_POS);
+      state.playheadPositionInPixels = (FlxG.mouse.viewY - state.gridPlayheadBaseY) * ChartEditorTimeScale.VIEW_DIRECTION;
       state.moveSongToScrollPosition();
 
       // Cursor should be a grabby hand.
@@ -325,7 +325,7 @@ class ChartEditorCursorHandler
       var lineStep:Float = (draggedStep != null) ? (draggedStep + state.dragTargetCurrentStep).clamp(0, state.lastSnappedGridStep) : cursorSnappedStep;
       state.gridCursorLine.visible = true;
       state.gridCursorLine.x = state.gridTiledSprite.x;
-      state.gridCursorLine.y = Math.round(state.gridTiledSprite.y + ChartEditorTimeScale.stepToPixels(lineStep)) - Std.int(state.gridCursorLine.height / 2);
+      state.gridCursorLine.y = Math.round(state.gridToScreenY(ChartEditorTimeScale.stepToPixels(lineStep))) - Std.int(state.gridCursorLine.height / 2);
     }
 
     // The direction value for the column at the cursor.
@@ -335,7 +335,7 @@ class ChartEditorCursorHandler
     if (state.selectionBoxStartPos != null)
     {
       var cursorXStart:Float = state.selectionBoxStartPos.x - state.gridTiledSprite.x;
-      var cursorYStart:Float = state.selectionBoxStartPos.y - state.gridTiledSprite.y;
+      var cursorYStart:Float = state.screenToGridY(state.selectionBoxStartPos.y);
 
       var hasDraggedMouse:Bool =
         Math.abs(cursorX - cursorXStart) > ChartEditorState.DRAG_THRESHOLD
@@ -463,13 +463,13 @@ class ChartEditorCursorHandler
           {
             // Scroll up.
             var diff:Float = ChartEditorState.MENU_BAR_HEIGHT - FlxG.mouse.viewY;
-            state.currentScrollEase -= diff * 0.5; // Too fast!
+            state.currentScrollEase -= diff * 0.5 * ChartEditorTimeScale.VIEW_DIRECTION; // Too fast!
           }
           else if (FlxG.mouse.viewY > (state.playbarHeadLayout?.y ?? 0.0))
           {
             // Scroll down.
             var diff:Float = FlxG.mouse.viewY - (state.playbarHeadLayout?.y ?? 0.0);
-            state.currentScrollEase += (diff * 0.5); // Too fast!
+            state.currentScrollEase += (diff * 0.5 * ChartEditorTimeScale.VIEW_DIRECTION); // Too fast!
           }
 
           // Render the selection box, and keep the rendered graphic clamped to the size of the screen
@@ -598,8 +598,8 @@ class ChartEditorCursorHandler
         FlxG.mouse.viewY,
         (state.notePreview?.y ?? 0.0),
         (state.notePreview?.y ?? 0.0) + (state.notePreview?.height ?? 0.0),
-        0,
-        state.songLengthInPixels
+        state.isViewDownscroll ? state.songLengthInPixels : 0,
+        state.isViewDownscroll ? 0 : state.songLengthInPixels
       );
 
       state.currentScrollEase = clickedPosInPixels;
@@ -801,8 +801,8 @@ class ChartEditorCursorHandler
             state.currentPlaceNoteData.kind,
             state.currentSongNoteStyle
           ) ?? state.currentSongNoteStyle;
-          state.gridGhostHoldNote.updateHoldNotePosition(state.renderedHoldNotes);
           state.gridGhostHoldNote.updateHoldNoteGraphic();
+          state.gridGhostHoldNote.updateHoldNotePosition(state.renderedHoldNotes);
         }
         else
         {
@@ -1142,10 +1142,8 @@ class ChartEditorCursorHandler
 
     if (targetCursorMode == null)
     {
-      if (
-        state.activeToolboxes.get(ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT)?.hitTest(FlxG.mouse.viewX, FlxG.mouse.viewY) == true
-        || state.activeToolboxes.get(ChartEditorState.CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT)?.hitTest(FlxG.mouse.viewX, FlxG.mouse.viewY) == true
-      )
+      if (isOverGrabbablePreview(state, ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT)
+        || isOverGrabbablePreview(state, ChartEditorState.CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT))
       {
         targetCursorMode = Pointer;
       }
@@ -1198,6 +1196,12 @@ class ChartEditorCursorHandler
 
     // Actually set the cursor mode to the one we specified earlier.
     Cursor.cursorMode = targetCursorMode ?? Default;
+  }
+
+  static function isOverGrabbablePreview(state:ChartEditorState, id:String):Bool
+  {
+    var toolbox = state.activeToolboxes.get(id);
+    return toolbox != null && toolbox.draggable && toolbox.hitTest(FlxG.mouse.viewX, FlxG.mouse.viewY);
   }
 }
 #end

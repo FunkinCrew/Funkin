@@ -26,6 +26,8 @@ import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialog.DialogEvent;
 import haxe.ui.core.Component;
 import haxe.ui.core.Screen;
+import haxe.ui.components.Image;
+import haxe.ui.events.MouseEvent;
 import haxe.ui.events.DragEvent;
 import haxe.ui.focus.FocusManager;
 
@@ -288,6 +290,12 @@ class ChartEditorToolboxHandler
 
     // Make sure we can reuse the toolbox later.
     toolbox.destroyOnClose = false;
+
+    if (id != ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT && id != ChartEditorState.CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT)
+    {
+      toolbox.renderCache = new funkin.ui.haxeui.ComponentRenderCache();
+    }
+    toolbox.resizable = true;
     state.activeToolboxes.set(id, toolbox);
 
     // Set the component above everything else when dragging.
@@ -371,27 +379,27 @@ class ChartEditorToolboxHandler
 
     var noteKinds:Null<CheckBox> = toolbox.findComponent('preferencesNoteKindIndicators', CheckBox);
     if (noteKinds == null) throw 'ChartEditorToolboxHandler.buildToolboxPreferencesLayout() - Could not find preferencesNoteKindIndicators component.';
-    noteKinds.onClick = _ -> if (state.preferencesListening) state.showNoteKindIndicators = noteKinds.selected;
+    noteKinds.onChange = _ -> if (state.preferencesListening) state.showNoteKindIndicators = noteKinds.selected;
 
     var subtitles:Null<CheckBox> = toolbox.findComponent('preferencesSubtitles', CheckBox);
     if (subtitles == null) throw 'ChartEditorToolboxHandler.buildToolboxPreferencesLayout() - Could not find preferencesSubtitles component.';
-    subtitles.onClick = _ -> if (state.preferencesListening) state.showSubtitles = subtitles.selected;
+    subtitles.onChange = _ -> if (state.preferencesListening) state.showSubtitles = subtitles.selected;
 
     var beatLines:Null<CheckBox> = toolbox.findComponent('preferencesBeatLines', CheckBox);
     if (beatLines == null) throw 'ChartEditorToolboxHandler.buildToolboxPreferencesLayout() - Could not find preferencesBeatLines component.';
-    beatLines.onClick = _ -> if (state.preferencesListening) state.showBeatLines = beatLines.selected;
+    beatLines.onChange = _ -> if (state.preferencesListening) state.showBeatLines = beatLines.selected;
 
     var snapLines:Null<CheckBox> = toolbox.findComponent('preferencesSnapLines', CheckBox);
     if (snapLines == null) throw 'ChartEditorToolboxHandler.buildToolboxPreferencesLayout() - Could not find preferencesSnapLines component.';
-    snapLines.onClick = _ -> if (state.preferencesListening) state.showSnapLines = snapLines.selected;
+    snapLines.onChange = _ -> if (state.preferencesListening) state.showSnapLines = snapLines.selected;
 
     var cursorLine:Null<CheckBox> = toolbox.findComponent('preferencesCursorLine', CheckBox);
     if (cursorLine == null) throw 'ChartEditorToolboxHandler.buildToolboxPreferencesLayout() - Could not find preferencesCursorLine component.';
-    cursorLine.onClick = _ -> if (state.preferencesListening) state.showCursorLine = cursorLine.selected;
+    cursorLine.onChange = _ -> if (state.preferencesListening) state.showCursorLine = cursorLine.selected;
 
     var constantScroll:Null<CheckBox> = toolbox.findComponent('preferencesConstantScroll', CheckBox);
     if (constantScroll == null) throw 'ChartEditorToolboxHandler.buildToolboxPreferencesLayout() - Could not find preferencesConstantScroll component.';
-    constantScroll.onClick = _ -> if (state.preferencesListening) state.constantScrollEnabled = constantScroll.selected;
+    constantScroll.onChange = _ -> if (state.preferencesListening) state.constantScrollEnabled = constantScroll.selected;
 
     var constantScrollSpeed:Null<Slider> = toolbox.findComponent('preferencesConstantScrollSpeed', Slider);
     var constantScrollSpeedLabel:Null<Label> = toolbox.findComponent('preferencesConstantScrollSpeedLabel', Label);
@@ -484,7 +492,7 @@ class ChartEditorToolboxHandler
 
     var themeMusic:Null<CheckBox> = toolbox.findComponent('preferencesThemeMusic', CheckBox);
     if (themeMusic == null) throw 'ChartEditorToolboxHandler.buildToolboxPreferencesLayout() - Could not find preferencesThemeMusic component.';
-    themeMusic.onClick = _ -> if (state.preferencesListening) state.setThemeMusicEnabled(themeMusic.selected);
+    themeMusic.onChange = _ -> if (state.preferencesListening) state.setThemeMusicEnabled(themeMusic.selected);
 
     var stackThreshold:Null<DropDown> = toolbox.findComponent('preferencesStackThreshold', DropDown);
     if (stackThreshold == null) throw 'ChartEditorToolboxHandler.buildToolboxPreferencesLayout() - Could not find preferencesStackThreshold component.';
@@ -566,7 +574,7 @@ class ChartEditorToolboxHandler
   {
     var checkbox:Null<CheckBox> = toolbox.findComponent(id, CheckBox);
     if (checkbox == null) throw 'ChartEditorToolboxHandler.bindCheckbox() - Could not find ${id} component.';
-    checkbox.onClick = _ -> onChange(checkbox.selected);
+    checkbox.onChange = _ -> onChange(checkbox.selected);
   }
 
   static function setCheckbox(toolbox:CollapsibleDialog, id:String, value:Bool):Void
@@ -712,6 +720,10 @@ class ChartEditorToolboxHandler
     toolbox.x = 700;
     toolbox.y = 150;
     toolbox.dialogContent.padding = 0;
+    toolbox.minResizeWidth = 160;
+    toolbox.minResizeHeight = 160;
+    toolbox.keepAspectRatio = true;
+    addPreviewTransparencyToggle(toolbox);
 
     toolbox.onDialogClosed = function(event:DialogEvent)
     {
@@ -727,6 +739,37 @@ class ChartEditorToolboxHandler
     charPlayer.targetScale = 0.5;
 
     return toolbox;
+  }
+
+  /**
+   * The class name added to a preview toolbox when the user toggles the transparent background button.
+   * Used to style the transparent stuff with CSS.
+   */
+  public static final PREVIEW_TRANSPARENT_CLASS:String = 'preview-transparent-mode';
+
+  static function addPreviewTransparencyToggle(toolbox:CollapsibleDialog):Void
+  {
+    var toggle:Image = new Image();
+    toggle.id = 'previewTransparencyToggle';
+    toggle.styleNames = 'dialog-transparency-button';
+    toggle.tooltip = 'Transparent background';
+
+    toggle.registerEvent(MouseEvent.MOUSE_DOWN, event -> event.cancel());
+    toggle.registerEvent(MouseEvent.DBL_CLICK, event -> event.cancel());
+    toggle.onClick = function(_) {
+      var transparent:Bool = !toolbox.hasClass(PREVIEW_TRANSPARENT_CLASS);
+      if (transparent)
+      {
+        toolbox.addClass(PREVIEW_TRANSPARENT_CLASS);
+        toggle.addClass('on');
+      }
+      else
+      {
+        toolbox.removeClass(PREVIEW_TRANSPARENT_CLASS);
+        toggle.removeClass('on');
+      }
+    };
+    toolbox.dialogTitle.addComponentAt(toggle, 1);
   }
 
   static function onShowToolboxPlayerPreview(state:ChartEditorState, toolbox:CollapsibleDialog):Void
@@ -749,6 +792,10 @@ class ChartEditorToolboxHandler
     toolbox.x = 200;
     toolbox.y = 150;
     toolbox.dialogContent.padding = 0;
+    toolbox.minResizeWidth = 160;
+    toolbox.minResizeHeight = 160;
+    toolbox.keepAspectRatio = true;
+    addPreviewTransparencyToggle(toolbox);
 
     toolbox.onDialogClosed = (event:DialogEvent) ->
     {

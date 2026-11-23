@@ -1,5 +1,6 @@
 package funkin.ui.haxeui.components;
 
+import animate.internal.Timeline;
 import flixel.math.FlxRect;
 import flixel.util.FlxDestroyUtil;
 import funkin.modding.events.ScriptEvent.GhostMissNoteScriptEvent;
@@ -8,6 +9,7 @@ import funkin.modding.events.ScriptEvent.HoldNoteScriptEvent;
 import funkin.modding.events.ScriptEvent.HitNoteScriptEvent;
 import funkin.modding.events.ScriptEvent.SongTimeScriptEvent;
 import funkin.modding.events.ScriptEvent.UpdateScriptEvent;
+import funkin.graphics.shaders.VerticalFadeShader;
 import funkin.play.character.BaseCharacter;
 import funkin.data.character.CharacterRegistry;
 import haxe.ui.containers.Box;
@@ -162,12 +164,36 @@ class CharacterPlayer extends Box
     if (character != null)
     {
       character.setScale(character.getBaseScale() * value);
-      measureCharacter();
+      var measured:Null<FlxRect> = measuredBounds;
+      if (measured != null && measuredScale != 0)
+      {
+        var ratio:Float = character.scale.x / measuredScale;
+        if (characterBounds == null) characterBounds = FlxRect.get();
+        characterBounds.set(measured.x * ratio, measured.y * ratio, measured.width * ratio, measured.height * ratio);
+        invalidateComponentLayout();
+      }
+      else
+      {
+        measureCharacter();
+      }
       repositionChildren();
     }
 
     return targetScale = value;
   }
+
+  /**
+   * The size that the CharacterPlayer should be to fit the character, including padding.
+   */
+  public function getFitSize():Null<Size>
+  {
+    if (character == null || characterBounds == null) return null;
+    return new Size(characterBounds.width + (paddingLeft ?? 0) + (paddingRight ?? 0), characterBounds.height + (paddingTop ?? 0) + (paddingBottom ?? 0));
+  }
+
+  var measuredBounds:Null<FlxRect> = null;
+
+  var measuredScale:Float = 0;
 
   @:access(funkin.play.stage.Bopper)
   function measureCharacter():Void
@@ -190,12 +216,22 @@ class CharacterPlayer extends Box
     }
 
     character.dance(true);
+
+    measuredBounds = FlxDestroyUtil.put(measuredBounds);
+    if (characterBounds != null)
+    {
+      measuredBounds = FlxRect.get().copyFrom(characterBounds);
+      measuredScale = character.scale.x;
+    }
+
     invalidateComponentLayout();
   }
 
+  @:access(funkin.play.stage.Bopper)
+  @:access(flixel.FlxSprite)
   function measureCurrentFrame():Void
   {
-    var frameBounds:FlxRect = character.getCurrentFrameBounds(FlxRect.get(), character.camera);
+    var frameBounds:FlxRect = character.isAnimate ? character.getCurrentFrameBounds(FlxRect.get(), character.camera) : getSpriteFrameBounds(FlxRect.get());
 
     if (!frameBounds.isEmpty)
     {
@@ -205,6 +241,47 @@ class CharacterPlayer extends Box
 
     frameBounds.put();
   }
+
+  @:access(flixel.FlxSprite)
+  function getSpriteFrameBounds(rect:FlxRect):FlxRect
+  {
+    var frame = character.frame;
+    if (frame == null) return rect.set(0, 0, 0, 0);
+
+    var trimmedWidth:Float = (frame.angle == 0) ? frame.frame.width : frame.frame.height;
+    var trimmedHeight:Float = (frame.angle == 0) ? frame.frame.height : frame.frame.width;
+    var trimX:Float = character.checkFlipX() ? frame.sourceSize.x - frame.offset.x - trimmedWidth : frame.offset.x;
+    var trimY:Float = character.checkFlipY() ? frame.sourceSize.y - frame.offset.y - trimmedHeight : frame.offset.y;
+
+    // from FlxSprite
+    var screenPos = character.getScreenPosition(null, character.camera);
+    var scaleX:Float = Math.abs(character.scale.x);
+    var scaleY:Float = Math.abs(character.scale.y);
+    rect.set(screenPos.x - character.offset.x + character.origin.x - character.origin.x * scaleX + trimX * scaleX,
+      screenPos.y - character.offset.y + character.origin.y - character.origin.y * scaleY + trimY * scaleY, trimmedWidth * scaleX, trimmedHeight * scaleY);
+    screenPos.put();
+    return rect;
+  }
+
+  /**
+   * Whether a point in HaxeUI screen coordinates is over the character's current frame.
+   */
+  @:access(funkin.play.stage.Bopper)
+  public function isPointOverCharacter(screenX:Float, screenY:Float):Bool
+  {
+    if (character == null || !character.visible || hidden) return false;
+    var frameBounds:FlxRect = character.isAnimate ? character.getCurrentFrameBounds(FlxRect.get(), character.camera) : getSpriteFrameBounds(FlxRect.get());
+    var px:Float = screenX * haxe.ui.Toolkit.scale;
+    var py:Float = screenY * haxe.ui.Toolkit.scale;
+    var result:Bool = !frameBounds.isEmpty && px >= frameBounds.left && px < frameBounds.right && py >= frameBounds.top && py < frameBounds.bottom;
+    frameBounds.put();
+    return result;
+  }
+
+  /**
+   * Set once the mouse reaches the character, and kept while it stays inside the preview window.
+   */
+  public var previewHoverActive:Bool = false;
 
   function onFrame(name:String, frameNumber:Int, frameIndex:Int):Void
   {
@@ -233,6 +310,75 @@ class CharacterPlayer extends Box
     if (character == null || characterBounds == null) return;
     character.x = this.cachedScreenX + (paddingLeft ?? 0) - characterBounds.x;
     character.y = this.cachedScreenY + (paddingTop ?? 0) - characterBounds.y;
+  }
+
+  /**
+   * If true, the character will be drawn with a reflection below it.
+   */
+  public var showReflection:Bool = false;
+
+  static final REFLECTION_ALPHA:Float = 0.35;
+
+  var reflectionShader:Null<VerticalFadeShader> = null;
+
+  var lastReflectionTimeline:Null<Timeline> = null;
+  var lastReflectionFrame:Int = -1;
+
+  override public function draw():Void
+  {
+    super.draw();
+
+    if (showReflection && visible && character != null && character.visible && characterBounds != null) drawReflection(character);
+  }
+
+  /**
+   * Draws the character again, flipped about the bottom of its bounds and faded out toward the head.
+   */
+  @:access(funkin.play.stage.Bopper)
+  @:access(animate.FlxAnimate)
+  @:access(animate.internal.Timeline)
+  function drawReflection(char:BaseCharacter):Void
+  {
+    var shader:VerticalFadeShader = reflectionShader ?? (reflectionShader = new VerticalFadeShader(0.7));
+
+    var oldY:Float = char.y;
+    var oldFlipY:Bool = char.flipY;
+    var oldAlpha:Float = char.alpha;
+    var oldShader = char.shader;
+    var oldRenderTexture:Bool = char.useRenderTexture;
+
+    var scaleY:Float = char.scale.y;
+    var animOffsetY:Float = char.animOffsets[1] - char.globalOffsets[1];
+    var boxHeight:Float = char.isAnimate ? char.timeline._bounds.height : char.frameHeight;
+
+    var shown:FlxRect = char.isAnimate ? char.getCurrentFrameBounds(FlxRect.get(), char.camera) : getSpriteFrameBounds(FlxRect.get());
+    var feetY:Float = shown.isEmpty ? oldY + characterBounds.bottom : shown.bottom;
+    shown.put();
+    char.y = 2 * feetY - oldY - scaleY * boxHeight + 2 * scaleY * animOffsetY;
+
+    if (char.isAnimate)
+    {
+      // force to be a render texture or else it'll look weird
+      char.useRenderTexture = true;
+      if (char.timeline != lastReflectionTimeline || char.animation.frameIndex != lastReflectionFrame)
+      {
+        char._renderTextureDirty = true;
+        lastReflectionTimeline = char.timeline;
+        lastReflectionFrame = char.animation.frameIndex;
+      }
+    }
+
+    char.flipY = !oldFlipY;
+    char.alpha = oldAlpha * REFLECTION_ALPHA;
+    char.shader = char.isAnimate ? shader : null;
+
+    char.draw();
+
+    char.flipY = oldFlipY;
+    char.alpha = oldAlpha;
+    char.shader = oldShader;
+    char.useRenderTexture = oldRenderTexture;
+    char.y = oldY;
   }
 
   /**

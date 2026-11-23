@@ -28,10 +28,11 @@ class CppiaManifestMacro
       return;
     }
 
-    var version:String = Context.definedValue('funkin');
+    var version:String = Context.definedValue('funkin_script');
+    if (version == null) version = Context.definedValue('funkin');
     if (version == null)
     {
-      Context.error('CppiaManifestMacro.build() could not read the "funkin" define. Build against the game hxml.', Context.currentPos());
+      Context.error('CppiaManifestMacro.build() could not read the "funkin_script" define. Build against the game hxml.', Context.currentPos());
       return;
     }
 
@@ -53,6 +54,12 @@ class CppiaManifestMacro
             pos: pos
           },
           {
+            name: 'scriptStamp',
+            access: [APublic, AStatic],
+            kind: FVar(macro :String, macro $v{'polymod-cppia-stamp:' + version}),
+            pos: pos
+          },
+          {
             name: 'classes',
             access: [APublic, AStatic],
             kind: FVar(macro :Array<String>, macro $v{classNames}),
@@ -68,6 +75,8 @@ class CppiaManifestMacro
       });
 
     Compiler.keep(MANIFEST_NAME);
+
+    CppiaPruneMacro.register(classNames);
   }
   #end
 }

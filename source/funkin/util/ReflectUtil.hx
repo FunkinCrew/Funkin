@@ -9,6 +9,7 @@ import polymod.hscript._internal.PolymodScriptClass;
  */
 @:nullSafety
 @SuppressWarnings(['checkstyle:VarTypeHint', 'checkstyle:FieldDocComment'])
+@:noPatch
 class ReflectUtil
 {
   /**

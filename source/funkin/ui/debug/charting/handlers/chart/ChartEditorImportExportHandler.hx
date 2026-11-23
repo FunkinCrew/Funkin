@@ -24,6 +24,7 @@ import funkin.ui.debug.charting.handlers.audio.ChartEditorAudioHandler;
  */
 @:nullSafety
 @:access(funkin.ui.debug.charting.ChartEditorState)
+@:noPatch
 class ChartEditorImportExportHandler
 {
   /**

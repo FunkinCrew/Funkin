@@ -549,6 +549,7 @@ class Preferences
     #if mobile
     // Apply the allowScreenTimeout setting.
     lime.system.System.allowScreenTimeout = Preferences.screenTimeout;
+    applyRenderScale(Preferences.renderScale);
     #end
   }
 
@@ -636,6 +637,55 @@ class Preferences
     save.mobileOptions.screenTimeout = value;
     Save.system.flush();
     return value;
+  }
+
+  public static inline final RENDER_SCALE_BALANCED:Float = 1.85;
+  public static inline final RENDER_SCALE_HIGH:Float = 2;
+  public static inline final RENDER_SCALE_NATIVE:Float = 3;
+
+  /**
+   * How many pixels per point (iOS) or dp (Android) the game renders at.
+   * Falls back to `detectedRenderScale` if the user has not picked one.
+   */
+  public static var renderScale(get, set):Float;
+
+  static function get_renderScale():Float
+  {
+    return Save?.instance?.mobileOptions?.renderScale ?? detectedRenderScale;
+  }
+
+  /**
+   * The default render scale based on the device's performance tier.
+   */
+  public static var detectedRenderScale(get, never):Float;
+
+  static function get_detectedRenderScale():Float
+  {
+    return switch (funkin.util.mobile.DeviceTierUtil.tier)
+    {
+      case LOW: RENDER_SCALE_BALANCED;
+      case MID: RENDER_SCALE_HIGH;
+      case HIGH: RENDER_SCALE_NATIVE;
+    }
+  }
+
+  static function set_renderScale(value:Float):Float
+  {
+    var save:Save = Save.instance;
+    save.mobileOptions.renderScale = value;
+    Save.system.flush();
+    applyRenderScale(value);
+    return value;
+  }
+
+  public static function applyRenderScale(scale:Float):Void
+  {
+    final hint:String = scale >= RENDER_SCALE_NATIVE ? '0' : Std.string(scale);
+    #if ios
+    lime.system.System.setHint('IOS_MAX_PIXEL_SCALE', hint);
+    #elseif android
+    lime.system.System.setHint('ANDROID_MAX_PIXEL_SCALE', hint);
+    #end
   }
   #end
 

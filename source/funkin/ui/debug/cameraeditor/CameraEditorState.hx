@@ -2758,6 +2758,14 @@ class CameraEditorState extends UIState implements ConsoleClass
   function destroyHaxeUIComponents():Void
   {
     this.clearNotifications();
+
+    // Force dispose existing dialogs.
+    if (aboutDialog != null) aboutDialog.disposeComponent();
+    if (exitConfirmDialog != null) exitConfirmDialog.disposeComponent();
+    if (userGuideDialog != null) userGuideDialog.disposeComponent();
+    if (deleteLayerConfirmDialog != null) deleteLayerConfirmDialog.disposeComponent();
+    if (autoSortLayersDialog != null) autoSortLayersDialog.disposeComponent();
+    if (welcomeDialog != null) welcomeDialog.disposeComponent();
   }
 
   override public function destroy():Void
@@ -2783,6 +2791,10 @@ class CameraEditorState extends UIState implements ConsoleClass
       currentStage = null;
     }
 
+    funkin.play.GameOverSubState.reset();
+    funkin.play.PauseSubState.reset();
+    funkin.play.Countdown.reset();
+
     destroyHaxeUIComponents();
 
     writePreferences(!saved);
@@ -2802,6 +2814,9 @@ class CameraEditorState extends UIState implements ConsoleClass
     chart.savedChanged.remove(onChartSavedChanged);
     chart.workingFileChanged.remove(onChartWorkingFileChanged);
     chart.recentsChanged.remove(onChartRecentsChanged);
+
+    CameraEditorPropertiesPanelHandler.cleanup();
+    CameraEditorState.instance = null;
   }
 
   function updateUndoRedoMenuItems():Void
@@ -2877,7 +2892,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       case [FlxKey.HOME, false, false, false, _]: // home -> jump to beginning
         onStopPlayback(null);
 
-      case [FlxKey.COMMA, false, false, false, _]:
+      case [FlxKey.COMMA, false, false, false, _] if (currentSongChartData != null):
         var eventData = new SongEventData(0, 'FocusCamera', 1);
 
         eventData.time = timeline.snapMs(Conductor.instance.songPosition);
@@ -2886,7 +2901,7 @@ class CameraEditorState extends UIState implements ConsoleClass
         this.performCommand(cmd);
         selectedSongEvent = eventData;
 
-      case [FlxKey.PERIOD, false, false, false, _]:
+      case [FlxKey.PERIOD, false, false, false, _] if (currentSongChartData != null):
         var eventData = new SongEventData(0, 'FocusCamera', 0);
 
         eventData.time = timeline.snapMs(Conductor.instance.songPosition);
@@ -2901,7 +2916,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       case [FlxKey.Y, true, false, false, _] | [FlxKey.Z, true, false, true, _]: // ctrl + y or ctrl + shift + z -> redo
         this.redoLastCommand();
 
-      case [FlxKey.A, true, false, false, _]: // ctrl + a -> select all timeline events
+      case [FlxKey.A, true, false, false, _] if (currentSongChartData != null): // ctrl + a -> select all timeline events
         selectedSongEvents = currentSongChartData.events.filter(e -> funkin.ui.haxeui.components.editors.timeline.TimelineUtil.isTimelineEvent(e.eventKind));
 
       case [FlxKey.C, true, false, false, true]: // ctrl + c -> copy

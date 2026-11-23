@@ -7,6 +7,7 @@ import flixel.util.FlxSave;
 /**
  * A bit more of the backend and nitty gritty of FNF's save system
  */
+@:access(funkin.save.Save)
 class SaveSystem
 {
   public function new():Void
@@ -32,7 +33,11 @@ class SaveSystem
     var backupSlot:Int = Save.system.archiveBadSaveData(FlxG.save.data);
 
     FlxG.save.erase();
-    return new Save();
+    FlxG.save.bind(Constants.SAVE_NAME + slot, Constants.SAVE_PATH);
+
+    var gameSave:Save = new Save();
+    FlxG.save.mergeData(gameSave.data, true);
+    return gameSave;
   }
 
   public function fetchLegacySaveData():Option<RawSaveData_v1_0_0>

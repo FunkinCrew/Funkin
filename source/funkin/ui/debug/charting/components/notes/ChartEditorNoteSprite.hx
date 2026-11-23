@@ -235,7 +235,7 @@ class ChartEditorNoteSprite extends FlxSprite
     var overrideStep:Null<Float> = overrideStepTime;
     var stepTime:Float = (overrideStep != null) ? overrideStep : noteData.getStepTime();
     var posY:Float = (overrideStep != null) ? ChartEditorTimeScale.stepToPixels(overrideStep) : ChartEditorTimeScale.timeToPixels(noteData.time, stepTime);
-    if (stepTime >= 0) this.y = posY - ChartEditorState.GRID_SIZE / 2;
+    if (stepTime >= 0) this.y = posY * ChartEditorTimeScale.VIEW_DIRECTION - ChartEditorState.GRID_SIZE / 2;
 
     if (origin != null)
     {
@@ -357,7 +357,7 @@ class ChartEditorNoteSprite extends FlxSprite
   {
     var noteHeight:Float = ChartEditorState.GRID_SIZE;
     var stepTime:Float = inline noteData.getStepTime();
-    var notePosY:Float = ChartEditorTimeScale.timeToPixels(noteData.time, stepTime) - noteHeight / 2;
+    var notePosY:Float = ChartEditorTimeScale.timeToPixels(noteData.time, stepTime) * ChartEditorTimeScale.VIEW_DIRECTION - noteHeight / 2;
     if (origin != null) notePosY += origin.y;
 
     // True if the note is above the view area.

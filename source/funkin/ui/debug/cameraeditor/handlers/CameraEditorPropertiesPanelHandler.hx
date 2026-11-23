@@ -277,5 +277,14 @@ class CameraEditorPropertiesPanelHandler
     var event:Null<SongEvent> = SongEventRegistry.getEvent(eventKind);
     return event != null ? event.getTitle() : eventKind;
   }
+
+  /**
+   * Perform cleanup to ensure no HaxeUI elements remain when leaving the state.
+   */
+  public static function cleanup():Void
+  {
+    builtFor = null;
+    builtContainers.clear();
+  }
 }
 #end

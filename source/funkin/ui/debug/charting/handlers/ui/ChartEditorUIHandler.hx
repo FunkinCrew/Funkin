@@ -8,23 +8,23 @@ import funkin.data.song.SongData.SongMetadata;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongDataUtils;
 import funkin.play.character.BaseCharacter.CharacterType;
-import funkin.ui.debug.charting.commands.items.CutItemsCommand;
-import funkin.ui.debug.charting.commands.selection.DeselectAllItemsCommand;
-import funkin.ui.debug.charting.commands.notes.FlipNotesCommand;
-import funkin.ui.debug.charting.commands.selection.InvertSelectedItemsCommand;
-import funkin.ui.debug.charting.commands.notes.MirrorNotesCommand;
-import funkin.ui.debug.charting.commands.items.PasteItemsCommand;
-import funkin.ui.debug.charting.selection.ChartEditorSelectableItems;
 import funkin.ui.debug.charting.commands.events.RemoveEventsCommand;
+import funkin.ui.debug.charting.commands.items.CutItemsCommand;
+import funkin.ui.debug.charting.commands.items.PasteItemsCommand;
 import funkin.ui.debug.charting.commands.items.RemoveItemsCommand;
+import funkin.ui.debug.charting.commands.notes.FlipNotesCommand;
+import funkin.ui.debug.charting.commands.notes.MirrorNotesCommand;
 import funkin.ui.debug.charting.commands.notes.RemoveNotesCommand;
 import funkin.ui.debug.charting.commands.notes.RemoveStackedNotesCommand;
+import funkin.ui.debug.charting.commands.selection.DeselectAllItemsCommand;
+import funkin.ui.debug.charting.commands.selection.InvertSelectedItemsCommand;
 import funkin.ui.debug.charting.commands.selection.SelectAllItemsBetweenTimeCommand;
 import funkin.ui.debug.charting.commands.selection.SelectAllItemsCommand;
 import funkin.ui.debug.charting.commands.selection.SelectItemsCommand;
 import funkin.ui.debug.charting.commands.selection.SetItemSelectionCommand;
 import funkin.ui.debug.charting.components.palette.ChartEditorCommandPalette;
 import funkin.ui.debug.charting.components.playbar.ChartEditorPlaybarHead;
+import funkin.ui.debug.charting.selection.ChartEditorSelectableItems;
 import funkin.ui.debug.charting.toolboxes.ChartEditorDifficultyToolbox;
 import funkin.ui.haxeui.components.CharacterPlayer;
 import funkin.util.Constants;
@@ -36,6 +36,8 @@ import haxe.ui.containers.dialogs.CollapsibleDialog;
 import haxe.ui.containers.menus.Menu;
 import haxe.ui.containers.menus.MenuItem;
 import haxe.ui.core.Screen;
+import haxe.ui.geom.Size;
+import haxe.ui.backend.flixel.MouseHelper;
 import haxe.ui.events.DragEvent;
 import haxe.ui.events.UIEvent;
 
@@ -534,17 +536,19 @@ class ChartEditorUIHandler
 
     state.menubarItemUserGuide.onClick = _ -> state.openUserGuideDialog();
 
-    state.menubarItemDownscroll.onClick = event -> state.isViewDownscroll = event.value;
+    state.menubarItemDownscroll.onChange = event -> state.isViewDownscroll = state.menubarItemDownscroll.selected;
     state.menubarItemDownscroll.selected = state.isViewDownscroll;
 
     state.menubarItemZoomIn.onClick = _ -> state.zoomLevelIndex++;
     state.menubarItemZoomOut.onClick = _ -> state.zoomLevelIndex--;
     state.menubarItemZoomReset.onClick = _ -> state.zoomLevelIndex = ChartEditorState.BASE_ZOOM_INDEX;
 
-    state.menubarItemViewWaveforms.onClick = event -> state.audioWaveforms.visible = state.menubarItemViewWaveforms.selected;
-    state.menubarItemViewDifficultyHeatmap.onClick = event -> state.showDifficultyHeatmap = state.menubarItemViewDifficultyHeatmap.selected;
+    state.menubarItemViewWaveforms.onChange = event -> state.audioWaveforms.visible = state.menubarItemViewWaveforms.selected;
+    state.menubarItemViewDifficultyHeatmap.onChange = event -> state.showDifficultyHeatmap = state.menubarItemViewDifficultyHeatmap.selected;
     state.menubarItemViewDifficultyHeatmap.selected = state.showDifficultyHeatmap;
-    state.menubarItemViewPlayerView.onClick = event -> state.showPlayerView = state.menubarItemViewPlayerView.selected;
+    state.menubarItemViewPreviewReflections.onChange = event -> state.showPreviewReflections = state.menubarItemViewPreviewReflections.selected;
+    state.menubarItemViewPreviewReflections.selected = state.showPreviewReflections;
+    state.menubarItemViewPlayerView.onChange = event -> state.showPlayerView = state.menubarItemViewPlayerView.selected;
     state.menubarItemViewPlayerView.selected = state.showPlayerView;
     state.menubarItemViewWaveforms.selected = state.audioWaveforms.visible;
 
@@ -841,6 +845,75 @@ class ChartEditorUIHandler
     }
   }
 
+  /**
+   * In transparent mode, hide the panel unless the mouse is over it, and show a reflection under the character.
+   */
+  static function updatePreviewTransparency(state:ChartEditorState, toolbox:CollapsibleDialog, charPlayer:CharacterPlayer):Void
+  {
+    var transparent:Bool = toolbox.hasClass(ChartEditorToolboxHandler.PREVIEW_TRANSPARENT_CLASS);
+    var mouseX:Float = MouseHelper.currentWorldX;
+    var mouseY:Float = MouseHelper.currentWorldY;
+    var overWindow:Bool = toolbox.hitTest(mouseX, mouseY);
+
+    charPlayer.previewHoverActive = (charPlayer.previewHoverActive && overWindow) || (overWindow && charPlayer.isPointOverCharacter(mouseX, mouseY));
+    var hovered:Bool = charPlayer.previewHoverActive || toolbox.hasClass('dragging') || toolbox.isResizing;
+    var hidePanel:Bool = transparent && !hovered && !toolbox.minimized;
+
+    // fadeeee
+    var current:Float = toolbox.dialogTitle.opacity;
+    var target:Float = hidePanel ? 0 : 1;
+    if (current != target)
+    {
+      var next:Float = current + (target - current) * Math.min(1, FlxG.elapsed * PREVIEW_PANEL_FADE_SPEED);
+      if (Math.abs(target - next) < 0.01) next = target;
+      toolbox.dialogTitle.opacity = next;
+      toolbox.customStyle.backgroundOpacity = next;
+      toolbox.customStyle.borderOpacity = next;
+      toolbox.invalidateComponentStyle();
+    }
+
+    // Panels are interactive if they are opaque, or minimized.
+    var interactive:Bool = !transparent || toolbox.minimized || toolbox.dialogTitle.opacity >= 1;
+    if (interactive != toolbox.resizable)
+    {
+      if (interactive)
+      {
+        @:privateAccess toolbox.disableInteractivity(false);
+        toolbox.draggable = true;
+        toolbox.resizable = true;
+      }
+      else
+      {
+        toolbox.resizable = false;
+        toolbox.draggable = false;
+        @:privateAccess toolbox.disableInteractivity(true);
+      }
+    }
+
+    charPlayer.showReflection = transparent && state.showPreviewReflections && !toolbox.minimized;
+  }
+
+  /**
+   * How fast a transparent preview's panel fades, higher is faster.
+   */
+  static final PREVIEW_PANEL_FADE_SPEED:Float = 12;
+
+  static function fitCharacterPreview(toolbox:CollapsibleDialog, charPlayer:CharacterPlayer):Void
+  {
+    var fit:Null<PreviewFit> = toolbox.userData;
+    if (fit == null || fit.charId != charPlayer.charId)
+    {
+      var size:Null<Size> = charPlayer.getFitSize();
+      if (size == null) return;
+      toolbox.width = size.width + 2;
+      toolbox.height = size.height + toolbox.dialogTitle.height + 2;
+      toolbox.userData = ({charId: charPlayer.charId, width: toolbox.width, scale: charPlayer.targetScale} : PreviewFit);
+      return;
+    }
+    var scale:Float = fit.scale * toolbox.width / fit.width;
+    if (Math.abs(charPlayer.targetScale - scale) > 0.001) charPlayer.targetScale = scale;
+  }
+
   public static function handlePlayerPreviewToolbox(state:ChartEditorState):Void
   {
     // Manage the Select Difficulty tree view.
@@ -867,17 +940,13 @@ class ChartEditorUIHandler
         charPlayer.loadCharacter(state.currentSongMetadata.playData.characters.player);
         charPlayer.characterType = CharacterType.BF;
         charPlayer.flip = true;
-        charPlayer.targetScale = 0.5;
 
         charPreviewToolbox.invalidateComponentLayout();
       }
     }
 
-    if (charPreviewToolbox != null && !charPreviewToolbox.minimized)
-    {
-      charPreviewToolbox.width = charPlayer.width + 2;
-      charPreviewToolbox.height = charPlayer.height + charPreviewToolbox.dialogTitle.height + 2;
-    }
+    if (charPreviewToolbox != null && !charPreviewToolbox.minimized) fitCharacterPreview(charPreviewToolbox, charPlayer);
+    if (charPreviewToolbox != null) updatePreviewTransparency(state, charPreviewToolbox, charPlayer);
     state.currentPlayerCharacterPlayer = charPlayer;
   }
 
@@ -909,17 +978,13 @@ class ChartEditorUIHandler
         charPlayer.loadCharacter(state.currentSongMetadata.playData.characters.opponent);
         charPlayer.characterType = CharacterType.DAD;
         charPlayer.flip = false;
-        charPlayer.targetScale = 0.5;
 
         charPreviewToolbox.invalidateComponentLayout();
       }
     }
 
-    if (charPreviewToolbox != null && !charPreviewToolbox.minimized)
-    {
-      charPreviewToolbox.width = charPlayer.width + 2;
-      charPreviewToolbox.height = charPlayer.height + charPreviewToolbox.dialogTitle.height + 2;
-    }
+    if (charPreviewToolbox != null && !charPreviewToolbox.minimized) fitCharacterPreview(charPreviewToolbox, charPlayer);
+    if (charPreviewToolbox != null) updatePreviewTransparency(state, charPreviewToolbox, charPlayer);
     state.currentOpponentCharacterPlayer = charPlayer;
   }
 
@@ -1062,6 +1127,14 @@ class ChartEditorUIHandler
       state.buttonSelectDummy.destroy();
       state.buttonSelectDummy = null;
     }
+
+    // Force dispose existing dialogs.
+    for (toolbox in state.activeToolboxes)
+    {
+      if (toolbox == null) continue;
+      toolbox.disposeComponent();
+    }
+    state.activeToolboxes.clear();
   }
 
   /**
@@ -1147,4 +1220,14 @@ class ChartEditorUIHandler
     }
   }
 }
+
+/**
+ * Typedef for Character fit results
+ **/
+typedef PreviewFit =
+{
+  charId:String,
+  width:Float,
+  scale:Float
+};
 #end

@@ -247,7 +247,7 @@ class ChartEditorPlaybackHandler
     visualMs:Float,
     textX:Float):Void
   {
-    ghost.y = ChartEditorTimeScale.msToPixels(visualMs) - state.scrollPositionInPixels + ChartEditorState.GRID_INITIAL_Y_POS;
+    ghost.y = state.gridToScreenY(ChartEditorTimeScale.msToPixels(visualMs));
     if (text == null) return;
     text.x = ghost.x + textX;
     var label:String = flixel.util.FlxStringUtil.formatTime(Math.max(0, visualMs - Conductor.instance.instrumentalOffset) / Constants.MS_PER_SEC, true);
@@ -309,18 +309,15 @@ class ChartEditorPlaybackHandler
     if (!sprite.visible) return;
 
     var endMs:Float = ChartEditorTimeScale.playerViewEnd(visualMs, songMs, downscroll, strumlineOffsetY);
-    var top:Float =
-      (Math.abs(
-        visualMs - songMs
-      ) > 0.5) ? ChartEditorTimeScale.msToPixels(
-        visualMs
-      ) - state.scrollPositionInPixels + ChartEditorState.GRID_INITIAL_Y_POS : state.playheadPositionInPixels
-        + ChartEditorState.GRID_INITIAL_Y_POS;
-    var cutoff:Float = ChartEditorTimeScale.msToPixels(Math.max(0, endMs)) - state.scrollPositionInPixels + ChartEditorState.GRID_INITIAL_Y_POS;
+    var startPixels:Float = (Math.abs(visualMs - songMs) > 0.5) ? ChartEditorTimeScale.msToPixels(visualMs) : state.scrollPositionInPixels
+      + state.playheadPositionInPixels;
+    var start:Float = state.gridToScreenY(startPixels);
+    var cutoff:Float = state.gridToScreenY(ChartEditorTimeScale.msToPixels(Math.max(0, endMs)));
+    var top:Float = Math.min(start, cutoff);
     sprite.setPosition(left, top);
     sprite.offset.set(0, 0);
-    sprite.scale.set(width, Math.max(1, cutoff - top));
-    edge.visible = cutoff < FlxG.height;
+    sprite.scale.set(width, Math.max(1, Math.abs(cutoff - start)));
+    edge.visible = cutoff < FlxG.height && cutoff > 0;
     edge.setPosition(left, cutoff - 1);
     edge.offset.set(0, 0);
     edge.scale.set(width, 2);
@@ -397,6 +394,15 @@ class ChartEditorPlaybackHandler
    */
   public static function easeToSongTimeMs(state:ChartEditorState, songTimeMs:Float):Void
   {
+    if ((state.audioInstTrack != null && state.audioInstTrack.isPlaying) || state.audioVocalTrackGroup.playing)
+    {
+      state.stopAudioPlayback();
+      state.scrollPositionInMs = songTimeMs;
+      state.moveSongToScrollPosition();
+      state.currentScrollEase = state.scrollPositionInPixels;
+      state.startAudioPlayback();
+      return;
+    }
     state.easeSongToScrollPosition(ChartEditorTimeScale.msToPixels(songTimeMs));
   }
 
@@ -629,13 +635,13 @@ class ChartEditorPlaybackHandler
     {
       // Scroll up.
       var diff:Float = ChartEditorState.MENU_BAR_HEIGHT - FlxG.mouse.viewY;
-      state.currentScrollEase -= diff * speed; // Too fast!
+      state.currentScrollEase -= diff * speed * ChartEditorTimeScale.VIEW_DIRECTION; // Too fast!
     }
     else if (FlxG.mouse.viewY > (state.playbarHeadLayout?.y ?? 0.0))
     {
       // Scroll down.
       var diff:Float = FlxG.mouse.viewY - (state.playbarHeadLayout?.y ?? 0.0);
-      state.currentScrollEase += (diff * speed); // Too fast!
+      state.currentScrollEase += (diff * speed * ChartEditorTimeScale.VIEW_DIRECTION); // Too fast!
     }
   }
 }

@@ -98,42 +98,6 @@ class ChartEditorAutoSaveHandler
     }
   }
 
-  /**
-   * Called when the window was closed, to save a backup of the chart.
-   * @param exitCode The exit code of the window. We use `-1` when calling the function due to a game crash.
-   */
-  public static function onWindowClose(state:ChartEditorState, exitCode:Int):Void
-  {
-    trace('Window exited with exit code: $exitCode');
-    trace('Should save chart? ${state.saveDataDirty}');
-
-    var needsAutoSave:Bool = state.saveDataDirty;
-
-    state.writePreferences(needsAutoSave);
-
-    if (needsAutoSave)
-    {
-      state.exportCurrentChartToFNFC(true, null);
-    }
-  }
-
-  public static function onWindowCrash(state:ChartEditorState, message:String):Void
-  {
-    trace('Chart editor intercepted crash:');
-    trace('${message}');
-
-    trace('Should save chart? ${state.saveDataDirty}');
-
-    var needsAutoSave:Bool = state.saveDataDirty;
-
-    state.writePreferences(needsAutoSave);
-
-    if (needsAutoSave)
-    {
-      state.exportCurrentChartToFNFC(true, null);
-    }
-  }
-
   public static function cleanupAutoSave(state:ChartEditorState):Void
   {
     var closeListener:Null<Int->Void> = windowCloseListener;

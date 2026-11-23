@@ -39,6 +39,23 @@ class CharacterData
   public var scale:Null<Float>;
 
   /**
+   * Declares that this character is a variation of another character.
+   *
+   * This is the canonical format. Keep the relationship on the variation
+   * itself so there is a single source of truth and no duplicated parent-side
+   * map that can become stale:
+   *
+   * ```json
+   * "variation": {
+   *   "parent": "bf",
+   *   "name": "Dark"
+   * }
+   * ```
+   */
+  @:optional
+  public var variation:Null<CharacterVariationData>;
+
+  /**
    * Optional data about the health icon for the character.
    */
   @:optional
@@ -116,17 +133,6 @@ class CharacterData
   public var flipX:Null<Bool>;
 
   /**
-   * NOTE: This only applies to animate atlas characters.
-   *
-   * Whether to apply the stage matrix, if it was exported from a symbol instance.
-   * Also positions the Texture Atlas as it displays in Animate.
-   * Turning this on is only recommended if you prepositioned the character in Animate.
-   * For other cases, it should be turned off to act similarly to a normal FlxSprite.
-   */
-  @:optional
-  public var applyStageMatrix:Null<Bool>;
-
-  /**
    * Various settings for the prop.
    * Only available for texture atlases.
    */
@@ -162,7 +168,6 @@ class CharacterData
   public static final DEFAULT_SCALE:Float = 1;
   public static final DEFAULT_SCROLL:Array<Float> = [0, 0];
   public static final DEFAULT_STARTINGANIM:String = 'idle';
-  public static final DEFAULT_APPLYSTAGEMATRIX:Bool = false;
   public static final DEFAULT_ANIMTYPE:String = 'framelabel';
   public static final DEFAULT_ATLASSETTINGS:funkin.data.stage.StageData.TextureAtlasData = {
     swfMode: true,
@@ -311,11 +316,6 @@ class CharacterData
       input.flipX = DEFAULT_FLIPX;
     }
 
-    if (input.applyStageMatrix == null)
-    {
-      input.applyStageMatrix = DEFAULT_APPLYSTAGEMATRIX;
-    }
-
     if (input.atlasSettings == null)
     {
       input.atlasSettings = DEFAULT_ATLASSETTINGS;
@@ -409,6 +409,22 @@ enum abstract CharacterRenderType(String) from String to String
    * Renders the character using a custom method.
    */
   public var Custom = 'custom';
+}
+
+/**
+ * Canonical relationship metadata stored on a variation character.
+ */
+typedef CharacterVariationData =
+{
+  /** 
+   * ID of the base character this variation belongs to.
+   */
+  var parent:String;
+
+  /** 
+   * Optional label shown in editor variation selectors. 
+   */
+  @:optional var ?name:Null<String>;
 }
 
 /**

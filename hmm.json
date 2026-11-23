@@ -3,7 +3,7 @@
     {
       "name": "FlxPartialSound",
       "type": "git",
-      "ref": "cf4d3d37e309c4594813d7cc06aec5a800cdb090",
+      "ref": "e664e49e4dc86e44825040fdcdcc8e9c8972cccf",
       "url": "https://github.com/FunkinCrew/FlxPartialSound"
     },
     {
@@ -61,7 +61,7 @@
     {
       "name": "flixel",
       "type": "git",
-      "ref": "fd2a112cd12a86b9f8e4b704571b9d0330aa51fc",
+      "ref": "1c7036de6910f4bdb32ed5603d43fdd188a315d8",
       "url": "https://github.com/FunkinCrew/flixel"
     },
     {
@@ -112,19 +112,19 @@
     {
       "name": "haxeui-core",
       "type": "git",
-      "ref": "53c4aefe01a69fc36fbee1bf26b7885b7a87c7ad",
+      "ref": "945ec2ab0d4abaf2b3af5395a734a0ed6126daff",
       "url": "https://github.com/FunkinCrew/haxeui-core"
     },
     {
       "name": "haxeui-flixel",
       "type": "git",
-      "ref": "0cad69fb43adbf31978ea4f9f8580f83a9fe64bd",
+      "ref": "1e685dd5a945e800666e590a60474af1091dafae",
       "url": "https://github.com/FunkinCrew/haxeui-flixel"
     },
     {
       "name": "hxcpp",
       "type": "git",
-      "ref": "9a5ef43df75c00296b64b8ed84289b9a4fce577e",
+      "ref": "8be3d0fbc0303d85448bf7e7519489f0566125e2",
       "url": "https://github.com/FunkinCrew/hxcpp"
     },
     {
@@ -180,7 +180,7 @@
     {
       "name": "lime",
       "type": "git",
-      "ref": "56915a5d6482c8756cd78527db580fc162c44756",
+      "ref": "de3105c59e6f9c54d5a2c241130c3d8e45141cf8",
       "url": "https://github.com/FunkinCrew/lime"
     },
     {
@@ -192,13 +192,13 @@
     {
       "name": "openfl",
       "type": "git",
-      "ref": "3e07f8b542fe1994a6f5dd4bd2d3aca04ce93951",
+      "ref": "a48adb5d6fe75ab8c9abbf2f4a9abcc6f535834e",
       "url": "https://github.com/FunkinCrew/openfl"
     },
     {
       "name": "polymod",
       "type": "git",
-      "ref": "8f488e00a47d484010d64577aff3174cb7ac0cd8",
+      "ref": "22d8aa49abe95755ec481535d29ba8c465176ef1",
       "url": "https://github.com/FunkinCrew/polymod"
     },
     {

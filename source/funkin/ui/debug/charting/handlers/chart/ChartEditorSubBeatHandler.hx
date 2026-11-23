@@ -71,7 +71,7 @@ class ChartEditorSubBeatHandler
   {
     if (state.gridTiledSprite == null || state.isCursorOverHaxeUI || !FlxG.mouse.overlaps(state.gridTiledSprite)) return;
 
-    var mouseY:Float = FlxG.mouse.viewY - state.gridTiledSprite.y;
+    var mouseY:Float = state.screenToGridY(FlxG.mouse.viewY);
     for (existing in currentSubBeats(state))
     {
       if (Math.abs(ChartEditorTimeScale.msToPixels(existing) - mouseY) <= SUB_BEAT_REMOVE_PIXELS)

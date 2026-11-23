@@ -35,10 +35,20 @@ class Project extends HXProject
   static final VERSION:String = "0.8.7";
 
   /**
+   * The cppia script API version.
+   */
+  static final SCRIPT_VERSION:String = "0.9.0";
+
+  /**
+   * The oldest cppia script API version this build still loads.
+   */
+  static final SCRIPT_VERSION_MIN:String = "0.9.0";
+
+  /**
    * The build's number and version code.
    * Used when publishing the game to mobile app stores. Should increment with each patch.
    */
-  static final BUILD_NUMBER:Int = 70;
+  static final BUILD_NUMBER:Int = 117;
 
   /**
    * The game's name. Used as the default window title.
@@ -1177,6 +1187,10 @@ class Project extends HXProject
     // Add Funkin's version as a compilation flag so Polymod scripts can use it.
     setHaxedef("funkin", VERSION);
 
+    // Cppia script API range. Mods are versioned with funkin_script, the game accepts funkin_script_min up to funkin_script.
+    setHaxedef("funkin_script", SCRIPT_VERSION);
+    setHaxedef("funkin_script_min", SCRIPT_VERSION_MIN);
+
     // Enable OpenFL's error handler. Required for the crash logger.
     setHaxedef("openfl-enable-handle-error");
 
@@ -1253,7 +1267,12 @@ class Project extends HXProject
     if (FEATURE_MULTITHREADING.isEnabled(this))
     {
       setHaxedef("lime_threads");
-		}
+
+      if (!isWeb())
+      {
+        setHaxedef("lime_threads_deque");
+      }
+    }
 
     if (isWeb())
     {
@@ -1515,18 +1534,6 @@ class Project extends HXProject
   {
     // launchStoryboard = new LaunchStoryboard();
     // launchStoryboard.path = "./LaunchScreen.storyboard";
-
-    if (FEATURE_ONE_CLICK_INSTALL.isEnabled(this))
-    {
-      configureIOSURLScheme();
-    }
-  }
-
-  function configureIOSURLScheme()
-  {
-    setenv("FUNKIN_IOS_INFO_PLIST", Path.join([app.path ?? "", "ios", EXECUTABLE_NAME, '${EXECUTABLE_NAME}-Info.plist']));
-    setenv("FUNKIN_IOS_URL_SCHEME", "funkin");
-    setenv("FUNKIN_IOS_URL_NAME", '${PACKAGE_NAME}.oneclick');
   }
 
   function configurePolymod()
@@ -1546,6 +1553,28 @@ class Project extends HXProject
 
   // Prevents Polymod from loading all assets on load so we can let preloader do it
     setHaxedef("POLYMOD_DISABLE_WEB_PRELOAD");
+
+    if (FEATURE_POLYMOD_MODS.isEnabled(this))
+    {
+      // Enables Polymod's patching system which allows mods to modify the base game (funkin.*)
+      setHaxedef("POLYMOD_PATCH", "funkin");
+
+      // Except these packages:
+      var unpatchablePackages:Array<String> = [
+        'funkin.modding',
+        'funkin.api',
+        'funkin.save',
+        'funkin.external',
+        'funkin.native',
+        'funkin.memory',
+        'funkin.util.macro',
+        'funkin.util.mobile',
+        'funkin.util.protocol',
+        'funkin.util.logging',
+        'funkin.ui.modmenu'
+      ];
+      setHaxedef("POLYMOD_PATCH_EXCLUDE", unpatchablePackages.join(','));
+    }
 
     if (isDebug())
     {
