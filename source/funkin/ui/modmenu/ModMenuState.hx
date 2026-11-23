@@ -9,6 +9,7 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxDirection;
+import funkin.assets.Paths;
 import funkin.audio.FunkinSound;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
@@ -296,7 +297,7 @@ class ModMenuState extends MusicBeatState
     #if FEATURE_TOUCH_CONTROLS
     dragText.text = 'Tap a mod to move it, hold and drag to reorder';
     #end
-    dragText.setFormat(funkin.assets.Paths.font('ui/fonts/FunkinLingLong', 'otf'), 32, FlxColor.WHITE, FlxTextAlign.CENTER);
+    dragText.setFormat(Paths.font('ui/fonts/FunkinLingLong', 'otf'), 32, FlxColor.WHITE, FlxTextAlign.CENTER);
     dragText.scale.set(1, 0.8);
     dragText.letterSpacing = 5;
     dragText.zIndex = 10;
@@ -954,7 +955,9 @@ class ModMenuState extends MusicBeatState
   {
     if (controls.BACK_P)
     {
-      FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu'), 0.4);
+      FunkinSound.playSoundOnce(Paths.sound('ui/main-menu/cancel-menu'), {
+        volume: 0.4
+      });
       pressBackButton();
       return;
     }
@@ -967,7 +970,9 @@ class ModMenuState extends MusicBeatState
     {
       heldDirection = null;
 
-      FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
+      FunkinSound.playSoundOnce(Paths.sound('ui/main-menu/scroll-menu'), {
+        volume: 0.4
+      });
       enabledModItems.repositionItems();
       disabledModItems.repositionItems();
 
@@ -1069,7 +1074,9 @@ class ModMenuState extends MusicBeatState
     if (enabledModItems.modItems.indexOf(touchItem) == index) touchReorderSlot = slot;
     else
     {
-      FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
+      FunkinSound.playSoundOnce(Paths.sound('ui/main-menu/scroll-menu'), {
+        volume: 0.4
+      });
     }
   }
 
@@ -1142,7 +1149,9 @@ class ModMenuState extends MusicBeatState
 
         if (touchHoldTimer >= touchReorderHoldTime)
         {
-          FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
+          FunkinSound.playSoundOnce(Paths.sound('ui/main-menu/scroll-menu'), {
+            volume: 0.4
+          });
 
           touchReordering = true;
           touchReorderSlot = enabledModItems.modItems.indexOf(touchItem);
@@ -1166,7 +1175,9 @@ class ModMenuState extends MusicBeatState
     {
       if (!touchScrolling && !touchReordering && touchItem != null && !touchItem.locked && TouchUtil.justReleased && TouchUtil.overlapsComplex(touchItem))
       {
-        FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
+        FunkinSound.playSoundOnce(Paths.sound('ui/main-menu/scroll-menu'), {
+          volume: 0.4
+        });
 
         if (touchList == disabledModItems)
         {
@@ -1198,7 +1209,9 @@ class ModMenuState extends MusicBeatState
 
     if (TouchUtil.pressAction(hitboxOpenFolder))
     {
-      FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
+      FunkinSound.playSoundOnce(Paths.sound('ui/main-menu/scroll-menu'), {
+        volume: 0.4
+      });
 
       openFolderAnimator.playAnimation('accept');
       openFolderAnimator.onFinish = () ->
@@ -1210,7 +1223,9 @@ class ModMenuState extends MusicBeatState
 
     if (TouchUtil.pressAction(buttonDone))
     {
-      FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
+      FunkinSound.playSoundOnce(Paths.sound('ui/main-menu/scroll-menu'), {
+        volume: 0.4
+      });
 
       playElectrocutionSequence();
     }
@@ -1242,7 +1257,9 @@ class ModMenuState extends MusicBeatState
 
   function handleSelection():Void
   {
-    FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
+    FunkinSound.playSoundOnce(Paths.sound('ui/main-menu/scroll-menu'), {
+      volume: 0.4
+    });
 
     switch (selection)
     {
@@ -1516,49 +1533,50 @@ class ModMenuState extends MusicBeatState
     switch (type)
     {
       case JSON:
-        results.appendUnique([funkin.assets.Paths.music('ui/mods/mod-menu-ambience').metadata()]);
+        results.push(Paths.music('ui/mods/mod-menu-ambience').metadata());
 
-        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/smoke-cloud').json());
-        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/back-arrow').json());
-        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/foreground-wires-bottom').json());
-        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/foreground-wires-top').json());
-        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/sparks').json());
-        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/characters/bf').json());
-        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/characters/gf').json());
-        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/characters/empty-chair').json());
-        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/characters/pinhead').json());
+        results.append(Paths.animateAtlas('ui/mods/smoke-cloud').json());
+        results.append(Paths.animateAtlas('ui/mods/back-arrow').json());
+        results.append(Paths.animateAtlas('ui/mods/foreground-wires-bottom').json());
+        results.append(Paths.animateAtlas('ui/mods/foreground-wires-top').json());
+        results.append(Paths.animateAtlas('ui/mods/sparks').json());
+        results.append(Paths.animateAtlas('ui/mods/characters/bf').json());
+        results.append(Paths.animateAtlas('ui/mods/characters/gf').json());
+        results.append(Paths.animateAtlas('ui/mods/characters/empty-chair').json());
+        results.append(Paths.animateAtlas('ui/mods/characters/pinhead').json());
 
         results.appendUnique(funkin.assets.Assets.listInPath('ui/mods/characters/', JSON));
 
       case IMAGE:
-        results.appendUnique([
-          funkin.assets.Paths.image('ui/mods/smoke'),
-          funkin.assets.Paths.image('ui/mods/bg'),
-          funkin.assets.Paths.image('ui/mods/top-text'),
-          funkin.assets.Paths.image('ui/mods/carbattery'),
-          funkin.assets.Paths.image('ui/mods/gfwire'),
-          funkin.assets.Paths.image('ui/mods/box'),
-          funkin.assets.Paths.image('ui/mods/base-icon'),
-          funkin.assets.Paths.image('ui/mods/fallback-icon'),
-          funkin.assets.Paths.image('ui/mods/bgwires'),
-          funkin.assets.Paths.image('ui/mods/drop-hover')
-        ]);
-        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/smoke-cloud').image());
-        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/back-arrow').image());
-        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/foreground-wires-bottom').image());
-        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/foreground-wires-top').image());
-        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/sparks').image());
-        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/characters/bf').image());
-        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/characters/gf').image());
-        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/characters/empty-chair').image());
-        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/characters/pinhead').image());
+        results.push(Paths.image('ui/mods/smoke'));
+        results.push(Paths.image('ui/mods/bg'));
+        results.push(Paths.image('ui/mods/top-text'));
+        results.push(Paths.image('ui/mods/carbattery'));
+        results.push(Paths.image('ui/mods/gfwire'));
+        results.push(Paths.image('ui/mods/box'));
+        results.push(Paths.image('ui/mods/base-icon'));
+        results.push(Paths.image('ui/mods/fallback-icon'));
+        results.push(Paths.image('ui/mods/bgwires'));
+        results.push(Paths.image('ui/mods/drop-hover'));
+        results.push(Paths.image('ui/options/prompt/box'));
+        results.push(Paths.image('ui/options/prompt/buttonBig'));
+        results.push(Paths.image('ui/options/prompt/buttonSmall'));
+        results.push(Paths.image('ui/options/prompt/icons/question'));
+        results.push(Paths.image('ui/options/prompt/icons/warning'));
+        results.append(Paths.animateAtlas('ui/mods/smoke-cloud').image());
+        results.append(Paths.animateAtlas('ui/mods/back-arrow').image());
+        results.append(Paths.animateAtlas('ui/mods/foreground-wires-bottom').image());
+        results.append(Paths.animateAtlas('ui/mods/foreground-wires-top').image());
+        results.append(Paths.animateAtlas('ui/mods/sparks').image());
+        results.append(Paths.animateAtlas('ui/mods/characters/bf').image());
+        results.append(Paths.animateAtlas('ui/mods/characters/gf').image());
+        results.append(Paths.animateAtlas('ui/mods/characters/empty-chair').image());
+        results.append(Paths.animateAtlas('ui/mods/characters/pinhead').image());
 
       case XML:
-        results.appendUnique([
-          funkin.assets.Paths.xml('ui/mods/smoke'),
-          funkin.assets.Paths.xml('ui/mods/carbattery'),
-          funkin.assets.Paths.xml('ui/mods/gfwire')
-        ]);
+        results.push(Paths.xml('ui/mods/smoke'));
+        results.push(Paths.xml('ui/mods/carbattery'));
+        results.push(Paths.xml('ui/mods/gfwire'));
 
       case MUSIC:
         results.push(Paths.music('ui/mods/mod-menu-ambience').audio());
@@ -1566,10 +1584,10 @@ class ModMenuState extends MusicBeatState
         results.append(funkin.assets.Assets.listInPath('ui/mods/sounds/', SOUND));
 
       case FONT:
-        results.appendUnique([funkin.assets.Paths.file('ui/fonts/FunkinLingLong', 'otf')]);
+        results.push(Paths.file('ui/fonts/FunkinLingLong', 'otf'));
 
       case SHADER:
-        results.appendUnique([funkin.assets.Paths.frag('ui/shaders/replace-color')]);
+        results.push(Paths.frag('ui/shaders/replace-color'));
 
       default:
     }

@@ -3,6 +3,7 @@ package funkin.ui.modmenu;
 import flixel.FlxG;
 import flixel.tweens.FlxEase;
 import funkin.InitState;
+import funkin.assets.Paths;
 import funkin.audio.FunkinSound;
 import funkin.group.FunkinGroup.FunkinSpriteGroup;
 import funkin.modding.PolymodHandler;
@@ -520,7 +521,9 @@ class ModListManager
     if (item.getModId() == ModMenuState.BASE_GAME_MOD_ID) return false;
     if (!PolymodHandler.isModCompatible(item.mod))
     {
-      FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/menu-deny'), 0.7);
+      FunkinSound.playSoundOnce(Paths.sound('ui/quick-panel/sounds/menu-deny'), {
+        volume: 0.7
+      });
       item.flashBackground();
       return false;
     }

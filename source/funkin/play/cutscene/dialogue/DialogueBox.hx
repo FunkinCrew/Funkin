@@ -271,7 +271,9 @@ class DialogueBox extends FunkinSpriteGroup implements IDialogueScriptedClass im
     {
       if (soundPath == null || soundPath == '') continue;
 
-      var sound:Null<FunkinSound> = FunkinSound.load(Paths.sound(soundPath).toFlxSoundAsset(), 0.6);
+      var sound:Null<FunkinSound> = FunkinSound.loadSound(Paths.sound(soundPath), {
+        volume: 0.6
+      });
       if (sound != null) typingSounds.push(sound);
     }
 

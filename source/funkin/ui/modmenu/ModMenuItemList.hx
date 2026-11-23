@@ -7,6 +7,10 @@ import flixel.util.FlxColor;
 import flixel.tweens.FlxEase;
 import funkin.audio.FunkinSound;
 import flixel.util.FlxDirection;
+import funkin.assets.Paths;
+import funkin.audio.FunkinSound;
+import funkin.graphics.FunkinSprite;
+import funkin.group.FunkinGroup.FunkinSpriteGroup;
 
 /**
  * The item list class for the two lists in mod menu.
@@ -171,7 +175,7 @@ class ModMenuItemList extends FunkinSpriteGroup
     modItems = [];
 
     titleText = new FlxText(0, 0);
-    titleText.setFormat(funkin.assets.Paths.font('ui/fonts/FunkinLingLong', 'otf'), 32, FlxColor.WHITE, FlxTextAlign.CENTER);
+    titleText.setFormat(Paths.font('ui/fonts/FunkinLingLong', 'otf'), 32, FlxColor.WHITE, FlxTextAlign.CENTER);
 
     scrollbarTrack = new FunkinSprite(0, 0);
     scrollbarTrack.makeGraphic(1, 1, SCROLLBAR_TRACK_COLOR);
@@ -367,7 +371,9 @@ class ModMenuItemList extends FunkinSpriteGroup
       index = modItems.length - 1;
     }
 
-    FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
+    FunkinSound.playSoundOnce(Paths.sound('ui/main-menu/scroll-menu'), {
+      volume: 0.4
+    });
 
     selectModItem(modItems[index], false, step > 0 ? FlxDirection.UP : FlxDirection.DOWN);
     scrollBy(getScrollDeltaToReveal(selectedModItem));

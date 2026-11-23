@@ -185,7 +185,9 @@ class LetterSort extends FlxSpriteGroup
     {
       arrowToMove.offset.x = 0;
     });
-    if (playSound && diff != 0) FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu').toFlxSoundAsset(), 0.4);
+    if (playSound && diff != 0) FunkinSound.playSoundOnce(Paths.sound('ui/main-menu/scroll-menu'), {
+      volume: 0.4
+    });
   }
 
   /**

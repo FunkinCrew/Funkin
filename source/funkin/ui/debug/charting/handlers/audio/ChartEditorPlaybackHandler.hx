@@ -32,7 +32,7 @@ class ChartEditorPlaybackHandler
 
   public static function setupWelcomeMusic(state:ChartEditorState)
   {
-    state.welcomeMusic.loadEmbedded(Paths.music('ui/editors/chart-editor/artistic-expression').audio().toFlxSoundAsset());
+    state.welcomeMusic.loadAudio(Paths.music('ui/editors/chart-editor/artistic-expression').audio().toFlxSoundAsset());
     FlxG.sound.list.add(state.welcomeMusic);
     state.welcomeMusic.looped = true;
   }
@@ -309,8 +309,9 @@ class ChartEditorPlaybackHandler
     if (!sprite.visible) return;
 
     var endMs:Float = ChartEditorTimeScale.playerViewEnd(visualMs, songMs, downscroll, strumlineOffsetY);
-    var startPixels:Float = (Math.abs(visualMs - songMs) > 0.5) ? ChartEditorTimeScale.msToPixels(visualMs) : state.scrollPositionInPixels
-      + state.playheadPositionInPixels;
+    var startPixels:Float =
+      (Math.abs(visualMs - songMs) > 0.5) ? ChartEditorTimeScale.msToPixels(visualMs) : state.scrollPositionInPixels
+        + state.playheadPositionInPixels;
     var start:Float = state.gridToScreenY(startPixels);
     var cutoff:Float = state.gridToScreenY(ChartEditorTimeScale.msToPixels(Math.max(0, endMs)));
     var top:Float = Math.min(start, cutoff);

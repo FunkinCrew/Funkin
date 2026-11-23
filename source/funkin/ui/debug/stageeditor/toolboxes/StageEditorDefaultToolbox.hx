@@ -1,6 +1,8 @@
 package funkin.ui.debug.stageeditor.toolboxes;
 
 #if FEATURE_STAGE_EDITOR
+import funkin.assets.Paths;
+import funkin.audio.FunkinSound;
 import haxe.ui.containers.dialogs.CollapsibleDialog;
 import funkin.audio.FunkinSound;
 
@@ -28,8 +30,8 @@ class StageEditorDefaultToolbox extends CollapsibleDialog
    */
   public function toggle(on:Bool)
   {
-    if (!dialogVisible && on) FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/window-open'));
-    else if (dialogVisible && !on) FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/window-exit'));
+    if (!dialogVisible && on) FunkinSound.playSoundOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/window-open'));
+    else if (dialogVisible && !on) FunkinSound.playSoundOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/window-exit'));
 
     if (on) showDialog(false);
     else

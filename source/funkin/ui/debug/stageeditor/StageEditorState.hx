@@ -11,8 +11,16 @@ import flixel.addons.display.shapes.FlxShapeCircle;
 import flixel.graphics.FlxGraphic;
 import flixel.FlxSprite;
 import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
+import funkin.assets.Paths;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.addons.display.FlxGridOverlay;
+import funkin.audio.FunkinSound;
+import funkin.data.character.CharacterRegistry;
+import funkin.data.stage.StageRegistry;
+import funkin.graphics.FunkinCamera;
+import funkin.graphics.shaders.Grayscale;
+import funkin.input.Cursor;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.character.BaseCharacter;
 import funkin.play.character.BaseCharacter.CharacterType;
@@ -429,7 +437,7 @@ class StageEditorState extends UIState
     add(camMarker);
 
     nameTxt = new FlxText(0, 0, 0, '', 24);
-    nameTxt.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 24, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    nameTxt.setFormat(Paths.font('ui/fonts/VCR OSD Mono'), 24, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     nameTxt.cameras = [camHUD];
     add(nameTxt);
 
@@ -530,7 +538,7 @@ class StageEditorState extends UIState
     Save.instance.stageEditorHasBackup.value = false;
 
     Cursor.show();
-    FunkinSound.playMusicTrack(funkin.assets.Paths.music('ui/editors/chart-editor/artistic-expression/artistic-expression'), {
+    FunkinSound.playMusicTrack(Paths.music('ui/editors/chart-editor/artistic-expression/artistic-expression'), {
       volume: 0.0
     });
     FlxG.sound.music.fadeIn(10, 0, 1);
@@ -611,8 +619,8 @@ class StageEditorState extends UIState
 
     Preferences.debugDisplay == DebugDisplayMode.Off ? menubar.paddingLeft = null : menubar.paddingLeft = 256;
 
-    if (FlxG.mouse.justPressed || FlxG.mouse.justPressedRight) FunkinSound.playOnce(Paths.sound("ui/editors/chart-editor/charting-sounds/click-down"));
-    if (FlxG.mouse.justReleased || FlxG.mouse.justReleasedRight) FunkinSound.playOnce(Paths.sound("ui/editors/chart-editor/charting-sounds/click-up"));
+    if (FlxG.mouse.justPressed || FlxG.mouse.justPressedRight) FunkinSound.playSoundOnce(Paths.sound("ui/editors/chart-editor/charting-sounds/click-down"));
+    if (FlxG.mouse.justReleased || FlxG.mouse.justReleasedRight) FunkinSound.playSoundOnce(Paths.sound("ui/editors/chart-editor/charting-sounds/click-up"));
 
     // testmode
     menubarMenuFile.disabled = menubarMenuEdit.disabled = bottomBarModeText.disabled = menubarMenuWindow.disabled = testingMode;

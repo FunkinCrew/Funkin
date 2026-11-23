@@ -5,6 +5,8 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxSignal;
+import funkin.assets.Assets;
+import funkin.assets.Paths;
 import funkin.audio.FunkinSound;
 import funkin.util.HapticUtil;
 
@@ -41,7 +43,7 @@ class FunkinBackButton extends FunkinButton
   {
     super(x, y);
 
-    frames = Paths.getSparrowAtlas('ui/back-button');
+    frames = Assets.getSparrowAtlas(Paths.image('ui/back-button'));
     animation.addByIndices('idle', 'back', [0], '', 24, false);
     animation.addByIndices('hold', 'back', [5], '', 24, false);
     animation.addByIndices('confirm', 'back', [
@@ -114,7 +116,7 @@ class FunkinBackButton extends FunkinButton
     HapticUtil.vibrate(0, 0.05, 0.5);
     animation.play('confirm');
 
-    FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu'));
+    FunkinSound.playSoundOnce(Paths.sound('ui/main-menu/cancel-menu'));
 
     onConfirmStart.dispatch();
 

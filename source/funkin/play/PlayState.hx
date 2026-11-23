@@ -3224,7 +3224,9 @@ class PlayState extends MusicBeatSubState
                 if (vocals.legacyVoiceSystem && !vocals.legacyVoiceUsesPlayer) vocals.opponentVolume = 0;
                 vocals.playerVolume = 0;
               }
-              FunkinSound.playOnce(Paths.soundRandom('gameplay/general/sounds/miss-note-', 1, 3).toFlxSoundAsset(), FlxG.random.float(0.5, 0.6));
+              FunkinSound.playSoundOnce(Paths.soundRandom('gameplay/general/sounds/miss-note-', 1, 3), {
+                volume: FlxG.random.float(0.5, 0.6)
+              });
             }
             event.finish();
           }
@@ -3450,7 +3452,9 @@ class PlayState extends MusicBeatSubState
     {
       var tempVocals:Bool = currentStage != null && currentStage.getBoyfriend()?.tempVocals;
       if (vocals != null && !tempVocals) vocals.playerVolume = 0;
-      FunkinSound.playOnce(Paths.soundRandom('gameplay/general/sounds/miss-note-', 1, 3).toFlxSoundAsset(), FlxG.random.float(0.5, 0.6));
+      FunkinSound.playSoundOnce(Paths.soundRandom('gameplay/general/sounds/miss-note-', 1, 3), {
+        volume: FlxG.random.float(0.5, 0.6)
+      });
     }
   }
 
@@ -3496,7 +3500,9 @@ class PlayState extends MusicBeatSubState
     {
       var tempVocals:Bool = currentStage != null && currentStage.getBoyfriend()?.tempVocals;
       if (vocals != null && !tempVocals) vocals.playerVolume = 0;
-      FunkinSound.playOnce(Paths.soundRandom('gameplay/general/sounds/miss-note-', 1, 3).toFlxSoundAsset(), FlxG.random.float(0.1, 0.2));
+      FunkinSound.playSoundOnce(Paths.soundRandom('gameplay/general/sounds/miss-note-', 1, 3), {
+        volume: FlxG.random.float(0.1, 0.2)
+      });
     }
 
     event.finish();
@@ -3961,26 +3967,28 @@ class PlayState extends MusicBeatSubState
           camHUD.visible = false;
           isInCutscene = true;
 
-          FunkinSound.playOnce(Paths.sound('gameplay/stages/mallEvil/sounds/lights-off').toFlxSoundAsset(), function()
-          {
-            // no camFollow so it centers on horror tree
-            var targetSong:Song = SongRegistry.instance.fetchEntry(targetSongId) ?? throw 'Could not find a song with the ID $targetSongId';
-            var targetVariation:String = currentVariation;
-            if (!targetSong.hasDifficulty(PlayStatePlaylist.campaignDifficulty, currentVariation))
+          FunkinSound.playSoundOnce(Paths.sound('gameplay/stages/mallEvil/sounds/lights-off'), {
+            onComplete: function()
             {
-              targetVariation = targetSong.getFirstValidVariation(PlayStatePlaylist.campaignDifficulty) ?? Constants.DEFAULT_VARIATION;
+              // no camFollow so it centers on horror tree
+              var targetSong:Song = SongRegistry.instance.fetchEntry(targetSongId) ?? throw 'Could not find a song with the ID $targetSongId';
+              var targetVariation:String = currentVariation;
+              if (!targetSong.hasDifficulty(PlayStatePlaylist.campaignDifficulty, currentVariation))
+              {
+                targetVariation = targetSong.getFirstValidVariation(PlayStatePlaylist.campaignDifficulty) ?? Constants.DEFAULT_VARIATION;
+              }
+              if (currentStage != null) this.remove(currentStage);
+              funkin.ui.transition.Transition.openPlayState({
+                targetSong: targetSong,
+                targetDifficulty: PlayStatePlaylist.campaignDifficulty,
+                targetVariation: targetVariation,
+                practiceMode: isPracticeMode,
+                cameraFollowPoint: cameraFollowPoint.getPosition(),
+              }, {
+                transition: LoadingScreen(None, None),
+                shouldStopMusic: true,
+              });
             }
-            if (currentStage != null) this.remove(currentStage);
-            funkin.ui.transition.Transition.openPlayState({
-              targetSong: targetSong,
-              targetDifficulty: PlayStatePlaylist.campaignDifficulty,
-              targetVariation: targetVariation,
-              practiceMode: isPracticeMode,
-              cameraFollowPoint: cameraFollowPoint.getPosition(),
-            }, {
-              transition: LoadingScreen(None, None),
-              shouldStopMusic: true,
-            });
           });
         }
         else

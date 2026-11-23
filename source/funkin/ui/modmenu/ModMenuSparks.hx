@@ -1,6 +1,7 @@
 package funkin.ui.modmenu;
 
 import flixel.util.FlxTimer;
+import funkin.assets.Paths;
 import funkin.audio.FunkinSound;
 import funkin.graphics.FunkinSprite;
 
@@ -59,7 +60,7 @@ class ModMenuSparks extends FunkinSprite
 
     animation.play('electrocution');
 
-    shockSound = FunkinSound.playOnce(Paths.sound('ui/mods/sounds/sparks/electrocution').toString());
+    shockSound = FunkinSound.playSoundOnce(Paths.sound('ui/mods/sounds/sparks/electrocution'));
   }
 
   /**
@@ -85,7 +86,7 @@ class ModMenuSparks extends FunkinSprite
     this.visible = true;
     animation.play(randomAnimation);
 
-    FunkinSound.playOnce(Paths.sound('ui/mods/sounds/sparks/spark-${randomAnimation}').toString());
+    FunkinSound.playSoundOnce(Paths.sound('ui/mods/sounds/sparks/spark-${randomAnimation}'));
 
     _previousAnimation = randomAnimation;
   }

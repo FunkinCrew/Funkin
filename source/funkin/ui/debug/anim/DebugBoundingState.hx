@@ -11,6 +11,9 @@ import flixel.group.FlxGroup;
 import flixel.math.FlxPoint;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
+import funkin.assets.Assets;
+import funkin.assets.Paths;
+import funkin.audio.FunkinSound;
 import funkin.input.Cursor;
 import funkin.play.character.BaseCharacter;
 import funkin.data.character.CharacterData;
@@ -67,7 +70,7 @@ class DebugBoundingState extends FlxState
     FlxG.sound.music?.stop();
 
     Cursor.show();
-    FunkinSound.playMusicTrack(funkin.assets.Paths.music('ui/editors/chart-editor/artistic-expression/artistic-expression'), {
+    FunkinSound.playMusicTrack(Paths.music('ui/editors/chart-editor/artistic-expression/artistic-expression'), {
       volume: 0.0
     });
     FlxG.sound.music.fadeIn(10, 0, 1);
@@ -83,7 +86,7 @@ class DebugBoundingState extends FlxState
     // we are setting this as the default draw camera only temporarily, to trick haxeui
     FlxG.cameras.add(hudCam);
 
-    var str = Paths.xml('ui/editors/animation-editor/offset-editor-view');
+    var str = Paths.xml('ui/editors/animation-editor/offset-editor-view').toString();
     offsetEditorDialog = cast RuntimeComponentBuilder.fromAsset(str);
 
     if (offsetEditorDialog == null) throw "Could not build editor UI, check the layout file.";
@@ -127,7 +130,7 @@ class DebugBoundingState extends FlxState
     spriteSheetView = new FlxGroup();
     add(spriteSheetView);
 
-    var tex = Paths.getSparrowAtlas('gameplay/characters/bf-pixel/bf-pixel');
+    var tex = Assets.getSparrowAtlas(Paths.image('gameplay/characters/bf-pixel/bf-pixel'));
     // tex.frames[0].uv
 
     bf = new FlxSprite();
@@ -203,7 +206,7 @@ class DebugBoundingState extends FlxState
     add(offsetView);
 
     txtOffsetShit = new FlxText(20, 20, 0, "", 20);
-    txtOffsetShit.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 26, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    txtOffsetShit.setFormat(Paths.font('ui/fonts/VCR OSD Mono'), 26, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     txtOffsetShit.cameras = [hudCam];
     txtOffsetShit.y = FlxG.height - 20 - txtOffsetShit.height;
     offsetView.add(txtOffsetShit);
@@ -269,7 +272,7 @@ class DebugBoundingState extends FlxState
   function addInfo(str:String, value:Dynamic)
   {
     var swagText:FlxText = new FlxText(10, FlxG.height - 32);
-    swagText.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 26, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    swagText.setFormat(Paths.font('ui/fonts/VCR OSD Mono'), 26, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     swagText.scrollFactor.set();
 
     for (text in txtGrp.members)
@@ -325,8 +328,8 @@ class DebugBoundingState extends FlxState
 
     if (FlxG.keys.justPressed.H) hudCam.visible = !hudCam.visible;
 
-    if (FlxG.mouse.justPressed || FlxG.mouse.justPressedMiddle) FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/click-down'));
-    if (FlxG.mouse.justReleased || FlxG.mouse.justReleasedMiddle) FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/click-up'));
+    if (FlxG.mouse.justPressed || FlxG.mouse.justPressedMiddle) FunkinSound.playSoundOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/click-down'));
+    if (FlxG.mouse.justReleased || FlxG.mouse.justReleasedMiddle) FunkinSound.playSoundOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/click-up'));
 
     MouseUtil.mouseCamDrag();
     if (!haxeUIFocused) handleTrackpadScroll();

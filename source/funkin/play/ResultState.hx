@@ -661,31 +661,39 @@ class ResultState extends MusicBeatSubState
       {
         // preload the loop music
         @:nullSafety(Off)
-        var musicLoop:FunkinSound = FunkinSound.load(musicPath.audio().toFlxSoundAsset(), 1.0, true, true, false, false, null, null);
-        volume:1.0,
-        looped:true,
-        autoDestroy:true,
-        autoPlay:false,
-        persist:false,
-        stream:true
-      });
+        var musicLoop:FunkinSound = FunkinSound.loadSound(musicPath.audio(), {
+          volume: 1.0,
+          looped: true,
+          autoDestroy: true,
+          autoPlay: false,
+          persist: false,
+          stream: true
+        });
 
-      // Play the intro music.
-      FunkinSound.setMusic(musicLoop);
-      introMusicAudio = FunkinSound.loadSound(introMusicPath.audio(), {
-        volume: 1.0,
-        looped: false,
-        autoDestroy: true,
-        autoPlay: true,
-        onComplete: () ->
-        {
-          introMusicAudio = null;
-          musicLoop.play();
-          if (!isChartingMode)
+        // Play the intro music.
+        FunkinSound.setMusic(musicLoop);
+        introMusicAudio = FunkinSound.loadSound(introMusicPath.audio(), {
+          volume: 1.0,
+          looped: false,
+          autoDestroy: true,
+          autoPlay: true,
+          onComplete: () ->
           {
-            // Don't override the music and cause problems on the chart editor
-          });
-        }
+            introMusicAudio = null;
+            musicLoop.play();
+            if (!isChartingMode)
+            {
+              // Don't override the music and cause problems on the chart editor
+              FunkinSound.setMusic(musicLoop);
+            }
+            else // Play the results music as a looped sound instead (that we cancel before closing and returning to the chart editor)
+            {
+              resultsMusic = musicLoop;
+              false; // Why is this necessary for this to work?
+            }
+          },
+          stream: true
+        });
       else
       {
         if (!isChartingMode)

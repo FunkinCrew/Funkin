@@ -396,11 +396,9 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     panel = new QuickPanelGroup(buttonData, onButtonTapped, !pullTabEnabled);
     add(panel);
 
-    tickSound = new FunkinSound();
-    tickSound.loadEmbedded(Paths.sound('ui/quick-panel/sounds/tab-pull').toFlxSoundAsset());
-    tickSound.volume = 1;
-    FlxG.sound.defaultSoundGroup.add(tickSound);
-    FlxG.sound.list.add(tickSound);
+    tickSound = FunkinSound.loadSound(Paths.sound('ui/quick-panel/sounds/tab-pull'), {
+      volume: 1
+    });
 
     forEach(obj -> obj.cameras = [panelCam]);
 

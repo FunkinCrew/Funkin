@@ -10,6 +10,7 @@ import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.math.FlxMath;
 import flixel.util.FlxSort;
 import flixel.util.FlxTimer;
+import funkin.assets.Paths;
 import funkin.audio.FunkinSound;
 import funkin.ui.transition.stickers.StickerSprite;
 import funkin.ui.transition.stickers.StickerPack;
@@ -63,7 +64,7 @@ class StickerTransition extends FlxTransition
       case SOUND:
         for (i in 1...(8 + 1))
         {
-          results.push(funkin.assets.Paths.sound('ui/loading/stickers/sounds/key-click-$i'));
+          results.push(Paths.sound('ui/loading/stickers/sounds/key-click-$i'));
         }
       default:
         // Nothing.
@@ -103,7 +104,7 @@ class StickerTransition extends FlxTransition
   var grpStickers:FlxTypedSpriteGroup<StickerSprite>;
   var stickerPackId:String;
   var stickerPack:StickerPack;
-  var sounds:Array<String> = [];
+  var sounds:Array<AssetPath> = [];
 
   public function new(params:StickerTransitionParams):Void
   {
@@ -241,8 +242,8 @@ class StickerTransition extends FlxTransition
         sticker.visible = false;
 
         // Always play a sound.
-        var nextSound:String = FlxG.random.getObject(sounds);
-        FunkinSound.playOnce(nextSound);
+        var nextSound:AssetPath = FlxG.random.getObject(sounds);
+        FunkinSound.playSoundOnce(nextSound);
 
         // Do the small vibration each time sticker disappears.
         HapticUtil.vibrate(0, 0.01, Constants.MIN_VIBRATION_AMPLITUDE * 0.5);
@@ -326,8 +327,8 @@ class StickerTransition extends FlxTransition
         if (grpStickers == null) return;
 
         sticker.visible = true;
-        var daSound:String = FlxG.random.getObject(sounds);
-        FunkinSound.playOnce(daSound);
+        var daSound:AssetPath = FlxG.random.getObject(sounds);
+        FunkinSound.playSoundOnce(daSound);
 
         // Do the small vibration each time sticker appears.
         HapticUtil.vibrate(0, 0.01, Constants.MIN_VIBRATION_AMPLITUDE * 0.5);

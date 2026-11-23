@@ -2,6 +2,8 @@ package funkin.ui.debug.charting.handlers.audio;
 
 #if FEATURE_CHART_EDITOR
 import flixel.system.FlxAssets.FlxSoundAsset;
+import flixel.util.FlxColor;
+import funkin.assets.Paths;
 import funkin.audio.VoicesGroup;
 import funkin.audio.FunkinSound;
 import funkin.audio.waveform.WaveformData;
@@ -372,7 +374,7 @@ class ChartEditorAudioHandler
   {
     if (state.stretchySounds)
     {
-      if (state.stretchySound1 == null) state.stretchySound1 = FunkinSound.load(Paths.sound('ui/editors/chart-editor/charting-sounds/stretch-1'));
+      if (state.stretchySound1 == null) state.stretchySound1 = FunkinSound.loadSound(Paths.sound('ui/editors/chart-editor/charting-sounds/stretch-1'));
       if (state.stretchySound1 == null) return;
 
       // Prevent spam playing that could cause issues.
@@ -384,7 +386,7 @@ class ChartEditorAudioHandler
     }
     else
     {
-      if (state.stretchySound2 == null) state.stretchySound2 = FunkinSound.load(Paths.sound('ui/editors/chart-editor/charting-sounds/stretch-2'));
+      if (state.stretchySound2 == null) state.stretchySound2 = FunkinSound.loadSound(Paths.sound('ui/editors/chart-editor/charting-sounds/stretch-2'));
       if (state.stretchySound2 == null) return;
 
       // Prevent spam playing that could cause issues.

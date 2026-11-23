@@ -286,7 +286,7 @@ class CreditsState extends MusicBeatState
       assetQuery: MainMenuState.queryAssets,
       transition: BlackScreen(Fade(North), Fade(South))
     });
-    FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu').toFlxSoundAsset());
+    FunkinSound.playSoundOnce(Paths.sound('ui/main-menu/cancel-menu'));
   }
 
   override public function destroy():Void

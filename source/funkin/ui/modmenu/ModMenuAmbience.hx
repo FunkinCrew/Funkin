@@ -19,11 +19,6 @@ class ModMenuAmbience extends FunkinSoundscape
    */
   public static final EASTER_EGG_TIMER:Float = 180.0;
 
-  /**
-   * The path to the PhantomArcade easter egg sound.
-   */
-  public static final EASTER_EGG_PATH:String = Paths.sound('ui/mods/sounds/phantomarcade-trapped', false).toString();
-
   var _easterEgg:Null<FunkinSound> = null;
 
   public function new(params:FunkinSoundscapeSettings)
@@ -55,7 +50,7 @@ class ModMenuAmbience extends FunkinSoundscape
     // 180 seconds -> PhantomArcade easter egg
     FlxTimer.wait(EASTER_EGG_TIMER, () ->
     {
-      _easterEgg = FunkinSound.playOnce(EASTER_EGG_PATH);
+      _easterEgg = FunkinSound.playSoundOnce(Paths.sound('ui/mods/sounds/phantomarcade-trapped', false));
     });
 
     super.onSoundFadeIn(tween);

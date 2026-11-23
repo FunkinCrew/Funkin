@@ -1,5 +1,6 @@
 package funkin.ui.charSelect.characters;
 
+import funkin.assets.Paths;
 import funkin.audio.FunkinSound;
 import funkin.data.freeplay.player.PlayerData.PlayerCharSelectCharacterData;
 import funkin.data.freeplay.player.PlayerData.PlayerCharSelectData;

@@ -622,15 +622,15 @@ class CharacterSelectState extends MusicBeatSubState
     add(characterHitbox);
     #end
 
-    selectSound.loadEmbedded(Paths.sound('ui/character-select/sounds/select').toFlxSoundAsset());
+    selectSound.loadAudio(Paths.sound('ui/character-select/sounds/select').toFlxSoundAsset());
     selectSound.volume = 0.7;
     FlxG.sound.list.add(selectSound);
 
-    unlockSound.loadEmbedded(Paths.sound('ui/character-select/sounds/unlock').toFlxSoundAsset());
+    unlockSound.loadAudio(Paths.sound('ui/character-select/sounds/unlock').toFlxSoundAsset());
     unlockSound.volume = 0.7;
     FlxG.sound.list.add(unlockSound);
 
-    lockedSound.loadEmbedded(Paths.sound('ui/character-select/sounds/locked').toFlxSoundAsset());
+    lockedSound.loadAudio(Paths.sound('ui/character-select/sounds/locked').toFlxSoundAsset());
     lockedSound.volume = 0.7;
     FlxG.sound.list.add(lockedSound);
 
@@ -702,7 +702,7 @@ class CharacterSelectState extends MusicBeatSubState
     var blackScreen:FunkinSprite = new FunkinSprite(-(FlxG.width * 0.5), -(FlxG.height * 0.5)).makeSolidColor(FlxG.width * 2, FlxG.height * 2, 0xFF000000);
     add(blackScreen);
 
-    introSound.loadEmbedded(Paths.sound('ui/character-select/sounds/lights').toFlxSoundAsset());
+    introSound.loadAudio(Paths.sound('ui/character-select/sounds/lights').toFlxSoundAsset());
     introSound.volume = 0;
 
     FlxG.sound.list.add(introSound);
@@ -1021,7 +1021,7 @@ class CharacterSelectState extends MusicBeatSubState
     inputHandler.reset();
     cursors.confirm();
 
-    FunkinSound.playOnce(Paths.sound('ui/character-select/sounds/confirm').toFlxSoundAsset());
+    FunkinSound.playSoundOnce(Paths.sound('ui/character-select/sounds/confirm'));
 
     var event:CharacterSelectScriptEvent = CharacterSelectScriptEvent.get(CHARACTER_CONFIRMED, currentCharacterId);
     dispatchEvent(event);
@@ -1111,7 +1111,7 @@ class CharacterSelectState extends MusicBeatSubState
 
     wentBackToFreeplay = true;
 
-    FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu').toFlxSoundAsset());
+    FunkinSound.playSoundOnce(Paths.sound('ui/main-menu/cancel-menu'));
     FlxTween.tween(FlxG.sound.music, {
       volume: 0.0
     }, 0.7, {

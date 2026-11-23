@@ -5,6 +5,7 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import funkin.assets.Paths;
 import funkin.audio.FunkinSound;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
@@ -442,7 +443,7 @@ class ModMenuScene
         smokeCloud.visible = true;
         smokeCloud.animation.play('wholeTimeline');
 
-        FunkinSound.playOnce(Paths.sound('ui/mods/sounds/smoke-cloud').toString());
+        FunkinSound.playSoundOnce(Paths.sound('ui/mods/sounds/smoke-cloud'));
 
         sparks.endElectrocution();
 
@@ -544,7 +545,7 @@ class ModMenuScene
       if (crispyTimer >= CRISPY_SFX_DELAY && !playedCrispySFX)
       {
         playedCrispySFX = true;
-        FunkinSound.playOnce(Paths.sound('ui/mods/sounds/crispy').toString());
+        FunkinSound.playSoundOnce(Paths.sound('ui/mods/sounds/crispy'));
       }
     }
 
