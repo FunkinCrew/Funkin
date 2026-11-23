@@ -572,7 +572,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     var lastIndex:Int = panel.buttons.length - 1;
     curSelected = snap ? Std.int(FlxMath.bound(change, 0, lastIndex)) : FlxMath.wrap(curSelected + change, 0, lastIndex);
 
-    if (snap || change != 0) FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/menu-scroll').toFlxSoundAsset());
+    if (snap || change != 0) FunkinSound.playSoundOnce(Paths.sound('ui/quick-panel/sounds/menu-scroll'));
 
     if (panel.buttons[prevSelected] != null && panel.buttons[prevSelected] != currentButton) panel.buttons[prevSelected].doUnselectCallback();
 
@@ -773,7 +773,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
         if (uiState.is(PanelOpen) && controls.BACK_P)
         {
           closePanel();
-          FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/close-tab-click').toFlxSoundAsset());
+          FunkinSound.playSoundOnce(Paths.sound('ui/quick-panel/sounds/close-tab-click'));
           return;
         }
 
@@ -784,12 +784,12 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
           if (uiState.is(PanelClosed))
           {
             openPanel();
-            FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/open-tab-click').toFlxSoundAsset());
+            FunkinSound.playSoundOnce(Paths.sound('ui/quick-panel/sounds/open-tab-click'));
           }
           else
           {
             closePanel();
-            FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/close-tab-click').toFlxSoundAsset());
+            FunkinSound.playSoundOnce(Paths.sound('ui/quick-panel/sounds/close-tab-click'));
           }
           return;
         }
@@ -919,12 +919,12 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
         tracking = false;
         panel.setTabOnTop(true);
         openPanel();
-        FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/open-tab-click').toFlxSoundAsset());
+        FunkinSound.playSoundOnce(Paths.sound('ui/quick-panel/sounds/open-tab-click'));
         return;
       }
 
       grabPanel();
-      FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/tab-release-pull').toFlxSoundAsset());
+      FunkinSound.playSoundOnce(Paths.sound('ui/quick-panel/sounds/tab-release-pull'));
       return;
     }
 
@@ -936,12 +936,12 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
       if (uiState.is(PanelClosed))
       {
         openPanel();
-        FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/open-tab-click').toFlxSoundAsset());
+        FunkinSound.playSoundOnce(Paths.sound('ui/quick-panel/sounds/open-tab-click'));
       }
       else
       {
         closePanel();
-        FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/close-tab-click').toFlxSoundAsset());
+        FunkinSound.playSoundOnce(Paths.sound('ui/quick-panel/sounds/close-tab-click'));
       }
       return;
     }
@@ -950,7 +950,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     if (uiState.is(PanelOpen) && TouchUtil.justPressed && !overTab && !TouchUtil.overlaps(panel.panelSprite))
     {
       closePanel();
-      FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/close-tab-click').toFlxSoundAsset());
+      FunkinSound.playSoundOnce(Paths.sound('ui/quick-panel/sounds/close-tab-click'));
     }
   }
 
@@ -972,7 +972,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     panel.setTabOnTop(false);
     panel.pullTabVisual.press(curState);
 
-    FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/tab-press').toFlxSoundAsset());
+    FunkinSound.playSoundOnce(Paths.sound('ui/quick-panel/sounds/tab-press'));
   }
   #end
 
@@ -1038,12 +1038,12 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
       if (dragTarget > QuickPanelGroup.OPEN_DISTANCE * OPEN_THRESHOLD)
       {
         openPanel();
-        FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/open-tab-soft').toFlxSoundAsset());
+        FunkinSound.playSoundOnce(Paths.sound('ui/quick-panel/sounds/open-tab-soft'));
       }
       else
       {
         closePanel();
-        FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/close-tab-soft').toFlxSoundAsset());
+        FunkinSound.playSoundOnce(Paths.sound('ui/quick-panel/sounds/close-tab-soft'));
       }
     }
   }
@@ -1089,7 +1089,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     {
       lock = true;
       panel.playDeny(() -> lock = false);
-      FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/menu-deny').toFlxSoundAsset());
+      FunkinSound.playSoundOnce(Paths.sound('ui/quick-panel/sounds/menu-deny'));
       return;
     }
 
@@ -1097,7 +1097,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     {
       lock = true;
       panel.playAccept(curSelected, false);
-      FunkinSound.playOnce(Paths.sound('ui/main-menu/confirm-menu').toFlxSoundAsset());
+      FunkinSound.playSoundOnce(Paths.sound('ui/main-menu/confirm-menu'));
 
       afterFrames(6, () -> button.doCallback());
       afterFrames(10, () ->
@@ -1111,7 +1111,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     if (!uiState.transition(PanelConfirming)) return;
 
     panel.playAccept(curSelected, isTransitioning);
-    FunkinSound.playOnce(Paths.sound('ui/main-menu/confirm-menu').toFlxSoundAsset());
+    FunkinSound.playSoundOnce(Paths.sound('ui/main-menu/confirm-menu'));
 
     startTransition(button.data);
   }

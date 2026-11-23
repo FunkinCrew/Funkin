@@ -259,7 +259,9 @@ class Countdown
     var path = noteStyle.getCountdownSoundPath(step);
     if (path == null) return null;
 
-    return FunkinSound.playOnce(path.toFlxSoundAsset(), Constants.COUNTDOWN_VOLUME, null, null);
+    return FunkinSound.playSoundOnce(path, {
+      volume: Constants.COUNTDOWN_VOLUME
+    });
   }
 
   public static function decrement(step:CountdownStep):CountdownStep

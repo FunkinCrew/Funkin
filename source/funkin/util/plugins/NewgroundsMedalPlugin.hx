@@ -12,6 +12,9 @@ import funkin.api.newgrounds.Medals;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import funkin.util.macro.ConsoleMacro.ConsoleClass;
 import funkin.ui.FullScreenScaleMode;
+import funkin.assets.Paths;
+import flixel.text.FlxText;
+import funkin.api.newgrounds.Medals;
 import funkin.assets.FunkinAssetCache;
 import funkin.assets.FunkinBitmapFrontend;
 
@@ -65,7 +68,7 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements Conso
     pointsLabel.scrollFactor.set();
 
     nameLabel = new FlxText((73 + MEDAL_X) + (FullScreenScaleMode.gameCutoutSize.x / 2), 37 + MEDAL_Y, 0, 26);
-    nameLabel.font = funkin.assets.Paths.font('ui/fonts/Share Tech Mono');
+    nameLabel.font = funkin.assets.Paths.font('ui/fonts/Share Tech Mono').toString();
     nameLabel.letterSpacing = -2;
 
     nameLabel.text = 'Ono Boners Deluxe';
@@ -91,7 +94,9 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements Conso
             moveText = true;
           }
         case 'fade':
-          FunkinSound.playOnce(Paths.sound('ui/medals/ng-fade-out'), 1.0);
+          FunkinSound.playSoundOnce(Paths.sound('ui/medals/ng-fade-out'), {
+            volume: 1.0
+          });
         case 'hide':
           pointsLabel.visible = false;
           nameLabel.visible = false;
@@ -132,7 +137,7 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements Conso
     pointsLabel.scrollFactor.set();
 
     nameLabel = new FlxText((73 + MEDAL_X) + (FullScreenScaleMode.gameCutoutSize.x / 2), 37 + MEDAL_Y, 0, 26);
-    nameLabel.font = funkin.assets.Paths.font('ui/fonts/Share Tech Mono');
+    nameLabel.font = funkin.assets.Paths.font('ui/fonts/Share Tech Mono').toString();
     nameLabel.letterSpacing = -2;
 
     nameLabel.text = 'Ono Boners Deluxe';
@@ -206,7 +211,9 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements Conso
       instance.nameLabel.text = name;
       instance.updatePositions();
 
-      FunkinSound.playOnce(Paths.sound('ui/medals/ng-fade-in'), 1.0);
+      FunkinSound.playSoundOnce(Paths.sound('ui/medals/ng-fade-in'), {
+        volume: 1.0
+      });
       instance.medal.animation.play('wholeTimeline');
 
       instance.medal.visible = true;

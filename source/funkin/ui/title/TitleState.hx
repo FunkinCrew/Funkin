@@ -396,7 +396,9 @@ class TitleState extends MusicBeatState
       if (FlxG.sound.music != null) FlxG.sound.music.onComplete = null;
       titleText.animation.play('press');
       FlxG.camera.flash(FlxColor.WHITE, 1);
-      FunkinSound.playOnce(Paths.sound('ui/main-menu/confirm-menu').toString(), 0.7);
+      FunkinSound.playSoundOnce(Paths.sound('ui/main-menu/confirm-menu'), {
+        volume: 0.7
+      });
       transitioning = true;
 
       #if FEATURE_HAPTICS
@@ -494,7 +496,9 @@ class TitleState extends MusicBeatState
     FlxG.sound.music.fadeIn(4.0, 0.0, 1.0);
 
     FlxG.camera.flash(FlxColor.WHITE, 1);
-    FunkinSound.playOnce(Paths.sound('ui/main-menu/confirm-menu').toString(), 0.7);
+    FunkinSound.playSoundOnce(Paths.sound('ui/main-menu/confirm-menu'), {
+      volume: 0.7
+    });
 
     #if FEATURE_VIDEO_PLAYBACK
     // Stop the attract timer so you can listen to the whole song!

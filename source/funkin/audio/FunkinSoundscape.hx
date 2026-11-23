@@ -144,12 +144,15 @@ class FunkinSoundscape implements IFlxDestroyable
     used = (used.length >= groupSounds.length) ? [] : used;
     _usedInGroup.set(group, used);
 
-    _currentSFX = FunkinSound.playOnce(randomSound, 1.0, () ->
-    {
-      FlxTimer.wait(FlxG.random.float(params.randomTimeRange.x, params.randomTimeRange.y), () ->
+    _currentSFX = FunkinSound.playSoundOnce(funkin.assets.Paths.sound(randomSound), {
+      volume: 1.0,
+      onComplete: () ->
       {
-        playRandomSound();
-      });
+        FlxTimer.wait(FlxG.random.float(params.randomTimeRange.x, params.randomTimeRange.y), () ->
+        {
+          playRandomSound();
+        });
+      }
     });
   }
 

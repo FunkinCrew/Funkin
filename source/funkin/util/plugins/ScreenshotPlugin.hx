@@ -8,6 +8,9 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxSignal;
 import flixel.util.FlxTimer;
+import funkin.assets.Paths;
+import funkin.audio.FunkinSound;
+import funkin.input.Cursor;
 import funkin.util.WindowUtil;
 import funkin.util.logging.CrashHandler;
 import flixel.addons.util.FlxAsyncLoop;
@@ -320,7 +323,9 @@ class ScreenshotPlugin extends FlxBasic
       alpha: 0
     }, 0.15);
 
-    FunkinSound.playOnce(Paths.sound('ui/main-menu/screenshot'), 1.0);
+    FunkinSound.playSoundOnce(Paths.sound('ui/main-menu/screenshot'), {
+      volume: 1.0
+    });
   }
 
   static final PREVIEW_INITIAL_DELAY:Float = 0.25; // How long before the preview starts fading in.
