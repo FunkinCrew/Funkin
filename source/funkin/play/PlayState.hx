@@ -1783,6 +1783,7 @@ class PlayState extends MusicBeatSubState
 
         vocals?.forEach(function(voice:FunkinSound)
         {
+          vocals?.pause();
           soundsPausedBySubState.remove(voice);
         });
       }
