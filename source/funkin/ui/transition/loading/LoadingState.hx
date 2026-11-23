@@ -286,7 +286,13 @@ class LoadingState extends MusicBeatSubState
     // Get the list of assets needed for this state,
     // plus the assets that should always stay loaded across states.
     trace('[LOADING] Getting sound list...');
-    var soundsToLoad:Array<AssetPath> = params.assetQuery == null ? [] : params.assetQuery(SOUND);
+
+    var musicQuery:Array<AssetPath> = params.assetQuery == null ? [] : params.assetQuery(MUSIC);
+    #if FEATURE_STREAMED_AUDIO
+    var soundsToLoad:Array<AssetPath> = params.assetQuery == null ? [] : params.assetQuery(SOUND).filter(item -> !musicQuery.contains(item));
+    #else
+    var soundsToLoad:Array<AssetPath> = params.assetQuery == null ? [] : params.assetQuery(SOUND).appendUnique(musicQuery);
+    #end
     trace('[LOADING] Got list of ${soundsToLoad.length} total sounds.');
     if (soundsToLoad.length == 0)
     {
