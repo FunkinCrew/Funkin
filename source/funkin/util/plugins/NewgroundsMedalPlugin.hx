@@ -68,7 +68,7 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements Conso
     pointsLabel.scrollFactor.set();
 
     nameLabel = new FlxText((73 + MEDAL_X) + (FullScreenScaleMode.gameCutoutSize.x / 2), 37 + MEDAL_Y, 0, 26);
-    nameLabel.font = funkin.assets.Paths.font('ui/fonts/Share Tech Mono').toString();
+    nameLabel.font = funkin.assets.Paths.font('ui/fonts/Share Tech Mono');
     nameLabel.letterSpacing = -2;
 
     nameLabel.text = 'Ono Boners Deluxe';
@@ -137,7 +137,7 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements Conso
     pointsLabel.scrollFactor.set();
 
     nameLabel = new FlxText((73 + MEDAL_X) + (FullScreenScaleMode.gameCutoutSize.x / 2), 37 + MEDAL_Y, 0, 26);
-    nameLabel.font = funkin.assets.Paths.font('ui/fonts/Share Tech Mono').toString();
+    nameLabel.font = funkin.assets.Paths.font('ui/fonts/Share Tech Mono');
     nameLabel.letterSpacing = -2;
 
     nameLabel.text = 'Ono Boners Deluxe';
