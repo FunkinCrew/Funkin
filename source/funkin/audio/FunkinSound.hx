@@ -181,7 +181,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
       trace(' WARNING '.warning() + ' Sound asset: "${assetPath.toString()}" is cached and was queued up to streaming! Removing sound.');
     }
 
-    var soundPath:Sound = stream ? funkin.assets.Assets.getSound(assetPath) : funkin.assets.Assets.getMusic(assetPath);
+    var soundPath:Sound = stream ? funkin.assets.Assets.getMusic(assetPath) : funkin.assets.Assets.getSound(assetPath);
     sound.loadAudio(soundPath, stream, looped, autoDestroy, params?.onComplete);
 
     sound._label = '${assetPath.toString()}';
