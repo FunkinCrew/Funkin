@@ -166,11 +166,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     var persist:Bool = params?.persist ?? false;
     var looped:Bool = params?.looped ?? false;
     var autoDestroy:Bool = params?.autoDestroy ?? true;
-    var stream:Bool = params?.stream ?? false;
-
-    #if NO_FEATURE_STREAMED_AUDIO
-    stream = false;
-    #end
+    var stream:Bool = #if FEATURE_STREAMED_AUDIO params?.stream ?? false #else false #end;
 
     if (suppressOneShots && (params?.autoPlay ?? false) && !looped) return null;
 
@@ -179,20 +175,14 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     // Load the sound.
     // Sets `exists = true` as a side effect.
 
-    // todo: refine this lmao.
-    if (stream)
+    if (stream && funkin.assets.FunkinAssetCache.instance.hasSound(assetPath.toString()))
     {
-      if (funkin.assets.FunkinAssetCache.instance.hasSound(assetPath.toString()))
-      {
-        funkin.assets.FunkinAssetCache.instance.removeSound(assetPath.toString());
-        trace(
-          ' FUNKINSOUND STREAM '.bold().bg_note_right() + ' Sound asset: "${assetPath.toString()}" is cached and was queued up to streaming! Removing sound. '
-        );
-      }
-      sound.loadStreamed(assetPath.toString(), looped, autoDestroy, params?.onComplete);
+      funkin.assets.FunkinAssetCache.instance.removeSound(assetPath.toString());
+      trace(' WARNING '.warning() + ' Sound asset: "${assetPath.toString()}" is cached and was queued up to streaming! Removing sound.');
     }
-    else
-      sound.loadEmbedded(funkin.assets.Assets.getSound(assetPath), looped, autoDestroy, params?.onComplete);
+
+    var soundPath:Sound = stream ? funkin.assets.Assets.getSound(assetPath) : funkin.assets.Assets.getMusic(assetPath);
+    sound.loadAudio(soundPath, stream, looped, autoDestroy, params?.onComplete);
 
     sound._label = '${assetPath.toString()}';
 

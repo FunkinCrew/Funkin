@@ -704,7 +704,8 @@ class Assets implements ConsoleClass
   {
     if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.sound()?';
 
-    return FunkinAssetCache.instance.fetchMusic(assetPath);
+    // We don't need to use our own assetcache here since music assets is always streamed and we don't want it to be cached.
+    return OpenFLAssets.loadMusic(assetPath.toString());
   }
 
   /**
