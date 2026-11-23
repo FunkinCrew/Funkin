@@ -243,17 +243,14 @@ class QuickPanelGroup extends FunkinSpriteGroup
     pullExtra.scrollFactor.set(0, 0);
     pullExtra.scale.set(FlxG.width, FlxG.height);
     pullExtra.updateHitbox();
-    // Both scale and localScale need setting here.
-    pullExtra.localScale.x = FlxG.width;
-    pullExtra.localScale.y = FlxG.height;
-    pullExtra.localY = 0;
+    pullExtra.y = 0;
     pullExtra.visible = false; // Nothing to trail behind until the panel exists.
     add(pullExtra);
 
     pullHint = new FlxText(0, 0, 600, "How the fuck did you get here?", 30);
     pullHint.setFormat(funkin.assets.Paths.font('ui/fonts/FunkinOptions', 'otf'), 38, HINT_COLOR_NORMAL, RIGHT);
-    pullHint.localY = (FlxG.height / 2) - (pullHint.height / 2);
-    pullHint.localAlpha = 0;
+    pullHint.y = (FlxG.height / 2) - (pullHint.height / 2);
+    pullHint.alpha = 0;
     add(pullHint);
 
     var _tabKey:Bool = !hidePullTab;
@@ -261,18 +258,18 @@ class QuickPanelGroup extends FunkinSpriteGroup
     _tabKey = false;
     #end
     pullTabVisual = new QuickPanelPullTab(0, 0, _tabKey);
-    pullTabVisual.localY = (FlxG.height / 2) - (pullTabVisual.height / 2);
+    pullTabVisual.y = (FlxG.height / 2) - (pullTabVisual.height / 2);
     pullTabVisual.playIdle(PanelClosed);
     pullTabVisual.zIndex = Z_ABOVE;
-    if (hidePullTab) pullTabVisual.localAlpha = 0;
+    if (hidePullTab) pullTabVisual.alpha = 0;
     add(pullTabVisual);
 
     pullTabHitbox = new FlxSprite().makeGraphic(200, 280, 0xFFFF9191);
     pullTabHitbox.scrollFactor.set(0, 0);
-    pullTabHitbox.localAlpha = 0;
+    pullTabHitbox.alpha = 0;
     pullTabHitbox.updateHitbox();
     pullTabHitbox.zIndex = Z_HITBOX;
-    pullTabHitbox.localY = (FlxG.height / 2) - (pullTabHitbox.height / 2);
+    pullTabHitbox.y = (FlxG.height / 2) - (pullTabHitbox.height / 2);
     add(pullTabHitbox);
 
     setupHintAnims();
@@ -294,7 +291,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
     panelSprite.animation.play('idle');
     panelSprite.updateHitbox();
     panelSprite.scrollFactor.set(0, 0);
-    panelSprite.localY = 0;
+    panelSprite.y = 0;
     panelSprite.zIndex = Z_BELOW;
     panelSprite.active = bodyActive;
     panelSprite.visible = false; // show after brames
@@ -341,22 +338,22 @@ class QuickPanelGroup extends FunkinSpriteGroup
   {
     this.left = left;
 
-    pullTabVisual.localX = left ? 120 - pullTabVisual.width : -120;
-    pullTabHitbox.localX = left ? 145 - pullTabHitbox.width : -145;
+    pullTabVisual.x = left ? 120 - pullTabVisual.width : -120;
+    pullTabHitbox.x = left ? 145 - pullTabHitbox.width : -145;
     pullTabVisual.flipX = left;
 
     var panelWidth:Float = panelSprite != null ? panelSprite.width : 0;
     var overlap:Float = panelSprite != null ? 5 : 0;
-    pullExtra.localX = left ? -(pullExtra.width + panelWidth) + overlap : panelWidth - overlap;
-    // pullExtra.localX = left ? -(pullExtra.width + panelWidth) + 5 : panelWidth - 5;
+    pullExtra.x = left ? -(pullExtra.width + panelWidth) + overlap : panelWidth - overlap;
+    // pullExtra.x = left ? -(pullExtra.width + panelWidth) + 5 : panelWidth - 5;
 
     if (panelSprite != null)
     {
-      panelSprite.localX = left ? -panelSprite.width : 0;
+      panelSprite.x = left ? -panelSprite.width : 0;
       panelSprite.flipX = left;
     }
 
-    pullHint.localX = left ? 135 : -135 - pullHint.width;
+    pullHint.x = left ? 135 : -135 - pullHint.width;
     pullHint.alignment = left ? LEFT : RIGHT;
 
     layoutButtons(true);
@@ -414,14 +411,14 @@ class QuickPanelGroup extends FunkinSpriteGroup
 
     paHint.addAnimationByName('slideLeft', 30);
     paHint.addProperty('slideLeft', 'offset.x', [for (v in slide) -v]);
-    paHint.addProperty('slideLeft', 'localAlpha', fadeIn.copy());
+    paHint.addProperty('slideLeft', 'alpha', fadeIn.copy());
 
     paHint.addAnimationByName('slideRight', 30);
     paHint.addProperty('slideRight', 'offset.x', slide.copy());
-    paHint.addProperty('slideRight', 'localAlpha', fadeIn.copy());
+    paHint.addProperty('slideRight', 'alpha', fadeIn.copy());
 
     paHint.addAnimationByName('disappear', 30);
-    paHint.addProperty('disappear', 'localAlpha', fadeOut);
+    paHint.addProperty('disappear', 'alpha', fadeOut);
 
     paHint.setDefaultProperties();
   }
@@ -603,8 +600,8 @@ class QuickPanelGroup extends FunkinSpriteGroup
    */
   function moveButton(button:QuickPanelButton, target:ButtonTarget, t:Float):Void
   {
-    button.localX = FlxMath.lerp(button.localX, target.x, t);
-    button.localY = FlxMath.lerp(button.localY, target.y, t);
+    button.x = FlxMath.lerp(button.x, target.x, t);
+    button.y = FlxMath.lerp(button.y, target.y, t);
     button.localAngle = FlxMath.lerp(button.localAngle, target.angle, t);
     button.viewAlpha = FlxMath.lerp(button.viewAlpha, target.alpha, t);
     button.visible = button.viewAlpha > 0.01;

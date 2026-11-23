@@ -91,7 +91,6 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
 
   var currentSpeaker:Null<Speaker>;
   var currentDialogueBox:Null<DialogueBox>;
-
   var pendingDialogueBoxPosition:Null<Array<Float>> = null;
   var pendingDialogueBoxPositionId:Null<String> = null;
 
@@ -308,7 +307,6 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
     currentSpeaker.zIndex = 200;
     add(currentSpeaker);
 
-    updateChildren();
     refresh();
   }
 
@@ -325,7 +323,7 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
 
   static function getTypingSounds(entry:Null<DialogueEntryData>):Array<String>
   {
-    if (entry == null || entry.sounds == null) return DEFAULT_TYPING_SOUND.copy(); //what 
+    if (entry == null || entry.sounds == null) return DEFAULT_TYPING_SOUND.copy(); // what
     return entry.sounds.copy();
   }
 

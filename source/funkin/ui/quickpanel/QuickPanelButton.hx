@@ -202,15 +202,15 @@ class QuickPanelButton extends FunkinSpriteGroup
 
     guide = new FunkinSprite(0, 0);
     guide.makeGraphic(ITEM_WIDTH, ITEM_HEIGHT, 0x00D1D1D1);
-    guide.localAlpha = 0;
-    guide.localX = 0;
-    guide.localY = 0;
+    guide.alpha = 0;
+    guide.x = 0;
+    guide.y = 0;
     add(guide);
 
     buttonText = new FlxText(0, 0, ITEM_WIDTH - (ICON_WIDTH + LABEL_GAP), data.text ?? 'NO TEXT', 30);
     buttonText.setFormat(funkin.assets.Paths.font('ui/fonts/FunkinOptions', 'otf'), 38, TEXT_COLOR, LEFT);
-    buttonText.localX = ICON_WIDTH + LABEL_GAP;
-    buttonText.localY = (ITEM_HEIGHT / 2) - (buttonText.height / 2);
+    buttonText.x = ICON_WIDTH + LABEL_GAP;
+    buttonText.y = (ITEM_HEIGHT / 2) - (buttonText.height / 2);
     buttonText.offset.y = -6;
     add(buttonText);
 
@@ -263,8 +263,8 @@ class QuickPanelButton extends FunkinSpriteGroup
     addBumpAnimation('bumpBig', 1.2, 0.95);
     paScale.setDefaultProperties();
 
-    icon.localScale.x = baseIconScaleX;
-    icon.localScale.y = baseIconScaleY;
+    icon.scale.x = baseIconScaleX;
+    icon.scale.y = baseIconScaleY;
   }
 
   /**
@@ -303,10 +303,10 @@ class QuickPanelButton extends FunkinSpriteGroup
     ];
 
     paScale.addAnimationByName(name, 30);
-    paScale.addProperty(name, 'icon.localScale.x', [for (o in iconOffsets) baseIconScaleX + o]);
-    paScale.addProperty(name, 'icon.localScale.y', [for (o in iconOffsets) baseIconScaleY + o]);
-    paScale.addProperty(name, 'localScale.x', groupScale);
-    paScale.addProperty(name, 'localScale.y', groupScale.copy());
+    paScale.addProperty(name, 'icon.scale.x', [for (o in iconOffsets) baseIconScaleX + o]);
+    paScale.addProperty(name, 'icon.scale.y', [for (o in iconOffsets) baseIconScaleY + o]);
+    paScale.addProperty(name, 'scale.x', groupScale);
+    paScale.addProperty(name, 'scale.y', groupScale.copy());
   }
 
   function buildIcon(animData:PanelButtonAnim)
@@ -365,8 +365,8 @@ class QuickPanelButton extends FunkinSpriteGroup
 
     baseIconScaleX = icon.scale.x;
     baseIconScaleY = icon.scale.y;
-    icon.localScale.x = baseIconScaleX;
-    icon.localScale.y = baseIconScaleY;
+    icon.scale.x = baseIconScaleX;
+    icon.scale.y = baseIconScaleY;
     icon.updateHitbox();
   }
 
@@ -378,9 +378,9 @@ class QuickPanelButton extends FunkinSpriteGroup
   {
     this.left = left;
 
-    buttonText.localX = left ? guide.width - (ICON_WIDTH + buttonText.width + LABEL_GAP) : ICON_WIDTH + LABEL_GAP;
+    buttonText.x = left ? guide.width - (ICON_WIDTH + buttonText.width + LABEL_GAP) : ICON_WIDTH + LABEL_GAP;
     buttonText.alignment = left ? RIGHT : LEFT;
-    icon.localX = left ? guide.width - ICON_WIDTH : 0;
+    icon.x = left ? guide.width - ICON_WIDTH : 0;
   }
 
   /**
@@ -473,10 +473,10 @@ class QuickPanelButton extends FunkinSpriteGroup
 
     paScale.stop();
 
-    localScale.x = 1;
-    localScale.y = 1;
-    icon.localScale.x = baseIconScaleX;
-    icon.localScale.y = baseIconScaleY;
+    scale.x = 1;
+    scale.y = 1;
+    icon.scale.x = baseIconScaleX;
+    icon.scale.y = baseIconScaleY;
 
     if (selected) paScale.playAnimation('bump');
   }
@@ -494,7 +494,7 @@ class QuickPanelButton extends FunkinSpriteGroup
 
   function applyAlpha():Void
   {
-    localAlpha = fadeAlpha * alphaMultiplier * viewAlpha;
+    alpha = fadeAlpha * alphaMultiplier * viewAlpha;
   }
 
   override function destroy():Void

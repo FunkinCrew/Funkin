@@ -623,7 +623,7 @@ class ModMenuState extends MusicBeatState
         var fade = fadingItems[i];
         fade.elapsed += elapsed;
         var t = Math.min(1, fade.elapsed / fade.duration);
-        fade.item.localAlpha = FlxEase.quadOut(t);
+        fade.item.alpha = FlxEase.quadOut(t);
         if (t >= 1) fadingItems.splice(i, 1);
       }
     }
@@ -1340,7 +1340,7 @@ class ModMenuState extends MusicBeatState
 
   function fadeItemIn(item:ModMenuItem, duration:Float = 0.5):Void
   {
-    item.localAlpha = 0;
+    item.alpha = 0;
     fadingItems.push({
       item: item,
       elapsed: 0,
@@ -1444,8 +1444,8 @@ class ModMenuState extends MusicBeatState
 
     if (!doFade)
     {
-      for (item in newDisabledItems) item.localAlpha = 1;
-      for (item in newEnabledItems) item.localAlpha = 1;
+      for (item in newDisabledItems) item.alpha = 1;
+      for (item in newEnabledItems) item.alpha = 1;
     }
 
     return newDisabledItems;

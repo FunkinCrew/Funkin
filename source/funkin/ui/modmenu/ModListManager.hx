@@ -438,7 +438,7 @@ class ModListManager
 
       var item = new ModMenuItem(mod);
       if (!PolymodHandler.isModCompatible(mod)) item.setIncompatible();
-      item.localAlpha = 0;
+      item.alpha = 0;
       disabledList.addMod(item, disabledList.modItems.length);
       newItems.push(item);
     }
@@ -484,7 +484,7 @@ class ModListManager
       if (enabledList.modItems.exists((it) -> it.getModId() == mod.id)) continue;
 
       var item = new ModMenuItem(mod);
-      item.localAlpha = 0;
+      item.alpha = 0;
       enabledList.addMod(item, enabledList.modItems.length);
       newItems.push(item);
     }
@@ -687,8 +687,8 @@ class ModListManager
     var restY:Float = enabledList.getModItemYPos(index) + enabledList.scrollOffset;
 
     item.cancelFlight();
-    item.localX = ModMenuItemList.ITEM_X_OFFSET;
-    item.localY = restY;
+    item.x = ModMenuItemList.ITEM_X_OFFSET;
+    item.y = restY;
 
     var dir:Float = moveUp ? -1 : 1;
     item.startFlight(ModMenuItemList.ITEM_X_OFFSET, restY + dir * 14, 0.07, FlxEase.quadOut, () ->
@@ -779,8 +779,8 @@ class ModListManager
     item.clipRect = null;
     transitionLayer.add(item);
     item.cancelFlight();
-    item.localX = worldX - transitionLayer.x;
-    item.localY = worldY - transitionLayer.y;
+    item.x = worldX - transitionLayer.x;
+    item.y = worldY - transitionLayer.y;
   }
 
   /**
@@ -889,8 +889,8 @@ class ModListManager
   {
     if (item == null || destinationList == null || transitionLayer == null) return;
 
-    var worldX:Float = transitionLayer.x + item.localX;
-    var worldY:Float = transitionLayer.y + item.localY;
+    var worldX:Float = transitionLayer.x + item.x;
+    var worldY:Float = transitionLayer.y + item.y;
 
     transitionLayer.remove(item);
 
@@ -900,8 +900,8 @@ class ModListManager
     destinationList.addMod(item, clamped);
 
     item.cancelFlight();
-    item.localX = worldX - destinationList.x;
-    item.localY = worldY - destinationList.y;
+    item.x = worldX - destinationList.x;
+    item.y = worldY - destinationList.y;
 
     if (incomingCount(destinationList) == 0)
     {

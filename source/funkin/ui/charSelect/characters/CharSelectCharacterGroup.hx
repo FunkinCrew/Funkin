@@ -144,7 +144,7 @@ class CharSelectCharacterGroup extends FunkinGroup<CharSelectCharacter>
 
     if (newGF != null)
     {
-      newGF.localVisible = newId != 'locked';
+      newGF.visible = newId != 'locked';
       newGF.transitionIn();
     }
 

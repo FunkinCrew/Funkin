@@ -494,11 +494,11 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     FlxTween.cancelTweensOf(panel.pullTabVisual);
     if (duration <= 0)
     {
-      panel.pullTabVisual.localAlpha = targetAlpha;
+      panel.pullTabVisual.alpha = targetAlpha;
       return;
     }
     FlxTween.tween(panel.pullTabVisual, {
-      localAlpha: targetAlpha
+      alpha: targetAlpha
     }, duration, {
       ease: FlxEase.expoOut
     });
@@ -732,7 +732,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
     if (tracking)
     {
       tabFadeTimer = 0;
-      tab.localAlpha = 1.0;
+      tab.alpha = 1.0;
       return;
     }
     #end
@@ -741,7 +741,7 @@ class QuickPanelState extends FlxTypedContainer<FlxBasic>
 
     tabFadeTimer += elapsed;
     var progress:Float = FlxMath.bound((tabFadeTimer - TAB_FADE_DELAY) / TAB_FADE_DURATION, 0, 1);
-    tab.localAlpha = FlxMath.lerp(1.0, QuickPanelGroup.TAB_MIN_ALPHA, progress);
+    tab.alpha = FlxMath.lerp(1.0, QuickPanelGroup.TAB_MIN_ALPHA, progress);
   }
 
   /**

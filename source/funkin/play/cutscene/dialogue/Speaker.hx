@@ -58,9 +58,7 @@ class Speaker extends FunkinSprite implements IDialogueScriptedClass implements 
     if (animOffsets == value) return value;
 
     this.x = globalOffsets[0] + originalPosition[0] + value[0];
-    this.localX = globalOffsets[0] + originalPosition[0] + value[0];
     this.y = globalOffsets[1] + originalPosition[1] + value[1];
-    this.localY = globalOffsets[1] + originalPosition[1] + value[1];
 
     return animOffsets = value;
   }
@@ -79,9 +77,7 @@ class Speaker extends FunkinSprite implements IDialogueScriptedClass implements 
     final newY:Float = value[1] + originalPosition[1] + animOffsets[1];
 
     this.x = newX;
-    this.localX = newX;
     this.y = newY;
-    this.localY = newY;
 
     return globalOffsets = value;
   }
@@ -138,9 +134,7 @@ class Speaker extends FunkinSprite implements IDialogueScriptedClass implements 
   public function onCreate(event:ScriptEvent):Void
   {
     this.x = 0;
-    this.localX = 0;
     this.y = 0;
-    this.localY = 0;
     this.globalOffsets = [0, 0];
     this.alpha = 1;
 
@@ -166,9 +160,7 @@ class Speaker extends FunkinSprite implements IDialogueScriptedClass implements 
     super.revive();
 
     this.x = 0;
-    this.localX = 0;
     this.y = 0;
-    this.localY = 0;
     this.globalOffsets = [0, 0];
     this.visible = true;
     this.alpha = 1.0;
@@ -208,9 +200,6 @@ class Speaker extends FunkinSprite implements IDialogueScriptedClass implements 
     this.flipY = _data.flipY;
     this.globalOffsets = _data.offsets;
     this.setScale(_data.scale);
-
-    this.localX = this.x;
-    this.localY = this.y;
   }
 
   /**
@@ -223,9 +212,7 @@ class Speaker extends FunkinSprite implements IDialogueScriptedClass implements 
     if (scale == null) scale = 1.0;
 
     this.scale.x = scale;
-    this.localScale.x = scale;
     this.scale.y = scale;
-    this.localScale.y = scale;
 
     this.updateHitbox();
   }
@@ -358,9 +345,7 @@ class Speaker extends FunkinSprite implements IDialogueScriptedClass implements 
     frames = null;
 
     this.x = 0;
-    this.localX = 0;
     this.y = 0;
-    this.localY = 0;
     this.globalOffsets = [0, 0];
     this.alpha = 0;
 
