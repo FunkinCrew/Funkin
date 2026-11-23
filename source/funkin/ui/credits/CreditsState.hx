@@ -300,7 +300,7 @@ class CreditsState extends MusicBeatState
 
     switch (type)
     {
-      case SOUND:
+      case MUSIC:
         results.pushUnique(Paths.music('ui/freeplay/freeplay-random').audio());
 
       case JSON:

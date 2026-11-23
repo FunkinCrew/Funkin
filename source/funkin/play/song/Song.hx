@@ -913,7 +913,7 @@ class SongDifficulty
 
     switch (type)
     {
-      case SOUND:
+      case MUSIC:
         results.push(getInstPath(instId));
         trace('[LOADING] Getting voice list...');
         results.append(buildVoiceList());
