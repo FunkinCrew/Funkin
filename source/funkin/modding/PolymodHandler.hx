@@ -603,6 +603,11 @@ class PolymodHandler
     // `FileResourceResolver` allows you to access the content of outside game files.
     Polymod.blacklistImport("haxe.ui.parsers.ui.resolvers.FileResourceResolver");
 
+    // `flixel.tweens.misc.VarTween`
+    // `_properties` feeds field paths to `initializeVars()`; `_propertyInfos` stores resolved
+    // targets/values for `setStartValues()`/`update()` — blocking both stops internal `Reflect` abuse.
+    Polymod.blacklistInstanceFields(flixel.tweens.misc.VarTween, ['_properties', '_propertyInfos']);
+
     // `funkin.save.Save`
     // Direct access to save data is important for scripts (like checking unlocks),
     // but we don't want scripts to be able to perform operations like writing scores.
@@ -706,6 +711,8 @@ class PolymodHandler
       'setLevelScore',
       'setSongScore',
       'applySongRank',
+      '_properties',
+      '_propertyInfos',
       '_interp'
     ]);
   }
