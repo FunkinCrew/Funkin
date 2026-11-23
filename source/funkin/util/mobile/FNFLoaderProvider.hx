@@ -167,7 +167,7 @@ class FNFLoaderProvider
   static function isModArchiveURL(url:String):Bool
   {
     final normalizedURL:String = url.split('?')[0].split('#')[0].toLowerCase();
-    return normalizedURL.endsWith('.zip');
+    return normalizedURL.endsWith('.zip') || normalizedURL.endsWith('.fnfmod');
   }
 
   static function isFNFCURL(url:String):Bool

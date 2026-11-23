@@ -227,6 +227,7 @@ public class FNFLoaderExtension extends Extension
     {
       String lowerName = displayName.toLowerCase(Locale.ROOT);
       if (lowerName.endsWith(".fnfc")) return "fnfc";
+      if (lowerName.endsWith(".fnfmod")) return "fnfmod";
       if (lowerName.endsWith(".zip")) return "zip";
     }
 

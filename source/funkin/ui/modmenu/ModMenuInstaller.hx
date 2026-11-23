@@ -423,7 +423,7 @@ class ModMenuInstaller
     }
     else
     {
-      description = 'Could not move the .zip file to the mods folder. Check the logs for details.';
+      description = 'Could not move the mod archive to the mods folder. Check the logs for details.';
     }
 
     WindowUtil.showError('Failed to install mod', description);
