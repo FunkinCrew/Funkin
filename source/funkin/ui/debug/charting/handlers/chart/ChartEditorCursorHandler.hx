@@ -50,8 +50,8 @@ class ChartEditorCursorHandler
     if (state.gridCursorLine != null) state.gridCursorLine.visible = false;
 
     // Mouse sounds
-    if (FlxG.mouse.justPressed) FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/click-down').toString());
-    if (FlxG.mouse.justReleased) FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/click-up').toString());
+    if (FlxG.mouse.justPressed) FunkinSound.playSoundOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/click-down'));
+    if (FlxG.mouse.justReleased) FunkinSound.playSoundOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/click-up'));
 
     if (state.playbarHeadDragging) Screen.instance.setCursor('grabbing');
 
@@ -1142,8 +1142,10 @@ class ChartEditorCursorHandler
 
     if (targetCursorMode == null)
     {
-      if (isOverGrabbablePreview(state, ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT)
-        || isOverGrabbablePreview(state, ChartEditorState.CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT))
+      if (
+        isOverGrabbablePreview(state, ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT)
+        || isOverGrabbablePreview(state, ChartEditorState.CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT)
+      )
       {
         targetCursorMode = Pointer;
       }

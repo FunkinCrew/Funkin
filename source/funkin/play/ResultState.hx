@@ -905,7 +905,9 @@ class ResultState extends MusicBeatSubState
 
             if (atlas.sound != "")
             {
-              FunkinSound.playOnce(Paths.sound(atlas.sound).toFlxSoundAsset(), 1.0);
+              FunkinSound.playSoundOnce(Paths.sound(atlas.sound), {
+                volume: 1.0
+              });
             }
           });
         }

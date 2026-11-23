@@ -843,8 +843,10 @@ class PlayState extends MusicBeatSubState
         case IMAGE:
           // Background image for minimal mode!
           results.push(Paths.image('ui/main-menu/menu-desat'));
+        case MUSIC:
+          results.append(funkin.assets.Assets.listInPath('ui/pause/music', SOUND));
+
         case SOUND:
-          results.append(Assets.listInPath('ui/pause/music', SOUND));
           results.push(Paths.sound('gameplay/general/sounds/miss-note-1'));
           results.push(Paths.sound('gameplay/general/sounds/miss-note-2'));
           results.push(Paths.sound('gameplay/general/sounds/miss-note-3'));

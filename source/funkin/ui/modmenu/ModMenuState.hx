@@ -203,7 +203,7 @@ class ModMenuState extends MusicBeatState
     super();
 
     ambience = new ModMenuAmbience({
-      baseAmbiencePath: 'ui/mods/mod-menu-ambience/mod-menu-ambience',
+      baseAmbiencePath: 'ui/mods/mod-menu-ambience',
       randomSoundPath: 'ui/mods/sounds',
       randomSoundWait: 7.0,
       randomTimeRange: FlxPoint.get(6.0, 10.0),
@@ -1606,7 +1606,7 @@ class ModMenuState extends MusicBeatState
       assetQuery: MainMenuState.queryAssets,
       transition: BlackScreen(Fade(North), Fade(South))
     });
-    FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu').toString());
+    FunkinSound.playSoundOnce(Paths.sound('ui/main-menu/cancel-menu'));
   }
 }
 
