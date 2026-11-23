@@ -379,27 +379,27 @@ class ChartEditorToolboxHandler
 
     var noteKinds:Null<CheckBox> = toolbox.findComponent('preferencesNoteKindIndicators', CheckBox);
     if (noteKinds == null) throw 'ChartEditorToolboxHandler.buildToolboxPreferencesLayout() - Could not find preferencesNoteKindIndicators component.';
-    noteKinds.onClick = _ -> if (state.preferencesListening) state.showNoteKindIndicators = noteKinds.selected;
+    noteKinds.onChange = _ -> if (state.preferencesListening) state.showNoteKindIndicators = noteKinds.selected;
 
     var subtitles:Null<CheckBox> = toolbox.findComponent('preferencesSubtitles', CheckBox);
     if (subtitles == null) throw 'ChartEditorToolboxHandler.buildToolboxPreferencesLayout() - Could not find preferencesSubtitles component.';
-    subtitles.onClick = _ -> if (state.preferencesListening) state.showSubtitles = subtitles.selected;
+    subtitles.onChange = _ -> if (state.preferencesListening) state.showSubtitles = subtitles.selected;
 
     var beatLines:Null<CheckBox> = toolbox.findComponent('preferencesBeatLines', CheckBox);
     if (beatLines == null) throw 'ChartEditorToolboxHandler.buildToolboxPreferencesLayout() - Could not find preferencesBeatLines component.';
-    beatLines.onClick = _ -> if (state.preferencesListening) state.showBeatLines = beatLines.selected;
+    beatLines.onChange = _ -> if (state.preferencesListening) state.showBeatLines = beatLines.selected;
 
     var snapLines:Null<CheckBox> = toolbox.findComponent('preferencesSnapLines', CheckBox);
     if (snapLines == null) throw 'ChartEditorToolboxHandler.buildToolboxPreferencesLayout() - Could not find preferencesSnapLines component.';
-    snapLines.onClick = _ -> if (state.preferencesListening) state.showSnapLines = snapLines.selected;
+    snapLines.onChange = _ -> if (state.preferencesListening) state.showSnapLines = snapLines.selected;
 
     var cursorLine:Null<CheckBox> = toolbox.findComponent('preferencesCursorLine', CheckBox);
     if (cursorLine == null) throw 'ChartEditorToolboxHandler.buildToolboxPreferencesLayout() - Could not find preferencesCursorLine component.';
-    cursorLine.onClick = _ -> if (state.preferencesListening) state.showCursorLine = cursorLine.selected;
+    cursorLine.onChange = _ -> if (state.preferencesListening) state.showCursorLine = cursorLine.selected;
 
     var constantScroll:Null<CheckBox> = toolbox.findComponent('preferencesConstantScroll', CheckBox);
     if (constantScroll == null) throw 'ChartEditorToolboxHandler.buildToolboxPreferencesLayout() - Could not find preferencesConstantScroll component.';
-    constantScroll.onClick = _ -> if (state.preferencesListening) state.constantScrollEnabled = constantScroll.selected;
+    constantScroll.onChange = _ -> if (state.preferencesListening) state.constantScrollEnabled = constantScroll.selected;
 
     var constantScrollSpeed:Null<Slider> = toolbox.findComponent('preferencesConstantScrollSpeed', Slider);
     var constantScrollSpeedLabel:Null<Label> = toolbox.findComponent('preferencesConstantScrollSpeedLabel', Label);
@@ -492,7 +492,7 @@ class ChartEditorToolboxHandler
 
     var themeMusic:Null<CheckBox> = toolbox.findComponent('preferencesThemeMusic', CheckBox);
     if (themeMusic == null) throw 'ChartEditorToolboxHandler.buildToolboxPreferencesLayout() - Could not find preferencesThemeMusic component.';
-    themeMusic.onClick = _ -> if (state.preferencesListening) state.setThemeMusicEnabled(themeMusic.selected);
+    themeMusic.onChange = _ -> if (state.preferencesListening) state.setThemeMusicEnabled(themeMusic.selected);
 
     var stackThreshold:Null<DropDown> = toolbox.findComponent('preferencesStackThreshold', DropDown);
     if (stackThreshold == null) throw 'ChartEditorToolboxHandler.buildToolboxPreferencesLayout() - Could not find preferencesStackThreshold component.';
@@ -574,7 +574,7 @@ class ChartEditorToolboxHandler
   {
     var checkbox:Null<CheckBox> = toolbox.findComponent(id, CheckBox);
     if (checkbox == null) throw 'ChartEditorToolboxHandler.bindCheckbox() - Could not find ${id} component.';
-    checkbox.onClick = _ -> onChange(checkbox.selected);
+    checkbox.onChange = _ -> onChange(checkbox.selected);
   }
 
   static function setCheckbox(toolbox:CollapsibleDialog, id:String, value:Bool):Void

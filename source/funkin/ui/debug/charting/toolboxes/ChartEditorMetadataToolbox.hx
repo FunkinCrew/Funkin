@@ -7,6 +7,7 @@ import funkin.data.character.CharacterRegistry;
 import funkin.data.freeplay.album.AlbumRegistry;
 import funkin.data.song.importer.ChartManifestData;
 import funkin.data.stage.StageRegistry;
+import funkin.data.stickers.StickerRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.play.notes.notestyle.NoteStyle;
 import funkin.ui.debug.charting.commands.timing.AddNewTimeChangeCommand;
@@ -17,6 +18,7 @@ import funkin.ui.debug.charting.commands.song.SetAudioOffsetCommand;
 import funkin.ui.debug.charting.commands.song.SetFreeplayPreviewCommand;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
 import funkin.ui.freeplay.Album;
+import funkin.ui.transition.stickers.StickerPack;
 import haxe.ui.components.Button;
 import haxe.ui.components.DropDown;
 import haxe.ui.components.Label;
@@ -333,6 +335,19 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
         id: 'volume1',
         text: 'Volume 1'
         });
+    }
+
+    var stickerPackId:String = chartEditorState.currentSongMetadata.playData?.stickerPack ?? Constants.DEFAULT_STICKER_PACK;
+    var stickerPack:Null<StickerPack> = StickerRegistry.instance.fetchEntry(stickerPackId);
+    if (inputStickerPack != null)
+    {
+      selectIfChanged(inputStickerPack, (stickerPack != null) ? {
+        id: stickerPack.id,
+        text: stickerPack.getStickerPackName()
+      } : {
+        id: 'default',
+        text: 'Default'
+      });
     }
 
     var LIMIT = 6;

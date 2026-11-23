@@ -60,10 +60,8 @@ class Main extends Sprite
     // Add this signal so the player can toggle the debug display using a hotkey.
     FlxG.signals.postUpdate.add(handleDebugDisplayKeys);
 
-    #if mobile
     // Add this signal so we can reposition and resize the memory and fps counter.
     FlxG.signals.preUpdate.add(repositionCounters.bind(true));
-    #end
 
     // Force a `FunkinCamera` to be the default camera.
     // This allows the blend mode shader to work everywhere.
@@ -96,10 +94,8 @@ class Main extends Sprite
     FlxG.scaleMode = new FullScreenScaleMode();
     #end
 
-    #if mobile
     // Reposition and resize the memory and fps counter without lerping.
     repositionCounters(false);
-    #end
 
     #if hxcpp_debug_server
     trace('hxcpp_debug_server is enabled! You can now connect to the game with a debugger.');
@@ -127,7 +123,6 @@ class Main extends Sprite
     Preferences.debugDisplay = nextMode;
   }
 
-  #if mobile
   function repositionCounters(lerp:Bool):Void
   {
     // Calling this so it gets scaled based on the resolution of the game and device's resolution.
@@ -143,16 +138,15 @@ class Main extends Sprite
 
         if (lerp)
         {
-          debugDisplay.x = flixel.math.FlxMath.lerp(debugDisplay.x, FlxG.game.x + thypos, FlxG.elapsed * 3);
+          debugDisplay.x = flixel.math.FlxMath.lerp(debugDisplay.x, thypos, FlxG.elapsed * 3);
         }
         else
         {
-          debugDisplay.x = FlxG.game.x + thypos;
+          debugDisplay.x = thypos;
         }
 
-        debugDisplay.y = FlxG.game.y + (10 * scale);
+        debugDisplay.y = 10 * scale;
       }
     }
   }
-  #end
 }

@@ -645,7 +645,7 @@ class PolymodHandler
     {
       if (cls == null) continue;
       // Exclude certain allowed classes that mods should have access to.
-      if (cls == polymod.Polymod.ModMetadata || cls == polymod.patch.PatchState) continue;
+      if (cls == polymod.Polymod.ModMetadata || cls == polymod.patch.PatchState || cls == polymod.hscript.PolymodScriptBridge) continue;
 
       var className:String = Type.getClassName(cls);
       Polymod.blacklistImport(className);
