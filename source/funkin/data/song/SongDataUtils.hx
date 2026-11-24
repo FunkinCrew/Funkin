@@ -158,7 +158,9 @@ class SongDataUtils
         newData -= strumlineSize;
       }
 
-      return new SongNoteData(note.time, newData, note.length, note.kind);
+      var result:SongNoteData = note.clone();
+      result.data = newData;
+      return result;
     });
   }
 
@@ -177,72 +179,49 @@ class SongDataUtils
   {
     if (notes.length == 0) return notes;
 
-    var minTime = notes[0].time;
-    var maxTime = notes[0].time;
-    var minStrumline = notes[0].data;
-    var maxStrumline = notes[0].data;
+    var minTime:Float = notes[0].time;
+    var maxTime:Float = notes[0].time + notes[0].length;
+    var hasPlayer:Bool = false;
+    var hasOpponent:Bool = false;
     for (note in notes)
     {
-      // Find the maximum and minimum time and strumline positions
-      // I wish there was a better way of doing this
-      if (flip)
-      {
-        if (note.data < minStrumline)
-        {
-          minStrumline = note.data;
-        }
-        else if (note.data > maxStrumline)
-        {
-          maxStrumline = note.data;
-        }
-      }
-      if (note.time < minTime)
-      {
-        minTime = note.time;
-      }
-      else if (note.time > maxTime)
-      {
-        maxTime = note.time;
-      }
+      if (note.time < minTime) minTime = note.time;
+      if (note.time + note.length > maxTime) maxTime = note.time + note.length;
+      if (note.data < strumlineSize) hasPlayer = true;
+      else
+        hasOpponent = true;
     }
+    var timeCenter:Float = minTime + (maxTime - minTime) / 2;
 
-    var timeDiff = minTime + (maxTime - minTime) / 2;
-    if (flip && minStrumline < strumlineSize && strumlineSize < maxStrumline)
+    if (flip && mirrorX && hasPlayer && hasOpponent)
     {
-      // Flip the notes if one of the notes is on the other strum
+      // Flip the notes if the selection covers both strumlines
       // Otherwise they'll be inverted when mirrored
-      notes = flipNotes(notes);
+      notes = flipNotes(notes, strumlineSize);
     }
 
     return notes.map((note:SongNoteData) ->
     {
-      var newData = note.data;
-      var newTime = note.time;
+      var result:SongNoteData = note.clone();
 
       if (mirrorX)
       {
-        if (newData < strumlineSize)
+        if (result.data < strumlineSize)
         {
-          newData = strumlineSize - 1 - newData;
+          result.data = strumlineSize - 1 - result.data;
         }
         else
         {
-          newData = strumlineSize + strumlineSize * 2 - 1 - newData;
+          result.data = strumlineSize + strumlineSize * 2 - 1 - result.data;
         }
       }
       if (mirrorY)
       {
-        if (newTime < timeDiff)
-        {
-          newTime += (timeDiff - newTime) * 2;
-        }
-        else if (newTime > timeDiff)
-        {
-          newTime -= (newTime - timeDiff) * 2;
-        }
+        // A hold note's end becomes its start once time is reversed.
+        result.time = timeCenter * 2 - (note.time + note.length);
       }
 
-      return new SongNoteData(newTime, newData, note.length, note.kind);
+      return result;
     });
   }
 

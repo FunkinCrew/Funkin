@@ -1631,35 +1631,30 @@ abstract SongNoteData(SongNoteDataRaw) from SongNoteDataRaw to SongNoteDataRaw
     if (this == null) return other == null;
     if (other == null) return false;
 
-    if (this.kind == null || this.kind == '')
-    {
-      if (other.kind != '' && this.kind != null) return false;
-    }
-    else
-    {
-      if (other.kind == '' || this.kind == null) return false;
-    }
+    if ((this.kind ?? '') != (other.kind ?? '')) return false;
 
-    return this.time == other.time && this.data == other.data && this.length == other.length && this.params == other.params;
+    return this.time == other.time && this.data == other.data && this.length == other.length && paramsEqual(other);
   }
 
   @:op(A != B)
   public function op_notEquals(other:SongNoteData):Bool
   {
-    // Handle the case where one value is null.
-    if (this == null) return other == null;
-    if (other == null) return false;
+    return !op_equals(other);
+  }
 
-    if (this.kind == '')
+  /**
+   * Compare the `params` of two notes by value, since clones get new param arrays.
+   */
+  function paramsEqual(other:SongNoteData):Bool
+  {
+    var a:Array<NoteParamData> = this.params ?? [];
+    var b:Array<NoteParamData> = other.params ?? [];
+    if (a.length != b.length) return false;
+    for (i in 0...a.length)
     {
-      if (other.kind != '') return true;
+      if (a[i].name != b[i].name || a[i].value != b[i].value) return false;
     }
-    else
-    {
-      if (other.kind == '') return true;
-    }
-
-    return this.time != other.time || this.data != other.data || this.length != other.length || this.params != other.params;
+    return true;
   }
 
   @:op(A > B)

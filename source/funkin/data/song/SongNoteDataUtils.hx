@@ -73,47 +73,72 @@ class SongNoteDataUtils
   }
 
   /**
-   * Concatenates two arrays of notes but overwrites notes in `lhs` that are overlapped by notes in `rhs`.
-   * Hold notes are only overwritten by longer hold notes.
-   * This operation only modifies the second array and `overwrittenNotes`.
+   * Concatenates two arrays of notes, removing any notes in `lhs` that are stacked under a note in `rhs`.
+   * Incoming notes always win, and if several notes in `rhs` stack with each other, only the last one is kept.
+   * Does not modify `lhs`; `rhs` is modified in place to remove the incoming notes that were dropped.
    *
    * @param lhs An array of notes
    * @param rhs An array of notes to concatenate into `lhs`
-   * @param overwrittenNotes An optional array that is modified in-place with the notes in `lhs` that were overwritten.
+   * @param overwrittenNotes An optional array that is modified in-place with the original notes from `lhs` that were overwritten.
    * @param threshold The note stack threshold. Refer to `doNotesStack` for more details.
    * @return The unsorted resulting array.
    */
   public static function concatOverwrite(lhs:Array<SongNoteData>, rhs:Array<SongNoteData>, ?overwrittenNotes:Array<SongNoteData>, threshold:Float = 0):Array<SongNoteData>
   {
     if (lhs == null || rhs == null || rhs.length == 0) return lhs;
-    if (lhs.length == 0) return rhs;
 
-    var result = lhs.copy();
-    for (i in 0...rhs.length)
+    var kept:Array<SongNoteData> = [];
+    var i:Int = rhs.length;
+    while (i-- > 0)
     {
-      var noteB:SongNoteData = rhs[i];
-      var hasOverlap:Bool = false;
-
-      for (j in 0...lhs.length)
+      var note:SongNoteData = rhs[i];
+      var stacked:Bool = false;
+      for (other in kept)
       {
-        var noteA:SongNoteData = lhs[j];
+        if (doNotesStack(note, other, threshold))
+        {
+          stacked = true;
+          break;
+        }
+      }
+      if (!stacked) kept.push(note);
+    }
+    kept.reverse();
+    if (kept.length != rhs.length)
+    {
+      rhs.resize(0);
+      for (note in kept) rhs.push(note);
+    }
+
+    // Group the incoming notes by direction so each existing note only checks notes it could stack with.
+    var rhsByData:Map<Int, Array<SongNoteData>> = [];
+    for (note in rhs)
+    {
+      var bucket:Null<Array<SongNoteData>> = rhsByData.get(note.data);
+      if (bucket == null) rhsByData.set(note.data, [note]);
+      else
+        bucket.push(note);
+    }
+
+    var result:Array<SongNoteData> = [];
+    for (noteA in lhs)
+    {
+      var overwritten:Bool = false;
+      for (noteB in rhsByData.get(noteA.data) ?? [])
+      {
         if (doNotesStack(noteA, noteB, threshold))
         {
-          // Long hold notes should have priority over shorter hold notes
-          if (noteA.length <= noteB.length)
-          {
-            overwrittenNotes?.push(result[j].clone());
-            result[j] = noteB;
-          }
-          hasOverlap = true;
+          overwritten = true;
           break;
         }
       }
 
-      if (!hasOverlap) result.push(noteB);
+      if (overwritten) overwrittenNotes?.push(noteA);
+      else
+        result.push(noteA);
     }
 
-    return result;
+    return result.concat(rhs);
   }
 
   /**

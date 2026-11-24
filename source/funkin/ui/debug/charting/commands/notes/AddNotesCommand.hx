@@ -3,6 +3,7 @@ package funkin.ui.debug.charting.commands.notes;
 #if FEATURE_CHART_EDITOR
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongDataUtils;
+import funkin.data.song.SongNoteDataUtils;
 import funkin.ui.debug.charting.commands.ChartEditorCommand;
 
 /**
@@ -14,10 +15,11 @@ class AddNotesCommand implements ChartEditorCommand
 {
   var notes:Array<SongNoteData>;
   var appendToSelection:Bool;
+  var overwrittenNotes:Array<SongNoteData> = [];
 
   public function new(notes:Array<SongNoteData>, appendToSelection:Bool = false)
   {
-    this.notes = notes;
+    this.notes = notes.copy();
     this.appendToSelection = appendToSelection;
   }
 
@@ -28,13 +30,15 @@ class AddNotesCommand implements ChartEditorCommand
    */
   public function execute(state:ChartEditorState):Void
   {
-    for (note in notes)
-    {
-      state.currentSongChartNoteData.pushUnique(note);
-    }
+    overwrittenNotes = [];
+    state.currentSongChartNoteData = SongNoteDataUtils.concatOverwrite(state.currentSongChartNoteData, notes, overwrittenNotes);
 
     if (appendToSelection)
     {
+      for (note in overwrittenNotes)
+      {
+        state.currentNoteSelection.remove(note);
+      }
       for (note in notes)
       {
         state.currentNoteSelection.pushUnique(note);
@@ -63,7 +67,7 @@ class AddNotesCommand implements ChartEditorCommand
    */
   public function undo(state:ChartEditorState):Void
   {
-    state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, notes);
+    state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, notes).concat(overwrittenNotes);
     state.currentNoteSelection = [];
     state.currentEventSelection = [];
     state.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/undo'));

@@ -3,6 +3,7 @@ package funkin.ui.debug.charting.commands.notes;
 #if FEATURE_CHART_EDITOR
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongDataUtils;
+import funkin.data.song.SongNoteDataUtils;
 import funkin.ui.debug.charting.commands.ChartEditorCommand;
 
 /**
@@ -15,14 +16,14 @@ class MoveNotesCommand implements ChartEditorCommand
 {
   var notes:Array<SongNoteData>;
   var movedNotes:Array<SongNoteData>;
+  var overwrittenNotes:Array<SongNoteData> = [];
   var offset:Float;
   var columns:Int;
   var setPos:Bool;
 
   public function new(notes:Array<SongNoteData>, offset:Float, columns:Int, setPos:Bool = false, offsetInSteps:Bool = false)
   {
-    // Clone the notes to prevent editing from affecting the history.
-    this.notes = [for (note in notes) note.clone()];
+    this.notes = notes.copy();
     if (offsetInSteps)
     {
       this.offset = Conductor.instance.getStepTimeInMs(offset);
@@ -67,7 +68,8 @@ class MoveNotesCommand implements ChartEditorCommand
       movedNotes.pushUnique(resultNote);
     }
 
-    state.currentSongChartNoteData = state.currentSongChartNoteData.concat(movedNotes);
+    overwrittenNotes = [];
+    state.currentSongChartNoteData = SongNoteDataUtils.concatOverwrite(state.currentSongChartNoteData, movedNotes, overwrittenNotes);
     state.currentNoteSelection = movedNotes;
 
     state.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/note-place'));
@@ -87,7 +89,7 @@ class MoveNotesCommand implements ChartEditorCommand
   public function undo(state:ChartEditorState):Void
   {
     state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, movedNotes);
-    state.currentSongChartNoteData = state.currentSongChartNoteData.concat(notes);
+    state.currentSongChartNoteData = state.currentSongChartNoteData.concat(notes).concat(overwrittenNotes);
 
     state.currentNoteSelection = notes;
 

@@ -1224,19 +1224,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var hiddenPlaybarItems:Array<String> = [];
 
   /**
-   * The audio volume before it was toggled to zero.
-   * Metronome, hitsounds (player and opponent), instrumental, vocals (player and opponent)
-   */
-  var previousAudioVolumes:Array<Float> = [
-    1.0,
-    1.0,
-    1.0,
-    1.0,
-    1.0,
-    1.0
-  ];
-
-  /**
    * Whether hitsounds are enabled for at least one character.
    */
   var hitsoundsEnabled(get, never):Bool;
@@ -1253,12 +1240,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function set_metronomeMuted(value:Bool):Bool
   {
-    var wasMuted:Bool = metronomeMuted;
     metronomeMuted = value;
-    if (wasMuted && !value)
-    {
-      restoreAudioVolume(metronomeVolume, preferencesVolumeMetronome, preferencesLabelVolumeMetronome, 'Metronome', () -> metronomeVolume = 1.0);
-    }
+    refreshVolumeLabels();
     return metronomeMuted;
   }
 
@@ -1269,35 +1252,29 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function set_hitsoundsMuted(value:Bool):Bool
   {
-    var wasMuted:Bool = hitsoundsMuted;
     hitsoundsMuted = value;
-    if (wasMuted && !value && hitsoundVolumePlayer <= 0.0 && hitsoundVolumeOpponent <= 0.0)
-    {
-      restoreAudioVolume(
-        hitsoundVolumePlayer,
-        preferencesVolumeHitsoundPlayer,
-        preferencesLabelVolumeHitsoundPlayer,
-        'Player',
-        () -> hitsoundVolumePlayer = 1.0
-      );
-      restoreAudioVolume(
-        hitsoundVolumeOpponent,
-        preferencesVolumeHitsoundOpponent,
-        preferencesLabelVolumeHitsoundOpponent,
-        'Opponent',
-        () -> hitsoundVolumeOpponent = 1.0
-      );
-    }
+    refreshVolumeLabels();
     return hitsoundsMuted;
   }
 
-  function restoreAudioVolume(volume:Float, slider:Slider, label:Label, labelPrefix:String, applyVolume:Void->Void):Void
+  /**
+   * Update the Preferences toolbox volume labels, marking any muted audio.
+   */
+  function refreshVolumeLabels():Void
   {
-    if (volume > 0.0) return;
+    if (preferencesLabelVolumeMetronome == null) return;
 
-    applyVolume();
-    slider.value = 100.0;
-    label.text = '$labelPrefix - 100%';
+    inline function text(prefix:String, slider:Slider, muted:Bool):String
+    {
+      return '$prefix - ${Math.round(slider.pos)}%' + (muted ? ' (Muted)' : '');
+    }
+
+    preferencesLabelVolumeMetronome.text = text('Metronome', preferencesVolumeMetronome, metronomeMuted);
+    preferencesLabelVolumeHitsoundPlayer.text = text('Player', preferencesVolumeHitsoundPlayer, hitsoundsMuted);
+    preferencesLabelVolumeHitsoundOpponent.text = text('Opponent', preferencesVolumeHitsoundOpponent, hitsoundsMuted);
+    preferencesLabelVolumeInstrumental.text = text('Instrumental', preferencesVolumeInstrumental, instrumentalMuted);
+    preferencesLabelVolumeVocalsPlayer.text = text('Player', preferencesVolumeVocalsPlayer, playerVocalsMuted);
+    preferencesLabelVolumeVocalsOpponent.text = text('Opponent', preferencesVolumeVocalsOpponent, opponentVocalsMuted);
   }
 
   var stretchySound1:Null<FunkinSound> = null;
@@ -1445,7 +1422,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
     var isEqual:Bool = isSuperset && currentNoteSelection.length == value.length;
 
-    currentNoteSelection = value;
+    // Always keep our own copy, so the selection never shares an array with the chart or a command's history.
+    currentNoteSelection = value.copy();
     if (value.length > 0)
     {
       // Picking notes lets go of the other kinds of items.
@@ -1511,7 +1489,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function set_currentEventSelection(value:Array<SongEventData>):Array<SongEventData>
   {
-    currentEventSelection = value;
+    // Always keep our own copy, so the selection never shares an array with the chart or a command's history.
+    currentEventSelection = value.copy();
     if (value.length > 0)
     {
       // Picking events lets go of the other kinds of items, the same as notes.
@@ -3959,17 +3938,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function applyPreferenceVolumes():Void
   {
     metronomeVolume = preferencesVolumeMetronome.pos / 100.0;
-    preferencesLabelVolumeMetronome.text = 'Metronome - ${Math.round(preferencesVolumeMetronome.pos)}%';
     hitsoundVolumePlayer = preferencesVolumeHitsoundPlayer.pos / 100.0;
-    preferencesLabelVolumeHitsoundPlayer.text = 'Player - ${Math.round(preferencesVolumeHitsoundPlayer.pos)}%';
     hitsoundVolumeOpponent = preferencesVolumeHitsoundOpponent.pos / 100.0;
-    preferencesLabelVolumeHitsoundOpponent.text = 'Opponent - ${Math.round(preferencesVolumeHitsoundOpponent.pos)}%';
     if (audioInstTrack != null) audioInstTrack.volume = preferencesVolumeInstrumental.pos / 100.0;
-    preferencesLabelVolumeInstrumental.text = 'Instrumental - ${Math.round(preferencesVolumeInstrumental.pos)}%';
     audioVocalTrackGroup.playerVolume = preferencesVolumeVocalsPlayer.pos / 100.0;
-    preferencesLabelVolumeVocalsPlayer.text = 'Player - ${Math.round(preferencesVolumeVocalsPlayer.pos)}%';
     audioVocalTrackGroup.opponentVolume = preferencesVolumeVocalsOpponent.pos / 100.0;
-    preferencesLabelVolumeVocalsOpponent.text = 'Opponent - ${Math.round(preferencesVolumeVocalsOpponent.pos)}%';
+    refreshVolumeLabels();
   }
 
   function handleQuickWatch():Void
@@ -4154,19 +4128,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function set_playerVocalsMuted(value:Bool):Bool
   {
-    var wasMuted:Bool = playerVocalsMuted;
     playerVocalsMuted = value;
-    if (wasMuted && !value)
-    {
-      restoreAudioVolume(
-        audioVocalTrackGroup.playerVolume,
-        preferencesVolumeVocalsPlayer,
-        preferencesLabelVolumeVocalsPlayer,
-        'Player',
-        () -> audioVocalTrackGroup.playerVolume = 1.0
-      );
-    }
     this.applyVocalMutes();
+    refreshVolumeLabels();
     return playerVocalsMuted;
   }
 
@@ -4177,19 +4141,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function set_opponentVocalsMuted(value:Bool):Bool
   {
-    var wasMuted:Bool = opponentVocalsMuted;
     opponentVocalsMuted = value;
-    if (wasMuted && !value)
-    {
-      restoreAudioVolume(
-        audioVocalTrackGroup.opponentVolume,
-        preferencesVolumeVocalsOpponent,
-        preferencesLabelVolumeVocalsOpponent,
-        'Opponent',
-        () -> audioVocalTrackGroup.opponentVolume = 1.0
-      );
-    }
     this.applyVocalMutes();
+    refreshVolumeLabels();
     return opponentVocalsMuted;
   }
 
@@ -4200,16 +4154,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function set_instrumentalMuted(value:Bool):Bool
   {
-    var wasMuted:Bool = instrumentalMuted;
     instrumentalMuted = value;
-    if (wasMuted && !value)
-    {
-      restoreAudioVolume(preferencesVolumeInstrumental.value / 100.0, preferencesVolumeInstrumental, preferencesLabelVolumeInstrumental, 'Instrumental', () ->
-      {
-        if (audioInstTrack != null) audioInstTrack.volume = 1.0;
-      });
-    }
     if (audioInstTrack != null) audioInstTrack.muted = instrumentalMuted;
+    refreshVolumeLabels();
     return instrumentalMuted;
   }
 

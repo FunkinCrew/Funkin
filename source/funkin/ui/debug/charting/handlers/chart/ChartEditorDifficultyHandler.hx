@@ -41,8 +41,11 @@ class ChartEditorDifficultyHandler
     }
     else
     {
-      resultChartData.scrollSpeed.set(difficulty, scrollSpeed);
-      resultChartData.notes.set(difficulty, []);
+      if (!resultChartData.notes.exists(difficulty))
+      {
+        resultChartData.scrollSpeed.set(difficulty, scrollSpeed);
+        resultChartData.notes.set(difficulty, []);
+      }
     }
 
     state.difficultySelectDirty = true; // Force the Difficulty toolbox to update.
@@ -61,6 +64,8 @@ class ChartEditorDifficultyHandler
   {
     var newVariationMetadata:Null<SongMetadata> = state.songMetadata.get(newVariation);
     if (newVariationMetadata == null) return;
+    // Never overwrite a chart that already exists.
+    if (state.songChartData.get(newVariation)?.notes.exists(newDifficulty) ?? false) return;
 
     var oldChartData:Null<SongChartData> = state.songChartData.get(variation);
     if (oldChartData == null)
@@ -151,6 +156,20 @@ class ChartEditorDifficultyHandler
   }
 
   /**
+   * Evaluate a difficulty ID to see if it is valid for the current song.
+   */
+  public static function takenDifficultyIds(state:ChartEditorState, variation:String):Array<String>
+  {
+    var taken:Array<String> = (state.songMetadata.get(variation)?.playData.difficulties ?? []).copy();
+    var chartData:Null<SongChartData> = state.songChartData.get(variation);
+    if (chartData != null)
+    {
+      for (id in chartData.notes.keys()) taken.pushUnique(id);
+    }
+    return taken;
+  }
+
+  /**
    * Find an ID based on `base` that is not in `taken`.
    */
   public static function uniqueDifficultyId(base:String, taken:Array<String>):String
@@ -191,9 +210,12 @@ class ChartEditorDifficultyHandler
     var difficulties:Array<String> = variationMetadata.playData.difficulties;
     var index:Int = difficulties.indexOf(difficulty);
     if (index == -1 || difficulties.contains(newDifficulty)) return false;
+    var chartData:Null<SongChartData> = state.songChartData.get(variation);
+
+    // Don't rename over a chart that exists without being listed.
+    if (chartData?.notes.exists(newDifficulty) ?? false) return false;
 
     difficulties[index] = newDifficulty;
-    var chartData:Null<SongChartData> = state.songChartData.get(variation);
     if (chartData != null)
     {
       ChartEditorDifficultyHandler.moveMapKey(chartData.scrollSpeed, difficulty, newDifficulty);
@@ -214,6 +236,9 @@ class ChartEditorDifficultyHandler
   {
     var targetMetadata:Null<SongMetadata> = state.songMetadata.get(targetVariation);
     if (targetMetadata == null || targetMetadata.playData.difficulties.contains(newDifficulty)) return false;
+
+    // Don't copy over a chart that exists without being listed.
+    if (state.songChartData.get(targetVariation)?.notes.exists(newDifficulty) ?? false) return false;
 
     var sourceChart:Null<SongChartData> = state.songChartData.get(variation);
     var sourceNotes:Null<Array<SongNoteData>> = sourceChart != null ? sourceChart.notes.get(difficulty) : null;
@@ -250,7 +275,7 @@ class ChartEditorDifficultyHandler
     var targetMetadata:Null<SongMetadata> = state.songMetadata.get(targetVariation);
     if (targetMetadata == null) return false;
 
-    var newDifficulty:String = ChartEditorDifficultyHandler.uniqueDifficultyId(difficulty, targetMetadata.playData.difficulties);
+    var newDifficulty:String = ChartEditorDifficultyHandler.uniqueDifficultyId(difficulty, takenDifficultyIds(state, targetVariation));
     var wasSelected:Bool = variation == state.selectedVariation && difficulty == state.selectedDifficulty;
     if (!state.duplicateDifficulty(variation, difficulty, targetVariation, newDifficulty)) return false;
 

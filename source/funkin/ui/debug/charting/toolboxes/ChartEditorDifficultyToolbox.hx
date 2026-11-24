@@ -475,7 +475,7 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
     var id:Null<String> = ChartEditorDifficultyHandler.sanitizeDifficultyId(text);
     if (id == null || id == difficulty) return;
 
-    var taken:Array<String> = chartEditorState.songMetadata.get(variation)?.playData.difficulties ?? [];
+    var taken:Array<String> = ChartEditorDifficultyHandler.takenDifficultyIds(chartEditorState, variation);
     if (taken.contains(id))
     {
       chartEditorState.error('Difficulty Exists', '"$id" already exists in ${variation.toTitleCase()}.');
@@ -516,7 +516,7 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
     addMenuItem(menu, 'Rename', () -> startEditing('$variation:$difficulty'));
     addMenuItem(menu, 'Duplicate', function()
     {
-      var taken:Array<String> = chartEditorState.songMetadata.get(variation)?.playData.difficulties ?? [];
+      var taken:Array<String> = ChartEditorDifficultyHandler.takenDifficultyIds(chartEditorState, variation);
       var copy:String = ChartEditorDifficultyHandler.uniqueDifficultyId('$difficulty-copy', taken);
       if (chartEditorState.performDifficultyChange('Duplicate Difficulty', () -> chartEditorState.duplicateDifficulty(variation, difficulty, variation, copy)))
       {
@@ -539,7 +539,7 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
       {
         addMenuItem(copyMenu, target.toTitleCase(), function()
         {
-          var taken:Array<String> = chartEditorState.songMetadata.get(target)?.playData.difficulties ?? [];
+          var taken:Array<String> = ChartEditorDifficultyHandler.takenDifficultyIds(chartEditorState, target);
           var id:String = ChartEditorDifficultyHandler.uniqueDifficultyId(difficulty, taken);
           chartEditorState.performDifficultyChange('Copy Difficulty', () -> chartEditorState.duplicateDifficulty(variation, difficulty, target, id));
         });
@@ -668,7 +668,7 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
     var source = copiedDifficulty;
     if (source == null) return;
     var target:String = chartEditorState.selectedVariation;
-    var taken:Array<String> = chartEditorState.songMetadata.get(target)?.playData.difficulties ?? [];
+    var taken:Array<String> = ChartEditorDifficultyHandler.takenDifficultyIds(chartEditorState, target);
     var base:String = source.variation == target ? '${source.difficulty}-copy' : source.difficulty;
     var id:String = ChartEditorDifficultyHandler.uniqueDifficultyId(base, taken);
     if (chartEditorState.performDifficultyChange(

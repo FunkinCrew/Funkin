@@ -30,8 +30,8 @@ class SelectAllItemsCommand implements ChartEditorCommand
    */
   public function execute(state:ChartEditorState):Void
   {
-    this.previousNoteSelection = state.currentNoteSelection;
-    this.previousEventSelection = state.currentEventSelection;
+    this.previousNoteSelection = state.currentNoteSelection.copy();
+    this.previousEventSelection = state.currentEventSelection.copy();
 
     state.currentNoteSelection = shouldSelectNotes ? state.currentSongChartNoteData : [];
     state.currentEventSelection = shouldSelectEvents ? state.currentSongChartEventData : [];

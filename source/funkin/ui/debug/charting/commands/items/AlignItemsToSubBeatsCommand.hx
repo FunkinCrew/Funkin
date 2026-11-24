@@ -4,6 +4,7 @@ package funkin.ui.debug.charting.commands.items;
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongDataUtils;
+import funkin.data.song.SongNoteDataUtils;
 import funkin.ui.debug.charting.commands.ChartEditorCommand;
 
 /**
@@ -15,6 +16,7 @@ class AlignItemsToSubBeatsCommand implements ChartEditorCommand
 {
   var notes:Array<SongNoteData>;
   var movedNotes:Array<SongNoteData> = [];
+  var overwrittenNotes:Array<SongNoteData> = [];
   var events:Array<SongEventData>;
   var movedEvents:Array<SongEventData> = [];
   var noteTimes:Array<Float>;
@@ -72,7 +74,8 @@ class AlignItemsToSubBeatsCommand implements ChartEditorCommand
       movedEvents.pushUnique(resultEvent);
     }
 
-    state.currentSongChartNoteData = state.currentSongChartNoteData.concat(movedNotes);
+    overwrittenNotes = [];
+    state.currentSongChartNoteData = SongNoteDataUtils.concatOverwrite(state.currentSongChartNoteData, movedNotes, overwrittenNotes);
     state.currentSongChartEventData = state.currentSongChartEventData.concat(movedEvents);
     state.currentNoteSelection = movedNotes;
     state.currentEventSelection = movedEvents;
@@ -97,7 +100,7 @@ class AlignItemsToSubBeatsCommand implements ChartEditorCommand
   {
     state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, movedNotes);
     state.currentSongChartEventData = SongDataUtils.subtractEvents(state.currentSongChartEventData, movedEvents);
-    state.currentSongChartNoteData = state.currentSongChartNoteData.concat(notes);
+    state.currentSongChartNoteData = state.currentSongChartNoteData.concat(notes).concat(overwrittenNotes);
     state.currentSongChartEventData = state.currentSongChartEventData.concat(events);
 
     state.currentNoteSelection = notes;

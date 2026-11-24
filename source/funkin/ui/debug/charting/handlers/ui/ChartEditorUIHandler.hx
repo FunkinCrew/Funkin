@@ -33,6 +33,7 @@ import funkin.util.SortUtil;
 import haxe.ui.components.Button;
 import haxe.ui.components.Range;
 import haxe.ui.components.Rule;
+import haxe.ui.components.Slider;
 import haxe.ui.containers.dialogs.CollapsibleDialog;
 import haxe.ui.containers.menus.Menu;
 import haxe.ui.containers.menus.MenuCheckBox;
@@ -740,182 +741,61 @@ class ChartEditorUIHandler
       }
     };
 
-    state.preferencesVolumeMetronome.onChange = event ->
+    setupVolumeSlider(state, state.preferencesVolumeMetronome, () -> state.metronomeVolume, volume -> state.metronomeVolume = volume, () -> state.metronomeMuted, muted ->
     {
-      var volume:Float = event.value.toFloat() / 100.0;
-      state.metronomeVolume = volume;
-      state.metronomeMuted = volume <= 0.0;
-      state.menubarItemMuteMetronome.selected = state.metronomeMuted;
-      state.preferencesLabelVolumeMetronome.text = 'Metronome - ${Math.round(event.value)}%';
-    };
-    state.preferencesVolumeMetronome.onRightClick = _ ->
-    {
-      if (state.metronomeVolume <= 0.0)
-      {
-        state.metronomeVolume = 1.0;
-        state.preferencesVolumeMetronome.value = 100.0;
-        state.metronomeMuted = false;
-        state.menubarItemMuteMetronome.selected = false;
-        state.preferencesLabelVolumeMetronome.text = 'Metronome - 100%';
-      }
-      else
-      {
-        state.metronomeVolume = 0.0;
-        state.preferencesVolumeMetronome.value = 0.0;
-        state.metronomeMuted = true;
-        state.menubarItemMuteMetronome.selected = true;
-        state.preferencesLabelVolumeMetronome.text = 'Metronome - 0%';
-      }
-    }
+      state.metronomeMuted = muted;
+      state.menubarItemMuteMetronome.selected = muted;
+    });
     state.preferencesVolumeMetronome.value = Std.int(state.metronomeVolume * 100);
-    state.previousAudioVolumes[0] = Std.int(state.metronomeVolume * 100);
 
-    state.preferencesVolumeHitsoundPlayer.onChange = event ->
+    setupVolumeSlider(state, state.preferencesVolumeHitsoundPlayer, () -> state.hitsoundVolumePlayer, volume -> state.hitsoundVolumePlayer = volume, () -> state.hitsoundsMuted, muted ->
     {
-      var volume:Float = event.value.toFloat() / 100.0;
-      state.hitsoundVolumePlayer = volume;
-      state.hitsoundsMuted = state.hitsoundVolumePlayer <= 0.0 && state.hitsoundVolumeOpponent <= 0.0;
-      state.menubarItemMuteHitsounds.selected = state.hitsoundsMuted;
-      state.preferencesLabelVolumeHitsoundPlayer.text = 'Player - ${Math.round(event.value)}%';
-    };
-    state.preferencesVolumeHitsoundPlayer.onRightClick = _ ->
-    {
-      if (state.hitsoundVolumePlayer <= 0.0)
-      {
-        state.hitsoundVolumePlayer = 1.0;
-        state.preferencesVolumeHitsoundPlayer.value = 100.0;
-        state.hitsoundsMuted = false;
-        state.menubarItemMuteHitsounds.selected = false;
-        state.preferencesLabelVolumeHitsoundPlayer.text = 'Player - 100%';
-      }
-      else
-      {
-        state.hitsoundVolumePlayer = 0.0;
-        state.preferencesVolumeHitsoundPlayer.value = 0.0;
-        state.hitsoundsMuted = state.hitsoundVolumeOpponent <= 0.0;
-        state.menubarItemMuteHitsounds.selected = state.hitsoundsMuted;
-        state.preferencesLabelVolumeHitsoundPlayer.text = 'Player - 0%';
-      }
-    }
+      state.hitsoundsMuted = muted;
+      state.menubarItemMuteHitsounds.selected = muted;
+    });
     state.preferencesVolumeHitsoundPlayer.value = Std.int(state.hitsoundVolumePlayer * 100);
-    state.previousAudioVolumes[1] = Std.int(state.hitsoundVolumePlayer * 100);
 
-    state.preferencesVolumeHitsoundOpponent.onChange = event ->
+    setupVolumeSlider(state, state.preferencesVolumeHitsoundOpponent, () -> state.hitsoundVolumeOpponent, volume -> state.hitsoundVolumeOpponent = volume, () -> state.hitsoundsMuted, muted ->
     {
-      var volume:Float = event.value.toFloat() / 100.0;
-      state.hitsoundVolumeOpponent = volume;
-      state.hitsoundsMuted = state.hitsoundVolumePlayer <= 0.0 && state.hitsoundVolumeOpponent <= 0.0;
-      state.menubarItemMuteHitsounds.selected = state.hitsoundsMuted;
-      state.preferencesLabelVolumeHitsoundOpponent.text = 'Opponent - ${Math.round(event.value)}%';
-    };
-    state.preferencesVolumeHitsoundOpponent.onRightClick = _ ->
-    {
-      if (state.hitsoundVolumeOpponent <= 0.0)
-      {
-        state.hitsoundVolumeOpponent = 1.0;
-        state.preferencesVolumeHitsoundOpponent.value = 100.0;
-        state.hitsoundsMuted = false;
-        state.menubarItemMuteHitsounds.selected = false;
-        state.preferencesLabelVolumeHitsoundOpponent.text = 'Opponent - 100%';
-      }
-      else
-      {
-        state.hitsoundVolumeOpponent = 0.0;
-        state.preferencesVolumeHitsoundOpponent.value = 0.0;
-        state.hitsoundsMuted = state.hitsoundVolumePlayer <= 0.0;
-        state.menubarItemMuteHitsounds.selected = state.hitsoundsMuted;
-        state.preferencesLabelVolumeHitsoundOpponent.text = 'Opponent - 0%';
-      }
-    }
+      state.hitsoundsMuted = muted;
+      state.menubarItemMuteHitsounds.selected = muted;
+    });
     state.preferencesVolumeHitsoundOpponent.value = Std.int(state.hitsoundVolumeOpponent * 100);
-    state.previousAudioVolumes[2] = Std.int(state.hitsoundVolumeOpponent * 100);
 
-    state.preferencesVolumeInstrumental.onChange = event ->
+    setupVolumeSlider(state, state.preferencesVolumeInstrumental, () -> state.audioInstTrack?.volume ?? state.preferencesVolumeInstrumental.pos / 100.0, volume ->
     {
-      var volume:Float = event.value.toFloat() / 100.0;
       if (state.audioInstTrack != null) state.audioInstTrack.volume = volume;
-      state.instrumentalMuted = volume <= 0.0;
-      state.menubarItemMuteInstrumental.selected = state.instrumentalMuted;
-      state.preferencesLabelVolumeInstrumental.text = 'Instrumental - ${Math.round(event.value)}%';
-    };
-    state.preferencesVolumeInstrumental.onRightClick = _ ->
+    }, () -> state.instrumentalMuted, muted ->
     {
-      if (state.preferencesVolumeInstrumental.value <= 0.0)
-      {
-        if (state.audioInstTrack != null) state.audioInstTrack.volume = 1.0;
-        state.preferencesVolumeInstrumental.value = 100.0;
-        state.instrumentalMuted = false;
-        state.menubarItemMuteInstrumental.selected = false;
-        state.preferencesLabelVolumeInstrumental.text = 'Instrumental - 100%';
-      }
-      else
-      {
-        if (state.audioInstTrack != null) state.audioInstTrack.volume = 0.0;
-        state.preferencesVolumeInstrumental.value = 0.0;
-        state.instrumentalMuted = true;
-        state.menubarItemMuteInstrumental.selected = true;
-        state.preferencesLabelVolumeInstrumental.text = 'Instrumental - 0%';
-      }
-    }
-    state.previousAudioVolumes[3] = state.preferencesVolumeInstrumental.value;
+      state.instrumentalMuted = muted;
+      state.menubarItemMuteInstrumental.selected = muted;
+    });
 
-    state.preferencesVolumeVocalsPlayer.onChange = event ->
-    {
-      var volume:Float = event.value.toFloat() / 100.0;
-      state.audioVocalTrackGroup.playerVolume = volume;
-      state.playerVocalsMuted = volume <= 0.0;
-      state.menubarItemMutePlayerVocals.selected = state.playerVocalsMuted;
-      state.preferencesLabelVolumeVocalsPlayer.text = 'Player - ${Math.round(event.value)}%';
-    };
-    state.preferencesVolumeVocalsPlayer.onRightClick = _ ->
-    {
-      if (state.audioVocalTrackGroup.playerVolume <= 0.0)
+    setupVolumeSlider(
+      state,
+      state.preferencesVolumeVocalsPlayer,
+      () -> state.audioVocalTrackGroup.playerVolume,
+      volume -> state.audioVocalTrackGroup.playerVolume = volume,
+      () -> state.playerVocalsMuted,
+      muted ->
       {
-        state.audioVocalTrackGroup.playerVolume = 1.0;
-        state.preferencesVolumeVocalsPlayer.value = 100.0;
-        state.playerVocalsMuted = false;
-        state.menubarItemMutePlayerVocals.selected = false;
-        state.preferencesLabelVolumeVocalsPlayer.text = 'Player - 100%';
+        state.playerVocalsMuted = muted;
+        state.menubarItemMutePlayerVocals.selected = muted;
       }
-      else
-      {
-        state.audioVocalTrackGroup.playerVolume = 0.0;
-        state.preferencesVolumeVocalsPlayer.value = 0.0;
-        state.playerVocalsMuted = true;
-        state.menubarItemMutePlayerVocals.selected = true;
-        state.preferencesLabelVolumeVocalsPlayer.text = 'Player - 0%';
-      }
-    }
-    state.previousAudioVolumes[4] = state.preferencesVolumeVocalsPlayer.value;
+    );
 
-    state.preferencesVolumeVocalsOpponent.onChange = event ->
-    {
-      var volume:Float = event.value.toFloat() / 100.0;
-      state.audioVocalTrackGroup.opponentVolume = volume;
-      state.opponentVocalsMuted = volume <= 0.0;
-      state.menubarItemMuteOpponentVocals.selected = state.opponentVocalsMuted;
-      state.preferencesLabelVolumeVocalsOpponent.text = 'Opponent - ${Math.round(event.value)}%';
-    };
-    state.preferencesVolumeVocalsOpponent.onRightClick = _ ->
-    {
-      if (state.audioVocalTrackGroup.opponentVolume <= 0.0)
+    setupVolumeSlider(
+      state,
+      state.preferencesVolumeVocalsOpponent,
+      () -> state.audioVocalTrackGroup.opponentVolume,
+      volume -> state.audioVocalTrackGroup.opponentVolume = volume,
+      () -> state.opponentVocalsMuted,
+      muted ->
       {
-        state.audioVocalTrackGroup.opponentVolume = 1.0;
-        state.preferencesVolumeVocalsOpponent.value = 100.0;
-        state.opponentVocalsMuted = false;
-        state.menubarItemMuteOpponentVocals.selected = false;
-        state.preferencesLabelVolumeVocalsOpponent.text = 'Opponent - 100%';
+        state.opponentVocalsMuted = muted;
+        state.menubarItemMuteOpponentVocals.selected = muted;
       }
-      else
-      {
-        state.audioVocalTrackGroup.opponentVolume = 0.0;
-        state.preferencesVolumeVocalsOpponent.value = 0.0;
-        state.opponentVocalsMuted = true;
-        state.menubarItemMuteOpponentVocals.selected = true;
-        state.preferencesLabelVolumeVocalsOpponent.text = 'Opponent - 0%';
-      }
-    }
-    state.previousAudioVolumes[5] = state.preferencesVolumeVocalsOpponent.value;
+    );
 
     state.menubarItemPlaybackSpeed.onChange = _ -> state.applyPlaybackSpeed(state.menubarItemPlaybackSpeed.pos / 50.0);
     state.menubarItemPlaybackSpeed.onRightClick = _ -> state.setPlaybackSpeed(1.0);
@@ -963,6 +843,25 @@ class ChartEditorUIHandler
 
     // TODO: Pass specific HaxeUI components to add context menus to them.
     // registerContextMenu(null, Paths.xml('ui/editors/chart-editor/context/test'));
+  }
+
+  /**
+   * Sets up a volume slider to control a specific volume setting, and handles muting/unmuting when the slider is right-clicked.
+   */
+  static function setupVolumeSlider(state:ChartEditorState, slider:Slider, getVolume:Void->Float, setVolume:Float->Void, isMuted:Void->Bool,
+      setMuted:Bool->Void):Void
+  {
+    slider.onChange = event ->
+    {
+      if (!state.preferencesListening) return;
+      var volume:Float = event.value.toFloat() / 100.0;
+      // HaxeUI also fires change events when a tab is first laid out, without the value changing.
+      if (Math.abs(volume - getVolume()) < 0.005) return;
+      setVolume(volume);
+      if (isMuted()) setMuted(false);
+      state.refreshVolumeLabels();
+    };
+    slider.onRightClick = _ -> setMuted(!isMuted());
   }
 
   public static function handleToolboxes(state:ChartEditorState):Void

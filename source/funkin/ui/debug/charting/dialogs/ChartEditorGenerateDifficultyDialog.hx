@@ -69,7 +69,7 @@ class ChartEditorGenerateDifficultyDialog extends Dialog
     body.percentWidth = 100;
     addComponent(body);
 
-    var taken:Array<String> = metadata?.playData.difficulties ?? [];
+    var taken:Array<String> = ChartEditorDifficultyHandler.takenDifficultyIds(chartEditorState, variation);
     inputName = new TextField();
     inputName.text = ChartEditorDifficultyHandler.uniqueDifficultyId('$difficulty-generated', taken);
     inputName.percentWidth = 100;
@@ -215,7 +215,7 @@ class ChartEditorGenerateDifficultyDialog extends Dialog
       chartEditorState.error('Invalid Name', 'Enter a name for the new difficulty.');
       return;
     }
-    var taken:Array<String> = chartEditorState.songMetadata.get(variation)?.playData.difficulties ?? [];
+    var taken:Array<String> = ChartEditorDifficultyHandler.takenDifficultyIds(chartEditorState, variation);
     if (taken.contains(id))
     {
       chartEditorState.error('Difficulty Exists', '"$id" already exists in ${variation.toTitleCase()}.');

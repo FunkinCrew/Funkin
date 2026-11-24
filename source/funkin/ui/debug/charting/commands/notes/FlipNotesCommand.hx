@@ -3,6 +3,7 @@ package funkin.ui.debug.charting.commands.notes;
 #if FEATURE_CHART_EDITOR
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongDataUtils;
+import funkin.data.song.SongNoteDataUtils;
 import funkin.ui.debug.charting.commands.ChartEditorCommand;
 
 /**
@@ -14,10 +15,12 @@ class FlipNotesCommand implements ChartEditorCommand
 {
   var notes:Array<SongNoteData> = [];
   var flippedNotes:Array<SongNoteData> = [];
+  var overwrittenNotes:Array<SongNoteData> = [];
 
   public function new(notes:Array<SongNoteData>)
   {
-    this.notes = notes;
+    // Copy the selection so later selection changes don't leak into the history.
+    this.notes = notes.copy();
     this.flippedNotes = SongDataUtils.flipNotes(notes);
   }
 
@@ -31,8 +34,9 @@ class FlipNotesCommand implements ChartEditorCommand
     // Delete the notes.
     state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, notes);
 
-    // Add the flipped notes.
-    state.currentSongChartNoteData = state.currentSongChartNoteData.concat(flippedNotes);
+    // Add the flipped notes, overwriting any notes they land on.
+    overwrittenNotes = [];
+    state.currentSongChartNoteData = SongNoteDataUtils.concatOverwrite(state.currentSongChartNoteData, flippedNotes, overwrittenNotes);
 
     state.currentNoteSelection = flippedNotes;
     state.currentEventSelection = [];
@@ -51,7 +55,7 @@ class FlipNotesCommand implements ChartEditorCommand
   public function undo(state:ChartEditorState):Void
   {
     state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, flippedNotes);
-    state.currentSongChartNoteData = state.currentSongChartNoteData.concat(notes);
+    state.currentSongChartNoteData = state.currentSongChartNoteData.concat(notes).concat(overwrittenNotes);
 
     state.currentNoteSelection = notes;
     state.currentEventSelection = [];

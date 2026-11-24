@@ -2,6 +2,7 @@ package funkin.ui.debug.charting.commands.notes;
 
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongDataUtils;
+import funkin.data.song.SongNoteDataUtils;
 import funkin.ui.debug.charting.commands.ChartEditorCommand;
 
 /**
@@ -14,43 +15,16 @@ class MirrorNotesCommand implements ChartEditorCommand
 {
   var notes:Array<SongNoteData> = [];
   var mirroredNotes:Array<SongNoteData> = [];
+  var overwrittenNotes:Array<SongNoteData> = [];
   var mirrorX:Bool = true;
   var mirrorY:Bool = true;
 
   public function new(notes:Array<SongNoteData>, mirrorIndividually:Bool = true, flipMiddle:Bool = false, mirrorX:Bool = true, mirrorY:Bool = true)
   {
-    this.notes = notes;
+    this.notes = notes.copy();
     this.mirrorX = mirrorX;
     this.mirrorY = mirrorY;
-    if (mirrorIndividually)
-    {
-      var playerNotes:Array<SongNoteData> = [];
-      var opponentNotes:Array<SongNoteData> = [];
-      // Sort the selection by the strumline positions and then mirror each individually
-      for (note in notes)
-      {
-        if (note.data < ChartEditorState.STRUMLINE_SIZE)
-        {
-          playerNotes.pushUnique(note);
-        }
-        else if (note.data >= ChartEditorState.STRUMLINE_SIZE)
-        {
-          opponentNotes.pushUnique(note);
-        }
-      }
-      if (playerNotes.length > 0)
-      {
-        this.mirroredNotes = mirroredNotes.concat(SongDataUtils.mirrorNotes(playerNotes, ChartEditorState.STRUMLINE_SIZE, flipMiddle, mirrorX, mirrorY));
-      }
-      if (opponentNotes.length > 0)
-      {
-        this.mirroredNotes = mirroredNotes.concat(SongDataUtils.mirrorNotes(opponentNotes, ChartEditorState.STRUMLINE_SIZE, flipMiddle, mirrorX, mirrorY));
-      }
-    }
-    else
-    {
-      this.mirroredNotes = SongDataUtils.mirrorNotes(notes, ChartEditorState.STRUMLINE_SIZE, flipMiddle, mirrorX, mirrorY);
-    }
+    this.mirroredNotes = SongDataUtils.mirrorNotes(this.notes, ChartEditorState.STRUMLINE_SIZE, flipMiddle && !mirrorIndividually, mirrorX, mirrorY);
   }
 
   /**
@@ -63,8 +37,8 @@ class MirrorNotesCommand implements ChartEditorCommand
     // Delete the notes.
     state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, notes);
 
-    // Add the flipped notes.
-    state.currentSongChartNoteData = state.currentSongChartNoteData.concat(mirroredNotes);
+    overwrittenNotes = [];
+    state.currentSongChartNoteData = SongNoteDataUtils.concatOverwrite(state.currentSongChartNoteData, mirroredNotes, overwrittenNotes);
 
     state.currentNoteSelection = mirroredNotes;
     state.currentEventSelection = [];
@@ -83,7 +57,7 @@ class MirrorNotesCommand implements ChartEditorCommand
   public function undo(state:ChartEditorState):Void
   {
     state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, mirroredNotes);
-    state.currentSongChartNoteData = state.currentSongChartNoteData.concat(notes);
+    state.currentSongChartNoteData = state.currentSongChartNoteData.concat(notes).concat(overwrittenNotes);
 
     state.currentNoteSelection = notes;
     state.currentEventSelection = [];
