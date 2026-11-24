@@ -80,7 +80,7 @@ class TitleState extends MusicBeatState
           Paths.xml('ui/title/gf-dance-title')
         ]);
 
-      case SOUND:
+      case MUSIC:
         results.append([
           Paths.music('ui/main-menu/freaky-menu').audio(),
           Paths.music('ui/title/girlfriends-ringtone').audio()
@@ -113,16 +113,17 @@ class TitleState extends MusicBeatState
 
     curWacky = FlxG.random.getObject(getIntroTextShit());
 
-    Assets.cacheSound(Paths.music('ui/title/girlfriends-ringtone').audio());
-
-    // DEBUG BULLSHIT
-
-    if (!initialized) new FlxTimer().start(1, function(tmr:FlxTimer)
+    if (!initialized)
+    {
+      new FlxTimer().start(1, (tmr:FlxTimer) ->
+      {
+        startIntro();
+      });
+    }
+    else
     {
       startIntro();
-    });
-    else
-      startIntro();
+    }
   }
 
   var logoBl:FunkinSprite;
@@ -490,7 +491,8 @@ class TitleState extends MusicBeatState
     FunkinSound.playMusicTrack(Paths.music('ui/title/girlfriends-ringtone'), {
       volume: 0.0,
       overrideExisting: true,
-      forceRestart: true
+      forceRestart: true,
+      stream: true
     });
 
     FlxG.sound.music.fadeIn(4.0, 0.0, 1.0);

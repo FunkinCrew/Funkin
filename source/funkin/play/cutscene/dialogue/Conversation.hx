@@ -91,7 +91,6 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
 
   var currentSpeaker:Null<Speaker>;
   var currentDialogueBox:Null<DialogueBox>;
-
   var pendingDialogueBoxPosition:Null<Array<Float>> = null;
   var pendingDialogueBoxPositionId:Null<String> = null;
 
@@ -135,8 +134,11 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
 
     switch (type)
     {
-      case SOUND:
-        if (_data?.music?.asset != null && (_data.music?.asset?.length ?? 0) > 0) results.pushUnique(Paths.music(_data?.music?.asset ?? "").audio());
+      case MUSIC:
+        if (_data?.music?.asset != null && (_data.music?.asset?.length ?? 0) > 0)
+        {
+          results.push(Paths.music(_data?.music?.asset ?? "").audio());
+        }
 
       case JSON:
         if (_data?.music?.asset != null && (_data.music?.asset?.length ?? 0) > 0) results.pushUnique(Paths.music(_data?.music?.asset ?? "").metadata());
@@ -331,7 +333,7 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
 
   static function getTypingSounds(entry:Null<DialogueEntryData>):Array<String>
   {
-    if (entry == null || entry.sounds == null) return DEFAULT_TYPING_SOUND.copy(); //what 
+    if (entry == null || entry.sounds == null) return DEFAULT_TYPING_SOUND.copy(); // what
     return entry.sounds.copy();
   }
 

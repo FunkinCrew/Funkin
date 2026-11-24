@@ -421,16 +421,17 @@ class CharacterSelectState extends MusicBeatSubState
         results.push(Paths.xml('ui/character-select/interface/char-selector-denied'));
 
       case SOUND:
-        results.push(Paths.sound('ui/character-select/sounds/select'));
-        results.push(Paths.sound('ui/character-select/sounds/unlock'));
-        results.push(Paths.sound('ui/character-select/sounds/locked'));
-        results.push(Paths.sound('ui/character-select/sounds/lights'));
         results.push(Paths.sound('ui/character-select/sounds/confirm'));
+        results.push(Paths.sound('ui/character-select/sounds/lights'));
+        results.push(Paths.sound('ui/character-select/sounds/locked'));
+        results.push(Paths.sound('ui/character-select/sounds/select'));
+        results.push(Paths.sound('ui/character-select/sounds/static'));
+        results.push(Paths.sound('ui/character-select/sounds/unlock'));
         results.push(Paths.sound('ui/main-menu/cancel-menu'));
 
       case MUSIC:
         results.push(Paths.music('ui/character-select/stay-funky').audio());
-        results.push(Paths.sound('ui/character-select/sounds/static'));
+
       case TEXT:
         results.push(Paths.txt('ui/character-select/interface/icon-bop/info'));
 
