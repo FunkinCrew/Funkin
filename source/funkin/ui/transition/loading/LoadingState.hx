@@ -291,7 +291,9 @@ class LoadingState extends MusicBeatSubState
     #if FEATURE_STREAMED_AUDIO
     var soundsToLoad:Array<AssetPath> = params.assetQuery == null ? [] : params.assetQuery(SOUND).filter(item -> !musicQuery.contains(item));
     #else
-    var soundsToLoad:Array<AssetPath> = params.assetQuery == null ? [] : params.assetQuery(SOUND).appendUnique(musicQuery);
+    var soundsToLoad:Array<AssetPath> = params.assetQuery == null ? [] : params.assetQuery(SOUND);
+
+    soundsToLoad.appendUnique(musicQuery);
     #end
     trace('[LOADING] Got list of ${soundsToLoad.length} total sounds.');
     if (soundsToLoad.length == 0)
