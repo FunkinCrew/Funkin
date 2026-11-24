@@ -682,6 +682,10 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
     if (active != null) removeFromChain(active);
   }
 
+  public function renameSelection():Void
+  {
+  }
+
   /**
    * Add a copy of an event to the chain, at the chain's time.
    */
@@ -1228,6 +1232,8 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
     var easeType:String = SongEventHelper.resolveEaseTypeFromKey(easeStr ?? SongEvent.DEFAULT_EASE);
     var easeDir:String = easeDirStr ?? SongEventHelper.resolveEaseDirFromKey(easeStr);
 
+    setDurationVisible(easeType != 'CLASSIC' && easeType != 'INSTANT');
+
     var easeKey:String = '$easeType$easeDir';
     if (easeKey == _lastEaseKey) return;
     _lastEaseKey = easeKey;
@@ -1325,6 +1331,13 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
     var easeDirField:Component = toolboxEventsDataBox.findComponent('containereaseDir');
 
     if (easeDirField != null && easeDirField.hidden == visible) easeDirField.hidden = !visible;
+  }
+
+  function setDurationVisible(visible:Bool):Void
+  {
+    var durationField:Component = toolboxEventsDataBox.findComponent('containerduration');
+
+    if (durationField != null && durationField.hidden == visible) durationField.hidden = !visible;
   }
 
   /**

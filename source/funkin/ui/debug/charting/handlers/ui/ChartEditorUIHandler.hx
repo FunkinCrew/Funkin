@@ -326,6 +326,14 @@ class ChartEditorUIHandler
     };
     state.playbarZoom.onRightClick = _ -> state.zoomLevelIndex--;
 
+    state.playbarSpeed.onClick = _ ->
+    {
+      if (FlxG.keys.pressed.SHIFT) state.setPlaybackSpeed(1.0);
+      else
+        state.changePlaybackSpeed(0.1);
+    };
+    state.playbarSpeed.onRightClick = _ -> state.changePlaybackSpeed(-0.1);
+
     state.playbarBPM.onClick = _ ->
     {
       if (state.pressingControl())

@@ -474,6 +474,8 @@ class ChartEditorTimingToolbox extends ChartEditorBaseToolbox implements ChartEd
     removeTimeChange(selectedIndex);
   }
 
+  public function renameSelection():Void {}
+
   public static function build(chartEditorState:ChartEditorState):ChartEditorTimingToolbox
   {
     return new ChartEditorTimingToolbox(chartEditorState);

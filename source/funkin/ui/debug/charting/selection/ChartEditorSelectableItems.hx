@@ -324,6 +324,8 @@ class ChartEditorSelectableItems<T> implements ChartEditorSelectable implements 
   public function deleteSelection():Void
   {
   }
+
+  public function renameSelection():Void {}
 }
 
 typedef SelectableDrag<T> =

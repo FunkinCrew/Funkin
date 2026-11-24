@@ -11,6 +11,8 @@ import funkin.ui.debug.charting.toolboxes.ChartEditorEventDataToolbox;
 import funkin.ui.debug.charting.selection.ChartEditorSelectable;
 import funkin.data.event.SongEventRegistry;
 import funkin.data.event.SongEventSchema;
+import funkin.play.event.SongEvent;
+import funkin.play.event.SongEventHelper;
 import haxe.ui.containers.menus.MenuCheckBox;
 
 using Lambda;
@@ -143,6 +145,16 @@ class ChartEditorGridInteractionHandler
   }
 
   /**
+   * Instant and classic eases ignore the duration, so there's no length to show.
+   */
+  static function usesDuration(event:SongEventData):Bool
+  {
+    var ease:Null<String> = event.value?.ease;
+    var easeType:String = SongEventHelper.resolveEaseTypeFromKey(ease ?? SongEvent.DEFAULT_EASE);
+    return easeType != 'CLASSIC' && easeType != 'INSTANT';
+  }
+
+  /**
    * Show how long the event being edited lasts, in beats, as a bar and label to the right of the grid.
    */
   public static function handleEventDurationBar(state:ChartEditorState):Void
@@ -163,7 +175,7 @@ class ChartEditorGridInteractionHandler
         }
       }
     }
-    var steps:Float = (event != null) ? (event.getFloat('duration') ?? 0) : 0;
+    var steps:Float = (event != null && usesDuration(event)) ? (event.getFloat('duration') ?? 0) : 0;
     if (event == null || steps <= 0 || state.gridTiledSprite == null)
     {
       bar.visible = false;

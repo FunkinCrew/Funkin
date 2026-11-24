@@ -682,6 +682,11 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
     confirmRemoveDifficulty(chartEditorState.selectedVariation, chartEditorState.selectedDifficulty);
   }
 
+  public function renameSelection():Void
+  {
+    startEditing('${chartEditorState.selectedVariation}:${chartEditorState.selectedDifficulty}');
+  }
+
   function confirm(message:String, title:String, action:Void->Void):Void
   {
     Dialogs.messageBox(message, title, MessageBoxType.TYPE_YESNO, true, function(button:DialogButton)

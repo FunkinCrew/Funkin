@@ -556,6 +556,8 @@ class ChartEditorKeybindHandler
     // Typing in a text field, such as a rename.
     if (state.isHaxeUIFocused) return;
 
+    if (FlxG.keys.justPressed.F2) target.renameSelection();
+
     if (state.pressingControl() && FlxG.keys.justPressed.C) target.copySelection();
     if (state.pressingControl() && FlxG.keys.justPressed.V) target.pasteSelection();
 

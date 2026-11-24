@@ -192,6 +192,7 @@ class ChartEditorPlaybackHandler
     state.audioVocalTrackGroup.pitch = rate;
     var rateDisplay:Float = Std.int(rate * 100) / 100; // Round to 2 decimal places.
     state.menubarLabelPlaybackSpeed.text = 'Playback Speed - ${rateDisplay}x';
+    if (state.playbarSpeed != null) state.playbarSpeed.text = 'Speed: ${rateDisplay}x';
   }
 
   /**

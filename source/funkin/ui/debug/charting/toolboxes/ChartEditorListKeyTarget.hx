@@ -19,5 +19,10 @@ interface ChartEditorListKeyTarget
   public function copySelection():Void;
   public function pasteSelection():Void;
   public function deleteSelection():Void;
+
+  /**
+   * Start renaming the selected item, for lists whose items have names.
+   */
+  public function renameSelection():Void;
 }
 #end
