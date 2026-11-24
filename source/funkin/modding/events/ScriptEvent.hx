@@ -301,11 +301,12 @@ class HoldNoteScriptEvent extends NoteScriptEvent
     score:Float,
     isComboBreak:Bool,
     comboCount:Int = 0,
-    cancelable:Bool = false):Void
+    hitDiff:Float = 0):Void
   {
     super(type, null, healthChange, comboCount, true);
     this.holdNote = holdNote;
     this.score = score;
+    this.hitDiff = hitDiff;
     this.isComboBreak = isComboBreak;
   }
 
