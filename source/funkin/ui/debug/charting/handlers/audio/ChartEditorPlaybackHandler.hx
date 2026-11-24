@@ -34,6 +34,7 @@ class ChartEditorPlaybackHandler
   {
     state.welcomeMusic.loadAudio(Paths.music('ui/editors/chart-editor/artistic-expression').audio().toFlxSoundAsset());
     FlxG.sound.list.add(state.welcomeMusic);
+    FlxG.sound.defaultSoundGroup.add(state.welcomeMusic);
     state.welcomeMusic.looped = true;
   }
 

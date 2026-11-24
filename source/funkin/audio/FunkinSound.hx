@@ -100,7 +100,6 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   public function clone():FunkinSound
   {
     var sound:FunkinSound = new FunkinSound();
-    FlxG.sound.list.add(sound);
 
     // Clone the sound by creating one with the same data buffer.
     // Reusing the `Sound` object directly causes issues with playback.
@@ -113,6 +112,13 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     // Oh yeah, the waveform data is the same too!
     @:privateAccess
     sound._waveformData = this._waveformData;
+
+    // Make sure to add the sound to the list.
+    // If it's already in, it won't get re-added.
+    // If it's not in the list (it gets removed by FunkinSound.playMusic()),
+    // it will get re-added (then if this was called by playMusic(), removed again)
+    FlxG.sound.list.add(sound);
+    FlxG.sound.defaultSoundGroup.add(sound);
 
     return sound;
   }
@@ -182,11 +188,13 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     }
 
     var soundPath:Sound = stream ? funkin.assets.Assets.getMusic(assetPath) : funkin.assets.Assets.getSound(assetPath);
+
     sound.loadAudio(soundPath, stream, looped, autoDestroy, params?.onComplete);
 
-    sound._label = '${assetPath.toString()}';
+    sound._label = assetPath.toString();
 
     sound.volume = volume;
+
     sound.persist = persist;
 
     // Make sure to add the sound to the list.
@@ -251,8 +259,15 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     {
       // Backwards compatibility for `FunkinSound.load(openfl.media.Sound)`
       var sound:FunkinSound = new FunkinSound();
-      FlxG.sound.list.add(sound);
+
       sound.loadAudio(embeddedSound, false, looped, autoDestroy, onComplete);
+
+      // Make sure to add the sound to the list.
+      // If it's already in, it won't get re-added.
+      // If it's not in the list (it gets removed by FunkinSound.playMusic()),
+      // it will get re-added (then if this was called by playMusic(), removed again)
+      FlxG.sound.list.add(sound);
+      FlxG.sound.defaultSoundGroup.add(sound);
 
       return sound;
     }
@@ -466,7 +481,6 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     {
       // Once the partial sound is loaded, create a FunkinSound that contains its sound data.
       var sound:FunkinSound = new FunkinSound();
-      FlxG.sound.list.add(sound);
 
       // Load the sound.
       // Sets `exists = true` as a side effect.

@@ -625,15 +625,21 @@ class CharacterSelectState extends MusicBeatSubState
 
     selectSound.loadAudio(Paths.sound('ui/character-select/sounds/select').toFlxSoundAsset());
     selectSound.volume = 0.7;
+
     FlxG.sound.list.add(selectSound);
+    FlxG.sound.defaultSoundGroup.add(unlockSound);
 
     unlockSound.loadAudio(Paths.sound('ui/character-select/sounds/unlock').toFlxSoundAsset());
     unlockSound.volume = 0.7;
+
     FlxG.sound.list.add(unlockSound);
+    FlxG.sound.defaultSoundGroup.add(unlockSound);
 
     lockedSound.loadAudio(Paths.sound('ui/character-select/sounds/locked').toFlxSoundAsset());
     lockedSound.volume = 0.7;
+
     FlxG.sound.list.add(lockedSound);
+    FlxG.sound.defaultSoundGroup.add(lockedSound);
 
     // Pre-caching the menu music for later.
     // FlxG.sound.cache(Paths.sound('ui/character-select/stay-funky/stay-funky').toFlxSoundAsset());
@@ -707,6 +713,7 @@ class CharacterSelectState extends MusicBeatSubState
     introSound.volume = 0;
 
     FlxG.sound.list.add(introSound);
+    FlxG.sound.defaultSoundGroup.add(introSound);
 
     openSubState(new IntroSubState());
 
