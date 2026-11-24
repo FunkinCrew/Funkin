@@ -115,7 +115,7 @@ class CreditsState extends MusicBeatState
     add(creditsGroup);
 
     // Music
-    FunkinSound.playMusicTrack(Paths.music('ui/freeplay/freeplay-random/freeplay-random'), {
+    FunkinSound.playMusicTrack(Paths.music('ui/freeplay/freeplay-random'), {
       volume: 0.0,
       overrideExisting: true,
       forceRestart: true,
