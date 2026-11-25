@@ -538,7 +538,7 @@ class StageEditorState extends UIState
     Save.instance.stageEditorHasBackup.value = false;
 
     Cursor.show();
-    FunkinSound.playMusicTrack(Paths.music('ui/editors/chart-editor/artistic-expression/artistic-expression'), {
+    FunkinSound.playMusicTrack(Paths.music('ui/editors/chart-editor/artistic-expression'), {
       volume: 0.0
     });
     FlxG.sound.music.fadeIn(10, 0, 1);
