@@ -489,7 +489,7 @@ class Transition
 
   static function createCustomLoadingState(className:String, target:TransitionTarget, params:TransitionParams):LoadingState
   {
-    var loadingState:Null<LoadingState> = LoadingState.scriptInit(className, target, params);
+    var loadingState:Null<LoadingState> = LoadingState.scriptInit(className, FlxColor.BLACK, target, params);
     if (loadingState != null) return loadingState;
 
     trace('[TRANSITION] Failed to create scripted loading state "${className}". Falling back to the default loading screen.');
