@@ -488,7 +488,8 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
       var kindText:Null<String> = toolboxEventsEventKind.selectedItem?.text;
       if (kindText != null) quietly(toolboxEventsEventKind, () -> toolboxEventsEventKind.text = kindText);
     }
-    toolboxEventsEventKind.tooltip = mixedKinds ? 'The selected events are different kinds, changing this sets all of them' : null;
+    var kindTooltip:Null<String> = mixedKinds ? 'The selected events are different kinds, changing this sets all of them' : null;
+    if (toolboxEventsEventKind.tooltip != kindTooltip) toolboxEventsEventKind.tooltip = kindTooltip;
 
     for (component in hiddenUnsharedFields)
     {
@@ -522,7 +523,8 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
         var first:String = haxe.Json.stringify(Reflect.field(targets[0].valueAsStruct(), field.name) ?? field.defaultValue);
         mixed = targets.exists(event -> haxe.Json.stringify(Reflect.field(event.valueAsStruct(), field.name) ?? field.defaultValue) != first);
       }
-      container.tooltip = mixed ? 'The selected events have different values, changing this sets all of them' : null;
+      var newTooltip:Null<String> = mixed ? 'The selected events have different values, changing this sets all of them' : null;
+      if (container.tooltip != newTooltip) container.tooltip = newTooltip;
       if (mixed) showMixed(input);
       else
         clearMixed(input);
@@ -743,7 +745,6 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
   }
 
   var fitScrollHeightsPending:Bool = false;
-
   var chainRows:Array<
     {row:HBox, event:Null<SongEventData>}> = [];
   var hoveredChainRow:Null<HBox> = null;
