@@ -349,8 +349,7 @@ class ChartEditorCursorHandler
         {
           // We released the mouse. Select the notes in the box.
           var cursorFractionalStepStart:Float = ChartEditorTimeScale.pixelsToStep(cursorYStart);
-          var cursorStepStart:Int = Math.floor(cursorFractionalStepStart);
-          var cursorMsStart:Float = Conductor.instance.getStepTimeInMs(cursorStepStart);
+          var cursorMsStart:Float = Conductor.instance.getStepTimeInMs(cursorFractionalStepStart);
           var cursorColumnBase:Int = Math.floor(cursorX / ChartEditorState.GRID_SIZE);
           var cursorColumnBaseStart:Int = Math.floor(cursorXStart / ChartEditorState.GRID_SIZE);
 

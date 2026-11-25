@@ -171,7 +171,7 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
     if (difficultyInputScrollSpeed.value != speed) difficultyInputScrollSpeed.value = speed;
     difficultyLabelScrollSpeed.text = 'Scroll speed: ${Math.round(speed * 100) / 100}x';
     var rating:Int = chartEditorState.currentSongChartDifficultyRating;
-    if (difficultyInputRating.value != rating) difficultyInputRating.value = rating;
+    ChartEditorBaseToolbox.setStepperValue(difficultyInputRating, rating);
     refreshingDetails = false;
 
     updateInfo(chartEditorState.selectedVariation, chartEditorState.selectedDifficulty);

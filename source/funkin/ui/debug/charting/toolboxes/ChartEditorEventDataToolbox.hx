@@ -443,7 +443,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
 
     refreshingBeat = true;
     var beat:Float = Math.round(Conductor.instance.getTimeInSteps(chainEvents[0].time) / Constants.STEPS_PER_BEAT * 1000) / 1000;
-    if (toolboxEventsChainBeat.value != beat) toolboxEventsChainBeat.value = beat;
+    ChartEditorBaseToolbox.setStepperValue(toolboxEventsChainBeat, beat);
     refreshingBeat = false;
 
     refreshChainList();

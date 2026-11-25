@@ -84,34 +84,13 @@ class ChartEditorKeybindHandler
       shouldSnap = true;
     }
 
-    // Up Arrow = Scroll Up
-    if (state.upKeyHandler.activated && state.currentLiveInputStyle != WASDKeys)
+    // Up/Down Arrow or W/S = Move to the next snap line
+    var keyDirection:Int = 0; // -1 for earlier in the song, 1 for later.
+    if (state.currentLiveInputStyle != WASDKeys)
     {
-      scrollAmount = -ChartEditorTimeScale.currentStepPixels() * 4 * screenDirection;
-      shouldPause = true;
-      shouldSnap = true;
-    }
-    // Down Arrow = Scroll Down
-    if (state.downKeyHandler.activated && state.currentLiveInputStyle != WASDKeys)
-    {
-      scrollAmount = ChartEditorTimeScale.currentStepPixels() * 4 * screenDirection;
-      shouldPause = true;
-      shouldSnap = true;
-    }
-
-    // W = Scroll Up (doesn't work with Ctrl+Scroll)
-    if (state.wKeyHandler.activated && state.currentLiveInputStyle != WASDKeys && !state.pressingControl())
-    {
-      scrollAmount = -ChartEditorTimeScale.currentStepPixels() * 4 * screenDirection;
-      shouldPause = true;
-      shouldSnap = true;
-    }
-    // S = Scroll Down (doesn't work with Ctrl+Scroll)
-    if (state.sKeyHandler.activated && state.currentLiveInputStyle != WASDKeys && !state.pressingControl())
-    {
-      scrollAmount = ChartEditorTimeScale.currentStepPixels() * 4 * screenDirection;
-      shouldPause = true;
-      shouldSnap = true;
+      if (state.upKeyHandler.activated || (state.wKeyHandler.activated && !state.pressingControl())) keyDirection = -1;
+      if (state.downKeyHandler.activated || (state.sKeyHandler.activated && !state.pressingControl())) keyDirection = 1;
+      keyDirection *= Std.int(screenDirection);
     }
 
     // GAMEPAD LEFT STICK UP = Scroll Up by 1 note snap
@@ -236,20 +215,41 @@ class ChartEditorKeybindHandler
       shouldPause = true;
     }
 
+    if (keyDirection != 0)
+    {
+      var playheadAbsolute:Float = (state.currentScrollEase ?? state.scrollPositionInPixels) + state.playheadPositionInPixels;
+      var targetPixels:Float = playheadAbsolute;
+      // SHIFT + Arrow = Move two at once
+      for (_ in 0...(FlxG.keys.pressed.SHIFT ? 2 : 1))
+      {
+        targetPixels = state.pressingControl() ? state.nextSnapPixels(
+          targetPixels,
+          keyDirection,
+          Constants.STEPS_PER_BEAT,
+          false
+        ) : state.nextSnapPixels(targetPixels, keyDirection);
+      }
+      // ALT + Arrow = Move the playhead instead of the view
+      if (FlxG.keys.pressed.ALT) playheadAmount = targetPixels - playheadAbsolute;
+      else
+        scrollAmount = targetPixels - playheadAbsolute;
+      shouldPause = true;
+    }
+
     // SHIFT + Scroll = Scroll Fast
     // GAMEPAD LEFT STICK CLICK + Scroll = Scroll Fast
-    if (FlxG.keys.pressed.SHIFT || (FlxG.gamepads.firstActive?.pressed?.LEFT_STICK_CLICK ?? false))
+    if (keyDirection == 0 && (FlxG.keys.pressed.SHIFT || (FlxG.gamepads.firstActive?.pressed?.LEFT_STICK_CLICK ?? false)))
     {
       scrollAmount *= 2;
     }
     // CONTROL + Scroll = Scroll Precise
-    if (state.pressingControl())
+    if (keyDirection == 0 && state.pressingControl())
     {
       scrollAmount /= 4;
     }
 
     // Alt + Drag = Scroll but move the playhead the same amount.
-    if (FlxG.keys.pressed.ALT)
+    if (keyDirection == 0 && FlxG.keys.pressed.ALT)
     {
       playheadAmount = scrollAmount;
       scrollAmount = 0;
@@ -321,6 +321,25 @@ class ChartEditorKeybindHandler
     var playheadStep:Float = ChartEditorTimeScale.pixelsToStep(playheadAbsolute);
     var snappedStep:Float = state.snapToSubBeat(playheadStep, targetSteps * state.noteSnapRatio);
     state.currentScrollEase += ChartEditorTimeScale.stepToPixels(snappedStep) - playheadAbsolute;
+  }
+
+  /**
+   * Find the next snap line from a position.
+   * @param fromPixels The absolute position of the playhead in the song, in pixels.
+   * @param direction 1 to move later in the song, -1 to move earlier.
+   * @param snapSteps The distance between lines, in steps. Defaults to the current note snap.
+   * @param stopAtSubBeats Whether to stop at any sub-beat on the way.
+   * @return The absolute position to land on, in pixels.
+   */
+  public static function nextSnapPixels(state:ChartEditorState, fromPixels:Float, direction:Int, ?snapSteps:Float, stopAtSubBeats:Bool = true):Float
+  {
+    var snap:Float = snapSteps ?? state.noteSnapRatio;
+    var fromStep:Float = ChartEditorTimeScale.pixelsToStep(fromPixels);
+    var targetStep:Float = (direction > 0 ? Math.ffloor(fromStep / snap + 0.0001) + 1 : Math.fceil(fromStep / snap - 0.0001) - 1) * snap;
+    targetStep = Math.max(0, targetStep);
+
+    if (stopAtSubBeats) targetStep = state.firstSubBeatStepBetween(fromStep, targetStep) ?? targetStep;
+    return ChartEditorTimeScale.stepToPixels(targetStep);
   }
 
   /**

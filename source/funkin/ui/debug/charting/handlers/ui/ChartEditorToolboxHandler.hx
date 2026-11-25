@@ -273,6 +273,8 @@ class ChartEditorToolboxHandler
         toolbox = buildToolboxMetadataLayout(state);
       case ChartEditorState.CHART_EDITOR_TOOLBOX_TIMING_LAYOUT:
         toolbox = ChartEditorTimingToolbox.build(state);
+        toolbox.minResizeWidth = 290;
+        toolbox.minResizeHeight = 280;
       case ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT:
         toolbox = buildToolboxPlayerPreviewLayout(state);
       case ChartEditorState.CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT:
@@ -686,6 +688,8 @@ class ChartEditorToolboxHandler
     var toolbox:ChartEditorBaseToolbox = ChartEditorDifficultyToolbox.build(state);
 
     if (toolbox == null) return null;
+    toolbox.minResizeWidth = 340;
+    toolbox.minResizeHeight = 260;
 
     return toolbox;
   }
@@ -695,6 +699,8 @@ class ChartEditorToolboxHandler
     var toolbox:ChartEditorBaseToolbox = ChartEditorMetadataToolbox.build(state);
 
     if (toolbox == null) return null;
+    toolbox.minResizeWidth = 320;
+    toolbox.minResizeHeight = 200;
 
     return toolbox;
   }
@@ -756,7 +762,8 @@ class ChartEditorToolboxHandler
 
     toggle.registerEvent(MouseEvent.MOUSE_DOWN, event -> event.cancel());
     toggle.registerEvent(MouseEvent.DBL_CLICK, event -> event.cancel());
-    toggle.onClick = function(_) {
+    toggle.onClick = function(_)
+    {
       var transparent:Bool = !toolbox.hasClass(PREVIEW_TRANSPARENT_CLASS);
       if (transparent)
       {

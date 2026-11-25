@@ -306,8 +306,8 @@ class ChartEditorTimingToolbox extends ChartEditorBaseToolbox implements ChartEd
 
     refreshing = true;
     timingToolboxDetails.text = selectedIndex == 0 ? 'Song start' : 'Time change at beat ${formatNumber(timeChange.beatTime)}';
-    if (timingInputBPM.value != timeChange.bpm) timingInputBPM.value = timeChange.bpm;
-    if (timingInputNumerator.value != timeChange.timeSignatureNum) timingInputNumerator.value = timeChange.timeSignatureNum;
+    ChartEditorBaseToolbox.setStepperValue(timingInputBPM, timeChange.bpm);
+    ChartEditorBaseToolbox.setStepperValue(timingInputNumerator, timeChange.timeSignatureNum);
     var denominatorIndex:Int = DENOMINATORS.indexOf(timeChange.timeSignatureDen);
     if (denominatorIndex >= 0 && timingInputDenominator.selectedIndex != denominatorIndex) timingInputDenominator.selectedIndex = denominatorIndex;
 
@@ -324,7 +324,7 @@ class ChartEditorTimingToolbox extends ChartEditorBaseToolbox implements ChartEd
       if (timingInputStart.step != BEAT_STEP) timingInputStart.step = BEAT_STEP;
       if (timingInputStart.min != min) timingInputStart.min = min;
       if (timingInputStart.max != max) timingInputStart.max = max;
-      if (timingInputStart.value != value) timingInputStart.value = value;
+      ChartEditorBaseToolbox.setStepperValue(timingInputStart, value);
     }
     refreshing = false;
   }

@@ -1,6 +1,7 @@
 package funkin.ui.debug.charting.toolboxes;
 
 #if FEATURE_CHART_EDITOR
+import haxe.ui.components.NumberStepper;
 import haxe.ui.containers.dialogs.CollapsibleDialog;
 
 /**
@@ -17,6 +18,15 @@ class ChartEditorBaseToolbox extends CollapsibleDialog
     super();
 
     this.chartEditorState = chartEditorState;
+  }
+
+  /**
+   * Sets the value of a NumberStepper without triggering its focus event.
+   */
+  static function setStepperValue(stepper:NumberStepper, value:Float):Void
+  {
+    if (stepper.focus) return;
+    if (stepper.value != value) stepper.value = value;
   }
 
   /**

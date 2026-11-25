@@ -267,7 +267,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
    */
   static function setStepper(stepper:NumberStepper, value:Float):Void
   {
-    if (stepper.value != value) stepper.value = value;
+    ChartEditorBaseToolbox.setStepperValue(stepper, value);
   }
 
   var lastCharSignature:Null<String> = null;
