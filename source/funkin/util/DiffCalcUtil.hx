@@ -14,7 +14,7 @@ import funkin.data.song.SongData.SongNoteData;
  * - % of the chart previewed
  * - Scroll speed
  *
- * Strain is calculated based on these factors, and the overall difficulty rating is derived from the total strain.
+ * Strain is calculated based on these factors.
  */
 class DiffCalcUtil
 {
@@ -36,17 +36,17 @@ class DiffCalcUtil
   /**
    * A gap at least this long, in milliseconds, is a rest.
    */
-  static final REST_MS:Float = 250.4555;
+  static final REST_MS:Float = 259.7316;
 
   /**
    * Extra strain for a hit that breaks the pattern.
    */
-  static final IRREGULAR_WEIGHT:Float = 1.3883;
+  static final IRREGULAR_WEIGHT:Float = 0.2616;
 
   /**
    * Extra strain per additional note in a chord.
    */
-  static final CHORD_WEIGHT:Float = 0.0106;
+  static final CHORD_WEIGHT:Float = 1.0342;
 
   /**
    * The hits per second where a chord counts fully.
@@ -56,17 +56,17 @@ class DiffCalcUtil
   /**
    * Extra strain for more notes in a chord.
    */
-  static final CHORD_FLAT_WEIGHT:Float = 1.6427;
+  static final CHORD_FLAT_WEIGHT:Float = 1.9934;
 
   /**
    * Strain from hitting the same lane again soon.
    */
-  static final JACK_WEIGHT:Float = 1.3778;
+  static final JACK_WEIGHT:Float = 2.1773;
 
   /**
    * How much strain is left after a second.
    */
-  static final DECAY_PER_SECOND:Float = 0.4915;
+  static final DECAY_PER_SECOND:Float = 0.4055;
 
   /**
    * The length of the stretches the strain is sampled over.
@@ -76,22 +76,22 @@ class DiffCalcUtil
   /**
    * How much each next hardest stretch counts compared to the one before, for the hardest parts of the song.
    */
-  static final SECTION_FALLOFF:Float = 0.8995;
+  static final SECTION_FALLOFF:Float = 0.93;
 
   /**
-   * The same, for the song as a whole, where almost every stretch counts.
+   * How long, in milliseconds, the strain has to be kept up for, for how hard the song is to keep going through.
    */
-  static final WHOLE_SONG_FALLOFF:Float = 0.9963;
+  static final HELD_MS:Float = 51000;
 
   /**
-   * How much the whole song counts toward the strain, the rest being its hardest parts.
+   * How much the strain kept up over `HELD_MS` counts toward the strain, the rest being the hardest parts.
    */
-  static final WHOLE_SONG_SHARE:Float = 0.4911;
+  static final HELD_SHARE:Float = 0.33;
 
   /**
    * Extra strain for a hit whose timing breaks the rhythm, instead of repeating one of the last few gaps.
    */
-  static final RHYTHM_WEIGHT:Float = 4.4438;
+  static final RHYTHM_WEIGHT:Float = 4.3354;
 
   /**
    * How close two gaps have to be, as a share of the gap, to count as the same rhythm.
@@ -106,27 +106,27 @@ class DiffCalcUtil
   /**
    * Extra strain for an anchor, where a lane comes back every other hit while the hits between it change.
    */
-  static final ANCHOR_WEIGHT:Float = 1.1507;
+  static final ANCHOR_WEIGHT:Float = 0.6212;
 
   /**
    * The hits per second where an anchor counts fully.
    */
-  static final ANCHOR_FULL_SPEED:Float = 10.875;
+  static final ANCHOR_FULL_SPEED:Float = 5.4131;
 
   /**
    * Extra strain from how fast the anchored lane itself is hit.
    */
-  static final ANCHOR_JACK_WEIGHT:Float = 0.1409;
+  static final ANCHOR_JACK_WEIGHT:Float = 0.0026;
 
   /**
    * How much an anchor counts as a pattern break.
    */
-  static final ANCHOR_BREAK:Float = 0.4056;
+  static final ANCHOR_BREAK:Float = 0.4526;
 
   /**
    * How much less strain a hit adds when the opponent already played it the same way.
    */
-  static final PREVIEW_DISCOUNT:Float = 0.2064;
+  static final PREVIEW_DISCOUNT:Float = 0.1871;
 
   /**
    * How many hits before each one have to match the opponent too.
@@ -153,13 +153,13 @@ class DiffCalcUtil
   /**
    * Scroll speeds above this make notes harder to read, and add to the rating.
    */
-  static final SCROLL_SPEED_START:Float = 2.4;
+  static final SCROLL_SPEED_START:Float = 2.8;
 
-  static final RATING_PER_SCROLL_SPEED:Float = 2.209;
+  static final RATING_PER_SCROLL_SPEED:Float = 3.5078;
   // The rating is a curve over the natural log of the strain, fitted to the base game's charts as rated by my own FUCKING HANDS.
-  static final RATING_SQUARED:Float = 1.2299;
-  static final RATING_LINEAR:Float = -8.1064;
-  static final RATING_CONSTANT:Float = 14.2862;
+  static final RATING_SQUARED:Float = 1.2132;
+  static final RATING_LINEAR:Float = -6.8031;
+  static final RATING_CONSTANT:Float = 10.3125;
 
   /**
    * Work out how much strain the player's notes in a chart add up to.
@@ -174,7 +174,29 @@ class DiffCalcUtil
 
     var values:Array<Float> = [for (section in sections) section.strain];
     values.sort((a, b) -> a > b ? -1 : (a < b ? 1 : 0));
-    return WHOLE_SONG_SHARE * falloffAverage(values, WHOLE_SONG_FALLOFF) + (1 - WHOLE_SONG_SHARE) * falloffAverage(values, SECTION_FALLOFF);
+    return HELD_SHARE * heldStrain(sections) + (1 - HELD_SHARE) * falloffAverage(values, SECTION_FALLOFF);
+  }
+
+  /**
+   * The highest average strain over any `HELD_MS` of the song, with stretches that have no hits counting as none.
+   * @param sections Half second stretches in time order, as `sectionStrains` gives them.
+   */
+  static function heldStrain(sections:Array<DiffCalcSection>):Float
+  {
+    var first:Int = Math.round(sections[0].time / SECTION_MS);
+    var dense:Array<Float> = [for (i in 0...(Math.round(sections[sections.length - 1].time / SECTION_MS) - first + 1)) 0];
+    for (section in sections) dense[Math.round(section.time / SECTION_MS) - first] = section.strain;
+
+    var window:Int = Std.int(Math.min(dense.length, Math.round(HELD_MS / SECTION_MS)));
+    var total:Float = 0;
+    for (i in 0...window) total += dense[i];
+    var best:Float = total;
+    for (i in window...dense.length)
+    {
+      total += dense[i] - dense[i - window];
+      if (total > best) best = total;
+    }
+    return best / window;
   }
 
   /**
