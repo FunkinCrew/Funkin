@@ -60,7 +60,14 @@ class OptionsState extends MusicBeatState
     persistentUpdate = true;
 
     #if FEATURE_LAG_ADJUSTMENT
-    drumsBG = FunkinSound.load(Paths.music('ui/input-offsets/drums-loop').audio().toFlxSoundAsset(), 0, true, false, false, false);
+    drumsBG = FunkinSound.loadSound(Paths.music('ui/input-offsets/drums-loop').audio(), {
+      volume: 0,
+      looped: true,
+      autoDestroy: false,
+      autoPlay: false,
+      persist: false,
+      stream: true
+    });
     #end
 
     var menuBG = new FlxSprite().loadGraphic(Paths.image('ui/main-menu/menu-bg').toFlxGraphicAsset());
@@ -123,11 +130,12 @@ class OptionsState extends MusicBeatState
     }
     FlxG.sound.music.fadeOut(0.5, 0, function(tw)
     {
-      FunkinSound.playMusic('ui/main-menu/freaky-menu/freaky-menu', {
-        startingVolume: 0,
+      FunkinSound.playMusicTrack(Paths.music('ui/main-menu/freaky-menu'), {
+        volume: 0,
         overrideExisting: true,
-        restartTrack: true,
-        persist: true
+        forceRestart: true,
+        persist: true,
+        stream: true
       });
       FlxG.sound.music.fadeIn(0.5, 1);
     });
@@ -212,7 +220,7 @@ class OptionsState extends MusicBeatState
       case IMAGE:
         results.appendUnique([Paths.image('ui/main-menu/menu-bg')]);
 
-      case SOUND:
+      case MUSIC:
         results.appendUnique([Paths.music('ui/main-menu/freaky-menu').audio()]);
 
         #if FEATURE_LAG_ADJUSTMENT
@@ -267,11 +275,12 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     {
       var switchToOffsets = function()
       {
-        FunkinSound.playMusic('ui/input-offsets/offsets-loop/offsets-loop', {
-          startingVolume: 0,
+        FunkinSound.playMusicTrack(Paths.music('ui/input-offsets/offsets-loop'), {
+          volume: 0,
           overrideExisting: true,
-          restartTrack: true,
-          loop: true
+          forceRestart: true,
+          looped: true,
+          stream: true
         });
         OptionsState.instance.drumsBG.play(true);
         FlxG.sound.music.fadeIn(1, 1);

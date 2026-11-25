@@ -473,11 +473,11 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       if (calibrating) Preferences.globalOffset = savedOffset;
       #if !FEATURE_TOUCH_CONTROLS
       // mobile would play this twice
-      if (!destroying) FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu'));
+      if (!destroying) FunkinSound.playSoundOnce(funkin.assets.Paths.sound('ui/main-menu/cancel-menu'));
       #end
     }
     else
-      FunkinSound.playOnce(Paths.sound('ui/main-menu/confirm-menu'));
+      FunkinSound.playSoundOnce(funkin.assets.Paths.sound('ui/main-menu/confirm-menu'));
     offsetItem.currentValue = Preferences.globalOffset;
 
     final drums:Null<FunkinSound> = OptionsState.instance?.drumsBG;

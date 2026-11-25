@@ -404,12 +404,17 @@ class PauseSubState extends MusicBeatSubState
    */
   function startPauseMusic():Void
   {
-    var pauseMusicPath:String = Paths.music('ui/pause/music/breakfast$musicSuffix/breakfast$musicSuffix');
-    pauseMusic = FunkinSound.load(pauseMusicPath, 0, true, true);
+    var pauseMusicPath:funkin.assets.Paths.AssetPath = funkin.assets.Paths.music('ui/pause/music/breakfast$musicSuffix').audio();
+    pauseMusic = FunkinSound.loadSound(pauseMusicPath, {
+      volume: 0,
+      looped: true,
+      autoDestroy: true,
+      stream: true
+    });
 
     if (pauseMusic == null)
     {
-      FlxG.log.warn('Could not play pause music: ${pauseMusicPath} does not exist!');
+      FlxG.log.warn('Could not play pause music: ${pauseMusicPath.toString()} does not exist!');
     }
 
     // Start playing at a random point in the song.
@@ -898,7 +903,9 @@ class PauseSubState extends MusicBeatSubState
       if (currentEntry >= currentMenuEntries.length) currentEntry = 0;
     }
 
-    if (currentEntry != prevEntry) FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
+    if (currentEntry != prevEntry) FunkinSound.playSoundOnce(funkin.assets.Paths.sound('ui/main-menu/scroll-menu'), {
+      volume: 0.4
+    });
 
     for (entryIndex in 0...currentMenuEntries.length)
     {

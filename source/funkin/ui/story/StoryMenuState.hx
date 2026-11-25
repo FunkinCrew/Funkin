@@ -308,11 +308,12 @@ class StoryMenuState extends MusicBeatState
 
   function playMenuMusic():Void
   {
-    FunkinSound.playMusic('ui/main-menu/freaky-menu/freaky-menu', {
+    FunkinSound.playMusicTrack(funkin.assets.Paths.music('ui/main-menu/freaky-menu'), {
       overrideExisting: true,
-      restartTrack: false,
+      forceRestart: false,
       // Continue playing this music between states, until a different music track gets played.
-      persist: true
+      persist: true,
+      stream: true
     });
   }
 
@@ -560,7 +561,9 @@ class StoryMenuState extends MusicBeatState
       }
     }
 
-    if (currentIndex != prevIndex) FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu').toFlxSoundAsset(), 0.4);
+    if (currentIndex != prevIndex) FunkinSound.playSoundOnce(Paths.sound('ui/main-menu/scroll-menu'), {
+      volume: 0.4
+    });
 
     repositionTitles();
     updateText();
@@ -603,7 +606,9 @@ class StoryMenuState extends MusicBeatState
     if (hasChanged)
     {
       buildDifficultySprite();
-      FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu').toFlxSoundAsset(), 0.4);
+      FunkinSound.playSoundOnce(Paths.sound('ui/main-menu/scroll-menu'), {
+        volume: 0.4
+      });
       // Disable the funny music thing for now.
       // funnyMusicThing();
     }
@@ -634,7 +639,7 @@ class StoryMenuState extends MusicBeatState
   {
     if (!(currentLevel?.isUnlocked() ?? false))
     {
-      FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu').toFlxSoundAsset());
+      FunkinSound.playSoundOnce(Paths.sound('ui/main-menu/cancel-menu'));
       return;
     }
 
@@ -642,7 +647,7 @@ class StoryMenuState extends MusicBeatState
 
     selectedLevel = true;
 
-    FunkinSound.playOnce(Paths.sound('ui/main-menu/confirm-menu').toFlxSoundAsset());
+    FunkinSound.playSoundOnce(Paths.sound('ui/main-menu/confirm-menu'));
 
     if (currentLevelTitle != null)
     {
@@ -815,7 +820,7 @@ class StoryMenuState extends MusicBeatState
       assetQuery: MainMenuState.queryAssets,
       transition: BlackScreen(Fade(North), Fade(South)),
     });
-    FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu').toFlxSoundAsset());
+    FunkinSound.playSoundOnce(Paths.sound('ui/main-menu/cancel-menu'));
   }
 
   /**

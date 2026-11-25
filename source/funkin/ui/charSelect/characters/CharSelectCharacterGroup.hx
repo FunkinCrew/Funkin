@@ -89,8 +89,7 @@ class CharSelectCharacterGroup extends FunkinGroup<CharSelectCharacter>
     staticSound = new FunkinSound();
     var loadedSound:Null<FunkinSound> = FunkinSound.loadSound(Paths.sound('ui/character-select/sounds/static'), {
       volume: 0.6,
-      looped: true,
-      stream: true
+      looped: true
     });
     if (loadedSound != null) staticSound = loadedSound;
   }

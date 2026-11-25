@@ -558,7 +558,9 @@ class Assets implements ConsoleClass
    */
   public static function getMusic(assetPath:AssetPath):openfl.media.Sound
   {
-    TracyMacro.addText(assetPath);
+    #if FEATURE_DEBUG_TRACY
+    cpp.vm.tracy.TracyProfiler.zoneScoped('Assets.getSound(${assetPath.toString()})');
+    #end
     if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.sound()?';
 
     if (!assetPath.exists())

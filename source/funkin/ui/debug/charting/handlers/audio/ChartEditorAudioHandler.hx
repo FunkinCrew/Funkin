@@ -357,9 +357,12 @@ class ChartEditorAudioHandler
       trace('WARN: Failed to play sound $path, asset not found.');
       return;
     }
-    var snd:Null<FunkinSound> = FunkinSound.load(asset);
+    var snd:Null<FunkinSound> = new FunkinSound();
+    snd.loadAudio(path);
     if (snd == null) return;
     snd.autoDestroy = true;
+    FlxG.sound.list.add(snd);
+    FlxG.sound.defaultSoundGroup.add(snd);
     snd.play(true);
     snd.volume = volume;
   }

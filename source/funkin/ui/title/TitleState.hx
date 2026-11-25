@@ -289,12 +289,13 @@ class TitleState extends MusicBeatState
   {
     var shouldFadeIn:Bool = (FlxG.sound.music == null);
     // Load music. Includes logic to handle BPM changes.
-    FunkinSound.playMusic('ui/main-menu/freaky-menu/freaky-menu', {
-      startingVolume: 0.0,
+    FunkinSound.playMusicTrack(funkin.assets.Paths.music('ui/main-menu/freaky-menu'), {
+      volume: 0.0,
       overrideExisting: true,
-      restartTrack: false,
+      forceRestart: false,
       // Continue playing this music between states, until a different music track gets played.
-      persist: true
+      persist: true,
+      stream: true
     });
     // Fade from 0.0 to 1 over 4 seconds
     if (shouldFadeIn) FlxG.sound.music.fadeIn(4.0, 0.0, 1.0);

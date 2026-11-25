@@ -382,11 +382,12 @@ class MainMenuState extends MusicBeatState
 
   function playMenuMusic():Void
   {
-    FunkinSound.playMusic('ui/main-menu/freaky-menu/freaky-menu', {
+    FunkinSound.playMusicTrack(funkin.assets.Paths.music('ui/main-menu/freaky-menu'), {
       overrideExisting: true,
-      restartTrack: false,
+      forceRestart: false,
       // Continue playing this music between states, until a different music track gets played.
-      persist: true
+      persist: true,
+      stream: true
     });
   }
 
@@ -694,7 +695,7 @@ class MainMenuState extends MusicBeatState
   {
     uiStateMachine.transition(Exiting);
     rememberedSelectedIndex = menuItems?.selectedIndex ?? 0;
-    FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu').toString());
+    FunkinSound.playSoundOnce(Paths.sound('ui/main-menu/cancel-menu'));
 
     funkin.ui.transition.Transition.switchState(() -> new TitleState(), {
       assetQuery: TitleState.queryAssets,
@@ -746,7 +747,7 @@ class MainMenuState extends MusicBeatState
           results.appendUnique([Paths.xml('ui/main-menu/items/$item')]);
         }
 
-      case SOUND:
+      case MUSIC:
         results.appendUnique([Paths.music('ui/main-menu/freaky-menu').audio()]);
 
       default:

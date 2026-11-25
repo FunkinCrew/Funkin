@@ -824,9 +824,10 @@ class PlayState extends MusicBeatSubState
 
       switch (type)
       {
-        case SOUND:
+        case MUSIC:
           // Cache all pause music variants, including character-specific musicSuffix variants.
           results.append(Assets.listInPath('ui/pause/music', SOUND));
+        case SOUND:
           results.push(Paths.sound('gameplay/general/sounds/miss-note-1'));
           results.push(Paths.sound('gameplay/general/sounds/miss-note-2'));
           results.push(Paths.sound('gameplay/general/sounds/miss-note-3'));
