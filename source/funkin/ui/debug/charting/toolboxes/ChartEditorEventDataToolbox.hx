@@ -8,6 +8,7 @@ import funkin.data.animation.AnimationData;
 import funkin.data.character.CharacterRegistry;
 import funkin.data.event.SongEventRegistry;
 import funkin.data.event.SongEventSchema;
+import funkin.data.event.SongEventSchema.SongEventSchemaField;
 import funkin.util.Constants;
 import funkin.data.stage.StageData.StageDataProp;
 import funkin.data.stage.StageRegistry;
@@ -17,6 +18,7 @@ import funkin.ui.haxeui.components.CustomEventParamsList;
 import funkin.play.event.SongEvent;
 import funkin.play.event.SongEventHelper;
 import funkin.play.stage.Stage;
+import funkin.ui.debug.charting.commands.events.EditEventsCommand;
 import funkin.ui.debug.charting.commands.selection.SetItemSelectionCommand;
 import funkin.ui.debug.charting.handlers.ui.ChartEditorContextMenuHandler;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
@@ -113,6 +115,11 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
    * The event in the chain the form edits.
    */
   var chainActive:Null<SongEventData> = null;
+
+  /**
+   * Events in the chain that are hovered over, which get highlighted in the list and the chart.
+   */
+  var chainPicked:Array<SongEventData> = [];
 
   static final CHAIN_ROW_STYLE:String = 'padding: 4px; padding-left: 8px; background-opacity: 0;';
   static final CHAIN_ACTIVE_STYLE:String = 'background-color: #3C8DF0; background-opacity: 0.45;';
@@ -241,11 +248,14 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
         'Modified Events',
         'Switching ${chartEditorState.currentEventSelection.length} events to "${chartEditorState.eventKindToPlace}"'
       );
-      for (event in editTargets())
+      var targets:Array<SongEventData> = editTargets();
+      var before = EditEventsCommand.snapshot(targets);
+      for (event in targets)
       {
         event.eventKind = chartEditorState.eventKindToPlace;
-        event.value = chartEditorState.eventDataToPlace;
+        event.value = Reflect.copy(chartEditorState.eventDataToPlace);
       }
+      EditEventsCommand.push(chartEditorState, targets, before, 'eventKind');
       refreshChainList();
       chartEditorState.saveDataDirty = true;
       chartEditorState.noteDisplayDirty = true;
@@ -342,6 +352,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
 
     shouldTriggerOnEventKindChanged = true;
     updateEasePreview();
+    refreshMixedFields();
     fitScrollHeights();
   }
 
@@ -410,8 +421,186 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
   function editTargets():Array<SongEventData>
   {
     var active:Null<SongEventData> = chainActive;
-    if (chainEvents.length > 0 && active != null) return [active];
+    if (chainEvents.length > 0 && active != null)
+    {
+      var picked:Array<SongEventData> = chainPicked.filter(event -> chainEvents.contains(event));
+      return picked.length > 1 ? picked : [active];
+    }
     return chartEditorState.currentEventSelection;
+  }
+
+  function editTargetsField(name:String, value:Null<Dynamic>):Void
+  {
+    var all:Array<SongEventData> = editTargets();
+    var targets:Array<SongEventData> = all.length == 1 ? all : all.filter(event -> eventHasField(event, name));
+    var before = EditEventsCommand.snapshot(targets);
+    for (songEvent in targets)
+    {
+      var data:haxe.DynamicAccess<Dynamic>;
+      if (all.length == 1)
+      {
+        songEvent.eventKind = chartEditorState.eventKindToPlace;
+        data = Reflect.copy(chartEditorState.eventDataToPlace);
+      }
+      else
+      {
+        data = Reflect.copy(songEvent.valueAsStruct()) ?? {};
+        if (value == null) data.remove(name);
+        else
+          data.set(name, value);
+      }
+
+      if (name == CustomSongEvent.PARAMS_FIELD && value != null) data.set(name, CustomSongEvent.copyParams(value));
+      songEvent.value = data;
+    }
+    EditEventsCommand.push(chartEditorState, targets, before, name);
+  }
+
+  function eventHasField(event:SongEventData, name:String):Bool
+  {
+    var field:Null<SongEventSchemaField> = SongEventRegistry.getEventSchema(chartEditorState.eventKindToPlace)?.getByName(name);
+    if (field == null) return event.eventKind == chartEditorState.eventKindToPlace;
+    var other:Null<SongEventSchemaField> = event.getSchema()?.getByName(name);
+    return other != null && other.type == field.type;
+  }
+
+  /**
+   * What fields show when the events being edited have different values for them.
+   */
+  static inline var MIXED_TEXT:String = '---';
+
+  var hiddenUnsharedFields:Array<Component> = [];
+
+  function refreshMixedFields():Void
+  {
+    var schema:Null<SongEventSchema> = SongEventRegistry.getEventSchema(chartEditorState.eventKindToPlace);
+    if (schema == null) return;
+    var targets:Array<SongEventData> = editTargets();
+    var multiple:Bool = targets.length > 1;
+
+    var newTitle:String = multiple ? 'Events (${targets.length}x Events)' : 'Events';
+    if (this.title != newTitle) this.title = newTitle;
+
+    var mixedKinds:Bool = multiple && targets.exists(event -> event.eventKind != chartEditorState.eventKindToPlace);
+    if (mixedKinds) quietly(toolboxEventsEventKind, () -> toolboxEventsEventKind.text = MIXED_TEXT);
+    if (!mixedKinds && toolboxEventsEventKind.text == MIXED_TEXT)
+    {
+      var kindText:Null<String> = toolboxEventsEventKind.selectedItem?.text;
+      if (kindText != null) quietly(toolboxEventsEventKind, () -> toolboxEventsEventKind.text = kindText);
+    }
+    toolboxEventsEventKind.tooltip = mixedKinds ? 'The selected events are different kinds, changing this sets all of them' : null;
+
+    for (component in hiddenUnsharedFields)
+    {
+      component.hidden = false;
+    }
+    hiddenUnsharedFields = [];
+
+    @:privateAccess
+    for (field in schema.listAllFields(cast schema))
+    {
+      if (field == null || field.type == FRAME) continue;
+      var container:Null<Component> = toolboxEventsDataBox.findComponent('container${field.name}');
+      var input:Null<Component> = toolboxEventsDataBox.findComponent(field.name);
+      if (container == null || input == null) continue;
+
+      var shared:Bool = !multiple || targets.foreach(event -> eventHasField(event, field.name));
+      if (!shared)
+      {
+        if (!container.hidden)
+        {
+          container.hidden = true;
+          hiddenUnsharedFields.push(container);
+        }
+        continue;
+      }
+
+      var mixed:Bool = false;
+      if (multiple)
+      {
+        // The value is a plain struct, so read it with Reflect rather than DynamicAccess.get.
+        var first:String = haxe.Json.stringify(Reflect.field(targets[0].valueAsStruct(), field.name) ?? field.defaultValue);
+        mixed = targets.exists(event -> haxe.Json.stringify(Reflect.field(event.valueAsStruct(), field.name) ?? field.defaultValue) != first);
+      }
+      container.tooltip = mixed ? 'The selected events have different values, changing this sets all of them' : null;
+      if (mixed) showMixed(input);
+      else
+        clearMixed(input);
+    }
+  }
+
+  function showMixed(input:Component):Void
+  {
+    if (Std.isOfType(input, NumberStepper))
+    {
+      // Let the stepper finish showing its new value first, or it would replace the placeholder afterwards.
+      quietly(input, () -> {
+      });
+      var inner:Null<TextField> = input.findComponent('value', TextField);
+      if (inner != null) quietly(inner, () -> inner.text = MIXED_TEXT);
+    }
+    else if (Std.isOfType(input, DropDown))
+    {
+      var dropDown:DropDown = cast input;
+      quietly(dropDown, () -> dropDown.selectedIndex = -1);
+      quietly(dropDown, () -> dropDown.text = MIXED_TEXT);
+    }
+    else if (Std.isOfType(input, CheckBox))
+    {
+      var checkBox:CheckBox = cast input;
+      quietly(checkBox, () ->
+      {
+        checkBox.selected = false;
+        checkBox.text = MIXED_TEXT;
+      });
+    }
+    else if (Std.isOfType(input, TextField))
+    {
+      var textField:TextField = cast input;
+      quietly(textField, () -> textField.text = '');
+      textField.placeholder = MIXED_TEXT;
+    }
+  }
+
+  function clearMixed(input:Component):Void
+  {
+    if (Std.isOfType(input, NumberStepper))
+    {
+      var stepper:NumberStepper = cast input;
+      var inner:Null<TextField> = stepper.findComponent('value', TextField);
+      if (inner != null && inner.text == MIXED_TEXT)
+      {
+        var text:String = haxe.ui.util.StringUtil.padDecimal(stepper.value, stepper.precision);
+        quietly(inner, () -> inner.text = text);
+      }
+    }
+    else if (Std.isOfType(input, DropDown))
+    {
+      var dropDown:DropDown = cast input;
+      var text:Null<String> = dropDown.selectedItem?.text;
+      if (dropDown.text == MIXED_TEXT && text != null) quietly(dropDown, () -> dropDown.text = text);
+    }
+    else if (Std.isOfType(input, CheckBox))
+    {
+      var checkBox:CheckBox = cast input;
+      if (checkBox.text == MIXED_TEXT) quietly(checkBox, () -> checkBox.text = '');
+    }
+    else if (Std.isOfType(input, TextField))
+    {
+      cast(input, TextField).placeholder = null;
+    }
+  }
+
+  /**
+   * Change a field without its change event going through.
+   */
+  function quietly(component:Component, apply:Void->Void):Void
+  {
+    component.pauseEvent(UIEvent.CHANGE, true);
+    apply();
+    // Apply any change waiting on HaxeUI's next validation now, so it can't overwrite this later.
+    component.syncComponentValidation(false);
+    component.resumeEvent(UIEvent.CHANGE, true, true);
   }
 
   /**
@@ -424,7 +613,14 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
     {
       chainEvents = [];
       chainActive = null;
+      chainPicked = [];
       toolboxEventsChainBox.hidden = true;
+      // Several events at different times: show the first one, and edits go to all of them.
+      if (chartEditorState.currentNoteSelection.length == 0 && selection.length > 1)
+      {
+        chartEditorState.eventKindToPlace = selection[0].eventKind;
+        chartEditorState.eventDataToPlace = Reflect.copy(selection[0].valueAsStruct()) ?? {};
+      }
       return;
     }
 
@@ -437,6 +633,8 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
       chainActive = chainEvents[Std.int(Math.min(chainActiveIndex, chainEvents.length - 1))];
     }
     chainActiveIndex = chainEvents.indexOf(chainActive);
+    chainPicked = chainPicked.filter(event -> chainEvents.contains(event));
+    if (!chainPicked.contains(chainActive)) chainPicked = [chainActive];
     loadActiveIntoForm();
     toolboxEventsChainBox.hidden = false;
     toolboxEventsChainTitle.text = chainEvents.length > 1 ? 'EVENT CHAIN (${chainEvents.length} EVENTS)' : 'EVENT';
@@ -488,12 +686,15 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
       row.onClick = _ ->
       {
         chartEditorState.listKeyTarget = this;
-        pickChainEvent(event);
+        if (chartEditorState.pressingControl()) toggleChainPick(event);
+        else if (FlxG.keys.pressed.SHIFT) pickChainRange(event);
+        else
+          pickChainEvent(event);
       };
       row.onRightClick = _ ->
       {
         chartEditorState.listKeyTarget = this;
-        pickChainEvent(event);
+        if (!chainPicked.contains(event)) pickChainEvent(event);
         openChainMenu(event);
       };
       toolboxEventsChainList.addComponent(row);
@@ -567,7 +768,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
       var entry = chainRows[i];
       var event:Null<SongEventData> = i < chainEvents.length ? chainEvents[i] : null;
       var style:String = CHAIN_ROW_STYLE;
-      if (event != null && sameEvent(event, chainActive)) style += CHAIN_ACTIVE_STYLE;
+      if (event != null && (sameEvent(event, chainActive) || chainPicked.contains(event))) style += CHAIN_ACTIVE_STYLE;
       else if (entry.row == hoveredChainRow) style += CHAIN_HOVER_STYLE;
       if (entry.row.styleString != style) entry.row.styleString = style;
     }
@@ -597,10 +798,43 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
 
   function pickChainEvent(event:SongEventData):Void
   {
-    if (sameEvent(chainActive, event)) return;
+    if (sameEvent(chainActive, event) && chainPicked.length <= 1) return;
     chainActive = event;
     chainActiveIndex = chainEvents.indexOf(event);
+    chainPicked = [event];
     loadActiveIntoForm();
+    refresh();
+  }
+
+  /**
+   * Ctrl click: add an event to the picked ones, or take it out.
+   */
+  function toggleChainPick(event:SongEventData):Void
+  {
+    if (chainPicked.contains(event))
+    {
+      if (chainPicked.length <= 1) return;
+      chainPicked.remove(event);
+      if (sameEvent(chainActive, event)) chainActive = chainPicked[0];
+    }
+    else
+    {
+      chainPicked.push(event);
+      chainActive = event;
+    }
+    chainActiveIndex = chainEvents.indexOf(chainActive);
+    loadActiveIntoForm();
+    refresh();
+  }
+
+  function pickChainRange(event:SongEventData):Void
+  {
+    var from:Int = chainEvents.indexOf(chainActive);
+    var to:Int = chainEvents.indexOf(event);
+    if (from == -1 || to == -1) return pickChainEvent(event);
+    var low:Int = Std.int(Math.min(from, to));
+    var high:Int = Std.int(Math.max(from, to));
+    chainPicked = [for (i in low...(high + 1)) chainEvents[i]];
     refresh();
   }
 
@@ -624,7 +858,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
     remove.text = 'Remove';
     remove.onClick = _ ->
     {
-      removeFromChain(event);
+      deleteSelection();
     };
     menu.addComponent(remove);
 
@@ -685,8 +919,24 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
 
   public function deleteSelection():Void
   {
-    var active:Null<SongEventData> = chainActive;
-    if (active != null) removeFromChain(active);
+    var picked:Array<SongEventData> = editTargets();
+    if (picked.length > 1) removeManyFromChain(picked);
+    else
+    {
+      var active:Null<SongEventData> = chainActive;
+      if (active != null) removeFromChain(active);
+    }
+  }
+
+  function removeManyFromChain(events:Array<SongEventData>):Void
+  {
+    var remaining:Array<SongEventData> = [for (other in chainEvents) if (other != null && !events.contains(other)) other];
+    chartEditorState.performCommand(new funkin.ui.debug.charting.commands.events.RemoveEventsCommand(events));
+    chartEditorState.currentEventSelection = remaining;
+    chainActive = remaining.length > 0 ? remaining[0] : null;
+    chainPicked = chainActive != null ? [chainActive] : [];
+    if (chainActive != null) loadActiveIntoForm();
+    refresh();
   }
 
   public function renameSelection():Void
@@ -780,16 +1030,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
     {
       chartEditorState.eventDataToPlace.set(CustomSongEvent.PARAMS_FIELD, params);
       if (_initializing || chartEditorState.currentEventSelection.length == 0) return;
-      for (songEvent in editTargets())
-      {
-        songEvent.eventKind = chartEditorState.eventKindToPlace;
-        var value:haxe.DynamicAccess<Dynamic> = Reflect.copy(chartEditorState.eventDataToPlace);
-        value.set(CustomSongEvent.PARAMS_FIELD, CustomSongEvent.copyParams(params));
-        songEvent.value = value;
-      }
-      chartEditorState.saveDataDirty = true;
-      chartEditorState.noteDisplayDirty = true;
-      chartEditorState.noteTooltipsDirty = true;
+      editTargetsField(CustomSongEvent.PARAMS_FIELD, params);
     };
     target.addComponent(list);
     customEventParams = list;
@@ -1151,16 +1392,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
         // Edit the event data of any existing events.
         if (!_initializing && chartEditorState.currentEventSelection.length > 0)
         {
-          // chartEditorState.success('Modified Events', 'Edited ${chartEditorState.currentEventSelection.length} selected events')
-          for (songEvent in editTargets())
-          {
-            songEvent.eventKind = chartEditorState.eventKindToPlace;
-            songEvent.value = Reflect.copy(chartEditorState.eventDataToPlace);
-          }
-          chartEditorState.saveDataDirty = true;
-          chartEditorState.noteDisplayDirty = true;
-          chartEditorState.notePreviewDirty = true;
-          chartEditorState.noteTooltipsDirty = true;
+          editTargetsField(event.target.id, value);
         }
         updateEasePreview();
       }

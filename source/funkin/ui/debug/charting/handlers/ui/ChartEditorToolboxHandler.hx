@@ -488,6 +488,10 @@ class ChartEditorToolboxHandler
         ChartEditorLiveInputStyle.NumberKeys;
       case 2:
         ChartEditorLiveInputStyle.WASDKeys;
+      case 3:
+        ChartEditorLiveInputStyle.NumberKeysCondensed;
+      case 4:
+        ChartEditorLiveInputStyle.WASDKeysCondensed;
       default:
         ChartEditorLiveInputStyle.None;
     };
@@ -653,6 +657,10 @@ class ChartEditorToolboxHandler
         1;
       case ChartEditorLiveInputStyle.WASDKeys:
         2;
+      case ChartEditorLiveInputStyle.NumberKeysCondensed:
+        3;
+      case ChartEditorLiveInputStyle.WASDKeysCondensed:
+        4;
       default:
         0;
     };

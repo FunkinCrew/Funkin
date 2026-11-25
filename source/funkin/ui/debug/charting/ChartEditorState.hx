@@ -357,8 +357,15 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       LEFT, DOWN, UP, RIGHT,
          A,    S,  W,     D
     ],
+    NumberKeysCondensed => [ONE, TWO, THREE, FOUR],
+    WASDKeysCondensed => [A, S, W, D],
     None => []
   ];
+
+  /**
+   * Live input styles where Shift moves the keys to the opponent's side.
+   */
+  public static final LIVE_INPUT_CONDENSED:Array<ChartEditorLiveInputStyle> = [NumberKeysCondensed, WASDKeysCondensed];
 
   /**
    * INSTANCE DATA
@@ -1334,6 +1341,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * As the user moves down, we will update this note's sustain length, and finalize the note when they release.
    */
   var currentLiveInputPlaceNoteData:Array<SongNoteData> = [];
+
+  var currentLiveInputHeldColumns:Array<Null<Int>> = [];
 
   /**
    * Defines how "close" two notes must be to be considered stacked, based on steps.
@@ -4350,6 +4359,16 @@ enum abstract ChartEditorLiveInputStyle(String)
    * WASD to place notes on opponent's side, Arrow keys to place notes on player's side.
    */
   public var WASDKeys;
+
+  /**
+   * 1/2/3/4 to place notes on player's side, Shift+1/2/3/4 to place notes on opponent's side.
+   */
+  public var NumberKeysCondensed;
+
+  /**
+   * WASD to place notes on player's side, Shift+WASD to place notes on opponent's side.
+   */
+  public var WASDKeysCondensed;
 }
 
 /**

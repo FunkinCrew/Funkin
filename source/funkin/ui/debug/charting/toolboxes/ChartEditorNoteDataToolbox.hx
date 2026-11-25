@@ -183,6 +183,10 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
   {
     super.refresh();
 
+    var noteCount:Int = chartEditorState.currentNoteSelection.length;
+    var newTitle:String = noteCount > 1 ? 'Notes (${noteCount}x Notes)' : 'Notes';
+    if (this.title != newTitle) this.title = newTitle;
+
     // Picking notes changes the kind new notes get, so their params have to match it.
     var placeKind:String = chartEditorState.noteKindToPlace ?? '';
     if (chartEditorState.noteParamsToPlace.length != NoteKindManager

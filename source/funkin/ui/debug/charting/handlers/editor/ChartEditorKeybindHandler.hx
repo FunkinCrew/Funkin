@@ -1,6 +1,7 @@
 package funkin.ui.debug.charting.handlers.editor;
 
 #if FEATURE_CHART_EDITOR
+import flixel.input.keyboard.FlxKey;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import funkin.assets.ValidatedPaths as Paths;
@@ -84,14 +85,13 @@ class ChartEditorKeybindHandler
       shouldSnap = true;
     }
 
-    // Up/Down Arrow or W/S = Move to the next snap line
+    // Up/Down Arrow or W/S = Move to the next snap line, unless live input uses the key.
     var keyDirection:Int = 0; // -1 for earlier in the song, 1 for later.
-    if (state.currentLiveInputStyle != WASDKeys)
-    {
-      if (state.upKeyHandler.activated || (state.wKeyHandler.activated && !state.pressingControl())) keyDirection = -1;
-      if (state.downKeyHandler.activated || (state.sKeyHandler.activated && !state.pressingControl())) keyDirection = 1;
-      keyDirection *= Std.int(screenDirection);
-    }
+    if (state.upKeyHandler.activated && !liveInputUses(state, UP)) keyDirection = -1;
+    if (state.wKeyHandler.activated && !liveInputUses(state, W) && !state.pressingControl()) keyDirection = -1;
+    if (state.downKeyHandler.activated && !liveInputUses(state, DOWN)) keyDirection = 1;
+    if (state.sKeyHandler.activated && !liveInputUses(state, S) && !state.pressingControl()) keyDirection = 1;
+    keyDirection *= Std.int(screenDirection);
 
     // GAMEPAD LEFT STICK UP = Scroll Up by 1 note snap
     if (state.leftStickUpGamepadHandler.activated)
@@ -366,7 +366,7 @@ class ChartEditorKeybindHandler
    */
   public static function handleSnap(state:ChartEditorState):Void
   {
-    if (state.currentLiveInputStyle != WASDKeys)
+    if (!liveInputUses(state, LEFT))
     {
       // Shift + Left/Right changes the playback speed instead.
       if (FlxG.keys.justPressed.LEFT && !state.pressingControl() && !FlxG.keys.pressed.SHIFT)
@@ -394,13 +394,31 @@ class ChartEditorKeybindHandler
     }
   }
 
+  /**
+   * Whether the current live input style places notes with this key, so other keybinds should leave it alone.
+   */
+  static function liveInputUses(state:ChartEditorState, key:FlxKey):Bool
+  {
+    return ChartEditorState.LIVE_INPUT_KEYS[state.currentLiveInputStyle]?.contains(key) ?? false;
+  }
+
   public static function handlePlayhead(state:ChartEditorState):Void
   {
     // Place notes at the playhead with the keyboard.
-    for (note => key in ChartEditorState.LIVE_INPUT_KEYS[state.currentLiveInputStyle])
+    var condensed:Bool = ChartEditorState.LIVE_INPUT_CONDENSED.contains(state.currentLiveInputStyle);
+    for (index => key in ChartEditorState.LIVE_INPUT_KEYS[state.currentLiveInputStyle])
     {
-      if (FlxG.keys.checkStatus(key, JUST_PRESSED)) state.placeNoteAtPlayhead(note)
-      else if (FlxG.keys.checkStatus(key, JUST_RELEASED)) state.finishPlaceNoteAtPlayhead(note);
+      if (FlxG.keys.checkStatus(key, JUST_PRESSED))
+      {
+        var column:Int = (condensed && FlxG.keys.pressed.SHIFT) ? index + ChartEditorState.STRUMLINE_SIZE : index;
+        if (condensed) state.currentLiveInputHeldColumns[index] = column;
+        state.placeNoteAtPlayhead(column, !condensed);
+      }
+      else if (FlxG.keys.checkStatus(key, JUST_RELEASED))
+      {
+        var column:Int = condensed ? (state.currentLiveInputHeldColumns[index] ?? index) : index;
+        state.finishPlaceNoteAtPlayhead(column);
+      }
     }
 
     // Place events at playhead.
@@ -410,10 +428,13 @@ class ChartEditorKeybindHandler
     state.updatePlayheadGhostHoldNotes();
   }
 
-  public static function placeNoteAtPlayhead(state:ChartEditorState, column:Int):Void
+  /**
+   * @param shift Removes Whether holding Shift removes notes instead of placing them. Off for condensed live input, where Shift picks the side.
+   */
+  public static function placeNoteAtPlayhead(state:ChartEditorState, column:Int, shiftRemoves:Bool = true):Void
   {
     // SHIFT + press or LEFT_SHOULDER + press to remove notes instead of placing them.
-    var removeNoteInstead:Bool = FlxG.keys.pressed.SHIFT || (FlxG.gamepads.firstActive?.pressed?.LEFT_SHOULDER ?? false);
+    var removeNoteInstead:Bool = (shiftRemoves && FlxG.keys.pressed.SHIFT) || (FlxG.gamepads.firstActive?.pressed?.LEFT_SHOULDER ?? false);
 
     var playheadFractionalStep:Float = ChartEditorTimeScale.pixelsToStep(state.scrollPositionInPixels + state.playheadPositionInPixels);
     // Notes are centered on their line, so the nearest snap is the one the playhead is over.
@@ -849,7 +870,7 @@ class ChartEditorKeybindHandler
    */
   public static function handleViewKeybinds(state:ChartEditorState):Void
   {
-    if (state.currentLiveInputStyle != WASDKeys)
+    if (!liveInputUses(state, LEFT))
     {
       if (state.pressingControl() && FlxG.keys.justPressed.LEFT)
       {
@@ -970,7 +991,7 @@ class ChartEditorKeybindHandler
       state.menubarItemMutePlayerVocals.selected = state.playerVocalsMuted;
     }
     // Same as the Audio -> Mute Opponent Vocals toggle.
-    if (!state.isHaxeUIFocused && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.D && !state.pressingControl())
+    if (!state.isHaxeUIFocused && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.D && !state.pressingControl() && !liveInputUses(state, D))
     {
       state.opponentVocalsMuted = !state.opponentVocalsMuted;
       state.menubarItemMuteOpponentVocals.selected = state.opponentVocalsMuted;

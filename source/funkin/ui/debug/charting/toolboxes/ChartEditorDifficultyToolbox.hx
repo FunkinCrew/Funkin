@@ -79,6 +79,11 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
   var editingKey:Null<String> = null;
 
   /**
+   * Whether the new difficulty being named is unlisted.
+   */
+  var editingUnlisted:Bool = false;
+
+  /**
    * Closes the open text field, if there is one. Pass `true` to keep what was typed.
    */
   var closeActiveField:Null<Bool->Void> = null;
@@ -238,7 +243,7 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
         difficultyToolboxRows.addComponent(buildUnlistedRow(variation, difficulty));
       }
 
-      if (editingKey == '$variation:') difficultyToolboxRows.addComponent(buildNameField(variation, null));
+      if (editingKey == '$variation:') difficultyToolboxRows.addComponent(buildNameField(variation, null, editingUnlisted));
       else
         difficultyToolboxRows.addComponent(buildAddRow('+ Add difficulty', ROW_STYLE, () -> startEditing('$variation:')));
     }
@@ -376,13 +381,13 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
    * A text field in place of a row.
    * @param difficulty The difficulty being renamed, or `null` to add a new one.
    */
-  function buildNameField(variation:String, difficulty:Null<String>):HBox
+  function buildNameField(variation:String, difficulty:Null<String>, unlisted:Bool = false):HBox
   {
     var row:HBox = makeRow(ROW_STYLE, false);
     var field:TextField = new TextField();
     field.percentWidth = 100;
     field.text = difficulty ?? '';
-    field.placeholder = 'Difficulty name';
+    field.placeholder = unlisted ? 'Unlisted difficulty name' : 'Difficulty name';
     row.addComponent(field);
 
     var done:Bool = false;
@@ -394,7 +399,7 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
       Screen.instance.unregisterEvent(MouseEvent.MOUSE_DOWN, onScreenMouseDown);
       closeActiveField = null;
       if (FocusManager.instance.focus == field) FocusManager.instance.focus = null;
-      if (confirm) submitName(variation, difficulty, field.text ?? '');
+      if (confirm) submitName(variation, difficulty, field.text ?? '', unlisted);
     }
     function finish(confirm:Bool):Void
     {
@@ -463,14 +468,15 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
     hoveredRow = target;
   }
 
-  function startEditing(key:String):Void
+  function startEditing(key:String, unlisted:Bool = false):Void
   {
     if (closeActiveField != null) closeActiveField(true);
     editingKey = key;
+    editingUnlisted = unlisted;
     rebuildList();
   }
 
-  function submitName(variation:String, difficulty:Null<String>, text:String):Void
+  function submitName(variation:String, difficulty:Null<String>, text:String, unlisted:Bool = false):Void
   {
     var id:Null<String> = ChartEditorDifficultyHandler.sanitizeDifficultyId(text);
     if (id == null || id == difficulty) return;
@@ -485,9 +491,9 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
     if (difficulty == null)
     {
       var speed:Float = chartEditorState.currentSongChartScrollSpeed;
-      chartEditorState.performDifficultyChange('Add Difficulty', function()
+      chartEditorState.performDifficultyChange(unlisted ? 'Add Unlisted Difficulty' : 'Add Difficulty', function()
       {
-        chartEditorState.createDifficulty(variation, id, speed);
+        chartEditorState.createDifficulty(variation, id, speed, !unlisted);
         // Switched to here instead of with a command, so undo takes both back in one step.
         chartEditorState.selectedVariation = variation;
         chartEditorState.selectedDifficulty = id;
@@ -552,6 +558,21 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
       menu.addComponent(moveMenu);
     }
 
+    // Keeps the chart, but the game hides difficulties that aren't in the list.
+    var unlistItem:MenuItem = addMenuItem(menu, 'Make Unlisted', () ->
+    {
+      chartEditorState.performDifficultyChange('Unlist Difficulty', function()
+      {
+        var metadata:Null<SongMetadata> = chartEditorState.songMetadata.get(variation);
+        if (metadata == null || metadata.playData.difficulties.length <= 1) return false;
+        if (!metadata.playData.difficulties.remove(difficulty)) return false;
+        chartEditorState.markDifficultiesChanged();
+        return true;
+      });
+      updateTree();
+    });
+    unlistItem.disabled = (chartEditorState.songMetadata.get(variation)?.playData.difficulties.length ?? 0) <= 1;
+
     menu.addComponent(new MenuSeparator());
     var deleteItem:MenuItem = addMenuItem(menu, 'Delete', () -> confirmRemoveDifficulty(variation, difficulty));
     deleteItem.disabled = isLastDifficulty(variation);
@@ -562,6 +583,7 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox implements Cha
   {
     var menu:Menu = makeMenu();
     addMenuItem(menu, 'Add Difficulty', () -> startEditing('$variation:'));
+    addMenuItem(menu, 'Add Unlisted Difficulty', () -> startEditing('$variation:', true));
     menu.addComponent(new MenuSeparator());
     addMenuItem(menu, 'Save Metadata File', () -> saveMetadata(variation));
     addMenuItem(menu, 'Save Chart File', () -> saveChart(variation));

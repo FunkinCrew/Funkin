@@ -26,12 +26,15 @@ class ChartEditorDifficultyHandler
     return command.changed;
   }
 
-  public static function createDifficulty(state:ChartEditorState, variation:String, difficulty:String, scrollSpeed:Float = 1.0):Void
+  /**
+   * @param listed Whether to add the difficulty to the metadata's list.
+   */
+  public static function createDifficulty(state:ChartEditorState, variation:String, difficulty:String, scrollSpeed:Float = 1.0, listed:Bool = true):Void
   {
     var variationMetadata:Null<SongMetadata> = state.songMetadata.get(variation);
     if (variationMetadata == null) return;
 
-    variationMetadata.playData.difficulties.pushUnique(difficulty);
+    if (listed) variationMetadata.playData.difficulties.pushUnique(difficulty);
 
     var resultChartData = state.songChartData.get(variation);
     if (resultChartData == null)
