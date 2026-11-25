@@ -554,6 +554,13 @@ class ChartEditorNoteDisplayHandler
 
       state.noteTooltipsDirty = false;
 
+      state.renderedSelectionSquares.sort(function(order:Int, a:ChartEditorSelectionSquareSprite, b:ChartEditorSelectionSquareSprite):Int
+      {
+        var aError:Int = (a != null && a.isError) ? 1 : 0;
+        var bError:Int = (b != null && b.isError) ? 1 : 0;
+        return aError - bError;
+      });
+
       // Sort the notes DESCENDING. This keeps the sustain behind the associated note.
       if (state.notesNeedSort || state.isDragPreviewing() || state.dragTargetCurrentColumn != 0)
       {

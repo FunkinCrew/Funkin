@@ -142,6 +142,21 @@ class SongNoteDataUtils
   }
 
   /**
+   * Return a new array without these exact notes.
+   *
+   * @param notes The array of notes to remove from.
+   * @param toRemove The notes to remove.
+   * @return The filtered array of notes.
+   */
+  public static function removeExactNotes(notes:Array<SongNoteData>, toRemove:Array<SongNoteData>):Array<SongNoteData>
+  {
+    if (notes.length == 0 || toRemove.length == 0) return notes;
+    var removing:haxe.ds.ObjectMap<SongNoteData, Bool> = new haxe.ds.ObjectMap();
+    for (note in toRemove) removing.set(note, true);
+    return notes.filter(note -> !removing.exists(note));
+  }
+
+  /**
    * @param noteA First note.
    * @param noteB Second note.
    * @param threshold The note stack threshold, in steps.

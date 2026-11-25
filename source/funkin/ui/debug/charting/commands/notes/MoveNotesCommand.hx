@@ -16,7 +16,6 @@ class MoveNotesCommand implements ChartEditorCommand
 {
   var notes:Array<SongNoteData>;
   var movedNotes:Array<SongNoteData>;
-  var overwrittenNotes:Array<SongNoteData> = [];
   var offset:Float;
   var columns:Int;
   var setPos:Bool;
@@ -44,7 +43,7 @@ class MoveNotesCommand implements ChartEditorCommand
    */
   public function execute(state:ChartEditorState):Void
   {
-    state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, notes);
+    state.currentSongChartNoteData = SongNoteDataUtils.removeExactNotes(state.currentSongChartNoteData, notes);
 
     movedNotes = [];
 
@@ -68,8 +67,8 @@ class MoveNotesCommand implements ChartEditorCommand
       movedNotes.pushUnique(resultNote);
     }
 
-    overwrittenNotes = [];
-    state.currentSongChartNoteData = SongNoteDataUtils.concatOverwrite(state.currentSongChartNoteData, movedNotes, overwrittenNotes);
+    state.currentSongChartNoteData = state.currentSongChartNoteData.concat(movedNotes);
+    for (note in movedNotes) state.pendingMovedNotes.push(note);
     state.currentNoteSelection = movedNotes;
 
     state.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/note-place'));
@@ -88,8 +87,8 @@ class MoveNotesCommand implements ChartEditorCommand
    */
   public function undo(state:ChartEditorState):Void
   {
-    state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, movedNotes);
-    state.currentSongChartNoteData = state.currentSongChartNoteData.concat(notes).concat(overwrittenNotes);
+    state.currentSongChartNoteData = SongNoteDataUtils.removeExactNotes(state.currentSongChartNoteData, movedNotes);
+    state.currentSongChartNoteData = state.currentSongChartNoteData.concat(notes);
 
     state.currentNoteSelection = notes;
 

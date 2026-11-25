@@ -4,6 +4,7 @@ package funkin.ui.debug.charting.commands.items;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongDataUtils;
+import funkin.data.song.SongNoteDataUtils;
 import funkin.ui.debug.charting.commands.ChartEditorCommand;
 
 /**
@@ -31,7 +32,7 @@ class RemoveItemsCommand implements ChartEditorCommand
   {
     if ((notes.length + events.length) == 0) return;
 
-    state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, notes);
+    state.currentSongChartNoteData = SongNoteDataUtils.removeExactNotes(state.currentSongChartNoteData, notes);
     state.currentSongChartEventData = SongDataUtils.subtractEvents(state.currentSongChartEventData, events);
 
     state.currentNoteSelection = [];

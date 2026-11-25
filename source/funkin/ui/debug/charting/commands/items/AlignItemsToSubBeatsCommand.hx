@@ -16,7 +16,6 @@ class AlignItemsToSubBeatsCommand implements ChartEditorCommand
 {
   var notes:Array<SongNoteData>;
   var movedNotes:Array<SongNoteData> = [];
-  var overwrittenNotes:Array<SongNoteData> = [];
   var events:Array<SongEventData>;
   var movedEvents:Array<SongEventData> = [];
   var noteTimes:Array<Float>;
@@ -50,7 +49,7 @@ class AlignItemsToSubBeatsCommand implements ChartEditorCommand
 
   public function execute(state:ChartEditorState):Void
   {
-    state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, notes);
+    state.currentSongChartNoteData = SongNoteDataUtils.removeExactNotes(state.currentSongChartNoteData, notes);
     state.currentSongChartEventData = SongDataUtils.subtractEvents(state.currentSongChartEventData, events);
 
     var maxTime:Float = Conductor.instance.getStepTimeInMs(state.lastSnappedGridStep);
@@ -74,8 +73,8 @@ class AlignItemsToSubBeatsCommand implements ChartEditorCommand
       movedEvents.pushUnique(resultEvent);
     }
 
-    overwrittenNotes = [];
-    state.currentSongChartNoteData = SongNoteDataUtils.concatOverwrite(state.currentSongChartNoteData, movedNotes, overwrittenNotes);
+    state.currentSongChartNoteData = state.currentSongChartNoteData.concat(movedNotes);
+    for (note in movedNotes) state.pendingMovedNotes.push(note);
     state.currentSongChartEventData = state.currentSongChartEventData.concat(movedEvents);
     state.currentNoteSelection = movedNotes;
     state.currentEventSelection = movedEvents;
@@ -98,9 +97,9 @@ class AlignItemsToSubBeatsCommand implements ChartEditorCommand
 
   public function undo(state:ChartEditorState):Void
   {
-    state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, movedNotes);
+    state.currentSongChartNoteData = SongNoteDataUtils.removeExactNotes(state.currentSongChartNoteData, movedNotes);
     state.currentSongChartEventData = SongDataUtils.subtractEvents(state.currentSongChartEventData, movedEvents);
-    state.currentSongChartNoteData = state.currentSongChartNoteData.concat(notes).concat(overwrittenNotes);
+    state.currentSongChartNoteData = state.currentSongChartNoteData.concat(notes);
     state.currentSongChartEventData = state.currentSongChartEventData.concat(events);
 
     state.currentNoteSelection = notes;

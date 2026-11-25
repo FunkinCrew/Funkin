@@ -74,6 +74,7 @@ import funkin.ui.debug.charting.commands.notes.FlipNotesCommand;
 import funkin.ui.debug.charting.commands.notes.MirrorNotesCommand;
 import funkin.ui.debug.charting.commands.notes.MoveNotesCommand;
 import funkin.ui.debug.charting.commands.notes.RemoveNotesCommand;
+import funkin.ui.debug.charting.commands.notes.RemoveNotesUnderMovedCommand;
 import funkin.ui.debug.charting.commands.notes.RemoveStackedNotesCommand;
 import funkin.ui.debug.charting.commands.selection.DeselectAllItemsBetweenTimeCommand;
 import funkin.ui.debug.charting.commands.selection.DeselectAllItemsCommand;
@@ -1556,6 +1557,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var selectedNoteSet:haxe.ds.ObjectMap<SongNoteData, Bool> = new haxe.ds.ObjectMap();
   var selectedEventSet:haxe.ds.ObjectMap<SongEventData, Bool> = new haxe.ds.ObjectMap();
   var stackedNoteSet:haxe.ds.ObjectMap<SongNoteData, Bool> = new haxe.ds.ObjectMap();
+  var pendingMovedNotes:Array<SongNoteData> = [];
+  var pendingMovedCheckedSelection:Null<Array<SongNoteData>> = null;
+  var pendingMovedCheckedRevision:Int = -1;
   var displayedNoteSet:haxe.ds.ObjectMap<SongNoteData, Bool> = new haxe.ds.ObjectMap();
   var displayedEventSet:haxe.ds.ObjectMap<SongEventData, Bool> = new haxe.ds.ObjectMap();
   var displayedHoldNotes:haxe.ds.ObjectMap<SongNoteData, ChartEditorHoldNoteSprite> = new haxe.ds.ObjectMap();
@@ -3612,6 +3616,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     this.handleCursor();
     this.handleGridDoubleClicks();
     this.handleSelectables();
+    removeNotesUnderMoved();
 
     this.handleListKeybinds();
     this.handleUndoRedoKeybinds();
@@ -3646,6 +3651,38 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     #end
 
     handlePostUpdate();
+  }
+
+  function removeNotesUnderMoved():Void
+  {
+    if (pendingMovedNotes.length == 0) return;
+    if (pendingMovedCheckedSelection == currentNoteSelection && pendingMovedCheckedRevision == chartRevision) return;
+    pendingMovedCheckedSelection = currentNoteSelection;
+    pendingMovedCheckedRevision = chartRevision;
+
+    var inChart:haxe.ds.ObjectMap<SongNoteData, Bool> = new haxe.ds.ObjectMap();
+    for (note in currentSongChartNoteData) inChart.set(note, true);
+    var selected:haxe.ds.ObjectMap<SongNoteData, Bool> = new haxe.ds.ObjectMap();
+    for (note in currentNoteSelection) selected.set(note, true);
+
+    pendingMovedNotes = pendingMovedNotes.filter(note -> inChart.exists(note));
+    var deselected:Array<SongNoteData> = pendingMovedNotes.filter(note -> !selected.exists(note));
+    if (deselected.length == 0) return;
+    pendingMovedNotes = pendingMovedNotes.filter(note -> selected.exists(note));
+
+    var movedSet:haxe.ds.ObjectMap<SongNoteData, Bool> = new haxe.ds.ObjectMap();
+    for (note in deselected) movedSet.set(note, true);
+    var others:Array<SongNoteData> = currentSongChartNoteData.filter(note -> !movedSet.exists(note));
+
+    // The moved notes are kept, otheres are removed if they are under the moved notes.
+    var kept:Array<SongNoteData> = deselected.copy();
+    var under:Array<SongNoteData> = [];
+    SongNoteDataUtils.concatOverwrite(others, kept, under, stackedNoteThreshold);
+    var removed:Array<SongNoteData> = under.concat(deselected.filter(note -> !kept.contains(note)));
+    removed = removed.filter(note -> !selected.exists(note));
+    if (removed.length == 0) return;
+
+    performCommand(new RemoveNotesUnderMovedCommand(deselected, removed));
   }
 
   /**
