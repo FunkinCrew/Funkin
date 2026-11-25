@@ -192,7 +192,7 @@ class ChartEditorGridInteractionHandler
     bar.visible = true;
     bar.setPosition(left, top);
     bar.offset.set(0, 0);
-    bar.scale.set(EVENT_DURATION_WIDTH, Math.max(1, bottom - top));
+    bar.scale.set(EVENT_DURATION_WIDTH / bar.frameWidth, Math.max(1, bottom - top) / bar.frameHeight);
 
     var beats:Float = Math.round(steps / Constants.STEPS_PER_BEAT * 100) / 100;
     var label:String = '$beats ${beats == 1 ? 'beat' : 'beats'}';
