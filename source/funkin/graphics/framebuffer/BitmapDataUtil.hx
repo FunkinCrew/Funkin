@@ -150,12 +150,22 @@ class BitmapDataUtil
   public static function toGPU(bitmap:BitmapData, disposeImage:Bool = true):BitmapData
   {
     #if cpp
-    // Can cause issues on web
-    if (disposeImage)
+    if (bitmap != null)
     {
-      bitmap.disposeImage();
+      // Can cause issues on web
+      if (disposeImage)
+      {
+        bitmap.disposeImage();
+      }
+      if (FlxG.stage != null) // something DEFINITELY went wrong here.
+        bitmap.getTexture(FlxG.stage.context3D);
+      else
+        trace(' WARNING '.warning() + "Tried to move a bitmapdata to gpu, but the Flixel stage is somehow null! this shouldn't happen!");
     }
-    bitmap.getTexture(FlxG.stage.context3D);
+    else
+    {
+      trace(' WARNING '.warning() + "Tried to move a null bitmapdata to gpu, this shouldn't happen!");
+    }
     #end
 
     return bitmap;
