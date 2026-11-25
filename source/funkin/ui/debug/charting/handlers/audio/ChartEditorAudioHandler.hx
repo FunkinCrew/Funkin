@@ -21,6 +21,7 @@ import haxe.io.Path;
 import funkin.util.Constants;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorWaveformFilter;
 import funkin.ui.debug.charting.ChartEditorState.WaveformFilterResult;
+import funkin.ui.debug.charting.ChartEditorState.WaveformLoadResult;
 import funkin.ui.debug.charting.handlers.editor.ChartEditorThemeHandler;
 
 /**
@@ -32,6 +33,11 @@ import funkin.ui.debug.charting.handlers.editor.ChartEditorThemeHandler;
 @:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorAudioHandler
 {
+  /**
+   * Whether to stream audio tracks instead of loading them fully into memory.
+   */
+  static final STREAM_TRACKS:Bool = #if FEATURE_STREAMED_AUDIO true #else false #end;
+
   /**
    * Loads and stores byte data for a vocal track from an absolute file path
    *
@@ -134,7 +140,7 @@ class ChartEditorAudioHandler
   {
     if (instId == '') instId = Constants.DEFAULT_VARIATION;
     var instTrackData:Null<Bytes> = state.audioInstTrackData.get(instId);
-    var instTrack:Null<FunkinSound> = SoundUtil.buildSoundFromBytes(instTrackData);
+    var instTrack:Null<FunkinSound> = SoundUtil.buildSoundFromBytes(instTrackData, STREAM_TRACKS);
     if (instTrack == null) return false;
 
     stopExistingInstrumental(state);
@@ -190,7 +196,7 @@ class ChartEditorAudioHandler
       var trackKey:String = '$trackBaseKey$trackKeySuffix';
       var vocalTrackData:Null<Bytes> = state.audioVocalTrackData.get(trackKey);
       if (vocalTrackData == null) return false;
-      var vocalTrack:Null<FunkinSound> = SoundUtil.buildSoundFromBytes(vocalTrackData); // maybe not the best idea
+      var vocalTrack:Null<FunkinSound> = SoundUtil.buildSoundFromBytes(vocalTrackData, STREAM_TRACKS);
       if (vocalTrack == null) return false;
       vocalTrack.destroy();
       vocalTrack = null;
@@ -212,16 +218,18 @@ class ChartEditorAudioHandler
 
     var vocalTracks:Array<FunkinSound> = [];
     var firstVocalTrackKey:Null<String> = null;
+    var firstVocalTrackBytes:Null<Bytes> = null;
 
     if (setUpLegacyVocals)
     {
       var vocalTrackData:Null<Bytes> = state.audioVocalTrackData.get('');
-      var vocalTrack:Null<FunkinSound> = SoundUtil.buildSoundFromBytes(vocalTrackData);
+      var vocalTrack:Null<FunkinSound> = SoundUtil.buildSoundFromBytes(vocalTrackData, STREAM_TRACKS);
 
       if (vocalTrack != null)
       {
         vocalTracks.push(vocalTrack);
         firstVocalTrackKey = '';
+        firstVocalTrackBytes = vocalTrackData;
       }
     }
     else
@@ -241,7 +249,7 @@ class ChartEditorAudioHandler
           continue;
         }
 
-        var vocalTrack:Null<FunkinSound> = SoundUtil.buildSoundFromBytes(vocalTrackData);
+        var vocalTrack:Null<FunkinSound> = SoundUtil.buildSoundFromBytes(vocalTrackData, STREAM_TRACKS);
 
         if (vocalTrack == null)
         {
@@ -250,14 +258,16 @@ class ChartEditorAudioHandler
         }
 
         vocalTracks.push(vocalTrack);
-        if (firstVocalTrackKey == null) firstVocalTrackKey = trackKey;
+        if (firstVocalTrackKey == null)
+        {
+          firstVocalTrackKey = trackKey;
+          firstVocalTrackBytes = vocalTrackData;
+        }
       }
     }
 
     var firstVocalTrack:Null<FunkinSound> = vocalTracks[0];
     if (firstVocalTrack == null) return false;
-
-    var waveformData:Null<WaveformData> = getCachedWaveformData(state, firstVocalTrackKey ?? '', firstVocalTrack);
 
     if (totalVoicesCount < 2 && vocalTracks.length != totalVoicesCount)
     {
@@ -273,14 +283,7 @@ class ChartEditorAudioHandler
           state.audioVocalTrackGroup.addPlayerVoice(vocalTrack);
         }
 
-        if (waveformData != null)
-        {
-          addWaveformSprite(state, waveformData, charType, firstVocalTrack);
-        }
-        else
-        {
-          trace(' WARNING '.warning() + ' Failed to parse waveform data for vocal track.');
-        }
+        if (firstVocalTrackBytes != null) addWaveformSprite(state, firstVocalTrackKey ?? '', firstVocalTrackBytes, charType);
 
         state.audioVocalTrackGroup.playerVoicesOffset = state.currentVocalOffsetPlayer;
         return true;
@@ -291,14 +294,7 @@ class ChartEditorAudioHandler
           state.audioVocalTrackGroup.addOpponentVoice(vocalTrack);
         }
 
-        if (waveformData != null)
-        {
-          addWaveformSprite(state, waveformData, charType, firstVocalTrack);
-        }
-        else
-        {
-          trace(' WARNING '.warning() + ' Failed to parse waveform data for vocal track.');
-        }
+        if (firstVocalTrackBytes != null) addWaveformSprite(state, firstVocalTrackKey ?? '', firstVocalTrackBytes, charType);
 
         state.audioVocalTrackGroup.opponentVoicesOffset = state.currentVocalOffsetOpponent;
 
@@ -311,32 +307,64 @@ class ChartEditorAudioHandler
     return false;
   }
 
-  static function addWaveformSprite(state:ChartEditorState, waveformData:WaveformData, charType:CharacterType, track:FunkinSound):Void
+  static function addWaveformSprite(state:ChartEditorState, cacheKey:String, bytes:Bytes, charType:CharacterType):ChartEditorWaveformSprite
   {
-    var waveformSprite:ChartEditorWaveformSprite = new ChartEditorWaveformSprite(state, waveformData, charType);
-    @:privateAccess waveformSprite.audioBuffer = track._source?.buffer;
+    var waveformSprite:ChartEditorWaveformSprite = new ChartEditorWaveformSprite(state, requestWaveformData(state, cacheKey, bytes), charType);
+    waveformSprite.audioBytes = bytes;
     state.audioWaveforms.add(waveformSprite);
     state.waveformsDirty = true;
     state.queueWaveformFilterUpdate();
+    return waveformSprite;
   }
 
   /**
-   * Parsing waveform data reads every sample of the track, so keep it per track key until the track's audio is replaced.
+   * Builds or retrieves cached waveform data for a track, and returns it.
+   *
+   * @return The cached waveform data, or `null` if it is still being built.
    */
-  static function getCachedWaveformData(state:ChartEditorState, trackKey:String, track:FunkinSound):Null<WaveformData>
+  static function requestWaveformData(state:ChartEditorState, cacheKey:String, bytes:Bytes):Null<WaveformData>
   {
-    var cached:Null<WaveformData> = state.audioWaveformDataCache.get(trackKey);
+    var cached:Null<WaveformData> = state.audioWaveformDataCache.get(cacheKey);
     if (cached != null) return cached;
 
-    // Parse the waveform data for the given track if it hasn't been cached already.
-    var waveformData:Null<WaveformData> = WaveformDataParser.interpretFlxSound(track, ChartEditorState.WAVEFORM_SAMPLES_PER_POINT, true);
-    if (waveformData == null)
+    #if target.threaded
+    if (state.waveformLoadsPending.contains(bytes)) return null;
+    state.waveformLoadsPending.push(bytes);
+
+    var results = state.waveformLoadResults;
+    sys.thread.Thread.create(() ->
     {
-      trace(' WARNING '.warning() + ' Failed to parse waveform data for vocal track.');
+      var data:Null<WaveformData> = WaveformDataParser.interpretBytes(bytes, ChartEditorState.WAVEFORM_SAMPLES_PER_POINT, true);
+      data?.mipLevelCount();
+      results.add({
+        cacheKey: cacheKey,
+        bytes: bytes,
+        data: data
+      });
+    });
+    return null;
+    #else
+    var data:Null<WaveformData> = WaveformDataParser.interpretBytes(bytes, ChartEditorState.WAVEFORM_SAMPLES_PER_POINT, true);
+    if (data == null)
+    {
+      trace(' WARNING '.warning() + ' Failed to parse waveform data for track "$cacheKey".');
       return null;
     }
-    state.audioWaveformDataCache.set(trackKey, waveformData);
-    return waveformData;
+    state.audioWaveformDataCache.set(cacheKey, data);
+    return data;
+    #end
+  }
+
+  /**
+   * The bytes currently loaded for the track with the given `audioWaveformDataCache` key.
+   */
+  static function getTrackBytes(state:ChartEditorState, cacheKey:String):Null<Bytes>
+  {
+    if (cacheKey.startsWith(ChartEditorState.INSTRUMENTAL_WAVEFORM_CACHE_PREFIX))
+    {
+      return state.audioInstTrackData.get(cacheKey.substr(ChartEditorState.INSTRUMENTAL_WAVEFORM_CACHE_PREFIX.length));
+    }
+    return state.audioVocalTrackData.get(cacheKey);
   }
 
   public static function stopExistingVocals(state:ChartEditorState):Void
@@ -437,6 +465,27 @@ class ChartEditorAudioHandler
   public static function handleWaveformFilter(state:ChartEditorState, elapsed:Float):Void
   {
     #if target.threaded
+    var loadResult:Null<WaveformLoadResult> = state.waveformLoadResults.pop(false);
+    while (loadResult != null)
+    {
+      state.waveformLoadsPending.remove(loadResult.bytes);
+      if (loadResult.data == null)
+      {
+        trace(' WARNING '.warning() + ' Failed to parse waveform data for track "${loadResult.cacheKey}".');
+      }
+      else
+      {
+        // Only cache it if the track wasn't replaced while it was being built.
+        if (getTrackBytes(state, loadResult.cacheKey) == loadResult.bytes) state.audioWaveformDataCache.set(loadResult.cacheKey, loadResult.data);
+        for (waveform in state.audioWaveforms.members)
+        {
+          if (waveform != null && waveform.exists && waveform.audioBytes == loadResult.bytes) waveform.waveformData = loadResult.data;
+        }
+        state.waveformsDirty = true;
+      }
+      loadResult = state.waveformLoadResults.pop(false);
+    }
+
     var result:Null<WaveformFilterResult> = state.waveformFilterResults.pop(false);
     while (result != null)
     {
@@ -461,8 +510,8 @@ class ChartEditorAudioHandler
     {
       // Hidden waveforms get their overlay when shown again, since switching waveforms queues another update.
       if (waveform == null || !waveform.visible) continue;
-      var buffer:Null<lime.media.AudioBuffer> = waveform.audioBuffer;
-      if (state.waveformFilter == ChartEditorWaveformFilter.None || buffer == null)
+      var bytes:Null<Bytes> = waveform.audioBytes;
+      if (state.waveformFilter == ChartEditorWaveformFilter.None || bytes == null)
       {
         waveform.overlayData = null;
         state.waveformsDirty = true;
@@ -477,12 +526,7 @@ class ChartEditorAudioHandler
       var results = state.waveformFilterResults;
       sys.thread.Thread.create(() ->
       {
-        var data = funkin.audio.waveform.WaveformDataParser.interpretAudioBufferFiltered(
-          buffer,
-          ChartEditorState.WAVEFORM_SAMPLES_PER_POINT,
-          highPass,
-          cutoffHz
-        );
+        var data = funkin.audio.waveform.WaveformDataParser.interpretBytesFiltered(bytes, ChartEditorState.WAVEFORM_SAMPLES_PER_POINT, highPass, cutoffHz);
         data?.mipLevelCount();
         results.add({
           generation: generation,
@@ -491,8 +535,8 @@ class ChartEditorAudioHandler
         });
       });
       #else
-      waveform.overlayData = funkin.audio.waveform.WaveformDataParser.interpretAudioBufferFiltered(
-        buffer,
+      waveform.overlayData = funkin.audio.waveform.WaveformDataParser.interpretBytesFiltered(
+        bytes,
         ChartEditorState.WAVEFORM_SAMPLES_PER_POINT,
         highPass,
         cutoffHz
@@ -527,23 +571,13 @@ class ChartEditorAudioHandler
     if (!needed || state.instrumentalWaveform != null || track == null) return;
 
     var instId:String = (state.currentInstrumentalId == '') ? Constants.DEFAULT_VARIATION : state.currentInstrumentalId;
-    var cacheKey:String = ChartEditorState.INSTRUMENTAL_WAVEFORM_CACHE_PREFIX + instId;
-    var data:Null<funkin.audio.waveform.WaveformData> = state.audioWaveformDataCache.get(cacheKey);
-    if (data == null)
-    {
-      data = funkin.audio.waveform.WaveformDataParser.interpretFlxSound(track, ChartEditorState.WAVEFORM_SAMPLES_PER_POINT, true);
-      if (data == null) return;
-      state.audioWaveformDataCache.set(cacheKey, data);
-    }
+    var bytes:Null<Bytes> = state.audioInstTrackData.get(instId);
+    if (bytes == null) return;
 
     // Super secret GF key
-    var waveform:ChartEditorWaveformSprite = new ChartEditorWaveformSprite(state, data, GF);
-    @:privateAccess waveform.audioBuffer = track._source?.buffer;
-    state.audioWaveforms.add(waveform);
+    var waveform:ChartEditorWaveformSprite = addWaveformSprite(state, ChartEditorState.INSTRUMENTAL_WAVEFORM_CACHE_PREFIX + instId, bytes, GF);
     state.instrumentalWaveform = waveform;
     state.instrumentalWaveformTrack = track;
-    state.waveformsDirty = true;
-    state.queueWaveformFilterUpdate();
   }
 
   /**

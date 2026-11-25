@@ -22,7 +22,7 @@ class WaveformDataParser
     @:privateAccess
     var soundBuffer:Null<lime.media.AudioBuffer> = sound?._source?.buffer;
 
-    if (soundBuffer == null)
+    if (soundBuffer == null || soundBuffer.data == null)
     {
       trace('[WAVEFORM] Failed to interpret FlxSound: ${sound}');
       return null;
@@ -171,6 +171,187 @@ class WaveformDataParser
     return new WaveformData(null, 1, sampleRate, samplesPerPoint, bitsPerSample, outputPointCount, outputData.toArray());
   }
 
+  /**
+   * Interprets compressed audio bytes into waveform data. This decodes the entire audio into memory, so it can be slow for large files.
+   *
+   * @param samplesPerPoint How many audio samples each data point covers.
+   * @param mono Merge every channel into one, which halves the memory for stereo audio.
+   */
+  public static function interpretBytes(bytes:haxe.io.Bytes, samplesPerPoint:Int = 256, mono:Bool = false):Null<WaveformData>
+  {
+    #if (cpp && lime_cffi && lime_miniaudio)
+    var reader:Null<ChunkedAudioReader> = ChunkedAudioReader.open(bytes);
+    if (reader == null)
+    {
+      trace('[WAVEFORM] Failed to decode audio bytes.');
+      return null;
+    }
+
+    var inputChannels:Int = reader.channels;
+    var channels:Int = mono ? 1 : inputChannels;
+    var outputData:Array<Int> = [];
+    var outputPointCount:Int = 0;
+
+    var minValues = new haxe.ds.Vector<Int>(channels);
+    var maxValues = new haxe.ds.Vector<Int>(channels);
+
+    // How many samples have gone into the current point. Points can span across chunks.
+    var pointSampleCount:Int = 0;
+
+    var frameCount:Int = reader.read();
+    while (frameCount > 0)
+    {
+      var soundData:lime.utils.Int16Array = reader.samples;
+      for (sampleIndex in 0...frameCount)
+      {
+        if (pointSampleCount == 0)
+        {
+          for (i in 0...channels)
+          {
+            minValues[i] = INT16_MAX;
+            maxValues[i] = INT16_MIN;
+          }
+        }
+
+        for (channelIndex in 0...inputChannels)
+        {
+          var sampleValue:Int = soundData[sampleIndex * inputChannels + channelIndex];
+          var outputChannel:Int = mono ? 0 : channelIndex;
+
+          if (sampleValue < minValues[outputChannel]) minValues[outputChannel] = sampleValue;
+          if (sampleValue > maxValues[outputChannel]) maxValues[outputChannel] = sampleValue;
+        }
+
+        pointSampleCount++;
+        if (pointSampleCount == samplesPerPoint)
+        {
+          for (channelIndex in 0...channels)
+          {
+            outputData.push(minValues[channelIndex]);
+            outputData.push(maxValues[channelIndex]);
+          }
+          outputPointCount++;
+          pointSampleCount = 0;
+        }
+      }
+      frameCount = reader.read();
+    }
+
+    // The last point covers whatever samples are left over.
+    if (pointSampleCount > 0)
+    {
+      for (channelIndex in 0...channels)
+      {
+        outputData.push(minValues[channelIndex]);
+        outputData.push(maxValues[channelIndex]);
+      }
+      outputPointCount++;
+    }
+
+    var sampleRate:Int = reader.sampleRate;
+    reader.close();
+
+    return new WaveformData(null, channels, sampleRate, samplesPerPoint, 16, outputPointCount, outputData);
+    #else
+    var soundBuffer:Null<lime.media.AudioBuffer> = lime.media.AudioBuffer.fromBytes(bytes);
+    if (soundBuffer == null || soundBuffer.data == null) return null;
+    return interpretAudioBuffer(soundBuffer, samplesPerPoint, mono);
+    #end
+  }
+
+  /**
+   * Like `interpretAudioBufferFiltered()`, but for compressed audio bytes instead of a decoded buffer.
+   *
+   * @param highPass `true` for a high pass filter, `false` for a low pass filter.
+   * @param cutoffHz The filter's cutoff frequency, in Hz.
+   */
+  public static function interpretBytesFiltered(bytes:haxe.io.Bytes, samplesPerPoint:Int, highPass:Bool, cutoffHz:Float):Null<WaveformData>
+  {
+    #if (cpp && lime_cffi && lime_miniaudio)
+    var reader:Null<ChunkedAudioReader> = ChunkedAudioReader.open(bytes);
+    if (reader == null)
+    {
+      trace('[WAVEFORM] Failed to decode audio bytes.');
+      return null;
+    }
+
+    var channels:Int = reader.channels;
+    var sampleRate:Int = reader.sampleRate;
+    var outputData:Array<Int> = [];
+    var outputPointCount:Int = 0;
+
+    var w0:Float = 2 * Math.PI * Math.min(cutoffHz, sampleRate * 0.45) / sampleRate;
+    var cosW0:Float = Math.cos(w0);
+
+    var q:Float = 0.7071067811865476;
+    var alpha:Float = Math.sin(w0) / (2 * q);
+    var a0:Float = 1 + alpha;
+    var b0:Float = (highPass ? (1 + cosW0) : (1 - cosW0)) / 2 / a0;
+    var b1:Float = (highPass ? -(1 + cosW0) : (1 - cosW0)) / a0;
+    var b2:Float = b0;
+    var a1:Float = -2 * cosW0 / a0;
+    var a2:Float = (1 - alpha) / a0;
+
+    var x1:Float = 0;
+    var x2:Float = 0;
+    var y1:Float = 0;
+    var y2:Float = 0;
+
+    var low:Float = INT16_MAX;
+    var high:Float = INT16_MIN;
+    var pointSampleCount:Int = 0;
+
+    var frameCount:Int = reader.read();
+    while (frameCount > 0)
+    {
+      var soundData:lime.utils.Int16Array = reader.samples;
+      for (sampleIndex in 0...frameCount)
+      {
+        // Mix the channels down to mono before filtering.
+        var x0:Float = 0;
+        for (channelIndex in 0...channels) x0 += soundData[sampleIndex * channels + channelIndex];
+        x0 /= channels;
+
+        var y0:Float = b0 * x0 + b1 * x1 + b2 * x2 - a1 * y1 - a2 * y2;
+        x2 = x1;
+        x1 = x0;
+        y2 = y1;
+        y1 = y0;
+
+        if (y0 < low) low = y0;
+        if (y0 > high) high = y0;
+
+        pointSampleCount++;
+        if (pointSampleCount == samplesPerPoint)
+        {
+          outputData.push(Std.int(Math.max(INT16_MIN, low)));
+          outputData.push(Std.int(Math.min(INT16_MAX, high)));
+          outputPointCount++;
+          pointSampleCount = 0;
+          low = INT16_MAX;
+          high = INT16_MIN;
+        }
+      }
+      frameCount = reader.read();
+    }
+
+    if (pointSampleCount > 0)
+    {
+      outputData.push(Std.int(Math.max(INT16_MIN, low)));
+      outputData.push(Std.int(Math.min(INT16_MAX, high)));
+      outputPointCount++;
+    }
+
+    reader.close();
+
+    return new WaveformData(null, 1, sampleRate, samplesPerPoint, 16, outputPointCount, outputData);
+    #else
+    var soundBuffer:Null<lime.media.AudioBuffer> = lime.media.AudioBuffer.fromBytes(bytes);
+    if (soundBuffer == null || soundBuffer.data == null) return null;
+    return interpretAudioBufferFiltered(soundBuffer, samplesPerPoint, highPass, cutoffHz);
+    #end
+  }
+
   public static function parseWaveformData(path:String):Null<WaveformData>
   {
     var rawJson:String = openfl.Assets.getText(path).trim();
@@ -203,3 +384,71 @@ class WaveformDataParser
     }
   }
 }
+
+#if (cpp && lime_cffi && lime_miniaudio)
+/**
+ * Decodes compressed audio bytes a chunk at a time to avoid allocating a large buffer for the entire decoded audio.
+ */
+@:nullSafety(Off)
+private class ChunkedAudioReader
+{
+  /**
+   * How many frames are decoded per chunk. 64K stereo frames is 256KB of PCM.
+   */
+  static final CHUNK_FRAMES:Int = 65536;
+
+  public var channels(default, null):Int;
+  public var sampleRate(default, null):Int;
+
+  /**
+   * The most recently decoded chunk, with channels interleaved. Only the first `read()` frames are valid.
+   */
+  public var samples(default, null):lime.utils.Int16Array;
+
+  var decoder:lime.media.miniaudio.MADecoder;
+  var chunk:haxe.io.Bytes;
+
+  public static function open(bytes:haxe.io.Bytes):Null<ChunkedAudioReader>
+  {
+    if (bytes == null) return null;
+    var decoder = lime.media.miniaudio.MADecoder.init_memory(bytes, lime.media.miniaudio.MADecoderConfig.init(lime.media.miniaudio.MAFormat.S16, 0, 0));
+    if (decoder == null) return null;
+
+    var format = decoder.get_data_format();
+    if (format == null || format.channels <= 0)
+    {
+      decoder.uninit();
+      return null;
+    }
+    return new ChunkedAudioReader(decoder, format.channels, format.sampleRate);
+  }
+
+  function new(decoder:lime.media.miniaudio.MADecoder,
+    channels:Int,
+    sampleRate:Int)
+  {
+    this.decoder = decoder;
+    this.channels = channels;
+    this.sampleRate = sampleRate;
+    chunk = haxe.io.Bytes.alloc(CHUNK_FRAMES * channels * 2);
+    samples = new lime.utils.Int16Array(chunk);
+  }
+
+  /**
+   * Decode the next chunk into `samples`.
+   * @return How many frames were decoded, or 0 at the end of the audio.
+   */
+  public function read():Int
+  {
+    if (decoder == null) return 0;
+    var framesRead:haxe.Int64 = decoder.read_pcm_frames(cpp.Pointer.ofArray(chunk.getData()), CHUNK_FRAMES);
+    return haxe.Int64.toInt(framesRead);
+  }
+
+  public function close():Void
+  {
+    if (decoder != null) decoder.uninit();
+    decoder = null;
+  }
+}
+#end

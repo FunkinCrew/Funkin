@@ -965,7 +965,17 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * Finished filter jobs.
    */
   var waveformFilterResults:sys.thread.Deque<WaveformFilterResult> = new sys.thread.Deque();
+
+  /**
+   * Finished jobs building the base waveform of a track.
+   */
+  var waveformLoadResults:sys.thread.Deque<WaveformLoadResult> = new sys.thread.Deque();
   #end
+
+  /**
+   * The audio bytes of every track whose base waveform is being built right now, so each track is only built once.
+   */
+  var waveformLoadsPending:Array<haxe.io.Bytes> = [];
 
   /**
    * Whether to show the instrumental waveform in the chart editor.
@@ -1039,7 +1049,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var showCursorLine:Bool = true;
 
   var showPlayerView:Bool = false;
-
   var gridColumnViews:Array<flixel.FlxSprite> = [];
   var gridColumnViewEdges:Array<flixel.FlxSprite> = [];
 
@@ -4248,6 +4257,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     audioInstTrackData.clear();
     audioVocalTrackData.clear();
     audioWaveformDataCache.clear();
+    waveformLoadsPending = [];
     undoHistory = [];
     redoHistory = [];
     instrumentalWaveform = null;
@@ -4372,9 +4382,6 @@ enum abstract ChartEditorLiveInputStyle(String)
 }
 
 /**
- * Available waveform positions for the chart editor state.
- */
-/**
  * A finished waveform filter job.
  */
 typedef WaveformFilterResult =
@@ -4387,6 +4394,24 @@ typedef WaveformFilterResult =
   #if FEATURE_CHART_EDITOR
   var waveform:ChartEditorWaveformSprite;
   #end
+  var data:Null<funkin.audio.waveform.WaveformData>;
+}
+
+/**
+ * A finished job building the base waveform of a track.
+ */
+typedef WaveformLoadResult =
+{
+  /**
+   * The key the waveform is stored under in `audioWaveformDataCache`.
+   */
+  var cacheKey:String;
+
+  /**
+   * The audio bytes the waveform was built from, to check the track wasn't replaced in the meantime.
+   */
+  var bytes:haxe.io.Bytes;
+
   var data:Null<funkin.audio.waveform.WaveformData>;
 }
 

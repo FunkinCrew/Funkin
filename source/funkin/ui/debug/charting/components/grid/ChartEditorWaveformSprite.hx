@@ -88,9 +88,9 @@ class ChartEditorWaveformSprite extends FlxSprite
   }
 
   /**
-   * The decoded audio this waveform came from, kept so filtered overlays can be made from it.
+   * The raw audio bytes for the track, used to build the waveform. `null` if the waveform is already built.
    */
-  public var audioBuffer:Null<lime.media.AudioBuffer> = null;
+  public var audioBytes:Null<haxe.io.Bytes> = null;
 
   var chartEditorState:ChartEditorState;
   var chunkBitmap:Null<BitmapData> = null;
@@ -101,8 +101,11 @@ class ChartEditorWaveformSprite extends FlxSprite
   // The index of the current segment being processed.
   var segmentIndex:Int = 0;
 
+  /**
+   * @param waveformData Can be `null` while the waveform is still being built, nothing is drawn until it is set.
+   */
   public function new(chartEditorState:ChartEditorState,
-    waveformData:WaveformData,
+    waveformData:Null<WaveformData>,
     iconId:CharacterType)
   {
     super(0, 0);
