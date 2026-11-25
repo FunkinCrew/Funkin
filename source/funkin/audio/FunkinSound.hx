@@ -80,17 +80,28 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    */
   public var waveformData(get, never):WaveformData;
 
+  /**
+   * Whether this FunkinSound is currently streaming or not.
+   */
+  public var isStreaming(get, never):Bool;
+
+  function get_isStreaming():Bool
+  {
+    #if NO_FEATURE_STREAMED_AUDIO
+    return false;
+    #else
+    if (this == null || this._sound == null) return false;
+    @:privateAccess
+    return this._sound.isStreaming;
+    #end
+  }
+
   var _waveformData:Null<WaveformData> = null;
 
   /**
    * Identifies this audio for the purposes of debugging.
    */
   var _label:String = 'unknown';
-
-  public function new()
-  {
-    super();
-  }
 
   /**
    * Creates a new `FunkinSound` object containing the same audio data as this one.
@@ -121,19 +132,6 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     FlxG.sound.defaultSoundGroup.add(sound);
 
     return sound;
-  }
-
-  public var isStreaming(get, never):Bool;
-
-  function get_isStreaming():Bool
-  {
-    #if NO_FEATURE_STREAMED_AUDIO
-    return false;
-    #else
-    if (this == null) return false;
-    @:privateAccess
-    return this?._source?.buffer?.__srcMADecoder != null;
-    #end
   }
 
   @:nullSafety(Off)
