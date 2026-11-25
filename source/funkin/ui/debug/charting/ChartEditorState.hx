@@ -2957,7 +2957,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   /**
    * A bar right of the event column showing how long the event being edited lasts.
    */
-  var gridEventDurationBar:Null<FunkinSprite> = null;
+  var gridEventDurationBar:Null<FlxSprite> = null;
 
   /**
    * How long the event being edited lasts, in beats, next to `gridEventDurationBar`.

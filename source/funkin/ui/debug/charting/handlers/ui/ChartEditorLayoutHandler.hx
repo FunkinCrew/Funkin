@@ -213,7 +213,7 @@ class ChartEditorLayoutHandler
       state.add(columnViewEdge);
       state.gridColumnViewEdges.push(columnViewEdge);
     }
-    var durationBar:FunkinSprite = new FunkinSprite().makeSolidColor(1, 1, ChartEditorGridInteractionHandler.EVENT_DURATION_COLOR);
+    var durationBar:FlxSprite = new FlxSprite().makeGraphic(1, 1, ChartEditorGridInteractionHandler.EVENT_DURATION_COLOR);
     durationBar.origin.set(0, 0);
     durationBar.visible = false;
     durationBar.zIndex = 25;
@@ -343,12 +343,18 @@ class ChartEditorLayoutHandler
     final SUBTITLES_MARGIN:Int = 30;
     if (state.isViewDownscroll)
     {
-      state.subtitles.offsets = [0, ChartEditorState.MENU_BAR_HEIGHT + SUBTITLES_MARGIN];
+      state.subtitles.offsets = [
+        0,
+        ChartEditorState.MENU_BAR_HEIGHT + SUBTITLES_MARGIN
+      ];
       state.subtitles.alignment = SUBTITLES_TOP;
     }
     else
     {
-      state.subtitles.offsets = [0, ChartEditorState.PLAYBAR_HEIGHT + SUBTITLES_MARGIN];
+      state.subtitles.offsets = [
+        0,
+        ChartEditorState.PLAYBAR_HEIGHT + SUBTITLES_MARGIN
+      ];
       state.subtitles.alignment = SUBTITLES_BOTTOM;
     }
   }
@@ -428,8 +434,9 @@ class ChartEditorLayoutHandler
     bounds.width = state.notePreview.width;
 
     var viewHeightPixels:Float = FlxG.height - ChartEditorState.MENU_BAR_HEIGHT - ChartEditorState.PLAYBAR_HEIGHT;
-    var viewTopPixels:Float = state.isViewDownscroll ? state.screenToGridY(FlxG.height - ChartEditorState.PLAYBAR_HEIGHT) : state.scrollPositionInPixels
-      - ChartEditorState.GRID_TOP_PAD;
+    var viewTopPixels:Float =
+      state.isViewDownscroll ? state.screenToGridY(FlxG.height - ChartEditorState.PLAYBAR_HEIGHT) : state.scrollPositionInPixels
+        - ChartEditorState.GRID_TOP_PAD;
     bounds.y = state.notePreview.y + (state.notePreview.height * (viewTopPixels / state.songLengthInPixels));
     bounds.height = state.notePreview.height * (viewHeightPixels / state.songLengthInPixels);
 
@@ -586,11 +593,7 @@ class ChartEditorLayoutHandler
           funkin.util.DiffCalcUtil.opponentShownFor(state.currentSongId)
         );
       }
-      state.difficultyHeatmap.refreshMap(
-        state.gridTiledSprite.x,
-        ChartEditorState.MENU_BAR_HEIGHT,
-        FlxG.height - ChartEditorState.PLAYBAR_HEIGHT
-      );
+      state.difficultyHeatmap.refreshMap(state.gridTiledSprite.x, ChartEditorState.MENU_BAR_HEIGHT, FlxG.height - ChartEditorState.PLAYBAR_HEIGHT);
     }
 
     if (state.notePreviewViewportBoundsDirty)

@@ -4,7 +4,7 @@ package funkin.ui.debug.charting.handlers.chart;
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.util.Constants;
-import funkin.graphics.FunkinSprite;
+import flixel.FlxSprite;
 import flixel.util.FlxColor;
 import funkin.ui.debug.charting.commands.selection.SetItemSelectionCommand;
 import funkin.ui.debug.charting.toolboxes.ChartEditorEventDataToolbox;
@@ -159,7 +159,7 @@ class ChartEditorGridInteractionHandler
    */
   public static function handleEventDurationBar(state:ChartEditorState):Void
   {
-    var bar:Null<FunkinSprite> = state.gridEventDurationBar;
+    var bar:Null<FlxSprite> = state.gridEventDurationBar;
     var text:Null<flixel.text.FlxText> = state.gridEventDurationText;
     if (bar == null || text == null) return;
 
@@ -198,7 +198,7 @@ class ChartEditorGridInteractionHandler
     var label:String = '$beats ${beats == 1 ? 'beat' : 'beats'}';
     if (text.text != label) text.text = label;
     text.visible = true;
-    text.setPosition(left + EVENT_DURATION_WIDTH + 4, Math.max(top, bottom - text.height));
+    text.setPosition(left + EVENT_DURATION_WIDTH + 4, top + (bottom - top - text.height) / 2);
   }
 
   public static function openToolboxFromGrid(state:ChartEditorState, id:String, menuItem:MenuCheckBox):Void
