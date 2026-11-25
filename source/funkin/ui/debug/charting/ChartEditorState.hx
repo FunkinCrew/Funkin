@@ -1219,6 +1219,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var hitsoundVolumeOpponent:Float = 1.0;
 
   /**
+   * The ids of the items hidden from the bottom bar. Picked by right clicking it, and saved with the preferences.
+   */
+  var hiddenPlaybarItems:Array<String> = [];
+
+  /**
    * The audio volume before it was toggled to zero.
    * Metronome, hitsounds (player and opponent), instrumental, vocals (player and opponent)
    */

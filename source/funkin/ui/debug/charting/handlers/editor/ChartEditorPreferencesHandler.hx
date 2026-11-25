@@ -32,6 +32,7 @@ class ChartEditorPreferencesHandler
     state.zoomCurrent = ChartEditorState.ZOOM_LEVELS[state.zoomLevelIndex];
     state.updateGridScale();
     state.currentLiveInputStyle = save.chartEditorLiveInputStyle.value;
+    if (!ChartEditorState.LIVE_INPUT_KEYS.exists(state.currentLiveInputStyle)) state.currentLiveInputStyle = NumberKeys;
     state.currentWaveformPos = save.chartEditorWaveformPos.value;
     state.showInstrumentalWaveform = save.chartEditorShowInstrumentalWaveform.value;
     state.waveformFilter = save.chartEditorWaveformFilter.value;
@@ -48,6 +49,7 @@ class ChartEditorPreferencesHandler
     state.constantScrollEnabled = save.chartEditorConstantScroll.value;
     state.gridBackingAlpha = save.chartEditorGridBackingAlpha.value;
     state.showSubtitles = save.chartEditorShowSubtitles.value;
+    state.hiddenPlaybarItems = (save.chartEditorHiddenPlaybarItems.value ?? []).copy();
     state.playtestStartTime = save.chartEditorPlaytestStartTime.value;
     state.playtestAudioSettings = save.chartEditorPlaytestAudioSettings.value;
     state.playtestShowResults = save.chartEditorPlaytestResultsSettings.value;
@@ -112,6 +114,7 @@ class ChartEditorPreferencesHandler
     save.chartEditorPlaytestSongScripts.value = state.playtestSongScripts;
     save.chartEditorStackedNoteThreshold.value = ChartEditorState.stackedNoteThreshold;
     save.chartEditorShowSubtitles.value = state.showSubtitles;
+    save.chartEditorHiddenPlaybarItems.value = state.hiddenPlaybarItems.copy();
     save.chartEditorTheme.value = state.currentTheme;
     save.chartEditorMetronomeVolume.value = state.metronomeVolume;
     save.chartEditorHitsoundVolumePlayer.value = state.hitsoundVolumePlayer;

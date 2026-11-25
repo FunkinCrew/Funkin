@@ -32,9 +32,12 @@ import funkin.util.FileUtil;
 import funkin.util.SortUtil;
 import haxe.ui.components.Button;
 import haxe.ui.components.Range;
+import haxe.ui.components.Rule;
 import haxe.ui.containers.dialogs.CollapsibleDialog;
 import haxe.ui.containers.menus.Menu;
+import haxe.ui.containers.menus.MenuCheckBox;
 import haxe.ui.containers.menus.MenuItem;
+import haxe.ui.core.Component;
 import haxe.ui.core.Screen;
 import haxe.ui.geom.Size;
 import haxe.ui.backend.flixel.MouseHelper;
@@ -278,6 +281,129 @@ class ChartEditorUIHandler
   }
 
   /**
+   * The items the bottom bar can show or hide, in the order the right click menu lists them.
+   */
+  static final PLAYBAR_ITEMS:Array<
+    {id:String, name:String}> = [
+    {
+      id: 'playbarSongPos',
+      name: 'Song Position'
+    },
+    {
+      id: 'playbarBeatNum',
+      name: 'Beat'
+    },
+    {
+      id: 'playbarStepNum',
+      name: 'Step'
+    },
+    {
+      id: 'playbarControls',
+      name: 'Playback Controls'
+    },
+    {
+      id: 'playbarDifficulty',
+      name: 'Difficulty'
+    },
+    {
+      id: 'playbarBPM',
+      name: 'BPM'
+    },
+    {
+      id: 'playbarNoteSnap',
+      name: 'Note Snap'
+    },
+    {
+      id: 'playbarZoom',
+      name: 'Zoom'
+    },
+    {
+      id: 'playbarSpeed',
+      name: 'Playback Speed'
+    },
+    {
+      id: 'playbarSongRemaining',
+      name: 'Time Remaining'
+    }
+  ];
+
+  /**
+   * Bottom bar items that already do something on right click, so it doesn't open the menu over them.
+   */
+  static final PLAYBAR_OWN_RIGHT_CLICK:Array<String> = [
+    'playbarControls',
+    'playbarDifficulty',
+    'playbarBPM',
+    'playbarNoteSnap',
+    'playbarZoom',
+    'playbarSpeed'
+  ];
+
+  /**
+   * Show a menu of toggles for which items the bottom bar shows, like the status bar in Visual Studio Code.
+   */
+  static function openPlaybarItemsMenu(state:ChartEditorState):Void
+  {
+    var menu:Menu = new Menu();
+    menu.left = FlxG.mouse.viewX;
+    menu.top = FlxG.mouse.viewY;
+    for (item in PLAYBAR_ITEMS)
+    {
+      var toggle:MenuCheckBox = new MenuCheckBox();
+      toggle.text = item.name;
+      toggle.selected = !state.hiddenPlaybarItems.contains(item.id);
+      toggle.onChange = _ ->
+      {
+        if (toggle.selected) state.hiddenPlaybarItems.remove(item.id);
+        else if (!state.hiddenPlaybarItems.contains(item.id)) state.hiddenPlaybarItems.push(item.id);
+        applyPlaybarItemVisibility(state);
+      };
+      menu.addComponent(toggle);
+    }
+    menu.registerEvent(UIEvent.BEFORE_CLOSE, (event:UIEvent) ->
+    {
+      if (state.pressingControl()) event.cancel();
+    });
+    menu.registerEvent(UIEvent.READY, _ -> menu.top = Math.max(0, FlxG.mouse.viewY - menu.height));
+    state.openCustomContextMenu(menu);
+  }
+
+  /**
+   * Show or hide the bottom bar's items, and the dividers between them.
+   */
+  public static function applyPlaybarItemVisibility(state:ChartEditorState):Void
+  {
+    var containers:Array<Component> = [];
+    for (item in PLAYBAR_ITEMS)
+    {
+      var component:Null<Component> = state.playbar.findComponent(item.id);
+      if (component == null) continue;
+      component.hidden = state.hiddenPlaybarItems.contains(item.id);
+      var parent:Null<Component> = component.parentComponent;
+      if (parent != null && !containers.contains(parent)) containers.push(parent);
+    }
+
+    for (container in containers)
+    {
+      var pendingRule:Null<Component> = null;
+      var seenItem:Bool = false;
+      for (child in container.childComponents)
+      {
+        if (Std.isOfType(child, Rule))
+        {
+          child.hidden = true;
+          if (seenItem && pendingRule == null) pendingRule = child;
+          continue;
+        }
+        if (child.hidden) continue;
+        if (pendingRule != null) pendingRule.hidden = false;
+        pendingRule = null;
+        seenItem = true;
+      }
+    }
+  }
+
+  /**
    * Sets up the onClick listeners for the UI.
    */
   public static function setupUIListeners(state:ChartEditorState):Void
@@ -298,6 +424,17 @@ class ChartEditorUIHandler
     state.playbarPlay.onClick = _ -> state.toggleAudioPlayback();
     state.playbarForward.onClick = _ -> state.playbarButtonPressed = 'playbarForward';
     state.playbarEnd.onClick = _ -> state.playbarButtonPressed = 'playbarEnd';
+
+    state.playbar.onRightClick = event ->
+    {
+      for (id in PLAYBAR_OWN_RIGHT_CLICK)
+      {
+        var item:Null<Component> = state.playbar.findComponent(id);
+        if (item != null && !item.hidden && item.hitTest(event.screenX, event.screenY)) return;
+      }
+      openPlaybarItemsMenu(state);
+    };
+    applyPlaybarItemVisibility(state);
 
     // Cycle note snap quant.
     state.playbarNoteSnap.onRightClick = _ ->
@@ -915,7 +1052,11 @@ class ChartEditorUIHandler
       if (size == null) return;
       toolbox.width = size.width + 2;
       toolbox.height = size.height + toolbox.dialogTitle.height + 2;
-      toolbox.userData = ({charId: charPlayer.charId, width: toolbox.width, scale: charPlayer.targetScale} : PreviewFit);
+      toolbox.userData = ({
+        charId: charPlayer.charId,
+        width: toolbox.width,
+        scale: charPlayer.targetScale
+      } : PreviewFit);
       return;
     }
     var scale:Float = fit.scale * toolbox.width / fit.width;
@@ -1231,11 +1372,12 @@ class ChartEditorUIHandler
 
 /**
  * Typedef for Character fit results
- **/
+**/
 typedef PreviewFit =
 {
   charId:String,
   width:Float,
   scale:Float
 };
+
 #end
