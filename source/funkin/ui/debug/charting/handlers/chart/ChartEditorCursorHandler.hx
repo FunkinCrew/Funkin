@@ -97,8 +97,15 @@ class ChartEditorCursorHandler
       highlightedNote = state.renderedNotes.members.find(function(note:ChartEditorNoteSprite):Bool
       {
         // If note.alive is false, the note is dead and awaiting recycling.
-        return note.alive && FlxG.mouse.overlaps(note);
+        return note.alive && note.noteData != null && FlxG.mouse.overlaps(note) && state.isNoteSelected(note.noteData);
       });
+      if (highlightedNote == null)
+      {
+        highlightedNote = state.renderedNotes.members.find(function(note:ChartEditorNoteSprite):Bool
+        {
+          return note.alive && FlxG.mouse.overlaps(note);
+        });
+      }
     }
 
     if (highlightedNote == null)
