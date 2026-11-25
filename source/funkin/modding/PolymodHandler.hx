@@ -603,6 +603,10 @@ class PolymodHandler
     // `FileResourceResolver` allows you to access the content of outside game files.
     Polymod.blacklistImport("haxe.ui.parsers.ui.resolvers.FileResourceResolver");
 
+    // `haxe.ui.styles.animation.Animation`
+    // `_initialState` holds internal property references that can bypass blacklisted fields.
+    Polymod.blacklistInstanceFields(haxe.ui.styles.animation.Animation, ['_initialState']);
+
     // `funkin.save.Save`
     // Direct access to save data is important for scripts (like checking unlocks),
     // but we don't want scripts to be able to perform operations like writing scores.
@@ -706,6 +710,7 @@ class PolymodHandler
       'setLevelScore',
       'setSongScore',
       'applySongRank',
+      '_initialState',
       '_interp'
     ]);
   }
