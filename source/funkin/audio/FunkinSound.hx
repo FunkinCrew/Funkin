@@ -228,8 +228,8 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     {
       // Backwards compatibility for `FunkinSound.load(openfl.media.Sound)`
       var sound:FunkinSound = new FunkinSound();
-      FlxG.sound.list.add(sound);
       sound.loadEmbedded(embeddedSound, looped, autoDestroy, onComplete);
+      FlxG.sound.list.add(sound);
 
       return sound;
     }
