@@ -2216,7 +2216,12 @@ class CameraEditorState extends UIState implements ConsoleClass
     playerVocals = [];
 
     var instData:Null<Bytes> = audioInstTrackData.get(currentVariation);
-    if (instData != null) currentInstrumental = SoundUtil.buildSoundFromBytes(instData);
+    if (instData != null) currentInstrumental = SoundUtil.buildSoundFromBytes(instData, true);
+    if (currentInstrumental == null)
+    {
+      trace('Failed to decode instrumental for variation "$currentVariation"');
+      return;
+    }
 
     currentInstrumental.onComplete = function()
     {
@@ -2249,9 +2254,9 @@ class CameraEditorState extends UIState implements ConsoleClass
         // For example, for voice ID "bf" on variation "pico", the file name would be "Voices-bf-pico.ogg"
 
         var vocalData:Null<Bytes> = audioVocalTrackData.get(trackKey);
-        if (vocalData != null)
+        var vocalSound:Null<FunkinSound> = SoundUtil.buildSoundFromBytes(vocalData, true);
+        if (vocalSound != null)
         {
-          var vocalSound = SoundUtil.buildSoundFromBytes(vocalData);
           currentVocals.push(vocalSound);
           if (isPlayer) playerVocals.push(vocalSound);
         }
