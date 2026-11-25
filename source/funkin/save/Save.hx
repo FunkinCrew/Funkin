@@ -395,7 +395,7 @@ class Save implements ConsoleClass implements ISerializable
   public var chartEditorThemeMusic:SaveProperty<Bool>;
   @:saveProperty(data.optionsChartEditor.playbackSpeed, 0.5)
   public var chartEditorPlaybackSpeed:SaveProperty<Float>;
-  @:saveProperty(data.optionsChartEditor.hiddenPlaybarItems, [])
+  @:saveProperty(data.optionsChartEditor.hiddenPlaybarItems, ['playbarStepNum', 'playbarSpeed'])
   public var chartEditorHiddenPlaybarItems:SaveProperty<Array<String>>;
 
   /**
@@ -1974,7 +1974,7 @@ typedef SaveDataChartEditorOptions =
 
   /**
    * The ids of the items hidden from the Chart Editor's bottom bar, picked by right clicking it.
-   * @default `[]`
+   * @default `['playbarStepNum', 'playbarSpeed']`
    */
   var ?hiddenPlaybarItems:Array<String>;
 }
