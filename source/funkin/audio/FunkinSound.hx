@@ -191,7 +191,6 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 
   /**
    * Load an audio file and prepare it for playback.
-   * DEPRECATED: Use `loadSound(AssetPath)`
    *
    * @param embeddedSound The sound to play.
    * @param volume The starting volume for the sound.
@@ -203,6 +202,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    * @param onLoad A function to call when the sound is loaded.
    * @return The constructed `FunkinSound` object, or `null` if the sound failed to be loaded.
    */
+  @:deprecated("FunkinSound.load() is deprecated, use loadSound(AssetPath) instead!")
   public static function load(embeddedSound:FlxSoundAsset,
     volume:Float = 1.0,
     looped:Bool = false,
@@ -261,7 +261,6 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 
   /**
    * Play a sound once, destroying it when it's finished.
-   * DEPRECATED: Use `playSoundOnce(AssetPath)`
    *
    * @param assetKey The asset path to the audio to play.
    * @param volume The starting volume.
@@ -269,6 +268,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    * @param onLoad A function to call when the sound is finished loading.
    * @return The constructed `FunkinSound` object, or `null` if the sound failed to be loaded.
    */
+  @:deprecated("FunkinSound.playOnce() is deprecated, use `playSoundOnce(AssetPath) instead!")
   public static function playOnce(assetKey:String, volume:Float = 1.0, ?onComplete:Void->Void, ?onLoad:Void->Void):Null<FunkinSound>
   {
     return FunkinSound.playSoundOnce(Paths.sound(assetKey), {
@@ -364,6 +364,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    * @param params A set of parameters for playback.
    * @return Whether the sound successfully played.
    */
+  @:deprecated("FunkinSound.playMusic() is deprecated, use `playMusicTrack(MusicAssetPathBuilder)` instead!")
   public static function playMusic(assetKey:String, ?params:FunkinMusicCompatParams):Bool
   {
     var usePartial:Bool = params?.partialParams?.loadPartial ?? false;
