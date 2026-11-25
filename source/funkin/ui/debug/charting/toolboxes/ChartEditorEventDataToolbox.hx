@@ -542,6 +542,8 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox implements Char
     else if (Std.isOfType(input, DropDown))
     {
       var dropDown:DropDown = cast input;
+      quietly(dropDown, () -> {
+      });
       quietly(dropDown, () -> dropDown.selectedIndex = -1);
       quietly(dropDown, () -> dropDown.text = MIXED_TEXT);
     }
