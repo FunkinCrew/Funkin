@@ -35,6 +35,7 @@ import funkin.graphics.FunkinSprite;
 import funkin.input.PreciseInputManager;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
+import funkin.play.GameplayStateMachine;
 import funkin.play.PauseSubState.PauseMode;
 import funkin.play.character.BaseCharacter;
 import funkin.play.components.HealthIcon;
@@ -372,8 +373,28 @@ class PlayState extends MusicBeatSubState
 
   /**
    * Whether the game is currently in the countdown before the song resumes.
+   * @deprecated This variable is deprecated. You should use the `GameplayStateMachine`.
    */
-  public var isInCountdown:Bool = false;
+  public var isInCountdown(get, set):Bool;
+
+  public function get_isInCountdown():Bool
+  {
+    return gameplayState?.isCountdown() ?? false;
+  }
+
+  public function set_isInCountdown(value:Bool):Bool
+  {
+    if (value)
+    {
+      gameplayState?.enterCountdown();
+    }
+    else
+    {
+      gameplayState?.enterSong();
+    }
+
+    return value;
+  }
 
   /**
    * Determines whether opening a substate over this causes the game to pause.
@@ -384,8 +405,28 @@ class PlayState extends MusicBeatSubState
 
   /**
    * Whether the game is currently in the Game Over state.
+   * @deprecated This variable is deprecated. You should use the `GameplayStateMachine`.
    */
-  public var isGameOverState:Bool = false;
+  public var isGameOverState(get, set):Bool;
+
+  public function get_isGameOverState():Bool
+  {
+    return gameplayState?.isGameOver() ?? false;
+  }
+
+  public function set_isGameOverState(value:Bool):Bool
+  {
+    if (value)
+    {
+      gameplayState?.enterGameOver();
+    }
+    else
+    {
+      gameplayState?.enterSong();
+    }
+
+    return value;
+  }
 
   /**
    * Whether the game is currently in Practice Mode.
@@ -407,8 +448,28 @@ class PlayState extends MusicBeatSubState
   /**
    * Whether the player has dropped below zero health,
    * and we are just waiting for an animation to play out before transitioning.
+   * @deprecated This variable is deprecated. You should use the `GameplayStateMachine`.
    */
-  public var isPlayerDying:Bool = false;
+  public var isPlayerDying(get, set):Bool;
+
+  public function get_isPlayerDying():Bool
+  {
+    return gameplayState?.isGameOver() ?? false;
+  }
+
+  public function set_isPlayerDying(value:Bool):Bool
+  {
+    if (value)
+    {
+      gameplayState?.enterGameOver();
+    }
+    else
+    {
+      gameplayState?.enterSong();
+    }
+
+    return value;
+  }
 
   /**
    * In Minimal Mode, the stage and characters are not loaded and a standard background is used.
@@ -417,14 +478,47 @@ class PlayState extends MusicBeatSubState
 
   /**
    * Whether the game is currently in an animated cutscene, and gameplay should be stopped.
+   * @deprecated This variable is deprecated. You should use the `GameplayStateMachine`.
    */
-  public var isInCutscene:Bool = false;
+  public var isInCutscene(get, set):Bool;
+
+  public function get_isInCutscene():Bool
+  {
+    return gameplayState?.isCutscene() ?? false;
+  }
+
+  public function set_isInCutscene(value:Bool):Bool
+  {
+    if (value)
+    {
+      gameplayState?.enterCutscene();
+    }
+    else
+    {
+      gameplayState?.enterSong();
+    }
+
+    return value;
+  }
 
   /**
    * If true, the player is allowed to pause the game.
    * Disabled during the ending of a song.
+   * @deprecated This variable is deprecated. You should use the `GameplayStateMachine`.
    */
-  public var mayPauseGame:Bool = true;
+  public var mayPauseGame(get, set):Bool;
+
+  public function get_mayPauseGame():Bool
+  {
+    return gameplayState?.mayPauseGame ?? false;
+  }
+
+  public function set_mayPauseGame(value:Bool):Bool
+  {
+    trace('WARNING: PlayState.instance.mayPauseGame can no longer be set.');
+
+    return value;
+  }
 
   /**
    * Whether the inputs should be disabled for whatever reason...
@@ -483,6 +577,11 @@ class PlayState extends MusicBeatSubState
   var noteStyle:NoteStyle;
 
   /**
+   * State machine for the gameplay.
+   */
+  public var gameplayState:GameplayStateMachine;
+
+  /**
    * PRIVATE INSTANCE VARIABLES
    * Private instance variables should be used for information that must be reset or dereferenced
    * every time the state is reset, but should not be accessed externally.
@@ -520,8 +619,28 @@ class PlayState extends MusicBeatSubState
 
   /**
    * False as long as the countdown has not finished yet.
+   * @deprecated This variable is deprecated. You should use `currentSong.songState`.
    */
-  var startingSong:Bool = false;
+  var startingSong(get, set):Bool;
+
+  public function get_startingSong():Bool
+  {
+    return currentSong?.songState.is(SongState.Starting) ?? false;
+  }
+
+  public function set_startingSong(value:Bool):Bool
+  {
+    if (value)
+    {
+      currentSong?.songState?.transition(SongState.Starting);
+    }
+    else
+    {
+      currentSong?.songState?.transition(SongState.Playing);
+    }
+
+    return value;
+  }
 
   /**
    * Track if we currently have the music paused for a Pause substate, so we can unpause it when we return.
@@ -644,7 +763,30 @@ class PlayState extends MusicBeatSubState
    */
   public var comboPopUps:PopUpStuff;
 
-  public var isSongEnd:Bool = false;
+  /**
+   * Whether the song has ended.
+   * @deprecated This variable is deprecated. You should use `currentSong.songState`.
+   */
+  public var isSongEnd(get, set):Bool;
+
+  public function get_isSongEnd():Bool
+  {
+    return currentSong?.songState.is(SongState.Ending) ?? false;
+  }
+
+  public function set_isSongEnd(value:Bool):Bool
+  {
+    if (value)
+    {
+      currentSong?.songState?.transition(SongState.Ending);
+    }
+    else
+    {
+      currentSong?.songState?.transition(SongState.Playing);
+    }
+
+    return value;
+  }
 
   #if FEATURE_TOUCH_CONTROLS
   /**
@@ -667,25 +809,20 @@ class PlayState extends MusicBeatSubState
    * - The Pause screen is open.
    * - The Game Over screen is open.
    * - The Chart Editor screen is open.
+   * @deprecated This variable is deprecated. You should use the `GameplayStateMachine`.
    */
-  var isGamePaused(get, never):Bool;
+  var isGamePaused(get, set):Bool;
 
   function get_isGamePaused():Bool
   {
-    // Note: If there is a substate which requires the game to act unpaused,
-    //       this should be changed to include something like `&& Std.isOfType()`
-    return this.subState != null;
+    return gameplayState?.isGamePaused ?? false;
   }
 
-  var isExitingViaPauseMenu(get, never):Bool;
-
-  function get_isExitingViaPauseMenu():Bool
+  public function set_isGamePaused(value:Bool):Bool
   {
-    if (this.subState == null) return false;
-    if (!Std.isOfType(this.subState, PauseSubState)) return false;
+    trace('WARNING: PlayState.instance.isGamePaused can no longer be set.');
 
-    var pauseSubState:PauseSubState = cast this.subState;
-    return !pauseSubState.allowInput;
+    return value;
   }
 
   /**
@@ -909,6 +1046,7 @@ class PlayState extends MusicBeatSubState
     overrideMusic = params.overrideMusic ?? false;
     previousCameraFollowPoint = params.cameraFollowPoint;
     mirrorSongData = params.mirrored ?? false;
+    gameplayState = new GameplayStateMachine('Play', currentSong.songState);
 
     // Basic object initialization
 
@@ -976,6 +1114,8 @@ class PlayState extends MusicBeatSubState
       trace('WARNING: PlayState instance already exists. This should not happen.');
     }
     instance = this;
+    gameplayState.setParent(this);
+
     #if !mobile
     // TODO: Figure out how to do the flair for charting mode!! I can't figure it out for the love of god. -Zack
     if (!isChartingMode) FlxG.autoPause = false;
@@ -1094,10 +1234,6 @@ class PlayState extends MusicBeatSubState
 
     FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
 
-    // The song is loaded and in the process of starting.
-    // This gets set back to false when the chart actually starts.
-    startingSong = true;
-
     // Call a script event to start the countdown.
     // Songs with cutscenes should call event.cancel().
     // As long as they call `PlayState.instance.startCountdown()` later, the countdown will start.
@@ -1214,6 +1350,8 @@ class PlayState extends MusicBeatSubState
     {
       if (!assertChartExists()) return;
 
+      var fromDeathState:Bool = gameplayState.isGameOver();
+
       prevScrollTargets = [];
 
       var retryEvent = SongRetryEvent.get(currentDifficulty);
@@ -1226,13 +1364,8 @@ class PlayState extends MusicBeatSubState
 
       resetCamera();
 
-      var fromDeathState = isPlayerDying;
-
       persistentUpdate = true;
       persistentDraw = true;
-
-      startingSong = true;
-      isPlayerDying = false;
 
       // Reset music properly.
       if (FlxG.sound.music != null)
@@ -1315,9 +1448,9 @@ class PlayState extends MusicBeatSubState
     }
 
     // Update the conductor.
-    if (startingSong)
+    if (currentSong.songState.is(SongState.Starting))
     {
-      if (isInCountdown)
+      if (gameplayState.isCountdown())
       {
         // Do NOT apply offsets at this point, because they already got applied the previous frame!
         Conductor.instance.update(Conductor.instance.songPosition + elapsed * 1000, false);
@@ -1367,7 +1500,7 @@ class PlayState extends MusicBeatSubState
       }
     }
 
-    if (!startingSong && vocals != null && FlxG.sound.music != null)
+    if (currentSong.songState.is(SongState.Playing) && vocals != null && FlxG.sound.music != null)
     {
       vocals.updatePending(FlxG.sound.music.time, FlxG.sound.music.playing);
     }
@@ -1390,7 +1523,7 @@ class PlayState extends MusicBeatSubState
     if (justUnpaused)
     {
       tweenPauseButtonIn();
-      if (!startingSong && hitbox != null) hitbox.visible = true;
+      if (currentSong.songState.is(SongState.Playing) && hitbox != null) hitbox.visible = true;
     }
     #end
 
@@ -1424,7 +1557,7 @@ class PlayState extends MusicBeatSubState
     FlxG.watch.addQuick('cameraBopIntensity', cameraBopIntensity);
 
     // Handle player death.
-    if (!isInCutscene && !disableKeys)
+    if (gameplayState.canTransition(GameplayState.GameOver) && !disableKeys)
     {
       // RESET = Quick Game Over Screen
       if (controls.RESET)
@@ -1441,8 +1574,10 @@ class PlayState extends MusicBeatSubState
       }
       #end
 
-      if (health <= Constants.HEALTH_MIN && !isPracticeMode && !isPlayerDying)
+      if (health <= Constants.HEALTH_MIN && !isPracticeMode)
       {
+        gameplayState.enterGameOver();
+
         // Stops the countdown at the current step so that the countdown voices don't leak into the death state.
         Countdown.stopCountdown();
 
@@ -1481,8 +1616,6 @@ class PlayState extends MusicBeatSubState
         persistentDraw = false;
         #end
 
-        isPlayerDying = true;
-
         #if FEATURE_MOBILE_ADVERTISEMENTS
         if (AdMobUtil.PLAYING_COUNTER < AdMobUtil.MAX_BEFORE_AD) AdMobUtil.PLAYING_COUNTER++;
         #end
@@ -1512,10 +1645,6 @@ class PlayState extends MusicBeatSubState
 
         event.finish();
       }
-      else if (isPlayerDying)
-      {
-        // Wait up.
-      }
     }
 
     processSongEvents();
@@ -1523,20 +1652,20 @@ class PlayState extends MusicBeatSubState
 
     // Handle keybinds.
     processInputQueue();
-    if (!isInCutscene && !disableKeys) debugKeyShit();
-    if (isInCutscene && !disableKeys) handleCutsceneKeys(elapsed);
+    if (!gameplayState.isCutscene() && !disableKeys) debugKeyShit();
+    if (gameplayState.isCutscene() && !disableKeys) handleCutsceneKeys(elapsed);
 
     // Moving notes into position is now done by Strumline.update().
-    if (!isInCutscene) processNotes(elapsed);
+    if (!gameplayState.isCutscene()) processNotes(elapsed);
 
     #if FEATURE_TOUCH_CONTROLS
-    if ((VideoCutscene.isPlaying() || isInCutscene) && !pauseButton.visible) pauseButton.visible = true;
+    if ((VideoCutscene.isPlaying() || gameplayState.isCutscene()) && !pauseButton.visible) pauseButton.visible = true;
     pauseCircle.visible = pauseButton.visible;
     #end
 
     justUnpaused = false;
     #if !mobile
-    if (Preferences.autoPause) FlxG.autoPause = !mayPauseGame;
+    if (Preferences.autoPause) FlxG.autoPause = !gameplayState.mayPauseGame;
     #end
   }
 
@@ -1547,7 +1676,7 @@ class PlayState extends MusicBeatSubState
    */
   function pause(mode:PauseMode = Standard, lostFocus:Bool = false):Void
   {
-    if (!mayPauseGame || justUnpaused || isGamePaused || isPlayerDying || isSongEnd) return;
+    if (!gameplayState.mayPauseGame || justUnpaused) return;
 
     switch (mode)
     {
@@ -1576,7 +1705,7 @@ class PlayState extends MusicBeatSubState
         event.finish();
 
       default: // also known as standard
-        if (!isInCountdown || isInCutscene) return;
+        if (!(gameplayState.isSong() || gameplayState.isCountdown())) return;
 
         Countdown.pauseCountdown();
         preparePauseUI();
@@ -1663,7 +1792,6 @@ class PlayState extends MusicBeatSubState
       iconP2?.updatePosition();
     }
 
-    isGameOverState = true;
     shouldSubstatePause = true;
     // Transition to the game over substate.
     var gameOverSubState = new GameOverSubState({
@@ -1847,7 +1975,7 @@ class PlayState extends MusicBeatSubState
 
       // Pause any sounds that are playing and keep track of them.
       // Vocals are also paused here but are not included as they are handled separately.
-      if (!isGameOverState)
+      if (!gameplayState.isGameOver())
       {
         FlxG.sound.list.forEachAlive((sound:FlxSound) ->
         {
@@ -1906,7 +2034,7 @@ class PlayState extends MusicBeatSubState
       }
 
       // Re-sync vocals.
-      if (FlxG.sound.music != null && !startingSong && !isInCutscene) resyncVocals();
+      if (FlxG.sound.music != null && currentSong.songState.is(SongState.Playing) && !gameplayState.isCutscene()) resyncVocals();
 
       // Resume the countdown.
       Countdown.resumeCountdown();
@@ -1924,7 +2052,6 @@ class PlayState extends MusicBeatSubState
 
       event.finish();
     }
-    isGameOverState = false;
 
     super.closeSubState();
   }
@@ -1934,13 +2061,13 @@ class PlayState extends MusicBeatSubState
    */
   override public function onFocus():Void
   {
-    if (VideoCutscene.isPlaying() #if !mobile && Preferences.autoPause #end && isGamePaused) VideoCutscene.pauseVideo();
+    if (VideoCutscene.isPlaying() #if !mobile && Preferences.autoPause #end && gameplayState.isGamePaused) VideoCutscene.pauseVideo();
     #if html5
     else if (Preferences.autoPause) VideoCutscene.resumeVideo();
     #end
 
     #if FEATURE_DISCORD_RPC
-    if (health > Constants.HEALTH_MIN && !isGamePaused && Preferences.autoPause)
+    if (health > Constants.HEALTH_MIN && !gameplayState.isGamePaused && Preferences.autoPause)
     {
       DiscordClient.instance.setPresence({
         state: buildDiscordRPCState(),
@@ -1964,7 +2091,7 @@ class PlayState extends MusicBeatSubState
     #end
 
     #if FEATURE_DISCORD_RPC
-    if (health > Constants.HEALTH_MIN && !isGamePaused && Preferences.autoPause)
+    if (health > Constants.HEALTH_MIN && !gameplayState.isGamePaused && Preferences.autoPause)
     {
       DiscordClient.instance.setPresence({
         state: buildDiscordRPCState(),
@@ -1976,7 +2103,7 @@ class PlayState extends MusicBeatSubState
     #end
 
     // if else if else if else if else if else AAAAAAAAAAAAAAAAAAAAAAA
-    if (!isGamePaused #if !mobile && Preferences.autoPause #end)
+    if (!gameplayState.isGamePaused #if !mobile && Preferences.autoPause #end)
     {
       if (currentConversation != null)
       {
@@ -2026,7 +2153,7 @@ class PlayState extends MusicBeatSubState
     // super.stepHit() returns false if a module cancelled the event.
     if (!super.stepHit()) return false;
 
-    if (isGamePaused) return false;
+    if (gameplayState.isGamePaused) return false;
 
     iconP1?.onStepHit(Std.int(Conductor.instance.currentStep));
     iconP2?.onStepHit(Std.int(Conductor.instance.currentStep));
@@ -2062,7 +2189,7 @@ class PlayState extends MusicBeatSubState
     // super.beatHit() returns false if a module cancelled the event.
     if (!super.beatHit()) return false;
 
-    if (isGamePaused) return false;
+    if (gameplayState.isGamePaused) return false;
 
     if (generatedMusic)
     {
@@ -2095,7 +2222,7 @@ class PlayState extends MusicBeatSubState
       }
 
       if (
-        !startingSong
+        currentSong.songState.is(SongState.Playing)
         && (
           Math.abs(FlxG.sound.music.time - correctSync) > RESYNC_THRESHOLD
           || Math.abs(playerVoicesError) > RESYNC_THRESHOLD
@@ -2804,8 +2931,6 @@ class PlayState extends MusicBeatSubState
     var result:Bool = Countdown.performCountdown();
     if (!result) return;
 
-    isInCutscene = false;
-
     // TODO: Maybe tween in the camera after any cutscenes.
     camHUD.visible = true;
   }
@@ -2816,7 +2941,7 @@ class PlayState extends MusicBeatSubState
    */
   public function startConversation(conversationId:String):Void
   {
-    isInCutscene = true;
+    gameplayState.enterCutscene();
 
     currentConversation = ConversationRegistry.instance.fetchEntry(conversationId);
     if (currentConversation == null) return;
@@ -2838,8 +2963,6 @@ class PlayState extends MusicBeatSubState
    */
   function onConversationComplete():Void
   {
-    isInCutscene = false;
-
     if (currentConversation != null)
     {
       currentConversation.kill();
@@ -2847,7 +2970,7 @@ class PlayState extends MusicBeatSubState
       currentConversation = null;
     }
 
-    if (startingSong && !isInCountdown)
+    if (currentSong.songState.is(SongState.Idle) && !gameplayState.isCountdown())
     {
       startCountdown();
     }
@@ -2858,13 +2981,13 @@ class PlayState extends MusicBeatSubState
    */
   function startSong():Void
   {
-    startingSong = false;
+    gameplayState.enterSong();
 
     #if FEATURE_TOUCH_CONTROLS
     if (hitbox != null) hitbox.visible = true;
     #end
 
-    if (!overrideMusic && !isGamePaused && currentChart != null)
+    if (!overrideMusic && !gameplayState.isGamePaused && currentChart != null)
     {
       currentChart?.playInst(currentInstrumental);
     }
@@ -2877,7 +3000,7 @@ class PlayState extends MusicBeatSubState
 
     FlxG.sound.music.onComplete = function()
     {
-      if (mayPauseGame) endSong(skipEndingTransition);
+      if (gameplayState.mayPauseGame) endSong(skipEndingTransition);
     };
 
     FlxG.sound.music.pitch = playbackRate;
@@ -2988,7 +3111,7 @@ class PlayState extends MusicBeatSubState
    */
   function onKeyPress(event:PreciseInputEvent):Void
   {
-    if (isGamePaused) return;
+    if (gameplayState.isGamePaused) return;
 
     // Set the current position for further calculation.
     event.position = Conductor.instance.songPosition;
@@ -3270,7 +3393,7 @@ class PlayState extends MusicBeatSubState
     if (inputPressQueue.length + inputReleaseQueue.length == 0) return;
 
     // Ignore inputs during cutscenes.
-    if (isInCutscene || disableKeys)
+    if (gameplayState.isCutscene() || disableKeys)
     {
       inputPressQueue = [];
       inputReleaseQueue = [];
@@ -3706,7 +3829,7 @@ class PlayState extends MusicBeatSubState
    */
   function handleCutsceneKeys(elapsed:Float):Void
   {
-    if (isGamePaused) return;
+    if (gameplayState.isGamePaused) return;
 
     var pauseButtonCheck:Bool = false;
     var androidPause:Bool = false;
@@ -3767,8 +3890,6 @@ class PlayState extends MusicBeatSubState
       FlxG.sound.music.volume = 0;
     }
     if (vocals != null) vocals.volume = 0;
-    mayPauseGame = false;
-    isSongEnd = true;
 
     // Prevent ghost misses while the song is ending.
     disableKeys = true;
@@ -3962,12 +4083,13 @@ class PlayState extends MusicBeatSubState
         // TODO: Softcode this cutscene.
         if (currentSong.id == 'eggnog')
         {
+          gameplayState.enterCutscene();
+
           var blackBG:FunkinSprite = new FunkinSprite(-FlxG.width * FlxG.camera.zoom, -FlxG.height * FlxG.camera.zoom);
           blackBG.makeSolidColor(FlxG.width * 3, FlxG.height * 3, FlxColor.BLACK);
           blackBG.scrollFactor.set();
           add(blackBG);
           camHUD.visible = false;
-          isInCutscene = true;
 
           FunkinSound.playSoundOnce(Paths.sound('gameplay/stages/mallEvil/sounds/lights-off'), {
             onComplete: function()
@@ -4500,7 +4622,16 @@ class PlayState extends MusicBeatSubState
 
     handleSkippedNotes();
     SongEventRegistry.handleSkippedEvents(songEvents, Conductor.instance.songPosition);
-    if (FlxG.sound.music != null && FlxG.sound.music.playing && preventDeath) regenNoteData(FlxG.sound.music.time);
+
+    if (FlxG.sound.music != null && FlxG.sound.music.playing)
+    {
+      currentSong?.songState?.transition(SongState.Playing);
+
+      if (preventDeath)
+      {
+        regenNoteData(FlxG.sound.music.time);
+      }
+    }
 
     Conductor.instance.update(FlxG.sound?.music?.time ?? 0.0);
 

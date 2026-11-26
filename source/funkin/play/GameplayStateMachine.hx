@@ -2,7 +2,7 @@ package funkin.play;
 
 import funkin.util.stateMachine.StateMachine;
 import funkin.ui.MusicBeatSubState;
-import funkin.play.pause.PauseSubState;
+import funkin.play.PauseSubState;
 import funkin.play.song.Song.SongState;
 import funkin.play.PlayState;
 
