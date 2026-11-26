@@ -1525,6 +1525,14 @@ class ChartEditorDialogHandler
       state.performDifficultyChange('Add Variation', function()
       {
         state.songMetadata.set(pendingVariation.variation, pendingVariation);
+        if (!state.songChartData.exists(pendingVariation.variation))
+        {
+          state.songChartData.set(pendingVariation.variation, new SongChartData([
+            Constants.DEFAULT_DIFFICULTY => 1.0
+          ], [], [
+            Constants.DEFAULT_DIFFICULTY => []
+          ]));
+        }
         state.refreshPlayDataVariations();
         return true;
       });

@@ -619,7 +619,11 @@ class FNFCUtil
     for (variation => metadata in data.songMetadatas)
     {
       var chartData:Null<SongChartData> = data.songChartDatas.get(variation);
-      if (chartData == null) throw 'Could not find chart data for variation: $variation';
+      if (chartData == null)
+      {
+        trace(' WARNING '.bg_yellow().bold() + ' Could not find chart data for variation: $variation, writing an empty chart.');
+        chartData = new SongChartData([], [], []);
+      }
 
       metadata.version = funkin.data.song.SongRegistry.SONG_METADATA_VERSION;
       metadata.generatedBy = funkin.data.song.SongRegistry.DEFAULT_GENERATEDBY;
