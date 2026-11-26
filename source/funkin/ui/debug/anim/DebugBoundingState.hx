@@ -536,51 +536,7 @@ class DebugBoundingState extends FlxState
 
   function buildOutputStringNew():String
   {
-    var charData:CharacterData = Reflect.copy(swagChar._data);
-
-    if (charData.renderType == CharacterData.DEFAULT_RENDERTYPE) Reflect.deleteField(charData, "renderType");
-    if (charData.offsets == CharacterData.DEFAULT_OFFSETS) Reflect.deleteField(charData, "offsets");
-    if (charData.cameraOffsets == CharacterData.DEFAULT_OFFSETS) Reflect.deleteField(charData, "cameraOffsets");
-
-    if (charData.healthIcon.id == swagChar.characterId) Reflect.deleteField(charData.healthIcon, "id");
-    if (charData.healthIcon.scale == CharacterData.DEFAULT_SCALE) Reflect.deleteField(charData.healthIcon, "scale");
-    if (charData.healthIcon.flipX == CharacterData.DEFAULT_FLIPX) Reflect.deleteField(charData.healthIcon, "flipX");
-    if (charData.healthIcon.isPixel == CharacterData.DEFAULT_ISPIXEL) Reflect.deleteField(charData.healthIcon, "isPixel");
-    if (charData.healthIcon.offsets == CharacterData.DEFAULT_OFFSETS) Reflect.deleteField(charData.healthIcon, "offsets");
-
-    if (
-      charData.healthIcon.id == null
-      && charData.healthIcon.scale == null
-      && charData.healthIcon.flipX == null
-      && charData.healthIcon.isPixel == null
-      && charData.healthIcon.offsets == null
-    )
-    {
-      Reflect.deleteField(charData, "healthIcon");
-    }
-
-    if (charData.startingAnimation == CharacterData.DEFAULT_STARTINGANIM) Reflect.deleteField(charData, "startingAnimation");
-    if (charData.scale == CharacterData.DEFAULT_SCALE) Reflect.deleteField(charData, "scale");
-    if (charData.isPixel == CharacterData.DEFAULT_ISPIXEL) Reflect.deleteField(charData, "isPixel");
-    if (charData.danceEvery == CharacterData.DEFAULT_DANCEEVERY) Reflect.deleteField(charData, "danceEvery");
-    if (charData.singTime == CharacterData.DEFAULT_SINGTIME) Reflect.deleteField(charData, "singTime");
-    if (charData.flipX == CharacterData.DEFAULT_FLIPX) Reflect.deleteField(charData, "flipX");
-    if (charData.atlasSettings == CharacterData.DEFAULT_ATLASSETTINGS) Reflect.deleteField(charData, "atlasSettings");
-
-    for (charDataAnim in charData.animations)
-    {
-      var animName:String = charDataAnim.name;
-      charDataAnim.offsets = swagChar.animationOffsets.get(animName);
-
-      if (charDataAnim.animType == CharacterData.DEFAULT_ANIMTYPE) Reflect.deleteField(charDataAnim, "animType");
-      if (charDataAnim.frameRate == CharacterData.DEFAULT_FRAMERATE) Reflect.deleteField(charDataAnim, "frameRate");
-      if (charDataAnim.offsets[0] == 0 && charDataAnim.offsets[1] == 0) Reflect.deleteField(charDataAnim, "offsets");
-      if (charDataAnim.looped == CharacterData.DEFAULT_LOOP) Reflect.deleteField(charDataAnim, "looped");
-      if (charDataAnim.flipX == CharacterData.DEFAULT_FLIPX) Reflect.deleteField(charDataAnim, "flipX");
-      if (charDataAnim.flipY == CharacterData.DEFAULT_FLIPY) Reflect.deleteField(charDataAnim, "flipY");
-    }
-
-    return SerializerUtil.toJSON(charData, true);
+    return swagChar._data.serialize();
   }
 
   var swagChar:BaseCharacter;

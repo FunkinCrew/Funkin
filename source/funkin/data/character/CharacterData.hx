@@ -2,9 +2,10 @@ package funkin.data.character;
 
 import funkin.data.animation.AnimationData;
 import funkin.util.VersionUtil;
+import funkin.util.tools.ISerializable;
 
 @:nullSafety
-class CharacterData
+class CharacterData implements ISerializable
 {
   /**
    * The semantic version number of the character data JSON format.
@@ -182,6 +183,30 @@ class CharacterData
   {
     this.version = CharacterRegistry.CHARACTER_DATA_VERSION;
     this.name = name;
+  }
+
+  /**
+   * Convert this CharacterData into a JSON string.
+   *
+   * @param pretty Whether to use pretty formatting on the output.
+   * @return This object, converted into a JSON string.
+   */
+  public function serialize(pretty:Bool = true,
+    ?params:json2object.JsonWriterParams):String
+  {
+    // Update generatedBy and version before writing.
+    updateVersionToLatest();
+
+    var writer = new json2object.JsonWriter<CharacterData>(params ?? {
+      ignoreNullOptionals: true,
+      ignoreDefaults: true
+    });
+    return writer.write(this, pretty ? ' ' : null);
+  }
+
+  public function updateVersionToLatest():Void
+  {
+    this.version = CharacterRegistry.CHARACTER_DATA_VERSION;
   }
 
   /**
@@ -416,13 +441,13 @@ enum abstract CharacterRenderType(String) from String to String
  */
 typedef CharacterVariationData =
 {
-  /** 
+  /**
    * ID of the base character this variation belongs to.
    */
   var parent:String;
 
-  /** 
-   * Optional label shown in editor variation selectors. 
+  /**
+   * Optional label shown in editor variation selectors.
    */
   @:optional var ?name:Null<String>;
 }
