@@ -368,6 +368,9 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
       }
     }
 
+    var autoPlay:Bool = params?.autoPlay ?? true;
+    var looped:Bool = params?.looped ?? true;
+
     // Play the new music.
     emptyPartialQueue();
     var music:Null<FunkinSound> = loadSound(musicAssetPath.audio(), {
@@ -379,19 +382,26 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
       autoPlay: params?.autoPlay ?? true,
       volume: params?.volume ?? MAX_VOLUME,
       onComplete: params?.onComplete,
-      onLoad: params?.onLoad,
     });
 
-    if (music != null)
-    {
-      setMusic(music);
-
-      return true;
-    }
-    else
+    if (music == null)
     {
       return false;
     }
+
+    setMusic(music);
+
+    if (autoPlay)
+    {
+      music.play();
+    }
+
+    if (params != null && params.onLoad != null && music._sound != null)
+    {
+      params.onLoad(music);
+    }
+
+    return true;
   }
 
   /**
