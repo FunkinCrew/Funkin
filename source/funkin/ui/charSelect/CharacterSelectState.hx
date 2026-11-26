@@ -519,7 +519,9 @@ class CharacterSelectState extends MusicBeatSubState
   override public function create():Void
   {
     super.create();
-
+    #if android 
+    FlxG.android.enabled = false;
+    #end
     uiStateMachine.transition(Disabled);
 
     loadAvailableCharacters();
@@ -899,7 +901,9 @@ class CharacterSelectState extends MusicBeatSubState
   override public function destroy():Void
   {
     instance = null;
-
+    #if android
+    FlxG.android.enabled = true;
+    #end
     super.destroy();
   }
 
