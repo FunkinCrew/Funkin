@@ -106,7 +106,7 @@ try {
 
 	if (-not $Classes -or $Classes.Count -eq 0) {
 		$base = (Resolve-Path $ScriptDir).Path.TrimEnd('\', '/')
-		$Classes = Get-ChildItem -Path $base -Recurse -Filter '*.hx' | ForEach-Object {
+		$Classes = Get-ChildItem -Path $base -Recurse -Filter '*.hx' | Where-Object { $_.Name -ne 'import.hx' } | ForEach-Object {
 			$rel = $_.FullName.Substring($base.Length).TrimStart('\', '/')
 			($rel -replace '\.hx$', '') -replace '[\\/]', '.'
 		} | Sort-Object
