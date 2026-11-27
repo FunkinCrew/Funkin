@@ -55,7 +55,7 @@ class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass impl
     {
       case IMAGE:
         results.appendUnique([
-          Paths.image('ui/freeplay/interface/card-glow'),
+          Paths.image('ui/freeplay/interface/card-glow').withPixelData(),
           Paths.image('ui/freeplay/interface/confirm-glow-1'),
           Paths.image('ui/freeplay/interface/glowing-text'),
           Paths.image('ui/freeplay/interface/confirm-glow-2'),

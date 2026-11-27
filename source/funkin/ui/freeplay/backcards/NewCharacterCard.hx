@@ -43,12 +43,12 @@ class NewCharacterCard extends BackingCard
     {
       case IMAGE:
         results.appendUnique([
-          Paths.image('ui/freeplay/styles/unlock/backing-card/dark-back'),
-          Paths.image('ui/freeplay/styles/unlock/backing-card/multiply-bar'),
+          Paths.image('ui/freeplay/styles/unlock/backing-card/dark-back').withPixelData(),
+          Paths.image('ui/freeplay/styles/unlock/backing-card/multiply-bar').withPixelData(),
           Paths.image('ui/freeplay/styles/unlock/backing-card/orange-gradient'),
-          Paths.image('ui/freeplay/styles/unlock/backing-card/red'),
+          Paths.image('ui/freeplay/styles/unlock/backing-card/red').withPixelData(),
           Paths.image('ui/freeplay/styles/unlock/backing-card/orange-gradient'),
-          Paths.image('ui/freeplay/styles/unlock/backing-card/yellow-bg'),
+          Paths.image('ui/freeplay/styles/unlock/backing-card/yellow-bg').withPixelData(),
           Paths.image('ui/freeplay/styles/unlock/backing-card/red-gradient'),
         ]);
       default:
