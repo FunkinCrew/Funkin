@@ -67,9 +67,20 @@ class StickerLoadingState extends LoadingState
 
     this.grpStickers = new FlxTypedSpriteGroup<StickerSprite>();
 
-    this.stickerPackId = stickerParams.stickerPack ?? Constants.DEFAULT_STICKER_PACK;
-    this.stickerPack = StickerRegistry.instance.fetchEntry(this.stickerPackId) ?? StickerRegistry.instance.fetchDefault();
+    var targetStickerPack:Null<StickerPack> = StickerRegistry.instance.fetchEntry(stickerParams.stickerPack ?? Constants.DEFAULT_STICKER_PACK);
 
+    if (targetStickerPack != null && targetStickerPack.isValid())
+    {
+      this.stickerPack = targetStickerPack;
+    }
+    else
+    {
+      trace(' WARNING '.warning() + ' Sticker pack "${stickerParams.stickerPack}" is invalid or missing, falling back to default.');
+      this.stickerPack = StickerRegistry.instance.fetchDefault();
+    }
+    
+    this.stickerPackId = stickerPack.id;
+    
     @:nullSafety(Off)
     {
       transIn = null;

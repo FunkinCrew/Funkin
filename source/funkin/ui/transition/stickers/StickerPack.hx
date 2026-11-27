@@ -96,13 +96,40 @@ class StickerPack implements IRegistryEntry<StickerData>
   }
 
   /**
-   * Retrieve a random sticker from the pack.
+   * Filters and returns only the sticker keys whose asset paths actually exist.
+   * @return An array of valid sticker asset keys.
+   */
+  public function getValidStickers():Array<String>
+  {
+    var stickers:Array<String> = getStickers();
+    if (stickers == null) return [];
+
+    return stickers.filter(function(sticker:String):Bool
+    {
+      if (sticker == null || sticker == '') return false;
+      var formattedPath:String = funkin.assets.Paths.formatRelative(sticker, 'ui/loading/stickers/stickerpacks', Constants.EXT_IMAGE);
+      return funkin.assets.Paths.image(formattedPath).exists();
+    });
+  }
+
+  /**
+   * Checks whether this sticker pack contains at least one valid, existing sticker asset.
+   * @return True... if at least one valid sticker exists, otherwise False...
+   */
+  public function isValid():Bool
+  {
+    return getValidStickers().length > 0;
+  }
+
+  /**
+   * Retrieve a random valid sticker from the pack.
    * @param last Whether this will be the last sticker to be placed on the screen.
    * @return An asset path to a sticker to display.
    */
   public function getRandomStickerPath(last:Bool):String
   {
-    return funkin.assets.Paths.formatRelative(FlxG.random.getObject(getStickers()), 'ui/loading/stickers/stickerpacks', Constants.EXT_IMAGE);
+    var valid:Array<String> = getValidStickers();
+    return funkin.assets.Paths.formatRelative(FlxG.random.getObject(valid), 'ui/loading/stickers/stickerpacks', Constants.EXT_IMAGE);
   }
 
   public function toString():String
