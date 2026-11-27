@@ -172,10 +172,10 @@ class CharacterRegistry extends BaseRegistry<BaseCharacter, CharacterData, Chara
 
   static function findCharPixelIconAsset(char:String):Null<FlxFrame>
   {
-    var charPath:String = 'ui/freeplay/characters/';
+    var iconName:String = '';
+    var charPath:String = 'gameplay/characters/${iconName}/freeplay-';
 
     var charIDParts:Array<String> = char.split('-');
-    var iconName:String = '';
     var lastValidIconName:String = '';
     for (i in 0...charIDParts.length)
     {
@@ -183,6 +183,11 @@ class CharacterRegistry extends BaseRegistry<BaseCharacter, CharacterData, Chara
 
       if (Paths.image(charPath + '${iconName}', false).exists())
       {
+        lastValidIconName = iconName;
+      }
+      else if (Paths.image('ui/freeplay/characters/' + '${iconName}', false).exists())
+      {
+        charPath = 'ui/freeplay/characters/';
         lastValidIconName = iconName;
       }
 
