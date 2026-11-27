@@ -38,7 +38,7 @@ class BackupAvailableDialog extends Dialog
     var file = Path.withoutExtension(Path.withoutDirectory(filePath));
 
     #if sys
-    var stat = sys.FileSystem.stat(filePath);
+    var stat = FileUtil.getFileStat(filePath);
     var sizeInMB = (stat.size / 1000000).round(3);
 
     backupTimeLabel.text = "Full Name: " + file + "\nLast Modified: " + stat.mtime.toString() + "\nSize: " + sizeInMB + " MB";

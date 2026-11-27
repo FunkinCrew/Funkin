@@ -104,7 +104,7 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
     }
     else
     {
-      var lastModified:String = 'Last Modified: ' + sys.FileSystem.stat(chartPath).mtime.toString();
+      var lastModified:String = 'Last Modified: ' + FileUtil.getFileStat(chartPath).mtime.toString();
       linkRecentChart.tooltip += '\n' + lastModified;
     }
     #end
