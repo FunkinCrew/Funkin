@@ -83,10 +83,26 @@ class ReflectUtil
    * Copies the anonymous structure to a new object.
    * @param obj The object to copy.
    * @return An independent clone of the structure.
+   * @throws error When trying to copy a blacklisted object.
    */
   public static function copyAnonymousFieldsOf(obj:Any):Null<Any>
   {
-    return Reflect.copy(obj);
+    if (!isAccessAllowed(obj))
+    {
+      throw 'Attempted to copy blacklisted object "${getClassNameOf(obj)}"';
+    }
+
+    var copy = Reflect.copy(obj);
+
+    for (field in Reflect.fields(copy))
+    {
+      if (!isAccessAllowed(obj, field))
+      {
+        Reflect.deleteField(copy, field);
+      }
+    }
+
+    return copy;
   }
 
   /**
