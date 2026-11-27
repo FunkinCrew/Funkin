@@ -45,10 +45,10 @@ class PixelatedIcon extends FunkinSprite
   {
     if (this.char == char) return;
 
-    var charPath:String = 'ui/freeplay/characters/';
+    var iconName:String = '';
+    var charPath:String = 'gameplay/characters/${iconName}/freeplay-';
 
     var charIDParts:Array<String> = char.split('-');
-    var iconName:String = '';
     var lastValidIconName:String = '';
     for (i in 0...charIDParts.length)
     {
@@ -58,9 +58,9 @@ class PixelatedIcon extends FunkinSprite
       {
         lastValidIconName = iconName;
       }
-      else if (Paths.image('gameplay/characters/${iconName}/freeplay-' + '${iconName}', false).exists())
+      else if (Paths.image('ui/freeplay/characters/' + '${iconName}', false).exists())
       {
-        charPath = 'gameplay/characters/${iconName}/freeplay-';
+        charPath = 'ui/freeplay/characters/';
         lastValidIconName = iconName;
       }
 
