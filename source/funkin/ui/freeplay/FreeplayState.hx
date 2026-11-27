@@ -2112,7 +2112,7 @@ class FreeplayState extends MusicBeatSubState
       goBack();
     }
 
-    if (controls.ACCEPT_P && uiStateMachine.canInteract())
+    if ((controls.ACCEPT_P  || FlxG.mouse.justPressed) && uiStateMachine.canInteract())
     {
       currentCapsule.onConfirm();
     }
