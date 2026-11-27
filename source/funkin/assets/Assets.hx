@@ -572,7 +572,7 @@ class Assets implements ConsoleClass
       throw 'Sound file does not exist: ${assetPath.toString()}';
     }
 
-    return OpenFLAssets.getMusic(assetPath.toString());
+    return Sound.fromAudioBuffer(AudioBuffer.fromBytes(assetPath.toString(), true));
   }
 
   /**
