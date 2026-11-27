@@ -688,6 +688,22 @@ class PolymodHandler
       Polymod.blacklistImport(className);
     }
 
+    // `flixel.system.debug.console.*` and `flixel.system.debug.watch.*`
+    // Can be used to access/modify fields via `Reflect`, bypassing blacklisted fields.
+    for (cls in ClassMacro.listClassesInPackage('flixel.system.debug.console'))
+    {
+      if (cls == null) continue;
+      var className:String = Type.getClassName(cls);
+      Polymod.blacklistImport(className);
+    }
+
+    for (cls in ClassMacro.listClassesInPackage('flixel.system.debug.watch'))
+    {
+      if (cls == null) continue;
+      var className:String = Type.getClassName(cls);
+      Polymod.blacklistImport(className);
+    }
+
     // External classes for android that bridge to private JNI methods & callbacks
     Polymod.blacklistImport('funkin.external.android.CallbackUtil');
     Polymod.blacklistImport('funkin.external.android.DataFolderUtil');
