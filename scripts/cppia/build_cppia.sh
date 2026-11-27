@@ -103,6 +103,7 @@ fi
 
 if [ "${#CLASSES[@]}" -eq 0 ]; then
 	while IFS= read -r f; do
+		if [ "${f##*/}" = "import.hx" ]; then continue; fi
 		rel="${f#"$SCRIPT_DIR"/}"
 		CLASSES+=("$(echo "${rel%.hx}" | tr '/' '.')")
 	done < <(find "$SCRIPT_DIR" -type f -name '*.hx' | sort)
