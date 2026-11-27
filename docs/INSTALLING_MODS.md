@@ -25,8 +25,12 @@
 4. Extract the mod you downloaded from its ZIP file, and place the mod folder into the game's `mods` folder.
 5. Restart the game (you may have to [force close](https://support.google.com/android/answer/9079646?hl=en) the app first). The game should detect the mod and start with it.
 
+Alternatively, tap a downloaded mod `.zip` file and choose Friday Night Funkin to install it from the Mods menu.
+
 # iOS
 1. Start the game at least once. This will create a `mods` folder in your system files.
 2. Open the Files app, and navigate to `On My iPhone` -> `Friday Night Funkin` -> `mods`.
 3. Extract the mod you downloaded from its ZIP file, and place the mod folder into the game's `mods` folder.
 4. Restart the game (you may have to [force close](https://support.apple.com/en-us/109359) the app first). The game should detect the mod and start with it.
+
+Alternatively, open a downloaded mod `.zip` file with Friday Night Funkin to install it from the Mods menu.

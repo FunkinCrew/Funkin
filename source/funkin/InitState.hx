@@ -518,6 +518,22 @@ class InitState extends FlxState
     else
     {
       #if mobile
+      funkin.util.mobile.FNFLoaderProvider.onModArchiveOpen.add(funkin.ui.modmenu.ModMenuState.openExternalArchive);
+      funkin.util.mobile.FNFLoaderProvider.onModArchiveError.add(function(reason:String):Void
+      {
+        WindowUtil.showError('Failed to open mod archive', reason);
+      });
+
+      final modArchiveError:Null<String> = funkin.util.mobile.FNFLoaderProvider.queryModArchiveError();
+      if (modArchiveError != null) WindowUtil.showError('Failed to open mod archive', modArchiveError);
+
+      final modArchive = funkin.util.mobile.FNFLoaderProvider.queryModArchive();
+      if (modArchive != null)
+      {
+        funkin.ui.modmenu.ModMenuState.openExternalArchive(modArchive.path, modArchive.fileName);
+        return;
+      }
+
       funkin.util.mobile.FNFLoaderProvider.onFNFCOpen.add(function(fnfcFile:String)
       {
         flixel.tweens.FlxTween.globalManager.clear();

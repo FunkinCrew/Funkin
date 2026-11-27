@@ -1431,12 +1431,12 @@ class Project extends HXProject
     final intentFilters:Array<Xml> = [];
 
     {
-      // FNFC Intent Filter
-      final fnfcIntentFilter:Xml = Xml.createElement('intent-filter');
+      // FNFC and mod archive intent filter
+      final archiveIntentFilter:Xml = Xml.createElement('intent-filter');
 
       final action:Xml = Xml.createElement('action');
       action.set('android:name', 'android.intent.action.VIEW');
-      fnfcIntentFilter.addChild(action);
+      archiveIntentFilter.addChild(action);
 
       final fnfcIntentFilterCategories:Array<String> = [
         "android.intent.category.DEFAULT",
@@ -1447,34 +1447,43 @@ class Project extends HXProject
       {
         final category:Xml = Xml.createElement('category');
         category.set('android:name', categoryName);
-        fnfcIntentFilter.addChild(category);
+        archiveIntentFilter.addChild(category);
       }
 
-      final fnfcIntentFilterDatas:Map<String, Array<String>> = [
-        "android:mimeType" => ["application/zip"], // When this is added, it makes the game show up only when it's a FNFC file.
-        // But it also for some reason make it not show up at all in ZArchiver no matter what the file is...
-        // "android:host"        => ["*"],
-        "android:scheme" => ["file", "content"], // I think having all these makes it so the extension check would work even when the files has dots like "epic-song-v2.0.fnfc"
+      final archiveIntentFilterDatas:Map<String, Array<String>> = [
+        "android:mimeType" => ["application/zip", "application/x-zip-compressed", "application/octet-stream"],
+        // Some file managers may not show the app for these MIME types
+        "android:scheme" => ["file", "content"],
         "android:pathPattern" => [
           ".*\\.fnfc",
           ".*\\..*\\.fnfc",
           ".*\\..*\\..*\\.fnfc",
           ".*\\..*\\..*\\..*\\.fnfc",
-          ".*\\..*\\..*\\..*\\..*\\.fnfc"
+          ".*\\..*\\..*\\..*\\..*\\.fnfc",
+          ".*\\.zip",
+          ".*\\..*\\.zip",
+          ".*\\..*\\..*\\.zip",
+          ".*\\..*\\..*\\..*\\.zip",
+          ".*\\..*\\..*\\..*\\..*\\.zip",
+          ".*\\.fnfmod",
+          ".*\\..*\\.fnfmod",
+          ".*\\..*\\..*\\.fnfmod",
+          ".*\\..*\\..*\\..*\\.fnfmod",
+          ".*\\..*\\..*\\..*\\..*\\.fnfmod"
         ]
       ];
 
-      for (key => values in fnfcIntentFilterDatas)
+      for (key => values in archiveIntentFilterDatas)
       {
         for (value in values)
         {
           final data:Xml = Xml.createElement("data");
           data.set(key, value);
-          fnfcIntentFilter.addChild(data);
+          archiveIntentFilter.addChild(data);
         }
       }
 
-      intentFilters.push(fnfcIntentFilter);
+      intentFilters.push(archiveIntentFilter);
     }
 
     {
