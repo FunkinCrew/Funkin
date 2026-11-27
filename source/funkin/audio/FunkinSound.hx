@@ -187,8 +187,8 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 
     var soundPath:Sound = stream ? funkin.assets.Assets.getMusic(assetPath) : funkin.assets.Assets.getSound(assetPath);
 
-    sound.loadAudio(soundPath, stream, looped, autoDestroy, params?.onComplete);
-
+    sound.loadAudio(soundPath, stream, looped, autoDestroy, stream, params?.onComplete);
+    
     sound._label = assetPath.toString();
 
     sound.volume = volume;
