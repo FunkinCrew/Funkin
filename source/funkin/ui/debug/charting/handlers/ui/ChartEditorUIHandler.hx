@@ -299,6 +299,10 @@ class ChartEditorUIHandler
       name: 'Step'
     },
     {
+      id: 'playbarSelectedNotes',
+      name: 'Selected Notes'
+    },
+    {
       id: 'playbarControls',
       name: 'Playback Controls'
     },
@@ -741,35 +745,63 @@ class ChartEditorUIHandler
       }
     };
 
-    setupVolumeSlider(state, state.preferencesVolumeMetronome, () -> state.metronomeVolume, volume -> state.metronomeVolume = volume, () -> state.metronomeMuted, muted ->
-    {
-      state.metronomeMuted = muted;
-      state.menubarItemMuteMetronome.selected = muted;
-    });
+    setupVolumeSlider(
+      state,
+      state.preferencesVolumeMetronome,
+      () -> state.metronomeVolume,
+      volume -> state.metronomeVolume = volume,
+      () -> state.metronomeMuted,
+      muted ->
+      {
+        state.metronomeMuted = muted;
+        state.menubarItemMuteMetronome.selected = muted;
+      }
+    );
     state.preferencesVolumeMetronome.value = Std.int(state.metronomeVolume * 100);
 
-    setupVolumeSlider(state, state.preferencesVolumeHitsoundPlayer, () -> state.hitsoundVolumePlayer, volume -> state.hitsoundVolumePlayer = volume, () -> state.hitsoundsMuted, muted ->
-    {
-      state.hitsoundsMuted = muted;
-      state.menubarItemMuteHitsounds.selected = muted;
-    });
+    setupVolumeSlider(
+      state,
+      state.preferencesVolumeHitsoundPlayer,
+      () -> state.hitsoundVolumePlayer,
+      volume -> state.hitsoundVolumePlayer = volume,
+      () -> state.hitsoundsMuted,
+      muted ->
+      {
+        state.hitsoundsMuted = muted;
+        state.menubarItemMuteHitsounds.selected = muted;
+      }
+    );
     state.preferencesVolumeHitsoundPlayer.value = Std.int(state.hitsoundVolumePlayer * 100);
 
-    setupVolumeSlider(state, state.preferencesVolumeHitsoundOpponent, () -> state.hitsoundVolumeOpponent, volume -> state.hitsoundVolumeOpponent = volume, () -> state.hitsoundsMuted, muted ->
-    {
-      state.hitsoundsMuted = muted;
-      state.menubarItemMuteHitsounds.selected = muted;
-    });
+    setupVolumeSlider(
+      state,
+      state.preferencesVolumeHitsoundOpponent,
+      () -> state.hitsoundVolumeOpponent,
+      volume -> state.hitsoundVolumeOpponent = volume,
+      () -> state.hitsoundsMuted,
+      muted ->
+      {
+        state.hitsoundsMuted = muted;
+        state.menubarItemMuteHitsounds.selected = muted;
+      }
+    );
     state.preferencesVolumeHitsoundOpponent.value = Std.int(state.hitsoundVolumeOpponent * 100);
 
-    setupVolumeSlider(state, state.preferencesVolumeInstrumental, () -> state.audioInstTrack?.volume ?? state.preferencesVolumeInstrumental.pos / 100.0, volume ->
-    {
-      if (state.audioInstTrack != null) state.audioInstTrack.volume = volume;
-    }, () -> state.instrumentalMuted, muted ->
-    {
-      state.instrumentalMuted = muted;
-      state.menubarItemMuteInstrumental.selected = muted;
-    });
+    setupVolumeSlider(
+      state,
+      state.preferencesVolumeInstrumental,
+      () -> state.audioInstTrack?.volume ?? state.preferencesVolumeInstrumental.pos / 100.0,
+      volume ->
+      {
+        if (state.audioInstTrack != null) state.audioInstTrack.volume = volume;
+      },
+      () -> state.instrumentalMuted,
+      muted ->
+      {
+        state.instrumentalMuted = muted;
+        state.menubarItemMuteInstrumental.selected = muted;
+      }
+    );
 
     setupVolumeSlider(
       state,
@@ -848,8 +880,12 @@ class ChartEditorUIHandler
   /**
    * Sets up a volume slider to control a specific volume setting, and handles muting/unmuting when the slider is right-clicked.
    */
-  static function setupVolumeSlider(state:ChartEditorState, slider:Slider, getVolume:Void->Float, setVolume:Float->Void, isMuted:Void->Bool,
-      setMuted:Bool->Void):Void
+  static function setupVolumeSlider(state:ChartEditorState,
+    slider:Slider,
+    getVolume:Void->Float,
+    setVolume:Float->Void,
+    isMuted:Void->Bool,
+    setMuted:Bool->Void):Void
   {
     slider.onChange = event ->
     {
@@ -1084,6 +1120,7 @@ class ChartEditorUIHandler
 
     state.playbarBeatNum.text = 'Beat: ${FlxStringUtil.formatMoney(songStepTime / Constants.STEPS_PER_BEAT)}';
     state.playbarStepNum.text = 'Step: ${Math.floor(songStepTime)}';
+    state.playbarSelectedNotes.text = 'Selected: ${state.currentNoteSelection.length + state.currentEventSelection.length}';
 
     state.playbarNoteSnap.text = '1/${state.noteSnapQuant}';
     state.playbarZoom.text = '${ChartEditorState.ZOOM_LEVELS[state.zoomLevelIndex]}x';

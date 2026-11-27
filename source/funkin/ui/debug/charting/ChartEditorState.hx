@@ -2891,6 +2891,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var playbarStepNum:Label;
 
   /**
+   * The label by the playbar telling the amount of selected notes and events.
+   */
+  var playbarSelectedNotes:Label;
+
+  /**
    * The label by the playbar telling the song time remaining.
    */
   var playbarSongRemaining:Label;
