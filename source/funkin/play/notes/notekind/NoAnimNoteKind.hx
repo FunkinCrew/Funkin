@@ -5,10 +5,8 @@ package funkin.play.notes.notekind;
  */
 class NoAnimNoteKind extends NoteKind
 {
-  static final DISABLE_ANIMATIONS:Bool = true;
-
   public function new()
   {
-    super('noanim', 'No Animation', null, [], DISABLE_ANIMATIONS, null);
+    super('noanim', 'No Animation', null, [], true, null);
   }
 }
