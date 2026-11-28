@@ -330,10 +330,40 @@ class LoadingState extends MusicBeatSubState
         }
       }
 
+      #if FEATURE_STREAMED_AUDIO
+      // cached bytes for audio streaming, temp.
+      var bytedFuture:Future<Array<Future<Bool>>> = Assets.cacheAllBytes(musicQuery);
+
+      bytedFuture.onComplete((loadedStreams:Array<Future<Bool>>) ->
+      {
+        for (loadedStream in loadedStreams)
+        {
+          if (loadedStream.isError)
+          {
+            trace('[LOADING] Error loading streamed sound: ${loadedStream.error}');
+            error++;
+          }
+          else if (!loadedStream.isComplete)
+          {
+            trace('HUH? Asset loading is not complete...');
+          }
+          else
+          {
+            success++;
+          }
+        }
+
+        trace('[LOADING] Finished loading ${success}/${success + error} sounds.');
+
+        loadingStagesDone += 1;
+        loadText();
+      });
+      #else
       trace('[LOADING] Finished loading ${success}/${success + error} sounds.');
 
       loadingStagesDone += 1;
       loadText();
+      #end
     });
   }
 
