@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.9]
+### Added
+- Added `loadingScreen` to specify the type of loading screen to use before the song.
+  - If `null` or `default`, the transition chosen by the caller is preserved.
+- Scripted Song classes can override Song.getLoadingScreenType() to return a full TransitionType instead of this field.
+
 ## [2.2.8]
 ### Added
 - Added the `_editor.comments` field to hold data for Chart Editor comments.
