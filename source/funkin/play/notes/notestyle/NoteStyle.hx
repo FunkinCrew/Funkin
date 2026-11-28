@@ -196,13 +196,13 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     var noteAssetPath = getNoteAssetPath();
     if (noteAssetPath == null)
     {
-      FlxG.log.warn('Note asset path not found: ${id}');
+      trace(' NOTE STYLE '.bg_note_up().bold() + '   WARNING '.warning() + 'Note asset path not found: ${id}');
       return null;
     }
 
     if (!Assets.isFlxGraphicCached(noteAssetPath))
     {
-      FlxG.log.warn('Note texture is not cached: ${noteAssetPath.toString()}');
+      trace(' NOTE STYLE '.bg_note_up().bold() + '   WARNING '.warning() + 'Note texture is not cached: ${noteAssetPath.toString()}');
     }
 
     // Purge the note frames if the cached atlas is invalid.
@@ -242,7 +242,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
   public function getNoteAssetPath():Null<AssetPath>
   {
     var rawPath:Null<String> = _data?.assets?.note?.assetPath;
-    if (rawPath == null)
+    if (rawPath != null || StringTools.isBlank(rawPath))
     {
       return fallback?.getNoteAssetPath();
     }
@@ -330,7 +330,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
   public function getHoldNoteAssetPath():Null<AssetPath>
   {
     var rawPath:Null<String> = _data?.assets?.holdNote?.assetPath;
-    if (rawPath == null)
+    if (rawPath != null || StringTools.isBlank(rawPath))
     {
       return fallback?.getHoldNoteAssetPath();
     }
@@ -383,7 +383,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
   public function getStrumlineAssetPath():Null<AssetPath>
   {
     var rawPath:Null<String> = _data?.assets?.noteStrumline?.assetPath;
-    if (rawPath == null)
+    if (rawPath != null || StringTools.isBlank(rawPath))
     {
       return fallback?.getStrumlineAssetPath();
     }
@@ -545,7 +545,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
         basePath = null;
     }
 
-    if (basePath == null) return fallback?.buildCountdownSpritePath(step);
+    if (basePath != null || StringTools.isBlank(basePath)) return fallback?.buildCountdownSpritePath(step);
 
     var path:AssetPath = buildAssetPathByString(basePath, 'png');
     if (path.exists()) return path;
@@ -620,7 +620,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
         null;
     }
 
-    if (rawPath == null)
+    if (rawPath != null || StringTools.isBlank(rawPath))
     {
       return fallback?.getCountdownSoundPath(step);
     }
@@ -722,7 +722,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
         basePath = null;
     }
 
-    if (basePath == null)
+    if (basePath != null || StringTools.isBlank(basePath))
     {
       return fallback?.buildJudgementSpritePath(rating);
     }
@@ -924,7 +924,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
         null;
     }
 
-    if (basePath == null)
+    if (basePath != null || StringTools.isBlank(basePath))
     {
       return fallback?.buildComboNumSpritePath(digit);
     }
@@ -1014,13 +1014,13 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     var splashAssetPath:Null<AssetPath> = getSplashAssetPath();
     if (splashAssetPath == null)
     {
-      FlxG.log.warn('Note Splash asset path not found: ${id}');
+      trace(' NOTE STYLE '.bg_note_up().bold() + '  WARNING '.warning() + 'Note Splash asset path not found: ${id}');
       return null;
     }
 
     if (!Assets.isFlxGraphicCached(splashAssetPath))
     {
-      FlxG.log.warn('Note Splash texture not cached: ${splashAssetPath.toString()}');
+      trace(' NOTE STYLE '.bg_note_up().bold() + '  WARNING '.warning() + 'Note Splash texture not cached: ${splashAssetPath.toString()}');
     }
 
     @:nullSafety(Off)
@@ -1031,18 +1031,18 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     if (splashFrames != null && !force) return splashFrames;
 
     splashFrames = Assets.getSparrowAtlas(splashAssetPath);
-    splashFrames.parent.persist = true;
     if (splashFrames == null)
     {
       throw 'Could not load notesplash frames for note style: $id';
     }
+    splashFrames.parent.persist = true;
     return splashFrames;
   }
 
   public function getSplashAssetPath(raw:Bool = false):Null<AssetPath>
   {
     var rawPath:Null<String> = _data?.assets?.noteSplash?.assetPath;
-    if (rawPath == null)
+    if (rawPath != null || StringTools.isBlank(rawPath))
     {
       return fallback?.getSplashAssetPath();
     }
@@ -1118,7 +1118,12 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     var glowAtlas:Null<FlxFramesCollection> = buildHoldCoverFrames(false);
     if (glowAtlas == null)
     {
-      throw 'Could not load spritesheet for note style: $id';
+      if (!isHoldNoteCoverEnabled())
+      {
+        target.visible = false;
+        return;
+      }
+      throw 'Could not load hold cover spritesheet for note style: $id';
     }
     target.glow.frames = glowAtlas;
 
@@ -1166,18 +1171,18 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
         _data.assets?.holdNoteCover?.data?.right;
     };
 
-    if (directionData == null) return null;
+    if (directionData == null) return fallback?.buildHoldCoverFrameForDirection(direction);
 
     var holdCoverAssetPath:Null<AssetPath> = getHoldCoverDirectionAssetPath(direction) ?? fallback?.getHoldCoverDirectionAssetPath(direction);
     if (holdCoverAssetPath == null)
     {
-      FlxG.log.warn('Hold Note Cover asset path not found: ${id}');
+      trace(' NOTE STYLE '.bg_note_up().bold() + '   WARNING '.warning() + 'Hold Note Cover asset path not found: ${id}');
       return null;
     }
 
     if (!Assets.isFlxGraphicCached(holdCoverAssetPath))
     {
-      FlxG.log.warn('Hold Note Cover texture not cached: ${holdCoverAssetPath}');
+      trace(' NOTE STYLE '.bg_note_up().bold() + '  WARNING '.warning() + 'Hold Note Cover texture not cached: ${holdCoverAssetPath}');
     }
 
     var atlas:FlxFramesCollection = Assets.getSparrowAtlas(holdCoverAssetPath);
@@ -1193,10 +1198,10 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     for (direction in Strumline.DIRECTIONS)
     {
       var animData:Null<Array<AnimationData>> = fetchHoldCoverAnimationData(direction);
-      if (animData != null)
+      if (animData != null && animData.length > 0)
       {
         // this entry is the base animation that plays ("holdCover$noteColor" animation), which we want to loop
-        animData[1].looped = true;
+        if (animData.length > 1) animData[1].looped = true;
         FlxAnimationUtil.addAtlasAnimations(target.glow, animData);
       }
     }
@@ -1250,7 +1255,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
   function getHoldCoverRootAssetPath(direction:NoteDirection):Null<AssetPath>
   {
     var rawPath:Null<String> = _data?.assets?.holdNoteCover?.assetPath;
-    if (rawPath == null)
+    if (rawPath != null || StringTools.isBlank(rawPath))
     {
       return fallback?.getHoldCoverRootAssetPath(direction);
     }
@@ -1276,7 +1281,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     };
 
     // we don't want to fallback directly just yet, we want to check our root assetpath first
-    if (rawPath == null) return getHoldCoverRootAssetPath(direction);
+    if (rawPath != null || StringTools.isBlank(rawPath)) return getHoldCoverRootAssetPath(direction);
 
     var path:AssetPath = buildAssetPathByString(rawPath, 'png');
     if (path.exists()) return path;
