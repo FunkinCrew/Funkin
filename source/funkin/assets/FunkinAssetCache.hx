@@ -486,6 +486,19 @@ class FunkinAssetCache implements OpenFLIAssetCache
   }
 
   /**
+   * Get a Sound prepped up for streaming, if the bytes exist in cache.
+   * @param id The asset id of the Sound.
+   * @return The Sound, if the bytes are in the cache, or `null` otherwise.
+   */
+  public function getMusic(id:String):Null<Sound>
+  {
+    var bytes = getBytes(id);
+    if (bytes == null) return null;
+
+    return Sound.fromAudioBuffer(lime.media.AudioBuffer.fromBytes(bytes, true));
+  }
+
+  /**
    * Gets text from a file from the cache.
    *
    * @param id The asset id of the text.

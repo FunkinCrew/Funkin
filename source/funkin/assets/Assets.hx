@@ -563,6 +563,14 @@ class Assets implements ConsoleClass
     #end
     if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.sound()?';
 
+    // Get the bytes ourselves
+    if (FunkinAssetCache.instance.hasBytes(assetPath.toString()))
+    {
+      var sound = FunkinAssetCache.instance.getMusic(assetPath.toString());
+
+      if (sound != null) return sound;
+    }
+
     if (!assetPath.exists())
     {
       #if VERBOSE_ASSET_CACHE
@@ -572,7 +580,9 @@ class Assets implements ConsoleClass
       throw 'Sound file does not exist: ${assetPath.toString()}';
     }
 
-    return Sound.fromAudioBuffer(AudioBuffer.fromBytes(assetPath.toString(), true));
+    // We just load it here if nothing is pre-cached.
+    // NOTE: This may cause stutters.
+    return OpenFLAssets.getMusic(assetPath.toString());
   }
 
   /**
