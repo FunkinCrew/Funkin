@@ -3,6 +3,7 @@ package funkin;
 import funkin.util.Constants;
 import flixel.util.FlxSignal;
 import flixel.math.FlxMath;
+import funkin.audio.FunkinSound;
 import funkin.data.song.SongData.SongTimeChange;
 import funkin.data.song.SongDataUtils;
 import funkin.play.PlayState;
@@ -446,7 +447,9 @@ class Conductor
     var oldStep:Float = this.currentStep;
 
     // If the song is playing, limit the song position to the length of the song or beginning of the song.
-    if (FlxG.sound.music != null && FlxG.sound.music.playing)
+    var music:Null<FunkinSound> = Std.downcast(FlxG.sound.music, FunkinSound);
+    var musicWaiting:Bool = music != null && music.playbackTime < 0;
+    if (FlxG.sound.music != null && FlxG.sound.music.playing && !musicWaiting)
     {
       this.songPosition = Math.min(this.combinedOffset, 0).clamp(songPos, currentLength);
     }

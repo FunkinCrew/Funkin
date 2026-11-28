@@ -69,6 +69,11 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   public var paused(get, never):Bool;
 
   /**
+   * The current playback time of the sound, in seconds.
+   */
+  public var playbackTime(get, never):Float;
+
+  /**
    * Set this to `true` to mute this sound,
    * making it inaudible without overriding the sound's volume.
    */
@@ -132,6 +137,13 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     FlxG.sound.defaultSoundGroup.add(sound);
 
     return sound;
+  }
+
+  override public function update(elapsed:Float):Void
+  {
+    var queuedTime:Null<Float> = _queuedTime;
+    if (queuedTime != null && queuedTime < 0) elapsed *= pitch;
+    super.update(elapsed);
   }
 
   @:nullSafety(Off)
@@ -700,6 +712,12 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   function get_paused():Bool
   {
     return this._paused;
+  }
+
+  function get_playbackTime():Float
+  {
+    var queuedTime:Null<Float> = _queuedTime;
+    return queuedTime ?? time;
   }
 
   function get_isPlaying():Bool

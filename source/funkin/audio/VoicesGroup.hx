@@ -92,6 +92,7 @@ class VoicesGroup extends SoundGroup
 
       if (voice.playing) voice.pause();
       voice.time = time;
+      voice.resume();
       queueVoice(voice, offset);
       return;
     }

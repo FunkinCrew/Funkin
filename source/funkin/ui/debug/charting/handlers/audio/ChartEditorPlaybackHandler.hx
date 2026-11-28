@@ -91,17 +91,7 @@ class ChartEditorPlaybackHandler
       // from being called twice when we move to the PlayState.
       state.audioInstTrack.update(elapsed);
 
-      // If the song starts 50ms in, make sure we start the song there.
-      if (Conductor.instance.instrumentalOffset < 0)
-      {
-        if (state.audioInstTrack.time < -Conductor.instance.instrumentalOffset)
-        {
-          trace('Resetting instrumental time to ${- Conductor.instance.instrumentalOffset}ms');
-          state.audioInstTrack.time = -Conductor.instance.instrumentalOffset;
-        }
-      }
-
-      state.audioVocalTrackGroup.updatePending(state.audioInstTrack.time, state.audioInstTrack.isPlaying);
+      state.audioVocalTrackGroup.updatePending(state.audioInstTrack.playbackTime, state.audioInstTrack.isPlaying);
 
       if
         ((!state.audioInstTrack.isPlaying || (state.audioVocalTrackGroup.length > 0 && !state.audioVocalTrackGroup.playing))
@@ -120,11 +110,7 @@ class ChartEditorPlaybackHandler
         var oldSongPosition:Float = Conductor.instance.songPosition + Conductor.instance.instrumentalOffset;
         state.updateSongTime();
         state.handleMusicPositionUpdate(oldSongPosition, Conductor.instance.songPosition + Conductor.instance.instrumentalOffset);
-        // Resync vocals.
-        if (Math.abs(state.audioInstTrack.time - state.audioVocalTrackGroup.time) > 100)
-        {
-          state.audioVocalTrackGroup.time = state.audioInstTrack.time;
-        }
+        resyncVocals(state);
         // Move the playhead.
         state.playheadPositionInPixels =
           ChartEditorTimeScale.stepToPixels(Conductor.instance.currentStepTime + Conductor.instance.instrumentalOffsetSteps)
@@ -138,11 +124,7 @@ class ChartEditorPlaybackHandler
         var oldSongPosition:Float = Conductor.instance.songPosition + Conductor.instance.instrumentalOffset;
         state.updateSongTime();
         state.handleMusicPositionUpdate(oldSongPosition, Conductor.instance.songPosition + Conductor.instance.instrumentalOffset);
-        // Resync vocals.
-        if (Math.abs(state.audioInstTrack.time - state.audioVocalTrackGroup.time) > 100)
-        {
-          state.audioVocalTrackGroup.time = state.audioInstTrack.time;
-        }
+        resyncVocals(state);
 
         // We need time in fractional steps here to allow the song to actually play.
         // Also account for a potentially offset playhead.
@@ -163,6 +145,15 @@ class ChartEditorPlaybackHandler
     if (FlxG.keys.justPressed.SPACE && !(state.isHaxeUIDialogOpen || state.isHaxeUIFocused))
     {
       state.toggleAudioPlayback();
+    }
+  }
+
+  static function resyncVocals(state:ChartEditorState):Void
+  {
+    if (state.audioInstTrack.playbackTime < 0) return;
+    if (Math.abs(state.audioInstTrack.time - state.audioVocalTrackGroup.time) > 100)
+    {
+      state.audioVocalTrackGroup.time = state.audioInstTrack.time;
     }
   }
 
@@ -340,8 +331,9 @@ class ChartEditorPlaybackHandler
     // Don't allow the audio to be played while we're dragging any of the playheads
     if (state.playbarHeadDragging || state.gridPlayheadScrollAreaPressed || state.notePreviewPlayHeadDragging) return;
     state.stopWelcomeMusic();
-    if (state.audioInstTrack != null) state.audioInstTrack.play(false, state.audioInstTrack.time);
-    state.audioVocalTrackGroup.play(false, state.audioInstTrack.time);
+    var startTime:Float = state.audioInstTrack?.playbackTime ?? 0.0;
+    if (state.audioInstTrack != null) state.audioInstTrack.play(false, startTime);
+    state.audioVocalTrackGroup.play(false, startTime);
 
     state.playbarPlay.text = '||'; // Pause
   }
@@ -364,10 +356,17 @@ class ChartEditorPlaybackHandler
     // Update the songPosition in the audio tracks.
     if (state.audioInstTrack != null)
     {
+      var wasPlaying:Bool = state.audioInstTrack.isPlaying;
       state.audioInstTrack.time = state.scrollPositionInMs + state.playheadPositionInMs - Conductor.instance.instrumentalOffset;
+      state.audioVocalTrackGroup.time = state.audioInstTrack.playbackTime;
+      if (!wasPlaying)
+      {
+        // If the audio was paused, we need to pause the tracks again after moving them to the new position.
+        state.audioInstTrack.pause();
+        state.audioVocalTrackGroup.pause();
+      }
       // Update the songPosition in the Conductor.
       state.updateSongTime();
-      state.audioVocalTrackGroup.time = state.audioInstTrack.time;
     }
 
     // We need to update the note sprites because we changed the scroll position.
@@ -441,7 +440,7 @@ class ChartEditorPlaybackHandler
    */
   static function smoothedSongTime(state:ChartEditorState):Float
   {
-    var audioTime:Float = state.audioInstTrack.time;
+    var audioTime:Float = state.audioInstTrack.playbackTime;
     if (!state.audioInstTrack.isPlaying)
     {
       smoothSongTime = audioTime;
@@ -493,9 +492,42 @@ class ChartEditorPlaybackHandler
     state.playMetronomeTick(Math.abs(measure - Math.round(measure)) < 0.01);
   }
 
+  static function handleCountdownSounds(state:ChartEditorState, oldSongPosition:Float, newSongPosition:Float):Void
+  {
+    if (state.isPlaytesting || newSongPosition <= oldSongPosition) return;
+    var noteStyle:Null<funkin.play.notes.notestyle.NoteStyle> = NoteStyleRegistry.instance.fetchEntry(state.currentSongNoteStyle);
+    if (noteStyle == null) return;
+    var oldBeat:Int = Math.floor(Conductor.instance.getTimeInSteps(oldSongPosition) / Constants.STEPS_PER_BEAT);
+    var newBeat:Int = Math.floor(Conductor.instance.getTimeInSteps(newSongPosition) / Constants.STEPS_PER_BEAT);
+    if (newBeat <= oldBeat) return;
+
+    var step:Null<funkin.play.Countdown.CountdownStep> = switch (newBeat)
+    {
+      case -5:
+        BEFORE;
+      case -4:
+        THREE;
+      case -3:
+        TWO;
+      case -2:
+        ONE;
+      case -1:
+        GO;
+      case 0:
+        AFTER;
+      default:
+        null;
+    }
+    if (step == null) return;
+
+    var path = noteStyle.getCountdownSoundPath(step);
+    if (path != null) funkin.audio.FunkinSound.playOnce(path.toFlxSoundAsset(), Constants.COUNTDOWN_VOLUME, null, null);
+  }
+
   public static function handleMusicPositionUpdate(state:ChartEditorState, oldSongPosition:Float, newSongPosition:Float):Void
   {
     handleMetronome(state, oldSongPosition, newSongPosition);
+    handleCountdownSounds(state, oldSongPosition, newSongPosition);
     state._currentEvents = SongDataUtils.getEventsInTimeRange(state.currentSongChartEventData, oldSongPosition, newSongPosition);
     state._allowedEvents = SongDataUtils.getEventsWithKind(state._currentEvents, ChartEditorState._allowedEventsNames);
 

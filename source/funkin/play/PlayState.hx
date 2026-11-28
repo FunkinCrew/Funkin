@@ -1425,7 +1425,7 @@ class PlayState extends MusicBeatSubState
 
       // so the song doesn't start too early :D
       var vwooshDelay:Float = 0.5;
-      Conductor.instance.update(-vwooshDelay * 1000 + startTimestamp + Conductor.instance.beatLengthMs * -Constants.COUNTDOWN_LENGTH_BEATS);
+      Conductor.instance.update(-vwooshDelay * 1000 + startTimestamp + Conductor.instance.beatLengthMs * -Constants.COUNTDOWN_LENGTH_BEATS, false);
 
       // timer for vwoosh
       vwooshTimer.start(vwooshDelay, function(_)
@@ -3015,6 +3015,8 @@ class PlayState extends MusicBeatSubState
       if (subtitles != null) subtitles.assignSubtitles(subtitlesFile, FlxG.sound.music);
     }
 
+    var musicStartTime:Float = Math.max(startTimestamp, Conductor.instance.songPosition - Conductor.instance.combinedOffset);
+
     // Prevent the volume from being wrong.
     FlxG.sound.music.volume = instrumentalVolume;
     if (FlxG.sound.music.fadeTween != null) FlxG.sound.music.fadeTween.cancel();
@@ -3027,10 +3029,10 @@ class PlayState extends MusicBeatSubState
       vocals.playerVolume = playerVocalsVolume;
       vocals.opponentVolume = opponentVocalsVolume;
 
-      vocals.play(true, startTimestamp);
+      vocals.play(true, musicStartTime);
     }
 
-    FlxG.sound.music.play(true, startTimestamp);
+    FlxG.sound.music.play(true, musicStartTime);
 
     #if FEATURE_DISCORD_RPC
     // Updating Discord Rich Presence.

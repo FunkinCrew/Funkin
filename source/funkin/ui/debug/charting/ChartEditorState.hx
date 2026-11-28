@@ -45,7 +45,6 @@ import funkin.input.Cursor;
 import funkin.input.TurboButtonHandler;
 import funkin.input.TurboKeyHandler;
 import funkin.modding.events.ScriptEvent;
-import funkin.play.Countdown.CountdownStep;
 import funkin.play.PlayState;
 import funkin.play.PlayStatePlaylist;
 import funkin.play.character.BaseCharacter.CharacterType;
@@ -3797,38 +3796,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // Show the mouse cursor.
     // Just throwing this somewhere convenient and infrequently called because sometimes Flixel's debug thing hides the cursor.
     if (!isPlaytesting) Cursor.show();
-
-    // For negative times during playback, we want to play the countdown sounds at certain beats.
-    var noteStyle:Null<NoteStyle> = NoteStyleRegistry.instance.fetchEntry(currentSongNoteStyle);
-    if (!isPlaytesting && (audioInstTrack?.playing ?? false) && noteStyle != null)
-    {
-      var step:Null<CountdownStep> = switch (Conductor.instance.currentBeat)
-      {
-        case -5:
-          CountdownStep.BEFORE;
-        case -4:
-          CountdownStep.THREE;
-        case -3:
-          CountdownStep.TWO;
-        case -2:
-          CountdownStep.ONE;
-        case -1:
-          CountdownStep.GO;
-        case 0:
-          CountdownStep.AFTER;
-        default:
-          null;
-      }
-
-      if (step != null)
-      {
-        var path = noteStyle.getCountdownSoundPath(step);
-        if (path != null)
-        {
-          FunkinSound.playOnce(path.toFlxSoundAsset(), Constants.COUNTDOWN_VOLUME, null, null);
-        }
-      }
-    }
 
     return true;
   }
