@@ -180,6 +180,10 @@ class PolymodErrorHandler
       // Script Parsing Errors
       //
 
+      case SCRIPT_PREHEAT_ERROR:
+        trace(' ERROR '.error() + ' ' + error.message);
+        funkin.util.WindowUtil.showError('Script Preheat Error', error.message);
+
       case SCRIPT_PARSE_FAILED:
         // A syntax error when parsing a script.
         trace(' ERROR '.error() + ' ' + error.message);
