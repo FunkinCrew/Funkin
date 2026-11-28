@@ -14,9 +14,9 @@ class DeviceUtil
     #elseif ios
     var hasPhysicalNotch:Bool = switch (model)
     {
-      case 'iPhone12,8' // iPhone SE (2020)
+      case 'iPhone12,8': // iPhone SE (2020)
         false; // Still using old iPhone 8 body so no notch
-      case 'iPhone14,6' // iPhone SE (2022)
+      case 'iPhone14,6': // iPhone SE (2022)
         false; // Still using old iPhone 8 body so no notch
       case 'iPhone19,4': // iPhone Duo
         false; // Hole punch doesn't count as a notch
@@ -46,38 +46,38 @@ class DeviceUtil
     return switch (model)
     {
       // iPhone 8 Series
-      case 'iPhone10,1' // iPhone 8 (Global)
+      case 'iPhone10,1': // iPhone 8 (Global)
         8;
-      case 'iPhone10,4' // iPhone 8 (GSM)
+      case 'iPhone10,4': // iPhone 8 (GSM)
         8;
-      case 'iPhone10,2' // iPhone 8 Plus (Global)
+      case 'iPhone10,2': // iPhone 8 Plus (Global)
         8;
-      case 'iPhone10,5' // iPhone 8 Plus (GSM)
+      case 'iPhone10,5': // iPhone 8 Plus (GSM)
         8;
 
-        // iPhone X Series
-      case 'iPhone10,3' // iPhone X (Global)
+      // iPhone X Series
+      case 'iPhone10,3': // iPhone X (Global)
         10;
-      case 'iPhone10,6' // iPhone X (GSM)
+      case 'iPhone10,6': // iPhone X (GSM)
         10;
-      case 'iPhone11,2' // iPhone XS
+      case 'iPhone11,2': // iPhone XS
         10;
-      case 'iPhone11,6' // iPhone XS Max
+      case 'iPhone11,6': // iPhone XS Max
         10;
-      case 'iPhone11,4' // iPhone XS Max (China)
+      case 'iPhone11,4': // iPhone XS Max (China)
         10;
-      case 'iPhone11,8' // iPhone XR
+      case 'iPhone11,8': // iPhone XR
         10;
 
-        // iPhone 11 Series
-      case 'iPhone12,1' // iPhone 11
+      // iPhone 11 Series
+      case 'iPhone12,1': // iPhone 11
         11;
-      case 'iPhone12,3' // iPhone 11 Pro
+      case 'iPhone12,3': // iPhone 11 Pro
         11;
-      case 'iPhone12,5' // iPhone 11 Pro Max
+      case 'iPhone12,5': // iPhone 11 Pro Max
         11;
 
-        // iPhone 12 Series
+      // iPhone 12 Series
       case 'iPhone13,1': // iPhone 12 Mini
         12;
       case 'iPhone13,2': // iPhone 12
@@ -144,18 +144,18 @@ class DeviceUtil
         18;
       case 'iPhone19,3': // iPhone 18 Pro Max (US)
         18;
-      case 'iPhone19,7' // iPhone 18 Pro Max
+      case 'iPhone19,7': // iPhone 18 Pro Max
         18;
-        // Unreleased as of writing this so I might be wrong
+      // Unreleased as of writing this so I might be wrong
       case 'iPhone19,1': // iPhone 18
         18;
       case 'iPhone19,5': // iPhone 18e
         18;
 
       // Other iPhone Models
-      case 'iPhone12,8' // iPhone SE (2020)
+      case 'iPhone12,8': // iPhone SE (2020)
         11;
-      case 'iPhone14,6' // iPhone SE (2022)
+      case 'iPhone14,6': // iPhone SE (2022)
         13;
       case 'iPhone18,4': // iPhone Air
         17; // same chip as 17 Pro
