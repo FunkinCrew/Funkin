@@ -242,7 +242,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
   public function getNoteAssetPath():Null<AssetPath>
   {
     var rawPath:Null<String> = _data?.assets?.note?.assetPath;
-    if (rawPath != null || StringTools.isBlank(rawPath))
+    if (rawPath == null || StringTools.isBlank(rawPath))
     {
       return fallback?.getNoteAssetPath();
     }
@@ -330,7 +330,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
   public function getHoldNoteAssetPath():Null<AssetPath>
   {
     var rawPath:Null<String> = _data?.assets?.holdNote?.assetPath;
-    if (rawPath != null || StringTools.isBlank(rawPath))
+    if (rawPath == null || StringTools.isBlank(rawPath))
     {
       return fallback?.getHoldNoteAssetPath();
     }
@@ -383,7 +383,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
   public function getStrumlineAssetPath():Null<AssetPath>
   {
     var rawPath:Null<String> = _data?.assets?.noteStrumline?.assetPath;
-    if (rawPath != null || StringTools.isBlank(rawPath))
+    if (rawPath == null || StringTools.isBlank(rawPath))
     {
       return fallback?.getStrumlineAssetPath();
     }
@@ -545,7 +545,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
         basePath = null;
     }
 
-    if (basePath != null || StringTools.isBlank(basePath)) return fallback?.buildCountdownSpritePath(step);
+    if (basePath == null || StringTools.isBlank(basePath)) return fallback?.buildCountdownSpritePath(step);
 
     var path:AssetPath = buildAssetPathByString(basePath, 'png');
     if (path.exists()) return path;
@@ -620,7 +620,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
         null;
     }
 
-    if (rawPath != null || StringTools.isBlank(rawPath))
+    if (rawPath == null || StringTools.isBlank(rawPath))
     {
       return fallback?.getCountdownSoundPath(step);
     }
@@ -722,7 +722,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
         basePath = null;
     }
 
-    if (basePath != null || StringTools.isBlank(basePath))
+    if (basePath == null || StringTools.isBlank(basePath))
     {
       return fallback?.buildJudgementSpritePath(rating);
     }
@@ -924,7 +924,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
         null;
     }
 
-    if (basePath != null || StringTools.isBlank(basePath))
+    if (basePath == null || StringTools.isBlank(basePath))
     {
       return fallback?.buildComboNumSpritePath(digit);
     }
@@ -1042,7 +1042,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
   public function getSplashAssetPath(raw:Bool = false):Null<AssetPath>
   {
     var rawPath:Null<String> = _data?.assets?.noteSplash?.assetPath;
-    if (rawPath != null || StringTools.isBlank(rawPath))
+    if (rawPath == null || StringTools.isBlank(rawPath))
     {
       return fallback?.getSplashAssetPath();
     }
@@ -1255,7 +1255,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
   function getHoldCoverRootAssetPath(direction:NoteDirection):Null<AssetPath>
   {
     var rawPath:Null<String> = _data?.assets?.holdNoteCover?.assetPath;
-    if (rawPath != null || StringTools.isBlank(rawPath))
+    if (rawPath == null || StringTools.isBlank(rawPath))
     {
       return fallback?.getHoldCoverRootAssetPath(direction);
     }
@@ -1281,7 +1281,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     };
 
     // we don't want to fallback directly just yet, we want to check our root assetpath first
-    if (rawPath != null || StringTools.isBlank(rawPath)) return getHoldCoverRootAssetPath(direction);
+    if (rawPath == null || StringTools.isBlank(rawPath)) return getHoldCoverRootAssetPath(direction);
 
     var path:AssetPath = buildAssetPathByString(rawPath, 'png');
     if (path.exists()) return path;
