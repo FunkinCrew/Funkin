@@ -6,6 +6,7 @@ import funkin.data.IRegistryEntry;
 import funkin.data.character.CharacterData;
 import funkin.data.character.CharacterRegistry;
 import funkin.data.character.CharacterData.CharacterRenderType;
+import funkin.input.Controls;
 import funkin.play.stage.Bopper;
 import funkin.play.notes.NoteDirection;
 import funkin.data.song.SongData.SongNoteData;
@@ -78,6 +79,18 @@ class BaseCharacter extends Bopper implements IRegistryEntry<CharacterData>
    * The current note kind.
    */
   public var curNoteKind:NoteKind;
+  
+  /**
+   * The current singing direction.
+   * For animation control purposes.
+   */
+  public var curSingDirection(default, null):Null<NoteDirection> = null;
+  
+  /**
+   * Whether the note that set `curSingDirection` is held.
+   * For animation control purposes.
+   */
+  public var curSingHeld(default, null):Bool;
 
   /**
    * This character plays a given animation when hitting these specific combo numbers.
@@ -501,17 +514,9 @@ class BaseCharacter extends Bopper implements IRegistryEntry<CharacterData>
   override public function onUpdate(event:UpdateScriptEvent):Void
   {
     super.onUpdate(event);
-
-    // Reset hold timer for each note pressed.
-    if (justPressedNote() && this.characterType == BF)
-    {
-      // If the `noanim` noteKind is active, don't reset the holdTimer.
-      if (curNoteKind != null && curNoteKind.noanim) return;
-      else
-      {
-        holdTimer = 0;
-      }
-    }
+    
+    if (this.characterType == BF && curSingDirection != null && curSingHeld)
+      curSingHeld = isHoldingNote(1, curSingDirection);
 
     if (isDead)
     {
@@ -556,7 +561,7 @@ class BaseCharacter extends Bopper implements IRegistryEntry<CharacterData>
 
       // Without this check here, the player character would only play the `sing` animation
       // for one beat, as opposed to holding it as long as the player is holding the button.
-      var shouldStopSinging:Bool = (this.characterType == BF) ? !isHoldingNote() : true;
+      var shouldStopSinging:Bool = (this.characterType == BF) ? !curSingHeld : true;
 
       var controller = cast(animation, FunkinAnimationController);
       if (controller.shouldUseConductorSync && shouldStopSinging) shouldStopSinging = FlxG.sound.music != null && FlxG.sound.music.playing;
@@ -565,6 +570,7 @@ class BaseCharacter extends Bopper implements IRegistryEntry<CharacterData>
       if (holdTimer > singTimeSec && shouldStopSinging)
       {
         holdTimer = 0;
+        curSingDirection = null;
 
         var currentAnimation:String = getCurrentAnimation();
         // Strip "-hold" from the end.
@@ -623,25 +629,24 @@ class BaseCharacter extends Bopper implements IRegistryEntry<CharacterData>
    * Used when determining whether a player character should revert to the `idle` animation.
    * On non-player characters, this should be ignored.
    */
-  function justPressedNote(player:Int = 1):Bool
+  function justPressedNote(player:Int = 1, ?direction:NoteDirection):Bool
   {
-    // Returns true if at least one of LEFT, DOWN, UP, or RIGHT is being held.
+    var controls:Controls;
     switch (player)
     {
-      case 1:
-        return
-          PlayerSettings.player1.controls.NOTE_LEFT_P
-          || PlayerSettings.player1.controls.NOTE_DOWN_P
-          || PlayerSettings.player1.controls.NOTE_UP_P
-          || PlayerSettings.player1.controls.NOTE_RIGHT_P;
-      case 2:
-        return
-          PlayerSettings.player2.controls.NOTE_LEFT_P
-          || PlayerSettings.player2.controls.NOTE_DOWN_P
-          || PlayerSettings.player2.controls.NOTE_UP_P
-          || PlayerSettings.player2.controls.NOTE_RIGHT_P;
+      case 1: controls = PlayerSettings.player1.controls;
+      case 2: controls = PlayerSettings.player2.controls;
+      default: return false;
     }
-    return false;
+    
+    return switch (direction)
+    {
+      case LEFT: controls.NOTE_LEFT_P;
+      case DOWN: controls.NOTE_DOWN_P;
+      case UP: controls.NOTE_UP_P;
+      case RIGHT: controls.NOTE_RIGHT_P;
+      default: controls.NOTE_LEFT_P || controls.NOTE_DOWN_P || controls.NOTE_UP_P || controls.NOTE_RIGHT_P;
+    };
   }
 
   /**
@@ -649,25 +654,24 @@ class BaseCharacter extends Bopper implements IRegistryEntry<CharacterData>
    * Used when determining whether a player character should revert to the `idle` animation.
    * On non-player characters, this should be ignored.
    */
-  function isHoldingNote(player:Int = 1):Bool
+  function isHoldingNote(player:Int = 1, ?direction:NoteDirection):Bool
   {
-    // Returns true if at least one of LEFT, DOWN, UP, or RIGHT is being held.
+    var controls:Controls;
     switch (player)
     {
-      case 1:
-        return
-          PlayerSettings.player1.controls.NOTE_LEFT
-          || PlayerSettings.player1.controls.NOTE_DOWN
-          || PlayerSettings.player1.controls.NOTE_UP
-          || PlayerSettings.player1.controls.NOTE_RIGHT;
-      case 2:
-        return
-          PlayerSettings.player2.controls.NOTE_LEFT
-          || PlayerSettings.player2.controls.NOTE_DOWN
-          || PlayerSettings.player2.controls.NOTE_UP
-          || PlayerSettings.player2.controls.NOTE_RIGHT;
+      case 1: controls = PlayerSettings.player1.controls;
+      case 2: controls = PlayerSettings.player2.controls;
+      default: return false;
     }
-    return false;
+    
+    return switch (direction)
+    {
+      case LEFT: controls.NOTE_LEFT;
+      case DOWN: controls.NOTE_DOWN;
+      case UP: controls.NOTE_UP;
+      case RIGHT: controls.NOTE_RIGHT;
+      default: controls.NOTE_LEFT || controls.NOTE_DOWN || controls.NOTE_UP || controls.NOTE_RIGHT;
+    }
   }
 
   /**
@@ -680,6 +684,9 @@ class BaseCharacter extends Bopper implements IRegistryEntry<CharacterData>
     // Let the character naturally transition back to their idle/dance animation
     // if the notekind is set to noanim.
     if (curNoteKind != null && curNoteKind.noanim) return;
+
+    curSingDirection = noteData.getDirection();
+    curSingHeld = true;
 
     if (noteData.getMustHitNote() && characterType == BF)
     {
@@ -726,6 +733,11 @@ class BaseCharacter extends Bopper implements IRegistryEntry<CharacterData>
     // If another script cancelled the event, don't do anything.
     if (event.eventCanceled) return;
 
+    curNoteKind = NoteKindManager.getNoteKind(event.holdNote.noteData.kind);
+    // Let the character naturally transition back to their idle/dance animation
+    // if the notekind is set to noanim.
+    if (curNoteKind != null && curNoteKind.noanim) return;
+
     if (event.holdNote.noteData.getMustHitNote() && characterType == BF)
     {
       holdTimer = 0;
@@ -746,6 +758,11 @@ class BaseCharacter extends Bopper implements IRegistryEntry<CharacterData>
 
     // If another script cancelled the event, don't do anything.
     if (event.eventCanceled) return;
+    
+    curNoteKind = NoteKindManager.getNoteKind(event.note.noteData.kind);
+    // Let the character naturally transition back to their idle/dance animation
+    // if the notekind is set to noanim.
+    if (curNoteKind != null && curNoteKind.noanim) return;
 
     if (event.note.noteData.getMustHitNote() && characterType == BF)
     {
@@ -771,6 +788,11 @@ class BaseCharacter extends Bopper implements IRegistryEntry<CharacterData>
 
     // If another script cancelled the event, don't do anything.
     if (event.eventCanceled) return;
+
+    curNoteKind = NoteKindManager.getNoteKind(event.holdNote.noteData.kind);
+    // Let the character naturally transition back to their idle/dance animation
+    // if the notekind is set to noanim.
+    if (curNoteKind != null && curNoteKind.noanim) return;
 
     if (event.holdNote.noteData.getMustHitNote() && characterType == BF)
     {
@@ -839,6 +861,7 @@ class BaseCharacter extends Bopper implements IRegistryEntry<CharacterData>
     {
       // If the note is from the same strumline, play the sing animation.
       this.playSingAnimation(event.dir, true);
+      holdTimer = 0;
     }
   }
 
@@ -856,10 +879,6 @@ class BaseCharacter extends Bopper implements IRegistryEntry<CharacterData>
   public function playSingAnimation(dir:NoteDirection, miss:Bool = false, ?suffix:String = ''):Void
   {
     var anim:String = 'sing${dir.nameUpper}${miss ? 'miss' : ''}${suffix != '' ? '-${suffix}' : ''}';
-
-    // restart even if already playing, because the character might sing the same note twice.
-    holdTimer = 0;
-
     playAnimation(anim, true);
   }
 
