@@ -370,7 +370,8 @@ class CharacterPlayer extends Box
 
     char.flipY = !oldFlipY;
     char.alpha = oldAlpha * REFLECTION_ALPHA;
-    char.shader = char.isAnimate ? shader : null;
+    shader.updateFrameInfo(char.isAnimate ? null : char.frame);
+    char.shader = shader;
 
     char.draw();
 
