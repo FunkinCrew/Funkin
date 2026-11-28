@@ -344,8 +344,9 @@ class SongMenuItem extends FlxSpriteGroup
   {
     var clipSize:Int = 290;
     var clipType:Int = 0;
+    var hasRanking:Bool = ranking.visible || fakeRanking.visible;
 
-    if (ranking.visible || fakeRanking.visible)
+    if (hasRanking)
     {
       favIconBlurred.x = this.x + 370;
       favIcon.x = favIconBlurred.x;
@@ -365,6 +366,17 @@ class SongMenuItem extends FlxSpriteGroup
       case 1:
         clipSize = 245;
     }
+
+    if (hasRanking) clipSize += 10;
+
+    if (favIcon.visible || favIconBlurred.visible)
+    {
+      var favoriteOffset:Float = hasRanking ? 370 : 405;
+      var titleOffset:Float = capsule.width * 0.26;
+      var safeClipWidth:Int = Std.int(Math.floor(favoriteOffset - titleOffset - 2));
+      clipSize = Std.int(Math.min(clipSize, Math.max(1, safeClipWidth)));
+    }
+
     songText.clipWidth = clipSize;
   }
 
@@ -787,6 +799,7 @@ class SongMenuItem extends FlxSpriteGroup
   {
     if (songText != null)
     {
+      songText.resetText();
       textAppear();
       if (Preferences.flashingLights) songText.flickerText();
     }
@@ -832,7 +845,7 @@ class SongMenuItem extends FlxSpriteGroup
 
     grayscaleShader.setAmount(isSelected ? 0 : 0.8);
     songText.alpha = isSelected ? 1 : 0.6;
-    songText.blurredText.visible = isSelected && songText.clipWidth >= 290;
+    songText.blurredText.visible = isSelected && (freeplayData == null || songText.clipWidth >= 290);
     capsule.offset.x = isSelected ? 0 : -5;
     if (!Preferences.flashingLights)
     {
