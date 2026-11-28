@@ -21,6 +21,7 @@ import funkin.data.story.level.LevelRegistry;
 import funkin.modding.module.ModuleHandler;
 import funkin.play.notes.notekind.NoteKindManager;
 import funkin.util.tasks.TaskHandler;
+import funkin.util.ReflectUtil;
 import lime.app.Future;
 import polymod.Polymod;
 
@@ -97,7 +98,8 @@ class ModReloader
     // Unload mods on the main thread, before reloading mods asynchronously.
     ModuleHandler.clearModuleCache();
     Polymod.clearScripts();
-
+    ReflectUtil.clearScriptCache();
+    
     TaskHandler.performSimpleTask(() ->
     {
       funkin.modding.PolymodHandler.loadEnabledMods();
