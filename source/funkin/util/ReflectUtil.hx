@@ -474,8 +474,6 @@ class ReflectUtil
 
   @:unreflective
   static var pathResolveCache:Map<String, Any> = new Map();
-  @:unreflective
-  static var blacklistedFieldsCache:Map<String, Any> = new Map();
 
   @:unreflective @:nullSafety(Off)
   static function getClassOrEnumFromName(path:String):Any
@@ -522,24 +520,7 @@ class ReflectUtil
 
     if (varName != null)
     {
-      var cacheKey = '${isClassReflect ? "C_" : "I_"}$key';
-      var blacklistedFields:Array<String> = blacklistedFieldsCache.get(cacheKey);
-      if (blacklistedFields == null)
-      {
-        if (isClassReflect)
-        {
-          blacklistedFields = PolymodScriptClass.blacklistedStaticFields.get(cast reflectedObj);
-        }
-        else
-        {
-          blacklistedFields = PolymodScriptClass.blacklistedInstanceFields.get(key);
-        }
-
-        if (blacklistedFields == null) blacklistedFields = [];
-        blacklistedFieldsCache.set(cacheKey, blacklistedFields);
-      }
-
-      if (blacklistedFields.contains(varName)) return false;
+      if (PolymodScriptClass.isBlacklistedField(key, varName)) return false;
     }
 
     if (PolymodScriptClass.importOverrides.exists(key) && PolymodScriptClass.importOverrides.get(key) == null) return false;
