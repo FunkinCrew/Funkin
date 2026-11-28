@@ -1,5 +1,6 @@
 package funkin.graphics.shaders;
 
+import flixel.graphics.frames.FlxFrame;
 import flixel.system.FlxAssets.FlxShader;
 
 /**
@@ -78,6 +79,27 @@ class VerticalFadeShader extends FlxShader
     return value;
   }
 
+  /**
+   * Updates the frame bounds of the sprite for the shader.
+   * @param frame The frame to retrieve the information from
+   */
+  public function updateFrameInfo(frame:Null<FlxFrame>):Void
+  {
+    if (frame == null)
+    {
+      uFrameBounds.value = [0, 0, 1, 1];
+      uFrameRotated.value = [false];
+      uFrameTrim.value = [1, 0];
+      return;
+    }
+
+    var rotated:Bool = frame.angle != 0;
+    var trimmedHeight:Float = rotated ? frame.frame.width : frame.frame.height;
+    uFrameBounds.value = [frame.uv.left, frame.uv.top, frame.uv.right, frame.uv.bottom];
+    uFrameRotated.value = [rotated];
+    uFrameTrim.value = [trimmedHeight / frame.sourceSize.y, frame.offset.y / frame.sourceSize.y];
+  }
+
   @:glFragmentSource('
     #pragma header
 
@@ -85,23 +107,31 @@ class VerticalFadeShader extends FlxShader
     uniform float fadeSpread;
     uniform bool fadeTop;
     uniform bool fadeBottom;
+    uniform vec4 uFrameBounds;
+    uniform bool uFrameRotated;
+    uniform vec2 uFrameTrim;
 
     void main()
     {
       vec4 color = flixel_texture2D(bitmap, openfl_TextureCoordv);
+
+      vec2 frameUV = (openfl_TextureCoordv - uFrameBounds.xy) / (uFrameBounds.zw - uFrameBounds.xy);
+      float fadeY = frameUV.y;
+      if (uFrameRotated) fadeY = 1.0 - frameUV.x;
+      fadeY = fadeY * uFrameTrim.x + uFrameTrim.y;
 
       float fade = 1.0;
       float halfSpread = fadeSpread * 0.5;
 
       if (fadeTop)
       {
-        fade *= smoothstep(threshold - halfSpread, threshold + halfSpread, openfl_TextureCoordv.y);
+        fade *= smoothstep(threshold - halfSpread, threshold + halfSpread, fadeY);
       }
 
       if (fadeBottom)
       {
         float bottomThreshold = 1.0 - threshold;
-        fade *= 1.0 - smoothstep(bottomThreshold - halfSpread, bottomThreshold + halfSpread, openfl_TextureCoordv.y);
+        fade *= 1.0 - smoothstep(bottomThreshold - halfSpread, bottomThreshold + halfSpread, fadeY);
       }
 
       color.rgb *= fade;
@@ -122,5 +152,6 @@ class VerticalFadeShader extends FlxShader
     this.fadeThreshold = threshold;
     this.fadeType = type;
     this.fadeSize = fadeSize;
+    updateFrameInfo(null);
   }
 }
