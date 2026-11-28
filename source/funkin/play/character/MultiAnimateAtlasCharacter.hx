@@ -120,7 +120,7 @@ class MultiAnimateAtlasCharacter extends BaseCharacter
     loadAtlases();
     loadAnimations();
 
-    log('Successfully loaded texture atlases for ${characterId} with ${_data.animations.length} animations.');
+    log('Successfully loaded texture atlases for ${characterId} with ${getCharacterAnimations().length} animations.');
     super.onCreate(event);
   }
 
@@ -131,7 +131,7 @@ class MultiAnimateAtlasCharacter extends BaseCharacter
     var textureList:Array<FlxAtlasFrames> = [];
     var addedAssetPaths:Array<String> = [];
 
-    var assetPath:String = funkin.assets.Paths.formatRelative(_data.assetPath, 'gameplay/characters/$characterId');
+    var assetPath:String = funkin.assets.Paths.formatRelative(getAssetPath(), 'gameplay/characters/$characterId');
 
     var baseAssetLibrary:String = Paths.getLibrary(assetPath);
     var baseAssetPath:String = Paths.stripLibrary(assetPath);
@@ -144,7 +144,7 @@ class MultiAnimateAtlasCharacter extends BaseCharacter
 
     mainTexture.parent.destroyOnNoUse = false;
 
-    for (animation in _data.animations)
+    for (animation in getCharacterAnimations())
     {
       if (animation.assetPath == null) continue;
       if (addedAssetPaths.contains(animation.assetPath)) continue;
@@ -204,14 +204,16 @@ class MultiAnimateAtlasCharacter extends BaseCharacter
     }
 
     this.frames = FlxAnimateFrames.combineAtlas(textureList);
-    this.setScale(_data.scale);
+    this.setScale(getBaseScale());
   }
 
   function loadAnimations():Void
   {
-    log('Loading ${_data.animations.length} animations for ${characterId}');
+    var animationList:Array<AnimationData> = getCharacterAnimations();
 
-    for (anim in _data.animations)
+    log('Loading ${animationList.length} animations for ${characterId}');
+
+    for (anim in animationList)
     {
       switch (anim.renderType)
       {
