@@ -26,6 +26,7 @@ import funkin.assets.Assets;
 class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass implements IStateChangingScriptedClass implements IFreeplayScriptedClass
 {
   static var resolvedScriptedClasses:Map<String, Null<String>> = [];
+
   public var backingTextYeah:FunkinSprite;
   public var orangeBackShit:FunkinSprite;
   public var alsoOrangeLOL:FunkinSprite;
@@ -293,19 +294,23 @@ class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass impl
         confirmGlow.alpha = 1;
         confirmTextGlow.visible = true;
         confirmTextGlow.alpha = 1;
-        FlxTween.tween(confirmTextGlow, {
-          alpha: 0.4
-        }, 0.5);
-        FlxTween.tween(confirmGlow, {
-          alpha: 0
-        }, 0.5);
-        FlxTween.color(instance.backingImage, 2, 0xFFCDCDCD, 0xFF555555, {
-          ease: FlxEase.expoOut,
-          onUpdate: function(_)
-          {
-            instance.angleMaskShader.extraColor = instance.backingImage.color;
-          }
-        });
+        if (Preferences.flashingLights)
+        {
+          FlxTween.tween(confirmTextGlow, {
+            alpha: 0.4
+          }, 0.5);
+          FlxTween.tween(confirmGlow, {
+            alpha: 0
+          }, 0.5);
+
+          FlxTween.color(instance.backingImage, 2, 0xFFCDCDCD, 0xFF555555, {
+            ease: FlxEase.expoOut,
+            onUpdate: function(_)
+            {
+              instance.angleMaskShader.extraColor = instance.backingImage.color;
+            }
+          });
+        }
       }
     });
   }
