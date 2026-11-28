@@ -66,7 +66,7 @@ class FunkinProgressBar extends FunkinSpriteGroup
     micStand = new FunkinSprite();
     character = new FunkinLoadingCharacter();
 
-    customChildUpdate = true;
+    customChildPositioning = true;
   }
 
   /**

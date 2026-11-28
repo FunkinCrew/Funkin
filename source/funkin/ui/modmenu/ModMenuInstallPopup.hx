@@ -103,7 +103,7 @@ class ModMenuInstallPopup extends FunkinSpriteGroup
 
     background = new FunkinSprite(0, 0);
     background.makeSolidColor(CARD_WIDTH, cardHeight, FlxColor.BLACK);
-    background.localAlpha = 0.72;
+    background.alpha = 0.72;
     background.scrollFactor.set(0, 0);
     add(background);
 
@@ -117,8 +117,8 @@ class ModMenuInstallPopup extends FunkinSpriteGroup
     add(modIcon);
 
     titleText = new ScrollingTextBox(TEXT_WIDTH - 16, TITLE_HEIGHT, funkin.assets.Paths.font('ui/fonts/FunkinLingLong', 'otf'), 30, FlxColor.WHITE);
-    titleText.localX = PADDING + ICON_SIZE + PADDING;
-    titleText.localY = PADDING;
+    titleText.x = PADDING + ICON_SIZE + PADDING;
+    titleText.y = PADDING;
     titleText.scrollFactor.set(0, 0);
     titleText.scrolling = true;
     add(titleText);
@@ -126,23 +126,23 @@ class ModMenuInstallPopup extends FunkinSpriteGroup
     detailText = new FlxText(0, 0, TEXT_WIDTH);
     detailText.setFormat(funkin.assets.Paths.font('ui/fonts/FunkinLingLong', 'otf'), 20, FlxColor.WHITE);
     detailText.fieldHeight = 64;
-    detailText.localX = titleText.localX;
-    detailText.localY = PADDING + 36;
+    detailText.x = titleText.x;
+    detailText.y = PADDING + 36;
     detailText.scrollFactor.set(0, 0);
     add(detailText);
 
     barBackground = new FunkinSprite(0, 0);
     barBackground.makeSolidColor(ICON_SIZE, BAR_HEIGHT, 0xFF3C3C4B);
-    barBackground.localX = PADDING;
-    barBackground.localY = PADDING + ICON_SIZE - BAR_HEIGHT;
+    barBackground.x = PADDING;
+    barBackground.y = PADDING + ICON_SIZE - BAR_HEIGHT;
     barBackground.scrollFactor.set(0, 0);
     add(barBackground);
 
     barFill = new FunkinSprite(0, 0);
 
     barFill.makeGraphic(ICON_SIZE, BAR_HEIGHT, 0xFF00C9FF);
-    barFill.localX = barBackground.localX;
-    barFill.localY = barBackground.localY;
+    barFill.x = barBackground.x;
+    barFill.y = barBackground.y;
     barFill.scrollFactor.set(0, 0);
     add(barFill);
 
@@ -151,8 +151,8 @@ class ModMenuInstallPopup extends FunkinSpriteGroup
 
     promptText = new FlxText(0, 0, CARD_WIDTH - (PADDING * 2));
     promptText.setFormat(funkin.assets.Paths.font('ui/fonts/FunkinLingLong', 'otf'), 20, FlxColor.WHITE, FlxTextAlign.CENTER);
-    promptText.localX = PADDING;
-    promptText.localY = PADDING + ICON_SIZE + 4;
+    promptText.x = PADDING;
+    promptText.y = PADDING + ICON_SIZE + 4;
     promptText.scrollFactor.set(0, 0);
     add(promptText);
 
@@ -163,7 +163,7 @@ class ModMenuInstallPopup extends FunkinSpriteGroup
       20,
       FlxColor.WHITE
     );
-    estimateText.localX = PADDING;
+    estimateText.x = PADDING;
     estimateText.scrollFactor.set(0, 0);
     estimateText.centered = true;
     estimateText.keepScrollOnChange = true;
@@ -250,11 +250,9 @@ class ModMenuInstallPopup extends FunkinSpriteGroup
     var onIconLoaded = () ->
     {
       modIcon.setGraphicSize(ICON_SIZE, ICON_SIZE);
-      modIcon.localScale.x = modIcon.scale.x;
-      modIcon.localScale.y = modIcon.scale.y;
       modIcon.updateHitbox();
-      modIcon.localX = PADDING;
-      modIcon.localY = PADDING;
+      modIcon.x = PADDING;
+      modIcon.y = PADDING;
     };
 
     if (lime.graphics.Image.__isGIF(bytes))
@@ -298,12 +296,10 @@ class ModMenuInstallPopup extends FunkinSpriteGroup
     modIcon.clipRect = iconClip;
 
     modIcon.scale.set(scale, scale);
-    modIcon.localScale.x = scale;
-    modIcon.localScale.y = scale;
     modIcon.updateHitbox();
 
-    modIcon.localX = PADDING - (iconClip.x * scale);
-    modIcon.localY = PADDING - (iconClip.y * scale);
+    modIcon.x = PADDING - (iconClip.x * scale);
+    modIcon.y = PADDING - (iconClip.y * scale);
   }
 
   /**
@@ -356,7 +352,7 @@ class ModMenuInstallPopup extends FunkinSpriteGroup
     final promptLines:Int = promptText.text == '' ? 0 : promptText.text.split('\n').length;
 
     estimateText.text = estimate;
-    estimateText.localY = promptText.localY + (PROMPT_HEIGHT * promptLines);
+    estimateText.y = promptText.y + (PROMPT_HEIGHT * promptLines);
 
     final lines:Int = Std.int(Math.max(1, promptLines + (estimate == '' ? 0 : 1)));
     final height:Int = ICON_SIZE + (PROMPT_HEIGHT * lines) + (PADDING * 2);
@@ -423,8 +419,8 @@ class ModMenuInstallPopup extends FunkinSpriteGroup
 
     resizeCard();
 
-    barBackground.localVisible = showBar;
-    barFill.localVisible = showBar;
+    barBackground.visible = showBar;
+    barFill.visible = showBar;
 
     if (showBar) targetRatio = Math.max(0, Math.min(1, ratio));
     else

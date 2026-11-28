@@ -234,7 +234,7 @@ class ScrollingTextBox extends FunkinSpriteGroup
 
     if (lineRepeat == null || repeatClip == null) return;
 
-    if (line.frameWidth <= boxWidth) lineRepeat.localVisible = false;
+    if (line.frameWidth <= boxWidth) lineRepeat.visible = false;
     else
       layoutCopy(lineRepeat, repeatClip, -scrollOffset + line.frameWidth + loopGap);
   }
@@ -247,14 +247,14 @@ class ScrollingTextBox extends FunkinSpriteGroup
     var left:Float = Math.max(0, position);
     var right:Float = Math.min(boxWidth, position + copy.frameWidth);
 
-    copy.localX = position;
+    copy.x = position;
 
     clip.x = Math.min(left - position, Math.max(0, copy.frameWidth - 1));
     clip.y = 0;
     clip.width = right - left;
     clip.height = Math.min(boxHeight, copy.frameHeight);
 
-    copy.localVisible = clip.width >= 1 && clip.height >= 1;
+    copy.visible = clip.width >= 1 && clip.height >= 1;
 
     if (clip.width < 1) clip.width = 1;
     if (clip.height < 1) clip.height = 1;

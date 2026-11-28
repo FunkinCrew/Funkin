@@ -425,8 +425,8 @@ class ModMenuItemList extends FunkinSpriteGroup
     for (index => modMenuItem in modItems)
     {
       modMenuItem.cancelFlight();
-      modMenuItem.localY = getModItemYPos(index) + scrollOffset;
-      modMenuItem.localX = ITEM_X_OFFSET;
+      modMenuItem.y = getModItemYPos(index) + scrollOffset;
+      modMenuItem.x = ITEM_X_OFFSET;
     }
 
     updateScrollbar();
@@ -541,7 +541,7 @@ class ModMenuItemList extends FunkinSpriteGroup
 
     for (item in modItems)
     {
-      var itemTop:Float = item.localY;
+      var itemTop:Float = item.y;
 
       item.setOnScreen(!CULL_OFFSCREEN_ITEMS || item.isInFlight || (itemTop + ModMenuItem.ICON_HEIGHT > top && itemTop < bottom));
     }
@@ -774,16 +774,16 @@ class ModMenuItemList extends FunkinSpriteGroup
       lastThumbHeight = thumbH;
     }
 
-    scrollbarTrack.localX = trackX;
-    scrollbarTrack.localY = trackTop;
+    scrollbarTrack.x = trackX;
+    scrollbarTrack.y = trackTop;
 
-    scrollbarThumb.localX = trackX;
-    scrollbarThumb.localY = thumbY;
+    scrollbarThumb.x = trackX;
+    scrollbarThumb.y = thumbY;
 
-    scrollbarTrack.x = x + scrollbarTrack.localX;
-    scrollbarTrack.y = y + scrollbarTrack.localY;
-    scrollbarThumb.x = x + scrollbarThumb.localX;
-    scrollbarThumb.y = y + scrollbarThumb.localY;
+    scrollbarTrack.x = x + scrollbarTrack.x;
+    scrollbarTrack.y = y + scrollbarTrack.y;
+    scrollbarThumb.x = x + scrollbarThumb.x;
+    scrollbarThumb.y = y + scrollbarThumb.y;
   }
 
   // Setters / helpers

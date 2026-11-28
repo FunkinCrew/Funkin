@@ -316,7 +316,6 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
     currentSpeaker.zIndex = 200;
     add(currentSpeaker);
 
-    updateChildren();
     refresh();
   }
 

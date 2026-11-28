@@ -106,7 +106,12 @@ class CharSelectCharacter extends FunkinSprite implements IBPMSyncedScriptedClas
     return currentPath;
   }
 
-  public function new(playerId:String, x:Float, y:Float, characterType:CharacterSelectType, data:Null<PlayerCharSelectCharacterData>, visualizer:Bool = false)
+  public function new(playerId:String,
+    x:Float,
+    y:Float,
+    characterType:CharacterSelectType,
+    data:Null<PlayerCharSelectCharacterData>,
+    visualizer:Bool = false)
   {
     super(x, y);
 
@@ -335,7 +340,7 @@ class CharSelectCharacter extends FunkinSprite implements IBPMSyncedScriptedClas
 
       if (setVisible)
       {
-        this.localVisible = false;
+        this.visible = false;
       }
       else
       {
@@ -356,7 +361,7 @@ class CharSelectCharacter extends FunkinSprite implements IBPMSyncedScriptedClas
       {
         if (setVisible)
         {
-          this.localVisible = false;
+          this.visible = false;
         }
         else
         {
